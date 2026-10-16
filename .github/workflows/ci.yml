@@ -17,7 +17,7 @@ jobs:
     name: Rust
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -52,7 +52,7 @@ jobs:
     name: UI
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
         with:
           node-version: 20
@@ -68,7 +68,7 @@ jobs:
       run:
         working-directory: tools/discord
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # Releases before 0.1.5 do not contain the bot yet.
       - id: bot
         shell: bash
