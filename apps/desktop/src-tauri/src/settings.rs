@@ -131,6 +131,9 @@ pub struct AgentSettings {
     pub review_enabled: bool,
     pub max_review_rounds: u32,
     pub shell: ShellConfig,
+    /// After a run, the orchestrator writes what it learned into Ylide's
+    /// section of the project's AGENTS.md. The file is read either way.
+    pub update_project_notes: bool,
 }
 
 impl Default for AgentSettings {
@@ -142,6 +145,7 @@ impl Default for AgentSettings {
             review_enabled: true,
             max_review_rounds: 2,
             shell: ShellConfig::default(),
+            update_project_notes: true,
         }
     }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clip, formatClock, roleColor, splitCode, summarizeArgs } from './text';
+import { clip, formatClock, formatTimeOfDay, formatWhen, roleColor, splitCode, summarizeArgs } from './text';
 
 describe('formatClock', () => {
   it('formats minutes and hours', () => {
@@ -44,5 +44,16 @@ describe('clip and roleColor', () => {
     expect(roleColor('reviewer')).toBe('var(--metal)');
     expect(roleColor('orchestrator')).toBe('var(--text-2)');
     expect(roleColor('tester')).toBe('var(--text-1)');
+  });
+});
+
+describe('formatWhen', () => {
+  it('shows the time for today and the date for an earlier day', () => {
+    const now = new Date(2026, 9, 17, 15, 0, 0).getTime();
+    expect(formatWhen(new Date(2026, 9, 17, 9, 5, 7).getTime(), 'en', now)).toBe(formatTimeOfDay(new Date(2026, 9, 17, 9, 5, 7).getTime(), 'en'));
+    const yesterday = formatWhen(new Date(2026, 9, 16, 22, 30).getTime(), 'en', now);
+    expect(yesterday).toContain('16');
+    expect(yesterday).toContain('Oct');
+    expect(yesterday).toContain('30');
   });
 });

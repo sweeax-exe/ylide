@@ -193,6 +193,11 @@
       "label": "작업당 리뷰 횟수",
       "hint": "작업이 완료로 간주되기 전에 리뷰어가 변경을 요청할 수 있는 횟수입니다."
     },
+    "notesTitle": "프로젝트 지식",
+    "updateProjectNotes": {
+      "label": "AGENTS.md에 프로젝트 지식 기록",
+      "hint": "실행이 끝날 때마다 오케스트레이터가 프로젝트에 대해 알게 된 것(잘 동작한 명령어, 구조, 규칙, 결정 사항)을 프로젝트 폴더의 AGENTS.md 안 Ylide 전용 섹션에 적습니다. 파일에 직접 쓴 내용은 그대로 남습니다. 에이전트와 채팅은 파일이 있으면 항상 읽습니다."
+    },
     "shellTitle": "명령",
     "shellDescription": "run_command가 프로젝트 폴더에서 명령을 시작하는 방식입니다.",
     "shellProgram": {
@@ -295,6 +300,10 @@
     "repeatedFailure": {
       "label": "반복된 실패",
       "hint": "에이전트가 실패하는 도구 호출을 똑같이 반복할 때 전송됩니다. 필드가 없습니다."
+    },
+    "notes": {
+      "label": "프로젝트 지식",
+      "hint": "실행 후 오케스트레이터에게 보내져 AGENTS.md의 Ylide 섹션을 업데이트합니다."
     }
   },
   "network": {
@@ -529,6 +538,7 @@
     "file": "파일 {{index}}/{{count}}",
     "pause": "{{name}} 다운로드 일시 중지",
     "resume": "{{name}} 다운로드 재개",
+    "retry": "{{name}} 다운로드 다시 시도",
     "cancel": "{{name}} 다운로드 취소",
     "progressLabel": "{{name}} 다운로드 진행률",
     "failed": "{{message}}"
@@ -584,6 +594,7 @@
     "plan": "{{placement}} · 약 {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB VRAM",
     "memRam": "{{value}} GiB RAM",
+    "noFit": "이 컴퓨터에 맞지 않음",
     "download": "다운로드",
     "downloadNamed": "{{name}} {{quant}} 다운로드",
     "downloadSize": "{{size}} GB 다운로드",

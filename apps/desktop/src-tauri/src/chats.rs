@@ -63,7 +63,7 @@ fn bad_id(id: &str) -> AppError {
 /// Writes via a flushed temporary file and a rename, so even after a crash or
 /// power loss the file holds the old or the new content. A temporary file
 /// left by a failed write is removed (it holds the whole chat).
-fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     use std::io::Write;
     let tmp = path.with_extension("tmp");
     let result = fs::File::create(&tmp)

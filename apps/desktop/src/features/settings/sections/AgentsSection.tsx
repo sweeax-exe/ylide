@@ -112,6 +112,21 @@ export function AgentsSection({ settings }: { settings: Settings }) {
         )}
       </Group>
 
+      <Group title={t('agents.notesTitle')}>
+        {(save) => (
+          <SwitchRow
+            label={t('agents.updateProjectNotes.label')}
+            hint={t('agents.updateProjectNotes.hint')}
+            checked={agent.updateProjectNotes}
+            onChange={(v) =>
+              void save((d) => {
+                d.agent.updateProjectNotes = v;
+              })
+            }
+          />
+        )}
+      </Group>
+
       <Group
         title={t('agents.shellTitle')}
         description={t('agents.shellDescription')}

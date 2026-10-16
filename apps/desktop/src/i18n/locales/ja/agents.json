@@ -63,7 +63,8 @@
     "planReady": "計画を作成しました",
     "reviewing": "変更をレビュー中",
     "stepLimit": "ステップ上限に達しました",
-    "answering": "{{agent}} に回答中"
+    "answering": "{{agent}} に回答中",
+    "notes": "プロジェクトの知識を更新中"
   },
   "idle": {
     "goalLabel": "エージェントに何を依頼しますか？",
@@ -80,7 +81,8 @@
     "project": "{{name}} で作業します",
     "noProject": "フォルダーが開かれていません。エージェントには作業対象のプロジェクトが必要です。",
     "previous": "前回の実行",
-    "showRun": "詳細を表示"
+    "showRun": "詳細を表示",
+    "openTasks_other": "未完了のタスクが {{count}} 件あります。続行すると最初にそれらに取り組みます。"
   },
   "mode": {
     "label": "承認",
@@ -114,6 +116,7 @@
     "stopBody": "エージェントはすぐに停止します。ここまでの変更はそのまま残り、チェックポイントから元に戻せます。",
     "stopConfirm": "実行を停止",
     "newRun": "新しい実行",
+    "continues": "前回の続き:",
     "questionWaiting": "{{agent}} が回答を待っています。",
     "answer": "回答する",
     "tabs": "実行の詳細",
@@ -124,7 +127,17 @@
     "tabCheckpoints": "チェックポイント",
     "tabCheckpointsCount": "チェックポイント {{value}}",
     "changedFiles": "変更されたファイル",
-    "noChanges": "変更されたファイルはありません。"
+    "noChanges": "変更されたファイルはありません。",
+    "notesUpdated": "AGENTS.md のプロジェクトの知識を更新しました",
+    "openNotes": "AGENTS.md を開く"
+  },
+  "next": {
+    "label": "次にエージェントに何を依頼しますか？",
+    "placeholder": "例: 次に割引コードのテストを追加する",
+    "hint": "エージェントはこの実行の目標、タスク、変更されたファイルを把握しています。Ctrl+Enter で続行します。",
+    "hintOpen_other": "エージェントはこの実行の目標、タスク、変更されたファイルを把握しており、残っている {{count}} 件のタスクから先に片付けます。Ctrl+Enter で続行します。",
+    "continue": "続行",
+    "otherProject": "この実行は別のプロジェクトのものです。このプロジェクトでは新しい実行を開始してください。"
   },
   "lines": {
     "label": "エージェントの世界線",
@@ -158,6 +171,7 @@
   },
   "feed": {
     "empty": "まだ何も起きていません。",
+    "stored": "以前のセッションの実行にはアクティビティ履歴は残りません。残るのは目標、タスク、結果、変更されたファイルだけです。",
     "to": "から",
     "ok": "成功",
     "failed": "失敗",

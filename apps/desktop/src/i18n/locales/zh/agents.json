@@ -63,7 +63,8 @@
     "planReady": "计划已就绪",
     "reviewing": "正在审查更改",
     "stepLimit": "已达到步数上限",
-    "answering": "正在回答 {{agent}}"
+    "answering": "正在回答 {{agent}}",
+    "notes": "正在更新项目知识"
   },
   "idle": {
     "goalLabel": "智能体要做什么？",
@@ -80,7 +81,8 @@
     "project": "在 {{name}} 中工作",
     "noProject": "未打开文件夹。智能体需要一个项目才能工作。",
     "previous": "上一次运行",
-    "showRun": "显示详情"
+    "showRun": "显示详情",
+    "openTasks_other": "还有 {{count}} 个任务未完成。继续时会先处理它们。"
   },
   "mode": {
     "label": "批准方式",
@@ -114,6 +116,7 @@
     "stopBody": "智能体会立即停止。目前已做的更改会保留，你可以从检查点撤销它们。",
     "stopConfirm": "停止运行",
     "newRun": "新建运行",
+    "continues": "接续：",
     "questionWaiting": "{{agent}} 正在等待你的回答。",
     "answer": "回答",
     "tabs": "运行详情",
@@ -124,7 +127,17 @@
     "tabCheckpoints": "检查点",
     "tabCheckpointsCount": "检查点 {{value}}",
     "changedFiles": "已更改的文件",
-    "noChanges": "没有更改任何文件。"
+    "noChanges": "没有更改任何文件。",
+    "notesUpdated": "已在 AGENTS.md 中更新项目知识",
+    "openNotes": "打开 AGENTS.md"
+  },
+  "next": {
+    "label": "智能体接下来要做什么？",
+    "placeholder": "例如：现在为折扣码添加测试",
+    "hint": "智能体了解本次运行的目标、任务和已更改的文件。按 Ctrl+Enter 继续。",
+    "hintOpen_other": "智能体了解本次运行的目标、任务和已更改的文件，并会先完成剩下的 {{count}} 个任务。按 Ctrl+Enter 继续。",
+    "continue": "继续",
+    "otherProject": "此运行属于另一个项目。请为当前项目新建运行。"
   },
   "lines": {
     "label": "智能体世界线",
@@ -158,6 +171,7 @@
   },
   "feed": {
     "empty": "还没有任何动态。",
+    "stored": "之前会话中的运行不保留活动记录，只保留目标、任务、结果和已更改的文件。",
     "to": "发给",
     "ok": "成功",
     "failed": "失败",

@@ -193,6 +193,11 @@
       "label": "Review rounds per task",
       "hint": "How often the reviewer may request changes before the task counts as done."
     },
+    "notesTitle": "Project knowledge",
+    "updateProjectNotes": {
+      "label": "Keep project knowledge in AGENTS.md",
+      "hint": "After each run, the orchestrator writes what it learned about the project (commands that worked, structure, conventions, decisions) into Ylide’s own section of AGENTS.md in the project folder. Your own text in the file stays as it is. Agents and chat always read the file when it exists."
+    },
     "shellTitle": "Commands",
     "shellDescription": "How run_command starts commands in the project folder.",
     "shellProgram": {
@@ -297,6 +302,10 @@
     "repeatedFailure": {
       "label": "Repeated failure",
       "hint": "Sent when an agent repeats the same failing tool call. Has no fields."
+    },
+    "notes": {
+      "label": "Project knowledge",
+      "hint": "Sent to the orchestrator after a run, to update Ylide’s section of AGENTS.md."
     }
   },
   "network": {
@@ -532,6 +541,7 @@
     "file": "file {{index}} of {{count}}",
     "pause": "Pause download of {{name}}",
     "resume": "Resume download of {{name}}",
+    "retry": "Retry download of {{name}}",
     "cancel": "Cancel download of {{name}}",
     "progressLabel": "Download progress of {{name}}",
     "failed": "{{message}}"
@@ -589,6 +599,7 @@
     "plan": "{{placement}} · about {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB VRAM",
     "memRam": "{{value}} GiB RAM",
+    "noFit": "Does not fit this computer",
     "download": "Download",
     "downloadNamed": "Download {{name}} {{quant}}",
     "downloadSize": "Download {{size}} GB",

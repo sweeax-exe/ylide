@@ -69,6 +69,8 @@
 .recActions {
   display: flex;
   align-items: center;
+  /* In a narrow column the download button wraps below instead of widening the page. */
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
@@ -404,13 +406,22 @@
   color: var(--text-2);
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
+.tableWrap {
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
   background: var(--bg-raised);
+  /* Scrolls on its own in a very narrow column, so the page does not. */
+  overflow-x: auto;
+  /* Also clips the visually hidden header labels, which are absolutely positioned. */
+  position: relative;
+}
+
+.table {
+  width: 100%;
+  /* Room for every column before the frame starts to scroll. */
+  min-width: 440px;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
 }
 
 .table th {
@@ -467,6 +478,11 @@
   flex-wrap: wrap;
 }
 
+.fitProgress {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
 .fitText {
   font-size: var(--text-xs);
   color: var(--text-2);
@@ -474,6 +490,11 @@
 }
 
 .fitNone {
+  color: var(--text-3);
+}
+
+.noFit {
+  font-size: var(--text-xs);
   color: var(--text-3);
 }
 
@@ -512,6 +533,10 @@
   }
   .details {
     padding-left: var(--space-5);
+  }
+  /* Leaves the room to the estimate and the download progress. */
+  .bits {
+    display: none;
   }
 }
 

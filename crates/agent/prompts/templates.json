@@ -1,9 +1,10 @@
 {
-  "planner": "Request from the user:\n{goal}\n\nAvailable roles:\n{roles}\n\nProject structure (top levels):\n{outline}\n\nEnvironment: {environment}",
-  "coderTask": "Team progress:\n{overview}\n\nYour task {task_id}: {task_title}\n{task_description}\n\nFiles mentioned by the planner: {task_files}\n\nEnvironment: {environment}",
-  "reviewerTask": "Task {task_id}: {task_title}\n{task_description}\n\nCoder's summary:\n{summary}\n\nChanges (unified diff):\n{diff}\n\nEnvironment: {environment}",
+  "planner": "{project_notes}{previous}Request from the user:\n{goal}\n\nAvailable roles:\n{roles}\n\nProject structure (top levels):\n{outline}\n\nEnvironment: {environment}",
+  "coderTask": "{project_notes}Team progress:\n{overview}\n\nYour task {task_id}: {task_title}\n{task_description}\n\nFiles mentioned by the planner: {task_files}\n\nEnvironment: {environment}",
+  "reviewerTask": "{project_notes}Task {task_id}: {task_title}\n{task_description}\n\nCoder's summary:\n{summary}\n\nChanges (unified diff):\n{diff}\n\nEnvironment: {environment}",
   "feedback": "The reviewer requested changes (round {round} of {max_rounds}):\n{review}\n\nAddress every point, then call finish again with an updated summary.",
   "question": "Team progress:\n{overview}\n\n{from} asks you: {question}\n\nAnswer briefly and concretely in plain text. Do not call tools.",
   "continue": "Continue with the task using the tools. Call finish when the task is done.",
-  "repeatedFailure": "You have made the same failing call several times. Stop repeating it: re-read the file or try a different approach."
+  "repeatedFailure": "You have made the same failing call several times. Stop repeating it: re-read the file or try a different approach.",
+  "notes": "The run is over. Update the project notes that Ylide keeps in AGENTS.md for later runs.\n\nCurrent notes:\n{notes}\n\nThis run:\n{overview}\n\nCommands that worked in this run:\n{commands}\n\nWrite the new notes as a short Markdown list of at most {max_lines} lines, grouped under these bold labels where you know something: **Run and build**, **Tests**, **Structure**, **Conventions**, **Decisions**. Keep only facts that help later runs: commands that actually worked, where things are, rules the code follows, decisions that were made. Keep what is still true and drop what is outdated or only about this run. Answer with the notes only: no heading, no code fence. Do not call tools."
 }

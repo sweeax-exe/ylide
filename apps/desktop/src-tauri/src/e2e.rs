@@ -142,6 +142,7 @@ async fn real_model_end_to_end() {
         default_model: agent_model("agent"),
         max_review_rounds: 1,
         review_enabled: true,
+        update_notes: false,
     };
     let ctx = Arc::new(RunContext::new(
         "e2e-run",

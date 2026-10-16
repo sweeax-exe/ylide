@@ -15,6 +15,83 @@
   padding: 0 var(--space-3) var(--space-3);
 }
 
+/* ---- the run this one continues */
+.continues {
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.continuesHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.continuesHead::-webkit-details-marker {
+  display: none;
+}
+
+.continuesHead > svg {
+  flex: none;
+  color: var(--text-3);
+}
+
+.continuesHead:hover .continuesGoal {
+  text-decoration: underline;
+}
+
+.continuesLabel {
+  flex: none;
+  color: var(--text-3);
+}
+
+.continuesGoal {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.continues[open] .continuesGoal {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.continuesBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 6px 0 2px 18px;
+}
+
+.continuesOutcome {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.continuesSummary {
+  align-self: stretch;
+  max-height: 160px;
+  margin: 0;
+  padding: 6px var(--space-2);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
 .goalWrap {
   display: flex;
   flex-direction: column;
@@ -205,6 +282,27 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   user-select: text;
+}
+
+.notes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 4px 4px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  color: var(--text-2);
+}
+
+.notes > svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.notesText {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
 }
 
 .filesBlock {

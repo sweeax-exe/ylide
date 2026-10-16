@@ -326,6 +326,27 @@ main,
   font-size: 1.125rem;
 }
 
+/* A quiet, outlined button next to the accent one (Discord in the header).
+   The outline is an inset shadow, so it is exactly as tall as Download. */
+.button.ghost {
+  gap: 8px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.button.ghost:hover {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+.button.ghost svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
 /* ------------------------------------------------------------ type */
 
 h1,
@@ -368,10 +389,13 @@ p {
 
 :root:lang(ja) :is(h1, h2, p) {
   word-break: auto-phrase;
+  /* A phrase wider than a narrow phone may still break. */
+  overflow-wrap: anywhere;
 }
 
 :root:lang(ko) :is(h1, h2, p) {
   word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 :root:is(:lang(hi), :lang(ar)) body {
@@ -952,6 +976,27 @@ p {
   margin-top: 28px;
 }
 
+/* The repository address under the open-source line, in code type. */
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.source-link:hover {
+  color: var(--text);
+}
+
+.source-link svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
 /* ------------------------------------------------------------ legal pages */
 
 .legal {
@@ -1019,6 +1064,24 @@ p {
 
 /* ------------------------------------------------------------ small screens */
 
+/* Discord and GitHub as logos only until the header has room for their names. */
+@media (max-width: 1100px) {
+  .button.ghost {
+    padding-inline: 9px;
+  }
+
+  .button.ghost span {
+    display: none;
+  }
+}
+
+/* Long section names (Fonctionnalités, Confidentialité) need the room first. */
+@media (max-width: 860px) {
+  .nav-link {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   :root {
     --gutter: 20px;
@@ -1035,7 +1098,17 @@ p {
   }
 
   .nav {
-    gap: 16px;
+    gap: 10px;
+  }
+
+  /* The globe alone opens the language menu; its label stays for screen readers. */
+  .lang-menu summary {
+    display: flex;
+    padding: 8px 4px;
+  }
+
+  .lang-menu summary span {
+    display: none;
   }
 
   .hero {
@@ -1123,6 +1196,39 @@ p {
 
   .foot-row {
     flex-direction: column;
+  }
+}
+
+/* The narrowest phones: the mark alone links home (the link keeps its label),
+   and the header controls move closer together. */
+@media (max-width: 374px) {
+  .brand span {
+    display: none;
+  }
+
+  /* The host goes under the door's name. */
+  .gates li {
+    grid-template-columns: auto 1fr;
+  }
+
+  .gates .switch {
+    grid-row: span 2;
+  }
+
+  .gates .host {
+    grid-column: 2;
+  }
+
+  .nav {
+    gap: 6px;
+  }
+
+  .button.ghost {
+    padding-inline: 7px;
+  }
+
+  .button.small {
+    padding-inline: 12px;
   }
 }
 

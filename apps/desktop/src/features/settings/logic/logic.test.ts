@@ -4,7 +4,7 @@ import type { Model } from '../../../bindings/Model';
 import type { NetworkLogEntry } from '../../../bindings/NetworkLogEntry';
 import type { Recommendation } from '../../../bindings/Recommendation';
 import { commandLine, prefixProblem, quoteArg } from './commands';
-import { filterByRole, localized, modelMark, orderCatalog, recommendationMarks, selectionKey, splitUncensored, variantBytes } from './catalog';
+import { filterByRole, fitFor, fitsByKey, localized, modelMark, orderCatalog, recommendationMarks, selectionKey, splitUncensored, variantBytes } from './catalog';
 import { fraction, jobFor, remainingSeconds, visibleDownloads } from './downloads';
 import { formatLines, isHttpUrl, numberText, optionalText, parseLines, parseNumber, sameList } from './forms';
 import { formatLogTime, mergeEntries, mergeLines, outcomeTone } from './logs';
@@ -151,6 +151,14 @@ describe('catalog', () => {
     expect(modelMark(marks, models[1])).toEqual({ kind: 'primary' });
     expect(modelMark(marks, models[2])).toEqual({ kind: 'autocomplete' });
     expect(recommendationMarks(null).size).toBe(0);
+  });
+  it('estimates every variant that fits, and says when one does not', () => {
+    const fits = fitsByKey({ ...rec, fits: [candidate('a', 'Q4'), candidate('b', 'Q4')] } as Recommendation);
+    expect(fitFor(fits, selectionKey('a', 'Q4'))).toEqual({ kind: 'estimate', candidate: candidate('a', 'Q4') });
+    expect(fitFor(fits, selectionKey('b', 'Q8'))).toEqual({ kind: 'noFit' });
+    // Before the recommendation has loaded, and after it failed, nothing is known.
+    expect(fitsByKey(null)).toBeNull();
+    expect(fitFor(null, selectionKey('a', 'Q4'))).toEqual({ kind: 'unknown' });
   });
   it('orders recommended models first', () => {
     expect(orderCatalog(models, recommendationMarks(rec)).map((m) => m.id)).toEqual(['b', 'a', 'c']);

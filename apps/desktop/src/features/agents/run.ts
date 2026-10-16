@@ -10,6 +10,7 @@ import type { ApprovalResponse } from '../../bindings/ApprovalResponse';
 import type { ChangeKind } from '../../bindings/ChangeKind';
 import type { Checkpoint } from '../../bindings/Checkpoint';
 import type { FileChange } from '../../bindings/FileChange';
+import type { LastRun } from '../../bindings/LastRun';
 import type { RunOutcome } from '../../bindings/RunOutcome';
 import type { Task } from '../../bindings/Task';
 import type { TaskPlan } from '../../bindings/TaskPlan';
@@ -98,10 +99,24 @@ export interface UserQuestion {
   at: number;
 }
 
+/** The finished run a run continues, as its header shows it. */
+export interface ContinuedRun {
+  runId: string;
+  goal: string;
+  outcome: RunOutcome;
+  summary: string | null;
+}
+
 export interface RunData {
   /** Null until the core reports it (events can arrive before `start` resolves). */
   runId: string | null;
   goal: string;
+  /** Root of the project the run works in; a run is only continued there. */
+  project: string | null;
+  /** The finished run this one continues; its agents were told about it. */
+  continues: ContinuedRun | null;
+  /** Read back from the project's stored record (after a restart): no activity log. */
+  stored: boolean;
   startedAt: number;
   finishedAt: number | null;
   nextSeq: number;
@@ -131,10 +146,13 @@ export const STREAM_TAIL = 240;
 export const ACTIVE_STATES: ReadonlySet<AgentState> = new Set(['thinking', 'callingTool']);
 export const WAITING_STATES: ReadonlySet<AgentState> = new Set(['waitingForApproval', 'waitingForAnswer']);
 
-export function createRun(goal: string, startedAt: number): RunData {
+export function createRun(goal: string, startedAt: number, from: { project?: string | null; continues?: ContinuedRun | null } = {}): RunData {
   return {
     runId: null,
     goal,
+    project: from.project ?? null,
+    continues: from.continues ?? null,
+    stored: false,
     startedAt,
     finishedAt: null,
     nextSeq: 1,
@@ -342,6 +360,56 @@ function combine(prev: ChangeKind | null | undefined, next: ChangeKind): ChangeK
 export function appendStream(tail: string, text: string): string {
   const next = tail + text;
   return next.length > STREAM_TAIL ? next.slice(-STREAM_TAIL) : next;
+}
+
+/** What a run that continues `run` keeps of it; null until it has ended. */
+export function continuationOf(run: RunData): ContinuedRun | null {
+  if (!run.outcome || !run.runId) return null;
+  return { runId: run.runId, goal: run.goal, outcome: run.outcome, summary: run.summary };
+}
+
+/**
+ * A finished run as the core stored it for the project: goal, outcome, tasks
+ * and changed files. The activity log and the agents' conversations are gone.
+ */
+export function restoreRun(last: LastRun, project: string | null): RunData {
+  const tasks = last.plan?.tasks ?? [];
+  return {
+    ...createRun(last.goal, last.startedAtUnixMs, { project }),
+    runId: last.runId,
+    finishedAt: last.finishedAtUnixMs,
+    plan: last.plan,
+    tasks: Object.fromEntries(tasks.map((t) => [t.id, t])),
+    taskOrder: tasks.map((t) => t.id),
+    changes: last.changes,
+    outcome: last.outcome,
+    summary: last.summary,
+    stored: true,
+  };
+}
+
+/** The project's AGENTS.md, where the orchestrator keeps what it learned. */
+export const NOTES_FILE = 'AGENTS.md';
+
+/** True when the run wrote the project notes (and did not delete them again). */
+export function notesUpdated(run: RunData): boolean {
+  const last = changedFiles(run.changes).find((f) => f.path.toLowerCase() === NOTES_FILE.toLowerCase());
+  return !!last && last.kind !== 'deleted';
+}
+
+/** Tasks a finished run left open; a run that continues it does them first. */
+export function openTaskCount(run: RunData): number {
+  return run.taskOrder.filter((id) => run.tasks[id] && run.tasks[id].status !== 'done').length;
+}
+
+export type ContinueBlock = 'noModel' | 'noProject' | 'otherProject';
+
+/** Why the agents cannot continue `run` right now, or null when they can. */
+export function continueBlock(run: RunData, modelReady: boolean, project: string | null): ContinueBlock | null {
+  if (run.project !== null && project !== null && run.project !== project) return 'otherProject';
+  if (project === null) return 'noProject';
+  if (!modelReady) return 'noModel';
+  return null;
 }
 
 /** True while any agent waits for a model answer. */

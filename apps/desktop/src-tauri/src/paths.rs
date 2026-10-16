@@ -59,9 +59,13 @@ impl AppPaths {
 
     /// Per-project checkpoint folder (hash of the project path).
     pub fn checkpoints_for(&self, project_root: &std::path::Path) -> PathBuf {
-        use sha2::{Digest, Sha256};
-        let key = project_root.display().to_string().to_lowercase();
-        let hash = hex::encode(Sha256::digest(key.as_bytes()));
-        self.checkpoints.join(&hash[..16])
+        self.checkpoints.join(project_key(project_root))
     }
+}
+
+/// Short name for files kept per project: a hash of the path, ignoring letter case.
+pub fn project_key(project_root: &std::path::Path) -> String {
+    use sha2::{Digest, Sha256};
+    let key = project_root.display().to_string().to_lowercase();
+    hex::encode(Sha256::digest(key.as_bytes()))[..16].to_string()
 }

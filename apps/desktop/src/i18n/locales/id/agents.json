@@ -63,7 +63,8 @@
     "planReady": "Rencana siap",
     "reviewing": "Meninjau perubahan",
     "stepLimit": "Batas langkah tercapai",
-    "answering": "Menjawab {{agent}}"
+    "answering": "Menjawab {{agent}}",
+    "notes": "Memperbarui pengetahuan proyek"
   },
   "idle": {
     "goalLabel": "Apa yang harus dikerjakan agen?",
@@ -80,7 +81,8 @@
     "project": "Bekerja di {{name}}",
     "noProject": "Tidak ada folder yang terbuka. Agen memerlukan proyek untuk bekerja.",
     "previous": "Proses sebelumnya",
-    "showRun": "Tampilkan detail"
+    "showRun": "Tampilkan detail",
+    "openTasks_other": "{{count}} tugas masih terbuka. Saat dilanjutkan, tugas itu dikerjakan lebih dulu."
   },
   "mode": {
     "label": "Persetujuan",
@@ -114,6 +116,7 @@
     "stopBody": "Agen langsung berhenti. Perubahan yang sudah dibuat tetap ada, dan Anda dapat mengurungkannya dari checkpoint.",
     "stopConfirm": "Hentikan proses",
     "newRun": "Proses baru",
+    "continues": "Melanjutkan:",
     "questionWaiting": "{{agent}} menunggu jawaban Anda.",
     "answer": "Jawab",
     "tabs": "Detail proses",
@@ -124,7 +127,17 @@
     "tabCheckpoints": "Checkpoint",
     "tabCheckpointsCount": "Checkpoint {{value}}",
     "changedFiles": "File yang diubah",
-    "noChanges": "Tidak ada file yang diubah."
+    "noChanges": "Tidak ada file yang diubah.",
+    "notesUpdated": "Pengetahuan proyek diperbarui di AGENTS.md",
+    "openNotes": "Buka AGENTS.md"
+  },
+  "next": {
+    "label": "Apa yang harus dikerjakan agen selanjutnya?",
+    "placeholder": "Contoh: sekarang tambahkan tes untuk kode diskon",
+    "hint": "Agen mengetahui tujuan, tugas, dan file yang diubah dalam proses ini. Ctrl+Enter melanjutkan.",
+    "hintOpen_other": "Agen mengetahui tujuan, tugas, dan file yang diubah dalam proses ini, dan menyelesaikan {{count}} tugas yang tersisa terlebih dahulu. Ctrl+Enter melanjutkan.",
+    "continue": "Lanjutkan",
+    "otherProject": "Proses ini milik proyek lain. Mulai proses baru untuk proyek ini."
   },
   "lines": {
     "label": "Garis dunia agen",
@@ -158,6 +171,7 @@
   },
   "feed": {
     "empty": "Belum ada yang terjadi.",
+    "stored": "Proses dari sesi sebelumnya tidak menyimpan log aktivitas, hanya tujuan, tugas, hasil, dan file yang diubah.",
     "to": "ke",
     "ok": "Berhasil",
     "failed": "Gagal",

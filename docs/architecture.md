@@ -118,7 +118,8 @@ ylide/
     models.json              the model registry (versioned data)
     schema/registry.schema.json
   tools/registry/            fill.mjs (sizes, hashes, pinned revisions), gguf-meta.mjs
-  scripts/fetch-runtime.mjs  downloads and verifies bundled runtimes
+  scripts/fetch-runtime.mjs  downloads and verifies bundled runtimes (and their license texts)
+  scripts/third-party-licenses.mjs  writes THIRD_PARTY_LICENSES.txt (Rust crates, npm packages)
   docs/                      architecture, design, registry, roadmap
 ```
 

@@ -193,6 +193,11 @@
       "label": "Rondas de revisión por tarea",
       "hint": "Cuántas veces puede pedir cambios el revisor antes de que la tarea se dé por terminada."
     },
+    "notesTitle": "Conocimiento del proyecto",
+    "updateProjectNotes": {
+      "label": "Mantener el conocimiento del proyecto en AGENTS.md",
+      "hint": "Tras cada ejecución, el orquestador escribe lo que aprendió del proyecto (comandos que funcionaron, estructura, convenciones, decisiones) en la sección propia de Ylide de AGENTS.md, en la carpeta del proyecto. Tu propio texto en el archivo se queda como está. Los agentes y el chat siempre leen el archivo si existe."
+    },
     "shellTitle": "Comandos",
     "shellDescription": "Cómo inicia run_command los comandos en la carpeta del proyecto.",
     "shellProgram": {
@@ -299,6 +304,10 @@
     "repeatedFailure": {
       "label": "Fallo repetido",
       "hint": "Se envía cuando un agente repite la misma llamada a herramienta fallida. No tiene campos."
+    },
+    "notes": {
+      "label": "Conocimiento del proyecto",
+      "hint": "Se envía al orquestador después de una ejecución para actualizar la sección de Ylide en AGENTS.md."
     }
   },
   "network": {
@@ -535,6 +544,7 @@
     "file": "archivo {{index}} de {{count}}",
     "pause": "Pausar la descarga de {{name}}",
     "resume": "Reanudar la descarga de {{name}}",
+    "retry": "Reintentar la descarga de {{name}}",
     "cancel": "Cancelar la descarga de {{name}}",
     "progressLabel": "Progreso de la descarga de {{name}}",
     "failed": "{{message}}"
@@ -594,6 +604,7 @@
     "plan": "{{placement}} · unos {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB de VRAM",
     "memRam": "{{value}} GiB de RAM",
+    "noFit": "No cabe en este equipo",
     "download": "Descargar",
     "downloadNamed": "Descargar {{name}} {{quant}}",
     "downloadSize": "Descargar {{size}} GB",

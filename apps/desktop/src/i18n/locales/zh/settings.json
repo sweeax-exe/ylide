@@ -193,6 +193,11 @@
       "label": "每个任务的审查轮数",
       "hint": "在任务被视为完成之前，审查者最多可以要求修改的次数。"
     },
+    "notesTitle": "项目知识",
+    "updateProjectNotes": {
+      "label": "在 AGENTS.md 中维护项目知识",
+      "hint": "每次运行结束后，编排者会把它对项目的了解（可用的命令、结构、约定、决策）写入项目文件夹中 AGENTS.md 里 Ylide 专属的部分。你自己在文件中写的内容保持不变。只要文件存在，智能体和聊天都会读取它。"
+    },
     "shellTitle": "命令",
     "shellDescription": "run_command 如何在项目文件夹中启动命令。",
     "shellProgram": {
@@ -295,6 +300,10 @@
     "repeatedFailure": {
       "label": "重复失败",
       "hint": "当智能体重复同一个失败的工具调用时发送。没有字段。"
+    },
+    "notes": {
+      "label": "项目知识",
+      "hint": "运行结束后发送给编排者，用于更新 AGENTS.md 中 Ylide 的部分。"
     }
   },
   "network": {
@@ -529,6 +538,7 @@
     "file": "第 {{index}} 个文件，共 {{count}} 个",
     "pause": "暂停下载 {{name}}",
     "resume": "继续下载 {{name}}",
+    "retry": "重试下载 {{name}}",
     "cancel": "取消下载 {{name}}",
     "progressLabel": "{{name}} 的下载进度",
     "failed": "{{message}}"
@@ -584,6 +594,7 @@
     "plan": "{{placement}} · 约 {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB 显存",
     "memRam": "{{value}} GiB 内存",
+    "noFit": "这台电脑装不下",
     "download": "下载",
     "downloadNamed": "下载 {{name}} {{quant}}",
     "downloadSize": "下载 {{size}} GB",

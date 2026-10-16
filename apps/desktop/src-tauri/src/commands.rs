@@ -5,6 +5,7 @@ use crate::agents;
 use crate::chat::{self, ChatEvent, ChatSendRequest, InlineEditRequest, InlineEvent};
 use crate::chats::{ChatSummary, StoredChat};
 use crate::error::{AppError, AppResult};
+use crate::last_run::LastRun;
 use crate::models::{DownloadJob, InstalledModel};
 use crate::network::NetworkLogEntry;
 use crate::registry_service::{self, RefreshOutcome};
@@ -488,8 +489,14 @@ pub async fn inline_edit(state: State<'_, AppState>, request: InlineEditRequest,
 // ---------------------------------------------------------------- agents
 
 #[tauri::command]
-pub async fn agent_start(state: State<'_, AppState>, goal: String, on_event: Channel<AgentEvent>) -> Cmd<String> {
-    agents::start(&state, goal, on_event).await
+pub async fn agent_start(state: State<'_, AppState>, goal: String, previous_run: Option<String>, on_event: Channel<AgentEvent>) -> Cmd<String> {
+    agents::start(&state, goal, previous_run, on_event).await
+}
+
+/// The open project's last agent run, kept across restarts; none without a project.
+#[tauri::command]
+pub fn agent_last_run(state: State<'_, AppState>) -> Cmd<Option<LastRun>> {
+    Ok(state.workspace().ok().and_then(|ws| state.last_runs.load(ws.root())))
 }
 
 #[tauri::command]

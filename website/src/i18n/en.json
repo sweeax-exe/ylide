@@ -14,10 +14,12 @@
     "privacy": "Privacy",
     "download": "Download",
     "home": "Ylide, home page",
-    "language": "Language"
+    "language": "Language",
+    "discord": "Join the Ylide community on Discord",
+    "github": "Ylide's source code on GitHub"
   },
   "hero": {
-    "title": "The AI IDE that never leaves your computer.",
+    "title": "Code with AI that never leaves your computer.",
     "lead": "Chat, inline edits and a team of coding agents, powered only by models running on your own computer. No account, no cloud, no subscription.",
     "download": "Download for Windows",
     "meta": "Version {{version}} for Windows 10 and 11, 64-bit, {{size}} MB. Open source under Apache-2.0.",
@@ -98,7 +100,7 @@
   },
   "open": {
     "title": "Open down to the last line.",
-    "body": "Ylide is open source under the Apache-2.0 license. The source code will be on GitHub soon, so you can read it, build it yourself and help develop it.",
+    "body": "Ylide is open source under the Apache-2.0 license. The source code of every release is on GitHub, so you can read it, build it yourself and help develop it.",
     "download": "Download Ylide {{version}}",
     "smartscreen": "Windows may warn you on the first start because the installer is not commercially signed yet. Click “More info”, then “Run anyway”."
   },

@@ -97,6 +97,26 @@ pub fn context_budget(user_limit: u32, model_context: Option<u32>) -> u32 {
     }
 }
 
+/// Characters of the project's AGENTS.md in the chat's system prompt.
+const CHAT_NOTES_CHARS: usize = 4_000;
+
+/// The chat's system prompt: the setting, the open project's name and its
+/// AGENTS.md (the user's rules and what the agents noted), bounded.
+fn system_prompt(base: &str, ws: Option<&workspace::Workspace>) -> String {
+    let mut system = base.to_string();
+    if let Some(ws) = ws {
+        system.push_str(&format!("\n\nThe open project is \"{}\".", ws.name()));
+        if let Ok(file) = ws.read_text(agent::knowledge::FILE) {
+            let notes = agent::knowledge::prompt_section(&file.content, CHAT_NOTES_CHARS);
+            if !notes.is_empty() {
+                system.push_str("\n\n");
+                system.push_str(notes.trim_end());
+            }
+        }
+    }
+    system
+}
+
 /// Slot for interactive requests: the last one (agents prefer slot 0).
 fn interactive_slot(h: &ChatHandle) -> Option<usize> {
     let n = h.scheduler.slot_count();
@@ -123,11 +143,7 @@ pub async fn send(state: &AppState, req: ChatSendRequest, channel: Channel<ChatE
     };
     let _ = channel.send(ChatEvent::Context { items: items.clone() });
 
-    let mut system = settings.chat.system_prompt.clone();
-    if let Some(ws) = &ws {
-        system.push_str(&format!("\n\nThe open project is \"{}\".", ws.name()));
-    }
-    let mut messages = vec![ChatMessage::system(system)];
+    let mut messages = vec![ChatMessage::system(system_prompt(&settings.chat.system_prompt, ws.as_ref()))];
     for m in history {
         messages.push(match m.role {
             UiRole::User => ChatMessage::user(m.content.clone()),
@@ -332,5 +348,21 @@ mod tests {
         assert_eq!(clean_replacement("```rust\nfn a() {}\n```"), "fn a() {}");
         assert_eq!(clean_replacement("Here you go:\n```ts\nconst x = 1;\n```\nDone."), "const x = 1;");
         assert_eq!(clean_replacement("    indented();\n"), "    indented();", "indentation is preserved");
+    }
+
+    #[test]
+    fn the_chat_knows_the_projects_agents_md() {
+        let dir = std::env::temp_dir().join(format!("chat-notes-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let ws = workspace::Workspace::open(&dir).unwrap();
+        let without = system_prompt("Be brief.", Some(&ws));
+        assert!(without.starts_with("Be brief.\n\nThe open project is") && !without.contains("AGENTS.md"), "{without}");
+        std::fs::write(dir.join("AGENTS.md"), format!("Always use pnpm.\n{}", "x\n".repeat(5_000))).unwrap();
+        let with = system_prompt("Be brief.", Some(&ws));
+        assert!(with.contains("Project notes from AGENTS.md") && with.contains("Always use pnpm."), "{with}");
+        assert!(with.contains("the rest was left out"), "bounded");
+        assert!(with.len() < "Be brief.".len() + CHAT_NOTES_CHARS + 1_000);
+        assert_eq!(system_prompt("Be brief.", None), "Be brief.");
     }
 }

@@ -1,0 +1,53 @@
+# The Ylide Discord bot. Installed by `node deploy/deploy.mjs --install`.
+# Settings, including the bot token, come from /etc/ylide-discord/env (root, 0600);
+# systemd reads that file before it drops to the unprivileged service user.
+
+[Unit]
+Description=Ylide Discord bot
+After=network-online.target
+Wants=network-online.target
+# Stop retrying when it keeps failing (for example without a token).
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=ylide-discord
+Group=ylide-discord
+WorkingDirectory=/opt/ylide-discord/current
+EnvironmentFile=/etc/ylide-discord/env
+Environment=NODE_ENV=production
+Environment=DATA_DIR=/var/lib/ylide-discord
+ExecStart=/usr/bin/node src/bot/main.js
+Restart=always
+RestartSec=5
+StateDirectory=ylide-discord
+StateDirectoryMode=0700
+UMask=0077
+MemoryMax=300M
+
+# Hardening: the bot needs outbound HTTPS and its state folder, nothing else.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+LockPersonality=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+# MemoryDenyWriteExecute stays off: V8's JIT needs writable code pages.
+
+[Install]
+WantedBy=multi-user.target

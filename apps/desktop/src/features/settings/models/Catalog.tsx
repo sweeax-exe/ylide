@@ -12,7 +12,7 @@ import { errorText, reportError } from '../../../lib/errors';
 import { formatGB, formatGiB, formatNumber, formatTokens } from '../../../lib/format';
 import { api } from '../../../lib/ipc';
 import { modelName, useApp } from '../../../state/app';
-import { filterByRole, modelMark, orderCatalog, recommendationMarks, ROLE_FILTERS, selectionKey, splitUncensored, type RoleFilter } from '../logic/catalog';
+import { filterByRole, fitsByKey, modelMark, orderCatalog, recommendationMarks, ROLE_FILTERS, selectionKey, splitUncensored, type RoleFilter } from '../logic/catalog';
 import { jobFor } from '../logic/downloads';
 import { keepFocusInSection, useFocusWhenReplaced } from '../page/focus';
 import { isSelfReported, reasonParams } from '../logic/reasons';
@@ -41,8 +41,11 @@ export function Catalog() {
   const noteId = useId();
   const uncensoredId = useId();
 
+  // Planned again for a newer model list, so its new variants are not read as "does not fit".
+  const registryVersion = registry?.registryVersion;
   useEffect(() => {
     let alive = true;
+    setRec({ state: 'loading' });
     api.recommend().then(
       (r) => alive && setRec({ state: 'ready', rec: r }),
       (e: unknown) => alive && setRec({ state: 'error', message: errorText(e) }),
@@ -50,7 +53,7 @@ export function Catalog() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [registryVersion]);
 
   const recommendation = rec.state === 'ready' ? rec.rec : null;
   const marks = useMemo(() => recommendationMarks(recommendation), [recommendation]);
@@ -66,12 +69,15 @@ export function Catalog() {
     }
     return map;
   }, [recommendation, marks]);
+  // Every other variant shows its own estimate, or that it does not fit.
+  const fits = useMemo(() => fitsByKey(recommendation), [recommendation]);
 
   const models = useMemo(() => orderCatalog(filterByRole(registry?.models ?? [], filter), marks), [registry, filter, marks]);
   // Uncensored variants are listed apart, below the models Ylide recommends from.
   const groups = useMemo(() => splitUncensored(models), [models]);
   const ctx: EntryContext = {
     recommended,
+    fits,
     installed: new Set(installedModels.map((m) => selectionKey(m.modelId, m.quant))),
     jobs,
     downloadsAllowed: allowed,

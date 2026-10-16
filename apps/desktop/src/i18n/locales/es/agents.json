@@ -63,7 +63,8 @@
     "planReady": "Plan listo",
     "reviewing": "Revisando los cambios",
     "stepLimit": "Límite de pasos alcanzado",
-    "answering": "Respondiendo a {{agent}}"
+    "answering": "Respondiendo a {{agent}}",
+    "notes": "Actualizando el conocimiento del proyecto"
   },
   "idle": {
     "goalLabel": "¿Qué deben hacer los agentes?",
@@ -80,7 +81,10 @@
     "project": "Trabaja en {{name}}",
     "noProject": "No hay ninguna carpeta abierta. Los agentes necesitan un proyecto en el que trabajar.",
     "previous": "Ejecución anterior",
-    "showRun": "Mostrar detalles"
+    "showRun": "Mostrar detalles",
+    "openTasks_one": "Queda una tarea pendiente. Al continuar, se retoma primero.",
+    "openTasks_many": "Quedan {{count}} tareas pendientes. Al continuar, se retoman primero.",
+    "openTasks_other": "Quedan {{count}} tareas pendientes. Al continuar, se retoman primero."
   },
   "mode": {
     "label": "Aprobaciones",
@@ -116,6 +120,7 @@
     "stopBody": "Los agentes se detienen de inmediato. Los cambios hechos hasta ahora se mantienen y puedes deshacerlos desde los puntos de control.",
     "stopConfirm": "Detener ejecución",
     "newRun": "Nueva ejecución",
+    "continues": "Continúa:",
     "questionWaiting": "{{agent}} espera tu respuesta.",
     "answer": "Responder",
     "tabs": "Detalles de la ejecución",
@@ -126,7 +131,19 @@
     "tabCheckpoints": "Puntos de control",
     "tabCheckpointsCount": "Puntos de control {{value}}",
     "changedFiles": "Archivos modificados",
-    "noChanges": "No se modificó ningún archivo."
+    "noChanges": "No se modificó ningún archivo.",
+    "notesUpdated": "Conocimiento del proyecto actualizado en AGENTS.md",
+    "openNotes": "Abrir AGENTS.md"
+  },
+  "next": {
+    "label": "¿Qué deben hacer los agentes ahora?",
+    "placeholder": "Por ejemplo: ahora añade una prueba para los códigos de descuento",
+    "hint": "Los agentes conocen el objetivo, las tareas y los archivos modificados de esta ejecución. Ctrl+Intro continúa.",
+    "hintOpen_one": "Los agentes conocen el objetivo, las tareas y los archivos modificados de esta ejecución, y primero terminan la tarea pendiente. Ctrl+Intro continúa.",
+    "hintOpen_many": "Los agentes conocen el objetivo, las tareas y los archivos modificados de esta ejecución, y primero terminan las {{count}} tareas pendientes. Ctrl+Intro continúa.",
+    "hintOpen_other": "Los agentes conocen el objetivo, las tareas y los archivos modificados de esta ejecución, y primero terminan las {{count}} tareas pendientes. Ctrl+Intro continúa.",
+    "continue": "Continuar",
+    "otherProject": "Esta ejecución pertenece a otro proyecto. Inicia una nueva ejecución para este."
   },
   "lines": {
     "label": "Líneas de universo de los agentes",
@@ -162,6 +179,7 @@
   },
   "feed": {
     "empty": "Todavía no ha pasado nada.",
+    "stored": "Las ejecuciones de una sesión anterior no guardan el registro de actividad, solo su objetivo, tareas, resultado y archivos modificados.",
     "to": "para",
     "ok": "Correcto",
     "failed": "Fallido",

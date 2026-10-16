@@ -7,6 +7,7 @@ mod commands;
 #[cfg(test)]
 mod e2e;
 mod error;
+mod last_run;
 mod logging;
 mod migration;
 mod models;
@@ -121,6 +122,7 @@ pub fn run() {
             commands::agent_answer,
             commands::agent_control,
             commands::agent_intervene,
+            commands::agent_last_run,
             commands::checkpoints_list,
             commands::checkpoint_restore,
         ])

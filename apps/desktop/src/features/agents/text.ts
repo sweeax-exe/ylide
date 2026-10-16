@@ -17,6 +17,12 @@ export function formatTimeOfDay(ms: number, language: string): string {
   return new Intl.DateTimeFormat(localeOf(language), { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(ms);
 }
 
+/** Time of day for today, date and time for an earlier day (a run from before a restart). */
+export function formatWhen(ms: number, language: string, now = Date.now()): string {
+  if (new Date(ms).toDateString() === new Date(now).toDateString()) return formatTimeOfDay(ms, language);
+  return new Intl.DateTimeFormat(localeOf(language), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(ms);
+}
+
 export interface TextPart {
   code: boolean;
   text: string;

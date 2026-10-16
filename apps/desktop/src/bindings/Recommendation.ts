@@ -20,4 +20,11 @@ embedding: Candidate | null,
 /**
  * Machine-level notices (no GPU, low disk, ...).
  */
-notices: Array<Reason>, };
+notices: Array<Reason>, 
+/**
+ * The best configuration of every variant for its model's main role, with
+ * the whole machine to itself, including models that are never recommended:
+ * what the catalog shows under "on this computer". A variant that does not
+ * fit is missing.
+ */
+fits: Array<Candidate>, };

@@ -55,6 +55,10 @@ function build() {
     console.error(`signing key not found at ${keyPath} (see docs/releasing.md)`);
     process.exit(1);
   }
+  // The installer carries the runtimes with their license texts and the license texts of
+  // all dependencies; both must match what is being built.
+  run(process.execPath, [join(root, 'scripts', 'fetch-runtime.mjs'), '--if-missing']);
+  run(process.execPath, [join(root, 'scripts', 'third-party-licenses.mjs'), '--check']);
   console.log(`building Ylide ${version}`);
   run(process.execPath, [cli, 'build', '--bundles', 'nsis'], { cwd: desktop });
   const installer = join(nsisDir, installerName);

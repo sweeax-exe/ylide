@@ -2,6 +2,7 @@
 
 use crate::agents::AgentRuns;
 use crate::chats::ChatStore;
+use crate::last_run::LastRuns;
 use crate::models::ModelStore;
 use crate::network::NetworkGate;
 use crate::paths::AppPaths;
@@ -37,6 +38,8 @@ pub struct AppState {
     pub agents: AgentRuns,
     /// Saved chats, per project.
     pub chats: ChatStore,
+    /// The last agent run of each project, for "Continue" after a restart.
+    pub last_runs: LastRuns,
     /// The newer version found by the last update check.
     pub pending_update: Mutex<Option<PendingUpdate>>,
     /// The downloaded and verified installer, waiting for the user's go.
@@ -79,6 +82,7 @@ impl AppState {
             requests: Mutex::new(HashMap::new()),
             agents: AgentRuns::default(),
             chats: ChatStore::new(paths.data.join("chats")),
+            last_runs: LastRuns::new(paths.data.join("agent-runs")),
             pending_update: Mutex::new(None),
             ready_update: Mutex::new(None),
             update_installing: AtomicBool::new(false),

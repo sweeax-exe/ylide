@@ -93,6 +93,8 @@ pub struct RunContext {
     always_allowed: Mutex<HashSet<String>>,
     /// Files read by any agent in this run (guards blind overwrites).
     read_files: Mutex<HashSet<String>>,
+    /// Commands that exited with 0, in order, for the project notes.
+    worked_commands: Mutex<Vec<String>>,
     stats: Mutex<HashMap<String, (f64, u32)>>,
     counter: AtomicU64,
 }
@@ -122,6 +124,7 @@ impl RunContext {
             blackboard: Mutex::new(Blackboard::default()),
             always_allowed: Mutex::default(),
             read_files: Mutex::default(),
+            worked_commands: Mutex::default(),
             stats: Mutex::default(),
             counter: AtomicU64::new(0),
         }
@@ -129,6 +132,16 @@ impl RunContext {
 
     pub fn emit(&self, event: AgentEvent) {
         (self.events)(event);
+    }
+
+    /// Commands that exited with 0 in this run, each once.
+    pub fn commands_that_worked(&self) -> Vec<String> {
+        self.worked_commands.lock().unwrap().clone()
+    }
+
+    /// Counts `path` as read, so a write of it is no blind overwrite.
+    pub(crate) fn mark_read(&self, path: &str) {
+        self.read_files.lock().unwrap().insert(path.to_string());
     }
 
     pub fn next_id(&self, prefix: &str) -> String {
@@ -403,7 +416,8 @@ pub async fn run_agent(
                     return AgentEnd::Finished(summary);
                 }
                 "submit_plan" => match serde_json::from_value::<PlanDraft>(args.clone()) {
-                    Ok(plan) if !plan.tasks.is_empty() => {
+                    // A run that carries over open tasks may get nothing new.
+                    Ok(plan) if !plan.tasks.is_empty() || has_tasks(ctx) => {
                         tool_result(true, "Plan received.", None);
                         conversation.push(ChatMessage::tool_result(&call.id, "Plan received."));
                         return AgentEnd::Plan(plan);
@@ -562,7 +576,45 @@ async fn execute_with_permission(
     if let Some(change) = &outcome.change {
         ctx.blackboard.lock().unwrap().changed_files.insert(change.path.clone());
     }
+    if let Some(command) = command.filter(|_| outcome.ok && name == "run_command") {
+        let mut worked = ctx.worked_commands.lock().unwrap();
+        if !worked.iter().any(|c| c == command) && worked.len() < MAX_WORKED_COMMANDS {
+            worked.push(command.to_string());
+        }
+    }
     outcome
+}
+
+/// Commands kept for the project notes.
+const MAX_WORKED_COMMANDS: usize = 20;
+
+/// One tool call outside an agent's loop (the orchestrator writing the
+/// project notes): the same events, approval and checkpoint as a model's call.
+pub(crate) async fn call_tool(ctx: &RunContext, agent: &AgentSpec<'_>, name: &str, args: Value) -> ToolOutcome {
+    let call_id = ctx.next_id("call");
+    let description = describe_call(name, &args);
+    ctx.emit(AgentEvent::ToolCall {
+        run_id: ctx.run_id.clone(),
+        agent_id: agent.id.clone(),
+        call_id: call_id.clone(),
+        tool: name.to_string(),
+        arguments: args.to_string(),
+    });
+    let outcome = execute_with_permission(ctx, agent, name, &args, &description, None, None).await;
+    ctx.emit(AgentEvent::ToolResult {
+        run_id: ctx.run_id.clone(),
+        agent_id: agent.id.clone(),
+        call_id,
+        ok: outcome.ok,
+        summary: outcome.summary.clone(),
+        change: outcome.change.clone(),
+    });
+    outcome
+}
+
+/// True when the run already has tasks before planning (carried over from the run it continues).
+fn has_tasks(ctx: &RunContext) -> bool {
+    ctx.blackboard.lock().unwrap().plan.as_ref().is_some_and(|p| !p.tasks.is_empty())
 }
 
 /// What the approval dialog shows: the diff of an edit, the full command, or the path.

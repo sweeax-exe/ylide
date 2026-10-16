@@ -63,7 +63,8 @@
     "planReady": "Plan prêt",
     "reviewing": "Relecture des modifications",
     "stepLimit": "Limite d’étapes atteinte",
-    "answering": "Répond à {{agent}}"
+    "answering": "Répond à {{agent}}",
+    "notes": "Mise à jour des connaissances du projet"
   },
   "idle": {
     "goalLabel": "Que doivent faire les agents ?",
@@ -80,7 +81,10 @@
     "project": "Dossier de travail : {{name}}",
     "noProject": "Aucun dossier n’est ouvert. Les agents ont besoin d’un projet dans lequel travailler.",
     "previous": "Exécution précédente",
-    "showRun": "Afficher les détails"
+    "showRun": "Afficher les détails",
+    "openTasks_one": "Une tâche reste ouverte. En poursuivant, elle est reprise en premier.",
+    "openTasks_many": "{{count}} tâches restent ouvertes. En poursuivant, elles sont reprises en premier.",
+    "openTasks_other": "{{count}} tâches restent ouvertes. En poursuivant, elles sont reprises en premier."
   },
   "mode": {
     "label": "Autorisations",
@@ -116,6 +120,7 @@
     "stopBody": "Les agents s’arrêtent immédiatement. Les modifications déjà faites restent en place, et vous pouvez les annuler depuis les points de contrôle.",
     "stopConfirm": "Arrêter l’exécution",
     "newRun": "Nouvelle exécution",
+    "continues": "Poursuit :",
     "questionWaiting": "{{agent}} attend votre réponse.",
     "answer": "Répondre",
     "tabs": "Détails de l’exécution",
@@ -126,7 +131,19 @@
     "tabCheckpoints": "Points de contrôle",
     "tabCheckpointsCount": "Points de contrôle {{value}}",
     "changedFiles": "Fichiers modifiés",
-    "noChanges": "Aucun fichier n’a été modifié."
+    "noChanges": "Aucun fichier n’a été modifié.",
+    "notesUpdated": "Connaissances du projet mises à jour dans AGENTS.md",
+    "openNotes": "Ouvrir AGENTS.md"
+  },
+  "next": {
+    "label": "Que doivent faire les agents ensuite ?",
+    "placeholder": "Par exemple : ajouter maintenant un test pour les codes de réduction",
+    "hint": "Les agents connaissent l’objectif, les tâches et les fichiers modifiés de cette exécution. Ctrl+Entrée poursuit.",
+    "hintOpen_one": "Les agents connaissent l’objectif, les tâches et les fichiers modifiés de cette exécution, et terminent d’abord la tâche restante. Ctrl+Entrée poursuit.",
+    "hintOpen_many": "Les agents connaissent l’objectif, les tâches et les fichiers modifiés de cette exécution, et terminent d’abord les {{count}} tâches restantes. Ctrl+Entrée poursuit.",
+    "hintOpen_other": "Les agents connaissent l’objectif, les tâches et les fichiers modifiés de cette exécution, et terminent d’abord les {{count}} tâches restantes. Ctrl+Entrée poursuit.",
+    "continue": "Poursuivre",
+    "otherProject": "Cette exécution appartient à un autre projet. Lancez une nouvelle exécution pour celui-ci."
   },
   "lines": {
     "label": "Lignes d’univers des agents",
@@ -162,6 +179,7 @@
   },
   "feed": {
     "empty": "Rien ne s’est encore passé.",
+    "stored": "Les exécutions d’une session précédente ne conservent pas le journal d’activité, seulement leur objectif, leurs tâches, leur résultat et les fichiers modifiés.",
     "to": "à",
     "ok": "Réussi",
     "failed": "Échec",

@@ -8,16 +8,17 @@ import { localeOf } from '../../../i18n';
 import type { Candidate } from '../../../bindings/Candidate';
 import type { DownloadJob } from '../../../bindings/DownloadJob';
 import type { Model } from '../../../bindings/Model';
+import type { Plan } from '../../../bindings/Plan';
 import type { Variant } from '../../../bindings/Variant';
 import { Badge, Button, IconButton } from '../../../components/ui';
 import { reportError } from '../../../lib/errors';
 import { formatGB, formatGiB, formatNumber, formatTokens } from '../../../lib/format';
 import { api, openExternal } from '../../../lib/ipc';
-import { localized, selectionKey, variantBytes, type Mark } from '../logic/catalog';
+import { fitFor, localized, selectionKey, variantBytes, type Mark } from '../logic/catalog';
 import { jobFor } from '../logic/downloads';
 import { keepFocusInSection, useFocusWhenReplaced } from '../page/focus';
 import s from './Catalog.module.css';
-import { DownloadInline } from './Downloads';
+import { DownloadProgress, JobActions } from './Downloads';
 import { UncensoredBadge, UncensoredNote } from './Uncensored';
 
 export interface Recommended {
@@ -27,6 +28,8 @@ export interface Recommended {
 
 export interface EntryContext {
   recommended: Map<string, Recommended>;
+  /** Every variant that fits, with its best configuration; null until the recommendation has loaded, and after it failed. */
+  fits: Map<string, Candidate> | null;
   installed: Set<string>;
   jobs: Record<string, DownloadJob>;
   downloadsAllowed: boolean;
@@ -178,36 +181,38 @@ function Benchmarks({ model }: { model: Model }) {
   return (
     <div className={s.block}>
       <h4 className={s.blockTitle}>{t('catalog.benchmarks')}</h4>
-      <table className={s.table}>
-        <thead>
-          <tr>
-            <th scope="col">{t('catalog.benchmark')}</th>
-            <th scope="col" className={s.num}>
-              {t('catalog.score')}
-            </th>
-            <th scope="col">{t('catalog.measuredBy')}</th>
-            <th scope="col">{t('catalog.date')}</th>
-            <th scope="col">
-              <span className="visually-hidden">{t('catalog.sourceLink')}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {model.benchmarks.map((b) => (
-            <tr key={b.name}>
-              <td>{b.name}</td>
-              <td className={s.num}>{t('catalog.scoreValue', { score: formatNumber(b.score, 1), unit: b.unit })}</td>
-              <td>{b.selfReported ? <Badge tone="warning">{t('catalog.selfReported')}</Badge> : <Badge>{t('catalog.independent')}</Badge>}</td>
-              <td className="tabular">{b.date ?? '–'}</td>
-              <td className={s.linkCell}>
-                <IconButton label={t('catalog.openSource', { name: b.name })} onClick={() => open(b.sourceUrl)}>
-                  <ExternalLink size={13} />
-                </IconButton>
-              </td>
+      <div className={s.tableWrap}>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th scope="col">{t('catalog.benchmark')}</th>
+              <th scope="col" className={s.num}>
+                {t('catalog.score')}
+              </th>
+              <th scope="col">{t('catalog.measuredBy')}</th>
+              <th scope="col">{t('catalog.date')}</th>
+              <th scope="col">
+                <span className="visually-hidden">{t('catalog.sourceLink')}</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {model.benchmarks.map((b) => (
+              <tr key={b.name}>
+                <td>{b.name}</td>
+                <td className={s.num}>{t('catalog.scoreValue', { score: formatNumber(b.score, 1), unit: b.unit })}</td>
+                <td>{b.selfReported ? <Badge tone="warning">{t('catalog.selfReported')}</Badge> : <Badge>{t('catalog.independent')}</Badge>}</td>
+                <td className="tabular">{b.date ?? '–'}</td>
+                <td className={s.linkCell}>
+                  <IconButton label={t('catalog.openSource', { name: b.name })} onClick={() => open(b.sourceUrl)}>
+                    <ExternalLink size={13} />
+                  </IconButton>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -217,28 +222,30 @@ function Quantizations({ model, ctx }: { model: Model; ctx: EntryContext }) {
   return (
     <div className={s.block}>
       <h4 className={s.blockTitle}>{t('catalog.quantizations')}</h4>
-      <table className={s.table}>
-        <thead>
-          <tr>
-            <th scope="col">{t('catalog.quant')}</th>
-            <th scope="col" className={s.num}>
-              {t('catalog.bits')}
-            </th>
-            <th scope="col" className={s.num}>
-              {t('catalog.size')}
-            </th>
-            <th scope="col">{t('catalog.fit')}</th>
-            <th scope="col" className={s.actionHead}>
-              <span className="visually-hidden">{t('catalog.download')}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {model.variants.map((v) => (
-            <QuantRow key={v.quant} model={model} variant={v} ctx={ctx} />
-          ))}
-        </tbody>
-      </table>
+      <div className={s.tableWrap}>
+        <table className={s.table}>
+          <thead>
+            <tr>
+              <th scope="col">{t('catalog.quant')}</th>
+              <th scope="col" className={`${s.num} ${s.bits}`}>
+                {t('catalog.bits')}
+              </th>
+              <th scope="col" className={s.num}>
+                {t('catalog.size')}
+              </th>
+              <th scope="col">{t('catalog.fit')}</th>
+              <th scope="col" className={s.actionHead}>
+                <span className="visually-hidden">{t('catalog.download')}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {model.variants.map((v) => (
+              <QuantRow key={v.quant} model={model} variant={v} ctx={ctx} />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -248,13 +255,14 @@ function QuantRow({ model, variant, ctx }: { model: Model; variant: Variant; ctx
   const [busy, setBusy] = useState(false);
   const key = selectionKey(model.id, variant.quant);
   const rec = ctx.recommended.get(key);
+  const fit = fitFor(ctx.fits, key);
   const size = variantBytes(variant);
   const job = jobFor(ctx.jobs, model.id, variant.quant);
   const installed = ctx.installed.has(key);
   const tooBig = ctx.freeBytes !== null && size > ctx.freeBytes;
   const reason = !ctx.downloadsAllowed ? t('catalog.downloadsOff') : tooBig ? t('catalog.noSpace', { free: formatGB(ctx.freeBytes ?? 0) }) : undefined;
 
-  // The button is replaced by the progress controls once the first job event arrives.
+  // The button is replaced by the job's controls once the first job event arrives.
   const progressFocus = useFocusWhenReplaced<HTMLTableCellElement>(!!job);
 
   const download = async (from: HTMLElement) => {
@@ -277,25 +285,26 @@ function QuantRow({ model, variant, ctx }: { model: Model; variant: Variant; ctx
       <td>
         <code className={s.quant}>{variant.quant}</code>
       </td>
-      <td className={s.num}>{formatNumber(variant.bitsPerWeight, 2)}</td>
+      <td className={`${s.num} ${s.bits}`}>{formatNumber(variant.bitsPerWeight, 2)}</td>
       <td className={s.num}>{t('common:units.gb', { value: formatGB(size) })}</td>
       <td className={s.fit}>
-        {rec ? (
+        {/* While it downloads, the progress takes the place of the estimate; a recommendation keeps its badge. */}
+        {job && !installed ? (
           <span className={s.fitLine}>
-            <Badge tone={rec.mark.kind === 'primary' ? 'accent' : 'neutral'}>{t(markLabelKey(rec.mark))}</Badge>
-            <span className={s.fitText}>
-              {t('catalog.plan', {
-                placement: t(`common:placement.${rec.candidate.plan.placement.kind}`),
-                tps: formatNumber(rec.candidate.plan.estTokensPerSec),
-                memory: [
-                  rec.candidate.plan.vramBytes > 0 ? t('catalog.memVram', { value: formatGiB(rec.candidate.plan.vramBytes) }) : null,
-                  rec.candidate.plan.ramBytes > 0 ? t('catalog.memRam', { value: formatGiB(rec.candidate.plan.ramBytes) }) : null,
-                ]
-                  .filter(Boolean)
-                  .join(', '),
-              })}
+            {rec && <Badge tone={rec.mark.kind === 'primary' ? 'accent' : 'neutral'}>{t(markLabelKey(rec.mark))}</Badge>}
+            <span className={s.fitProgress}>
+              <DownloadProgress job={job} />
             </span>
           </span>
+        ) : rec ? (
+          <span className={s.fitLine}>
+            <Badge tone={rec.mark.kind === 'primary' ? 'accent' : 'neutral'}>{t(markLabelKey(rec.mark))}</Badge>
+            <PlanText plan={rec.candidate.plan} />
+          </span>
+        ) : fit.kind === 'estimate' ? (
+          <PlanText plan={fit.candidate.plan} />
+        ) : fit.kind === 'noFit' ? (
+          <span className={s.noFit}>{t('catalog.noFit')}</span>
         ) : (
           <span className={s.fitNone}>–</span>
         )}
@@ -304,7 +313,7 @@ function QuantRow({ model, variant, ctx }: { model: Model; variant: Variant; ctx
         {installed ? (
           <Badge tone="success">{t('catalog.installedBadge')}</Badge>
         ) : job ? (
-          <DownloadInline job={job} />
+          <JobActions job={job} compact />
         ) : (
           <Button
             size="sm"
@@ -322,5 +331,21 @@ function QuantRow({ model, variant, ctx }: { model: Model; variant: Variant; ctx
         {!installed && !job && tooBig && ctx.downloadsAllowed && <div className={s.noSpace}>{t('catalog.noSpaceShort')}</div>}
       </td>
     </tr>
+  );
+}
+
+/** Placement, speed and memory of a configuration. */
+function PlanText({ plan }: { plan: Plan }) {
+  const { t } = useTranslation('settings');
+  return (
+    <span className={s.fitText}>
+      {t('catalog.plan', {
+        placement: t(`common:placement.${plan.placement.kind}`),
+        tps: formatNumber(plan.estTokensPerSec),
+        memory: [plan.vramBytes > 0 ? t('catalog.memVram', { value: formatGiB(plan.vramBytes) }) : null, plan.ramBytes > 0 ? t('catalog.memRam', { value: formatGiB(plan.ramBytes) }) : null]
+          .filter(Boolean)
+          .join(', '),
+      })}
+    </span>
   );
 }

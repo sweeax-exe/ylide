@@ -63,7 +63,8 @@
     "planReady": "Plan ready",
     "reviewing": "Reviewing the changes",
     "stepLimit": "Step limit reached",
-    "answering": "Answering {{agent}}"
+    "answering": "Answering {{agent}}",
+    "notes": "Updating the project knowledge"
   },
   "idle": {
     "goalLabel": "What should the agents do?",
@@ -80,7 +81,9 @@
     "project": "Works in {{name}}",
     "noProject": "No folder is open. The agents need a project to work in.",
     "previous": "Previous run",
-    "showRun": "Show details"
+    "showRun": "Show details",
+    "openTasks_one": "One task is still open. Continuing picks it up first.",
+    "openTasks_other": "{{count}} tasks are still open. Continuing picks them up first."
   },
   "mode": {
     "label": "Approvals",
@@ -115,6 +118,7 @@
     "stopBody": "The agents stop right away. Changes made so far stay in place, and you can undo them from the checkpoints.",
     "stopConfirm": "Stop run",
     "newRun": "New run",
+    "continues": "Continues:",
     "questionWaiting": "{{agent}} is waiting for your answer.",
     "answer": "Answer",
     "tabs": "Run details",
@@ -125,7 +129,18 @@
     "tabCheckpoints": "Checkpoints",
     "tabCheckpointsCount": "Checkpoints {{value}}",
     "changedFiles": "Changed files",
-    "noChanges": "No files were changed."
+    "noChanges": "No files were changed.",
+    "notesUpdated": "Project knowledge updated in AGENTS.md",
+    "openNotes": "Open AGENTS.md"
+  },
+  "next": {
+    "label": "What should the agents do next?",
+    "placeholder": "For example: now add a test for discount codes",
+    "hint": "The agents know this run’s goal, tasks and changed files. Ctrl+Enter continues.",
+    "hintOpen_one": "The agents know this run’s goal, tasks and changed files, and first finish the open task. Ctrl+Enter continues.",
+    "hintOpen_other": "The agents know this run’s goal, tasks and changed files, and first finish the {{count}} open tasks. Ctrl+Enter continues.",
+    "continue": "Continue",
+    "otherProject": "This run belongs to another project. Start a new run for this one."
   },
   "lines": {
     "label": "Agent world lines",
@@ -160,6 +175,7 @@
   },
   "feed": {
     "empty": "Nothing has happened yet.",
+    "stored": "Runs from an earlier session keep no activity log, only their goal, tasks, result and changed files.",
     "to": "to",
     "ok": "Succeeded",
     "failed": "Failed",

@@ -6,12 +6,14 @@ import type { AgentEvent } from '../../bindings/AgentEvent';
 import type { ApprovalRequest } from '../../bindings/ApprovalRequest';
 import type { ApprovalResponse } from '../../bindings/ApprovalResponse';
 import type { Checkpoint } from '../../bindings/Checkpoint';
+import type { LastRun } from '../../bindings/LastRun';
 import i18n from '../../i18n';
 import { reportError } from '../../lib/errors';
 import { api } from '../../lib/ipc';
+import { useApp } from '../../state/app';
 import { useLayout } from '../../state/layout';
 import { useToasts } from '../../state/toasts';
-import { appendStream, applyDecision, applyEvent, createRun, removeQuestion, type RunData } from './run';
+import { appendStream, applyDecision, applyEvent, continuationOf, createRun, removeQuestion, restoreRun, type RunData } from './run';
 
 export type Phase = 'idle' | 'starting' | 'running' | 'finished';
 
@@ -19,6 +21,10 @@ interface AgentRunState {
   phase: Phase;
   /** Goal typed in the idle view, kept while the panel is closed. */
   draft: string;
+  /** Next step typed under a finished run, kept while the panel is closed. */
+  followUp: string;
+  /** The next-step field takes the focus when it appears. */
+  focusFollowUp: boolean;
   /** The current run, or the last finished one. */
   run: RunData | null;
   paused: boolean;
@@ -37,7 +43,10 @@ interface AgentRunState {
   deferred: ReadonlySet<string>;
 
   setDraft(draft: string): void;
+  setFollowUp(text: string): void;
   start(goal: string): Promise<void>;
+  /** Starts a run that continues the finished one; its agents are told what it did. */
+  continueRun(goal: string): Promise<void>;
   pause(): Promise<void>;
   resume(): Promise<void>;
   stop(): Promise<void>;
@@ -47,8 +56,14 @@ interface AgentRunState {
   restore(checkpoint: Checkpoint): Promise<string[] | null>;
   /** Back to the idle view; the finished run stays available as "previous run". */
   newRun(): void;
-  /** Shows the last finished run again. */
-  showRun(): void;
+  /** Shows the last finished run again; with `next`, ready to type the next step. */
+  showRun(next?: boolean): void;
+  followUpFocused(): void;
+  /**
+   * Shows the project's last run, kept by the core across restarts, unless a
+   * run of this project is already here or one is going.
+   */
+  loadLast(project: string | null): Promise<void>;
   deferQuestion(questionId: string): void;
   reopenQuestion(questionId: string): void;
 }
@@ -139,9 +154,43 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     }
   };
 
+  /** Starts a run; with `from`, one that continues that finished run. */
+  const launch = async (goal: string, from: RunData | null) => {
+    const text = goal.trim();
+    const { phase, run: previous } = get();
+    if (!text || phase === 'starting' || phase === 'running') return;
+    const continues = from && continuationOf(from);
+    if (from && !continues) return;
+    const gen = ++generation;
+    resetStreams();
+    const project = useApp.getState().workspace?.root ?? null;
+    set({ phase: 'starting', run: createRun(text, Date.now(), { project, continues }), paused: false, stopping: false, controlBusy: false, restored: new Set(), streams: {}, deferred: new Set() });
+    try {
+      const runId = await api.agents.start(
+        text,
+        (event) => {
+          if (gen === generation) receive(event);
+        },
+        continues?.runId ?? null,
+      );
+      if (gen !== generation) return;
+      const { run } = get();
+      if (run && run.runId === null) set({ run: { ...run, runId } });
+      set((s) => ({ ...(continues ? { followUp: '' } : { draft: '' }), phase: s.phase === 'starting' ? 'running' : s.phase }));
+    } catch (e) {
+      if (gen !== generation) return;
+      generation++;
+      // Back where the user was: the idle view, or the finished run with the text still typed.
+      set({ phase, run: previous });
+      reportError(e, t('errors.start'));
+    }
+  };
+
   return {
     phase: 'idle',
     draft: '',
+    followUp: '',
+    focusFollowUp: false,
     run: null,
     paused: false,
     stopping: false,
@@ -154,27 +203,18 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       set({ draft });
     },
 
-    async start(goal) {
-      const text = goal.trim();
-      const { phase, run: previous } = get();
-      if (!text || phase === 'starting' || phase === 'running') return;
-      const gen = ++generation;
-      resetStreams();
-      set({ phase: 'starting', run: createRun(text, Date.now()), paused: false, stopping: false, controlBusy: false, restored: new Set(), streams: {}, deferred: new Set() });
-      try {
-        const runId = await api.agents.start(text, (event) => {
-          if (gen === generation) receive(event);
-        });
-        if (gen !== generation) return;
-        const { run } = get();
-        if (run && run.runId === null) set({ run: { ...run, runId } });
-        set((s) => ({ draft: '', phase: s.phase === 'starting' ? 'running' : s.phase }));
-      } catch (e) {
-        if (gen !== generation) return;
-        generation++;
-        set({ phase: 'idle', run: previous });
-        reportError(e, t('errors.start'));
-      }
+    setFollowUp(followUp) {
+      set({ followUp });
+    },
+
+    start(goal) {
+      return launch(goal, null);
+    },
+
+    continueRun(goal) {
+      const { phase, run } = get();
+      if (phase !== 'finished' || !run) return Promise.resolve();
+      return launch(goal, run);
     },
 
     async pause() {
@@ -256,8 +296,36 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       if (get().phase === 'finished') set({ phase: 'idle' });
     },
 
-    showRun() {
-      if (get().run?.outcome) set({ phase: 'finished' });
+    showRun(next = false) {
+      if (get().run?.outcome) set({ phase: 'finished', focusFollowUp: next });
+    },
+
+    followUpFocused() {
+      set({ focusFollowUp: false });
+    },
+
+    async loadLast(project) {
+      const busy = () => get().phase === 'starting' || get().phase === 'running';
+      if (busy() || (get().run && get().run?.project === project)) return;
+      const gen = generation;
+      let last: LastRun | null = null;
+      try {
+        last = project ? await api.agents.lastRun() : null;
+      } catch (e) {
+        console.warn('the last agent run could not be read', e);
+      }
+      if (gen !== generation || busy() || (get().run && get().run?.project === project)) return;
+      const run = last ? restoreRun(last, project) : null;
+      set({ phase: 'idle', run, followUp: '', focusFollowUp: false, restored: new Set(), streams: {}, deferred: new Set() });
+      // Checkpoints stay on disk, so the changes can still be undone.
+      if (!run?.runId) return;
+      const runId = run.runId;
+      try {
+        const checkpoints = await api.agents.checkpoints(runId);
+        set((s) => (s.run?.runId === runId && s.run.outcome ? { run: { ...s.run, checkpoints } } : {}));
+      } catch (e) {
+        console.warn('the checkpoints of the last agent run could not be read', e);
+      }
     },
 
     deferQuestion(questionId) {

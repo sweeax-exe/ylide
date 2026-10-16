@@ -63,7 +63,8 @@
     "planReady": "Plan steht",
     "reviewing": "Prüft die Änderungen",
     "stepLimit": "Schrittlimit erreicht",
-    "answering": "Beantwortet eine Frage von {{agent}}"
+    "answering": "Beantwortet eine Frage von {{agent}}",
+    "notes": "Aktualisiert das Projektwissen"
   },
   "idle": {
     "goalLabel": "Was sollen die Agents tun?",
@@ -80,7 +81,9 @@
     "project": "Arbeitet in {{name}}",
     "noProject": "Es ist kein Ordner geöffnet. Die Agents brauchen ein Projekt, in dem sie arbeiten.",
     "previous": "Letzter Lauf",
-    "showRun": "Details anzeigen"
+    "showRun": "Details anzeigen",
+    "openTasks_one": "Eine Aufgabe ist noch offen. Beim Weitermachen kommt sie zuerst dran.",
+    "openTasks_other": "{{count}} Aufgaben sind noch offen. Beim Weitermachen kommen sie zuerst dran."
   },
   "mode": {
     "label": "Freigaben",
@@ -115,6 +118,7 @@
     "stopBody": "Die Agents hören sofort auf. Bisherige Änderungen bleiben bestehen, du kannst sie über die Checkpoints rückgängig machen.",
     "stopConfirm": "Lauf stoppen",
     "newRun": "Neuer Lauf",
+    "continues": "Setzt fort:",
     "questionWaiting": "{{agent}} wartet auf deine Antwort.",
     "answer": "Antworten",
     "tabs": "Details zum Lauf",
@@ -125,7 +129,18 @@
     "tabCheckpoints": "Checkpoints",
     "tabCheckpointsCount": "Checkpoints {{value}}",
     "changedFiles": "Geänderte Dateien",
-    "noChanges": "Es wurden keine Dateien geändert."
+    "noChanges": "Es wurden keine Dateien geändert.",
+    "notesUpdated": "Projektwissen in AGENTS.md aktualisiert",
+    "openNotes": "AGENTS.md öffnen"
+  },
+  "next": {
+    "label": "Was sollen die Agents als Nächstes tun?",
+    "placeholder": "Zum Beispiel: Schreib jetzt noch einen Test für Rabattcodes",
+    "hint": "Die Agents kennen Ziel, Aufgaben und geänderte Dateien dieses Laufs. Strg+Enter macht weiter.",
+    "hintOpen_one": "Die Agents kennen Ziel, Aufgaben und geänderte Dateien dieses Laufs und erledigen zuerst die offene Aufgabe. Strg+Enter macht weiter.",
+    "hintOpen_other": "Die Agents kennen Ziel, Aufgaben und geänderte Dateien dieses Laufs und erledigen zuerst die {{count}} offenen Aufgaben. Strg+Enter macht weiter.",
+    "continue": "Weitermachen",
+    "otherProject": "Dieser Lauf gehört zu einem anderen Projekt. Starte für dieses Projekt einen neuen Lauf."
   },
   "lines": {
     "label": "Weltlinien der Agents",
@@ -160,6 +175,7 @@
   },
   "feed": {
     "empty": "Bisher ist nichts passiert.",
+    "stored": "Von Läufen aus einer früheren Sitzung bleibt kein Verlauf, nur Ziel, Aufgaben, Ergebnis und geänderte Dateien.",
     "to": "an",
     "ok": "Erfolgreich",
     "failed": "Fehlgeschlagen",

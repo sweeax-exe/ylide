@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { AgentEvent } from '../../bindings/AgentEvent';
 import type { AgentState } from '../../bindings/AgentState';
+import type { LastRun } from '../../bindings/LastRun';
 import type { Task } from '../../bindings/Task';
-import { appendStream, applyDecision, applyEvent, changedFiles, createRun, currentTask, isGenerating, removeQuestion, STREAM_TAIL, type RunData, type ToolFeedItem } from './run';
+import { appendStream, applyDecision, applyEvent, changedFiles, continuationOf, continueBlock, createRun, currentTask, isGenerating, notesUpdated, openTaskCount, removeQuestion, restoreRun, STREAM_TAIL, type RunData, type ToolFeedItem } from './run';
 
 const R = 'run-1';
 const status = (agentId: string, state: AgentState, step = '', taskId: string | null = null, tps = 0, total = 0): AgentEvent => ({
@@ -158,5 +159,84 @@ describe('changedFiles', () => {
       { path: 'b', kind: 'created' },
       { path: 'd', kind: 'deleted' },
     ]);
+  });
+});
+
+describe('continuing a run', () => {
+  const finished = () =>
+    feed([
+      { type: 'runStarted', runId: R, goal: 'Add a cart' },
+      { type: 'runFinished', runId: R, outcome: 'completed', summary: '✔ T1 Cart model' },
+    ], createRun('Add a cart', 1000, { project: 'D:/shop' }));
+
+  it('keeps goal, outcome and summary of a finished run', () => {
+    expect(continuationOf(finished())).toEqual({ runId: R, goal: 'Add a cart', outcome: 'completed', summary: '✔ T1 Cart model' });
+  });
+
+  it('has nothing to continue while the run is going or before the core named it', () => {
+    expect(continuationOf(feed([{ type: 'runStarted', runId: R, goal: 'x' }]))).toBeNull();
+    expect(continuationOf({ ...finished(), runId: null })).toBeNull();
+  });
+
+  it('remembers project and previous run in a new run', () => {
+    const from = continuationOf(finished())!;
+    const next = createRun('Now add tests', 5000, { project: 'D:/shop', continues: from });
+    expect(next.continues).toBe(from);
+    expect(next.project).toBe('D:/shop');
+    expect(createRun('fresh', 1).continues).toBeNull();
+  });
+
+  it('only continues in the same project with a running model', () => {
+    const run = finished();
+    expect(continueBlock(run, true, 'D:/shop')).toBeNull();
+    expect(continueBlock(run, true, 'D:/other')).toBe('otherProject');
+    expect(continueBlock(run, false, 'D:/other')).toBe('otherProject');
+    expect(continueBlock(run, true, null)).toBe('noProject');
+    expect(continueBlock(run, false, 'D:/shop')).toBe('noModel');
+    expect(continueBlock({ ...run, project: null }, true, 'D:/any')).toBeNull();
+  });
+});
+
+describe('a run kept across restarts', () => {
+  const last: LastRun = {
+    runId: 'run-7',
+    goal: 'Add a cart',
+    startedAtUnixMs: 1000,
+    finishedAtUnixMs: 9000,
+    outcome: 'cancelled',
+    summary: '✔ T1 Task T1\n– T2 Task T2',
+    plan: { goal: 'Add a cart', summary: 'Model, then view.', tasks: [task('T1', { status: 'done' }), task('T2', { status: 'skipped' }), task('T3')] },
+    changes: [{ path: 'src/cart.ts', kind: 'created', diff: '', checkpointId: 'run-7-1' }],
+    earlierGoals: [],
+  };
+
+  it('comes back with goal, tasks, result and changed files, marked as stored', () => {
+    const run = restoreRun(last, 'D:/shop');
+    expect(run).toMatchObject({ runId: 'run-7', goal: 'Add a cart', startedAt: 1000, finishedAt: 9000, outcome: 'cancelled', summary: last.summary, project: 'D:/shop', stored: true });
+    expect(run.taskOrder).toEqual(['T1', 'T2', 'T3']);
+    expect(run.tasks.T2.status).toBe('skipped');
+    expect(changedFiles(run.changes)).toEqual([{ path: 'src/cart.ts', kind: 'created' }]);
+    expect(run.feed).toEqual([]);
+    expect(createRun('fresh', 1).stored).toBe(false);
+  });
+
+  it('can be continued, and counts the tasks it left open', () => {
+    const run = restoreRun(last, 'D:/shop');
+    expect(continuationOf(run)?.runId).toBe('run-7');
+    expect(openTaskCount(run)).toBe(2);
+    expect(openTaskCount(restoreRun({ ...last, plan: null }, 'D:/shop'))).toBe(0);
+  });
+});
+
+describe('project notes', () => {
+  const change = (path: string, kind: 'created' | 'modified' | 'deleted') => ({ path, kind, diff: '', checkpointId: 'c' });
+  it('notices when the run wrote AGENTS.md', () => {
+    const run = createRun('x', 1);
+    expect(notesUpdated(run)).toBe(false);
+    expect(notesUpdated({ ...run, changes: [change('src/a.ts', 'modified')] })).toBe(false);
+    expect(notesUpdated({ ...run, changes: [change('src/a.ts', 'modified'), change('AGENTS.md', 'created')] })).toBe(true);
+    expect(notesUpdated({ ...run, changes: [change('agents.md', 'modified')] })).toBe(true);
+    expect(notesUpdated({ ...run, changes: [change('AGENTS.md', 'modified'), change('AGENTS.md', 'deleted')] })).toBe(false);
+    expect(notesUpdated({ ...run, changes: [change('docs/AGENTS.md', 'modified')] })).toBe(false);
   });
 });

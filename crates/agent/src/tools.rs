@@ -174,7 +174,6 @@ pub fn all_tools() -> Vec<ToolSpec> {
                     "summary": { "type": "string" },
                     "tasks": {
                         "type": "array",
-                        "minItems": 1,
                         "maxItems": 12,
                         "items": {
                             "type": "object",

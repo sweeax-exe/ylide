@@ -44,8 +44,8 @@ function jobStatus(job: DownloadJob): { key: string; tone: Tone } {
   return { key: 'downloading', tone: 'accent' };
 }
 
-/** Pause, resume, retry and cancel for one job. */
-function JobActions({ job }: { job: DownloadJob }) {
+/** Pause, resume, retry and cancel for one job; `compact` makes retry an icon too, for a table cell. */
+export function JobActions({ job, compact = false }: { job: DownloadJob; compact?: boolean }) {
   const { t } = useTranslation('settings');
   // Repeat clicks are ignored while a request runs. The buttons are not
   // disabled for that: a disabled button loses keyboard focus.
@@ -76,11 +76,16 @@ function JobActions({ job }: { job: DownloadJob }) {
           {running ? <Pause size={14} /> : <Play size={14} />}
         </IconButton>
       )}
-      {job.state.state === 'failed' && (
-        <Button size="sm" icon={<RotateCw size={13} />} onClick={(e) => void resume(e.currentTarget)}>
-          {t('common:actions.retry')}
-        </Button>
-      )}
+      {job.state.state === 'failed' &&
+        (compact ? (
+          <IconButton label={t('downloads.retry', { name: job.name })} onClick={(e) => void resume(e.currentTarget)}>
+            <RotateCw size={14} />
+          </IconButton>
+        ) : (
+          <Button size="sm" icon={<RotateCw size={13} />} onClick={(e) => void resume(e.currentTarget)}>
+            {t('common:actions.retry')}
+          </Button>
+        ))}
       <IconButton label={t('downloads.cancel', { name: job.name })} onClick={(e) => void act(e.currentTarget, () => api.models.cancel(job.jobId))}>
         <X size={14} />
       </IconButton>
@@ -90,31 +95,39 @@ function JobActions({ job }: { job: DownloadJob }) {
 
 const progressTone = (job: DownloadJob) => (job.state.state === 'failed' ? 'danger' : job.state.state === 'paused' ? 'muted' : 'accent');
 
-/** Amount, speed, time left and file number of a job, as separate phrases. */
-function useJobFacts(job: DownloadJob): string[] {
+/** What is known about a job's progress, each as a phrase; null when unknown. */
+function useJobFacts(job: DownloadJob) {
   const { t } = useTranslation('settings');
   const p = job.progress;
-  const remaining = job.state.state === 'running' ? remainingSeconds(p) : null;
-  const facts = [t('downloads.amount', { done: formatGB(downloadedBytes(job)), total: formatGB(totalBytes(job)), percent: formatNumber(fraction(job) * 100) })];
-  if (job.state.state === 'running' && p && p.bytesPerSecond > 0) facts.push(t('downloads.speed', { speed: formatBytes(p.bytesPerSecond) }));
-  if (remaining !== null) facts.push(t('downloads.remaining', { time: formatDuration(remaining) }));
-  if (p && p.fileCount > 1) facts.push(t('downloads.file', { index: p.fileIndex + 1, count: p.fileCount }));
-  return facts;
+  const running = job.state.state === 'running';
+  const remaining = running ? remainingSeconds(p) : null;
+  const percent = formatNumber(fraction(job) * 100);
+  return {
+    percent: t('downloads.percent', { percent }),
+    done: t('common:units.gb', { value: formatGB(downloadedBytes(job)) }),
+    amount: t('downloads.amount', { done: formatGB(downloadedBytes(job)), total: formatGB(totalBytes(job)), percent }),
+    speed: running && p && p.bytesPerSecond > 0 ? t('downloads.speed', { speed: formatBytes(p.bytesPerSecond) }) : null,
+    remaining: remaining !== null ? t('downloads.remaining', { time: formatDuration(remaining) }) : null,
+    file: p && p.fileCount > 1 ? t('downloads.file', { index: p.fileIndex + 1, count: p.fileCount }) : null,
+  };
 }
+
+const known = (facts: Array<string | null>) => facts.filter((f): f is string => f !== null);
 
 export function DownloadRow({ job }: { job: DownloadJob }) {
   const { t } = useTranslation('settings');
   const status = jobStatus(job);
-  const facts = useJobFacts(job);
+  const f = useJobFacts(job);
+  const facts = known([f.amount, f.speed, f.remaining, f.file]);
   return (
     <li className={s.row}>
       <div className={s.top}>
         <span className={s.name}>{job.name}</span>
         <Badge tone={status.tone}>{t(`downloads.state.${status.key}`)}</Badge>
         <span className={s.numbers}>
-          {facts.map((f) => (
-            <span key={f} className="tabular">
-              {f}
+          {facts.map((fact) => (
+            <span key={fact} className="tabular">
+              {fact}
             </span>
           ))}
         </span>
@@ -126,20 +139,33 @@ export function DownloadRow({ job }: { job: DownloadJob }) {
   );
 }
 
-/** A one-line version for tables: bar, percent and actions; details in the tooltip. */
-export function DownloadInline({ job }: { job: DownloadJob }) {
+/**
+ * A table cell's version: the bar over one short line of facts. The actions
+ * go in a cell of their own (`JobActions` with `compact`).
+ */
+export function DownloadProgress({ job }: { job: DownloadJob }) {
   const { t } = useTranslation('settings');
   const status = jobStatus(job);
-  const facts = useJobFacts(job);
+  const label = t(`downloads.state.${status.key}`);
+  const f = useJobFacts(job);
+  // A plain download needs no label; pausing, resuming and checking the file do.
+  // The amount comes last, so it is the one left out when the cell is narrow.
+  const facts = known([status.key === 'downloading' ? null : label, f.percent, f.remaining, f.done]);
+  const failed = job.state.state === 'failed' ? job.state.message : null;
   return (
-    <span className={s.inline} title={[t(`downloads.state.${status.key}`), ...facts].join(' · ')}>
-      <span className={s.inlineBar}>
-        <Progress value={fraction(job)} tone={progressTone(job)} label={t('downloads.progressLabel', { name: job.name })} />
-      </span>
-      <span className={`${s.inlinePercent} tabular`}>
-        {job.state.state === 'failed' ? t('downloads.state.failed') : t('downloads.percent', { percent: formatNumber(fraction(job) * 100) })}
-      </span>
-      <JobActions job={job} />
-    </span>
+    <div className={s.compact} title={failed ?? known([label, f.amount, f.speed, f.remaining, f.file]).join(' · ')}>
+      <Progress value={fraction(job)} tone={progressTone(job)} label={t('downloads.progressLabel', { name: job.name })} />
+      {failed !== null ? (
+        <span className={s.compactFailed}>{label}</span>
+      ) : (
+        <span className={s.compactFacts}>
+          {facts.map((fact) => (
+            <span key={fact} className="tabular">
+              {fact}
+            </span>
+          ))}
+        </span>
+      )}
+    </div>
   );
 }

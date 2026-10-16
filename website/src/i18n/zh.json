@@ -14,10 +14,12 @@
     "privacy": "隐私",
     "download": "下载",
     "home": "Ylide，返回首页",
-    "language": "语言"
+    "language": "语言",
+    "discord": "加入 Discord 上的 Ylide 社区",
+    "github": "Ylide 在 GitHub 上的源代码"
   },
   "hero": {
-    "title": "AI IDE，从不离开你的电脑。",
+    "title": "用 AI 写代码，一切都不离开你的电脑。",
     "lead": "聊天、行内编辑，再加一支编程智能体团队，完全由你自己电脑上运行的模型驱动。无需账号，无需云端，无需订阅。",
     "download": "下载 Windows 版",
     "meta": "版本 {{version}}，适用于 64 位 Windows 10 和 11，大小 {{size}} MB。基于 Apache-2.0 许可开源。",
@@ -98,7 +100,7 @@
   },
   "open": {
     "title": "每一行代码，都开源。",
-    "body": "Ylide 基于 Apache-2.0 许可证开源。源代码很快会发布到 GitHub 上，你可以阅读、自行构建，并参与开发。",
+    "body": "Ylide 基于 Apache-2.0 许可证开源。每个版本的源代码都发布在 GitHub 上，你可以阅读、自行构建，并参与开发。",
     "download": "下载 Ylide {{version}}",
     "smartscreen": "由于安装程序暂未进行商业签名，Windows 可能会在首次启动时发出警告。请点击“更多信息”，然后点击“仍要运行”。"
   },

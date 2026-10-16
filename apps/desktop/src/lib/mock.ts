@@ -11,6 +11,7 @@
 //   crash     the model server crashes while loading
 //   question  the agent asks the user a question during the run
 //   changes   the reviewer requests changes once
+//   lastrun   the project has a failed agent run from an earlier session, with open tasks
 
 import registryJson from '../../../../registry/models.json';
 import orchestratorPrompt from '../../../../crates/agent/prompts/orchestrator.md?raw';
@@ -28,6 +29,7 @@ import type { FileNode } from '../bindings/FileNode';
 import type { HardwareProfile } from '../bindings/HardwareProfile';
 import type { InlineEvent } from '../bindings/InlineEvent';
 import type { InstalledModel } from '../bindings/InstalledModel';
+import type { LastRun } from '../bindings/LastRun';
 import type { Mention } from '../bindings/Mention';
 import type { NetworkLogEntry } from '../bindings/NetworkLogEntry';
 import type { Placement } from '../bindings/Placement';
@@ -37,6 +39,7 @@ import type { Registry } from '../bindings/Registry';
 import type { RuntimeStatus } from '../bindings/RuntimeStatus';
 import type { ServerInfo } from '../bindings/ServerInfo';
 import type { Settings } from '../bindings/Settings';
+import type { Task } from '../bindings/Task';
 
 const registry = registryJson as unknown as Registry;
 const failures = new Set((new URLSearchParams(location.search).get('mock') ?? '').split(',').filter(Boolean));
@@ -99,6 +102,7 @@ let settings: Settings = {
     reviewEnabled: true,
     maxReviewRounds: 2,
     shell: { program: 'powershell.exe', args: ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command'], defaultTimeoutSecs: 120, maxOutputChars: 20000 },
+    updateProjectNotes: true,
   },
   chat: { systemPrompt: chatPrompt.trim(), inlinePrompt: inlinePrompt.trim(), contextBudgetTokens: 24000, saveHistory: true },
   editor: { fontSize: 13, fontFamily: '"JetBrains Mono Variable", "JetBrains Mono", Consolas, monospace', tabSize: 4, wordWrap: false, minimap: false, lineHeight: 1.55 },
@@ -133,6 +137,36 @@ const plan = (placement: Placement, context: number, vram: number, ram: number, 
 const fileSize = (id: string, quant: string) =>
   registry.models.find((m) => m.id === id)?.variants.find((v) => v.quant === quant)?.files.reduce((s, f) => s + f.sizeBytes, 0) ?? 0;
 const reason = (code: string, params: Record<string, string> = {}) => ({ code, params }) as Recommendation['notices'][number];
+
+// A rough estimate of every variant with the whole machine, for the catalog's
+// "on this computer": up to 12 GiB runs on the GPU, larger MoE models keep
+// their experts in RAM, larger dense models split their layers. The largest
+// variants are left out, so the catalog also shows ones that do not fit.
+function estimateFits(): Recommendation['fits'] {
+  return registry.models.flatMap((m) =>
+    m.variants.flatMap((v) => {
+      const weights = fileSize(m.id, v.quant);
+      if (weights > 25 * GiB) return [];
+      const context = m.roles.includes('chat') ? Math.min(m.context.recommended, 65536) : 8192;
+      // Like plan(): 0.9 GiB overhead and 20 KiB of KV cache per token.
+      const need = (weights + context * 20480) / GiB + 0.9;
+      const vram = Math.min(need, 12);
+      const ram = need - vram;
+      const layers = m.architecture.layers;
+      const placement: Placement =
+        ram === 0
+          ? { kind: 'gpu' }
+          : m.architecture.type === 'moe'
+            ? { kind: 'moeOffload', cpuExpertLayers: Math.round((layers * ram) / need) }
+            : { kind: 'partialOffload', gpuLayers: Math.round((layers * vram) / need) };
+      // Each token reads the active weights, at GPU or RAM speed.
+      const active = (weights * m.architecture.paramsActiveB) / m.architecture.paramsTotalB;
+      const tps = Math.round(Math.min(300, 0.6 / ((active * vram) / need / 896e9 + (active * ram) / need / 65e9)));
+      const round = (gib: number) => Math.round(gib * 10) / 10;
+      return [{ modelId: m.id, quant: v.quant, plan: plan(placement, context, round(vram), round(ram), tps, weights), score: 0, downloadBytes: weights, reasons: [] }];
+    }),
+  );
+}
 
 const recommendation: Recommendation = {
   budget: { vramBytes: 12.85 * GiB, gpuBandwidthGbps: 896, ramBytes: 51.2 * GiB, ramBandwidthGbps: 65, unified: false, unifiedBytes: 0, diskFreeBytes: 282 * GiB, backend: 'cuda', gpuName: 'NVIDIA GeForce RTX 5070 Ti' },
@@ -204,6 +238,7 @@ const recommendation: Recommendation = {
     reasons: [reason('runsOnCpu')],
   },
   notices: [],
+  fits: estimateFits(),
 };
 
 let installed: InstalledModel[] = settings.onboardingDone
@@ -320,8 +355,70 @@ let runSend: ((e: AgentEvent) => void) | null = null;
 let runId = '';
 /** Last status per agent, so pause/resume can report it like the core. */
 const lastStatus = new Map<string, Extract<AgentEvent, { type: 'status' }>['status']>();
+/** Each run's record, as the core keeps it, so a later run can continue it. */
+const runRecords = new Map<string, LastRun>();
+/** The project's last run, kept across restarts in the core (the mock has one project). */
+let lastRun: LastRun | null = failures.has('lastrun') ? storedRun() : null;
 
-async function simulateRun(id: string, goal: string, send: (e: AgentEvent) => void) {
+/** A run from an earlier session that failed with tasks left open (`?mock=lastrun`). */
+function storedRun(): LastRun {
+  const finished = Date.now() - 20 * 3600_000;
+  const task = (id: string, title: string, status: Task['status'], result: string | null): Task => ({ id, title, description: '', files: ['src/cart.ts'], assignee: 'coder', status, attempts: 0, result, review: null });
+  const failed = 'Stopped: step limit reached before the task was finished.';
+  return {
+    runId: 'run-earlier',
+    goal: 'Add discount codes to the cart',
+    startedAtUnixMs: finished - 9 * 60_000,
+    finishedAtUnixMs: finished,
+    outcome: 'failed',
+    summary: `✔ T1 Discount model\n   Added a list of codes to src/cart.ts.\n✘ T2 Apply codes in total()\n   ${failed}\n… T3 Test the discounts\n\nChanged files: src/cart.ts`,
+    plan: {
+      goal: 'Add discount codes to the cart',
+      summary: 'Model first, then total(), then tests.',
+      tasks: [task('T1', 'Discount model', 'done', 'Added a list of codes to src/cart.ts.'), task('T2', 'Apply codes in total()', 'failed', failed), task('T3', 'Test the discounts', 'pending', null)],
+    },
+    changes: [{ path: 'src/cart.ts', kind: 'modified', diff: '', checkpointId: 'run-earlier-1' }],
+    earlierGoals: [],
+  };
+}
+
+/** The previous run's open tasks, open again with a note on the last attempt (like the core). */
+function openTasks(previous: LastRun): Task[] {
+  return (previous.plan?.tasks ?? [])
+    .filter((t) => t.status !== 'done')
+    .map((t) => {
+      const base = t.description.split('Earlier attempt: ')[0].trim();
+      const note = t.status === 'failed' ? `Earlier attempt: failed (${t.result ?? 'no result'}).` : t.status === 'pending' ? '' : 'Earlier attempt: stopped before it was done; changes made so far are in the project.';
+      return { ...t, description: [base, note].filter(Boolean).join('\n\n'), status: 'pending', attempts: 0, result: null, review: null };
+    });
+}
+
+/** With `previous`, a short run that continues it: its open tasks first, then the new request. */
+async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) => void, previous: LastRun | null = null) {
+  const carried = previous ? openTasks(previous) : [];
+  const record: LastRun = {
+    runId: id,
+    goal,
+    startedAtUnixMs: Date.now(),
+    finishedAtUnixMs: 0,
+    outcome: 'cancelled',
+    summary: '',
+    plan: carried.length ? { goal, summary: '', tasks: carried } : null,
+    changes: [],
+    earlierGoals: previous ? [...previous.earlierGoals, previous.goal].slice(-3) : [],
+  };
+  // Keeps the record the core would store when the run ends.
+  const send = (e: AgentEvent) => {
+    if (e.type === 'planReady') record.plan = e.plan;
+    if (e.type === 'taskUpdated' && record.plan) record.plan = { ...record.plan, tasks: record.plan.tasks.map((t) => (t.id === e.task.id ? e.task : t)) };
+    if (e.type === 'toolResult' && e.change) record.changes.push({ ...e.change, diff: '' });
+    if (e.type === 'runFinished') {
+      Object.assign(record, { outcome: e.outcome, summary: e.summary, finishedAtUnixMs: Date.now() });
+      runRecords.set(id, record);
+      lastRun = record;
+    }
+    deliver(e);
+  };
   runId = id;
   runSend = send;
   lastStatus.clear();
@@ -358,13 +455,97 @@ async function simulateRun(id: string, goal: string, send: (e: AgentEvent) => vo
     send({ type: 'toolResult', runId, agentId, callId, ok: true, summary, change });
   };
   const until = <T,>(p: Promise<T>) => Promise.race([p, cancelled]);
+  /** Like the core after a run: the orchestrator rewrites Ylide's section of AGENTS.md. */
+  const writeNotes = async (notes: string) => {
+    if (!settings.agent.updateProjectNotes) return;
+    status('orchestrator', 'orchestrator', 'thinking', 'updating project notes', null, 54);
+    await think('orchestrator', 'Noting what this run showed about the project.');
+    const before = files.get('AGENTS.md');
+    const block = `<!-- ylide:start -->\n## What Ylide's agents know about this project\n\n${notes}\n<!-- ylide:end -->`;
+    const after =
+      before === undefined
+        ? `# AGENTS.md\n\nNotes for coding agents working on this project. Write your own rules for the agents outside the Ylide section; Ylide only changes the part between its markers.\n\n${block}\n`
+        : before.includes('<!-- ylide:start -->')
+          ? before.replace(/<!-- ylide:start -->[\s\S]*<!-- ylide:end -->/, block)
+          : `${before.trimEnd()}\n\n${block}\n`;
+    const callId = nextId('call');
+    send({ type: 'toolCall', runId, agentId: 'orchestrator', callId, tool: 'write_file', arguments: JSON.stringify({ path: 'AGENTS.md', content: after }) });
+    if (settings.agent.permissions.mode === 'ask') {
+      const approvalId = nextId('approval');
+      status('orchestrator', 'orchestrator', 'waitingForApproval', 'write_file AGENTS.md', null);
+      send({ type: 'approvalRequested', runId, request: { id: approvalId, agentId: 'orchestrator', tool: 'write_file', risk: 'write', title: 'write_file AGENTS.md', detail: after } });
+      if (!(await until(new Promise<boolean>((resolve) => pendingApprovals.set(approvalId, resolve))))) {
+        send({ type: 'toolResult', runId, agentId: 'orchestrator', callId, ok: false, summary: 'The user rejected this action.', change: null });
+        status('orchestrator', 'orchestrator', 'idle', '', null);
+        return;
+      }
+    }
+    const checkpointId = `${runId}-notes`;
+    send({ type: 'checkpointCreated', runId, checkpoint: { id: checkpointId, runId, seq: 99, label: 'write_file AGENTS.md (orchestrator)', createdAtUnixMs: Date.now(), files: [] } });
+    files.set('AGENTS.md', after);
+    emit('fs://changed', ['AGENTS.md']);
+    const diff = `--- a/AGENTS.md\n+++ b/AGENTS.md\n@@ -1,0 +1,${after.split('\n').length} @@\n${after.split('\n').map((l) => `+${l}`).join('\n')}\n`;
+    const summary = before === undefined ? 'Created AGENTS.md' : 'Updated AGENTS.md';
+    send({ type: 'toolResult', runId, agentId: 'orchestrator', callId, ok: true, summary, change: { path: 'AGENTS.md', kind: before === undefined ? 'created' : 'modified', diff, checkpointId } });
+    status('orchestrator', 'orchestrator', 'idle', '', null);
+  };
+  const cartNotes = '**Run and build:** `npm install`\n**Tests:** `npm test` (vitest) passes.\n**Structure:** cart logic in `src/cart.ts`, tests in `test/cart.test.ts`.\n**Decisions:** `total()` multiplies price by quantity.';
 
   try {
     send({ type: 'runStarted', runId, goal });
     status('orchestrator', 'orchestrator', 'thinking', 'thinking', null, 54);
-    await think('orchestrator', 'Looking at the project layout first, then the cart logic.');
+    const intro = !previous
+      ? 'Looking at the project layout first, then the cart logic.'
+      : carried.length
+        ? `This continues "${previous.goal}". ${carried.map((t) => t.id).join(', ')} carry over as they are; planning only what the new request adds.`
+        : `This continues "${previous.goal}". Its changes are already in place, so only the new step needs a plan.`;
+    await think('orchestrator', intro);
     await tool('orchestrator', 'list_dir', '{"path":""}', '9 entries');
     const task = (tid: string, title: string, description: string, paths: string[]) => ({ id: tid, title, description, files: paths, assignee: 'coder', status: 'pending' as const, attempts: 0, result: null, review: null });
+
+    if (previous) {
+      // "Go on" adds nothing: only the open tasks run.
+      const goOn = /^\s*(mach weiter|weiter|weitermachen|continue|go on)\b/i.test(goal) && carried.length > 0;
+      const last = Math.max(0, ...(previous.plan?.tasks ?? []).map((t) => Number(t.id.slice(1)) || 0));
+      const title = goal.length > 60 ? `${goal.slice(0, 59)}…` : goal;
+      const tasks: Task[] = [...carried];
+      if (!goOn) tasks.push(task(carried.length ? `T${last + 1}` : 'T1', title, goal, ['src/cart.ts']));
+      send({ type: 'planReady', runId, plan: { goal, summary: carried.length ? 'Finish the open tasks, then the new request.' : 'One step on top of the previous run.', tasks } });
+      status('orchestrator', 'orchestrator', 'idle', 'plan ready', null);
+      const lines: string[] = [];
+      for (const [i, t] of tasks.entries()) {
+        const checkpointId = `${runId}-${i + 1}`;
+        send({ type: 'checkpointCreated', runId, checkpoint: { id: checkpointId, runId, seq: i + 1, label: `${t.id}: ${t.title} (coder)`, createdAtUnixMs: Date.now(), files: [] } });
+        send({ type: 'taskUpdated', runId, task: { ...t, status: 'inProgress' } });
+        status('coder', 'coder', 'thinking', 'thinking', t.id, 62);
+        await think('coder', carried.includes(t) ? `Picking up ${t.id} where the last run stopped.` : 'Reading the cart module before the next change.');
+        await tool('coder', 'read_file', '{"path":"src/cart.ts"}', 'src/cart.ts (1-14 of 14)');
+        const doc = '/** Sum of price × quantity over all items. */\n';
+        const source = files.get('src/cart.ts')!;
+        if (!source.includes(doc)) {
+          files.set('src/cart.ts', source.replace('export function total(', `${doc}export function total(`));
+          emit('fs://changed', ['src/cart.ts']);
+          await tool('coder', 'edit_file', '{"path":"src/cart.ts"}', 'Edited src/cart.ts (+1 -0)', {
+            path: 'src/cart.ts',
+            kind: 'modified',
+            checkpointId,
+            diff: `--- a/src/cart.ts\n+++ b/src/cart.ts\n@@ -6,2 +6,3 @@\n \n+${doc}export function total(items: Item[]): number {\n`,
+          });
+        }
+        const result = carried.includes(t) ? `${t.title}: done now.` : 'Done on top of the previous run; total() is documented.';
+        send({ type: 'taskUpdated', runId, task: { ...t, status: 'inReview', result } });
+        status('coder', 'coder', 'done', 'finished', t.id);
+        status('reviewer', 'reviewer', 'thinking', 'reviewing diff', t.id, 58);
+        await think('reviewer', 'Small change, consistent with the earlier work.');
+        send({ type: 'taskUpdated', runId, task: { ...t, status: 'done', result, review: { verdict: 'approve', summary: 'Good.', comments: [] } } });
+        status('reviewer', 'reviewer', 'idle', '', t.id);
+        lines.push(`✔ ${t.id} ${t.title}\n   ${result}`);
+      }
+      await writeNotes(`${cartNotes}\n**Docs:** \`total()\` has a doc comment.`);
+      const notes = settings.agent.updateProjectNotes && files.has('AGENTS.md') ? ', AGENTS.md' : '';
+      send({ type: 'runFinished', runId, outcome: 'completed', summary: `${lines.join('\n')}\n\nChanged files: src/cart.ts${notes}` });
+      return;
+    }
     const plan = {
       goal,
       summary: 'Fix the total so it multiplies price by quantity, then make sure the tests cover it.',
@@ -473,7 +654,9 @@ async function simulateRun(id: string, goal: string, send: (e: AgentEvent) => vo
     await wait(1000);
     send({ type: 'taskUpdated', runId, task: { ...plan.tasks[1], status: 'done', result: 'Added an empty-cart test.', review: { verdict: 'approve', summary: 'Good.', comments: [] } } });
     status('reviewer', 'reviewer', 'idle', '', 'T2');
-    send({ type: 'runFinished', runId, outcome: 'completed', summary: '✔ T1 Fix total()\n✔ T2 Add a test for empty carts\n\nChanged files: src/cart.ts, test/cart.test.ts' });
+    await writeNotes(cartNotes);
+    const notes = settings.agent.updateProjectNotes && files.has('AGENTS.md') ? ', AGENTS.md' : '';
+    send({ type: 'runFinished', runId, outcome: 'completed', summary: `✔ T1 Fix total()\n✔ T2 Add a test for empty carts\n\nChanged files: src/cart.ts, test/cart.test.ts${notes}` });
   } catch {
     send({ type: 'runFinished', runId, outcome: 'cancelled', summary: 'Stopped by the user.' });
   } finally {
@@ -559,8 +742,10 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       jobs.set(id, job);
       logNet('modelDownload', `https://huggingface.co/${model.source.hfRepo}/resolve/${model.source.revision}/${model.variants.find((v) => v.quant === args.quant)!.files[0].path}`, 'requested');
       let done = job.progress?.downloadedBytes ?? 0;
+      // About 20 seconds per model, at the speed it reports, so the progress can be looked at.
+      const speed = total / 20;
       job.timer = window.setInterval(() => {
-        done = Math.min(total, done + total / 40);
+        done = Math.min(total, done + speed * 0.12);
         if (failures.has('jobfail') && done >= total / 2) {
           window.clearInterval(job.timer);
           job.state = { state: 'failed', message: 'checksum mismatch: the file was changed on the server' };
@@ -568,7 +753,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
           emit('models://job', snapshot);
           return;
         }
-        job.progress = { jobId: id, phase: done >= total ? 'done' : 'downloading', fileIndex: 0, fileCount: 1, downloadedBytes: done, totalBytes: total, bytesPerSecond: 112_000_000 };
+        job.progress = { jobId: id, phase: done >= total ? 'done' : 'downloading', fileIndex: 0, fileCount: 1, downloadedBytes: done, totalBytes: total, bytesPerSecond: speed };
         if (done >= total) {
           window.clearInterval(job.timer);
           job.state = { state: 'completed' };
@@ -793,11 +978,17 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
     }
     case 'agent_start': {
       if (!server) throw { code: 'no_model', message: 'start a model first' };
+      const wanted = args.previousRun ? String(args.previousRun) : null;
+      // In memory, or the stored last run after a restart.
+      const previous = wanted ? (runRecords.get(wanted) ?? (lastRun?.runId === wanted ? lastRun : undefined)) : null;
+      if (previous === undefined) throw { code: 'unknown_run', message: wanted };
       const id = `run-${Date.now()}`;
       runControl = { paused: false, cancelled: false, abort: () => undefined };
-      void simulateRun(id, args.goal, args.onEvent as (e: AgentEvent) => void);
+      void simulateRun(id, args.goal, args.onEvent as (e: AgentEvent) => void, previous);
       return r(id);
     }
+    case 'agent_last_run':
+      return r(lastRun);
     case 'agent_approve': {
       const resolve = pendingApprovals.get(args.requestId);
       pendingApprovals.delete(args.requestId);

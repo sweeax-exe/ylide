@@ -62,6 +62,7 @@ fn team(models: Vec<(&str, Arc<ScriptedModel>)>) -> Team {
         default_model: Arc::new(ScriptedModel::new(vec![])),
         max_review_rounds: 2,
         review_enabled: true,
+        update_notes: false,
     }
 }
 
@@ -317,4 +318,220 @@ async fn invalid_arguments_and_unknown_tools_are_reported_to_the_model() {
     let replies: Vec<String> = requests[2].messages.iter().filter(|m| m.role == MessageRole::Tool).filter_map(|m| m.content.clone()).collect();
     assert!(replies[0].contains("not valid JSON"));
     assert!(replies[1].contains("not available to you"));
+}
+
+#[tokio::test]
+async fn a_continued_run_plans_with_the_previous_run_in_view() {
+    let h = harness("continue");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "Test add", "description": "Add a test for add()." }]))]);
+    let coder = scripted(vec![call("finish", json!({"summary": "Test added."}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    let fixed = Task {
+        id: "T1".into(),
+        title: "Fix add".into(),
+        description: String::new(),
+        files: vec![],
+        assignee: "coder".into(),
+        status: TaskStatus::Done,
+        attempts: 0,
+        result: Some("add() now adds.".into()),
+        review: None,
+    };
+    let board = Blackboard {
+        plan: Some(Plan { goal: "Fix the add function".into(), summary: "One edit.".into(), tasks: vec![fixed] }),
+        messages: vec![],
+        changed_files: ["src/lib.rs".to_string()].into(),
+    };
+    let previous = crate::PreviousRun::new("Fix the add function", RunOutcome::Completed, "", &board, vec![]);
+
+    let report = crate::run_with_previous(ctx, &t, "Now add a test", Some(&previous)).await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    assert_eq!(report.plan.unwrap().goal, "Now add a test");
+    let requests = orchestrator.requests.lock().unwrap();
+    let planning = requests[0].messages[1].content.clone().unwrap();
+    assert!(planning.starts_with("Previous run"), "{planning}");
+    assert!(planning.contains("- [T1] Fix add (done) -> add() now adds."), "{planning}");
+    assert!(planning.contains("Changed files: src/lib.rs"), "{planning}");
+    assert!(planning.contains("Request from the user:\nNow add a test"), "{planning}");
+}
+
+fn stopped_run() -> crate::PreviousRun {
+    let task = |id: &str, title: &str, status: TaskStatus, result: Option<&str>| Task {
+        id: id.into(),
+        title: title.into(),
+        description: format!("Do {title}."),
+        files: vec![],
+        assignee: "coder".into(),
+        status,
+        attempts: 0,
+        result: result.map(Into::into),
+        review: None,
+    };
+    let board = Blackboard {
+        plan: Some(Plan {
+            goal: "Three steps".into(),
+            summary: "One after another.".into(),
+            tasks: vec![
+                task("T1", "first", TaskStatus::Done, Some("first done")),
+                task("T2", "second", TaskStatus::Failed, Some("Stopped: step limit reached.")),
+                task("T3", "third", TaskStatus::Pending, None),
+            ],
+        }),
+        messages: vec![],
+        changed_files: Default::default(),
+    };
+    crate::PreviousRun::new("Three steps", RunOutcome::Failed, "", &board, vec![])
+}
+
+#[tokio::test]
+async fn going_on_after_a_failed_run_does_the_open_tasks() {
+    let h = harness("go-on");
+    // "Go on" adds nothing: the orchestrator submits an empty task list.
+    let orchestrator = scripted(vec![call("submit_plan", json!({ "summary": "Finish the open tasks.", "tasks": [] }))]);
+    let coder = scripted(vec![call("finish", json!({"summary": "second done"})), call("finish", json!({"summary": "third done"}))]);
+    let t = team(vec![("orchestrator", orchestrator), ("coder", coder.clone())]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+
+    let report = crate::run_with_previous(ctx, &t, "Go on", Some(&stopped_run())).await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    let plan = report.plan.unwrap();
+    let tasks: Vec<(&str, &str, TaskStatus)> = plan.tasks.iter().map(|t| (t.id.as_str(), t.title.as_str(), t.status)).collect();
+    assert_eq!(tasks, vec![("T2", "second", TaskStatus::Done), ("T3", "third", TaskStatus::Done)]);
+    // The coder knows how the last attempt ended.
+    let requests = coder.requests.lock().unwrap();
+    let first = requests[0].messages[1].content.clone().unwrap();
+    assert!(first.contains("Your task T2: second\nDo second.\n\nEarlier attempt: failed (Stopped: step limit reached.)."), "{first}");
+}
+
+#[tokio::test]
+async fn a_new_request_is_planned_after_the_open_tasks() {
+    let h = harness("go-on-more");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "fourth", "description": "Do fourth." }]))]);
+    let coder = scripted((0..3).map(|i| call("finish", json!({ "summary": format!("done {i}") }))).collect());
+    let t = team(vec![("orchestrator", orchestrator), ("coder", coder)]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+
+    let report = crate::run_with_previous(ctx, &t, "Also do a fourth step", Some(&stopped_run())).await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    let ids: Vec<String> = report.plan.unwrap().tasks.iter().map(|t| format!("{} {}", t.id, t.title)).collect();
+    assert_eq!(ids, vec!["T2 second", "T3 third", "T4 fourth"]);
+}
+
+#[tokio::test]
+async fn a_fresh_plan_still_needs_a_task() {
+    let h = harness("empty-plan");
+    let orchestrator = scripted(vec![
+        call("submit_plan", json!({ "summary": "nothing", "tasks": [] })),
+        plan_call(json!([{ "title": "x", "description": "y" }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    let report = run(ctx, &t, "x").await;
+    assert_eq!(report.plan.unwrap().tasks.len(), 1);
+    let requests = orchestrator.requests.lock().unwrap();
+    let reply = requests[1].messages.iter().rev().find(|m| m.role == MessageRole::Tool).unwrap();
+    assert!(reply.content.as_deref().unwrap().contains("at least one task"));
+}
+
+const USER_RULES: &str = "# Rules\n\nAlways use pnpm.\n";
+
+fn with_notes(t: &mut Team) {
+    t.update_notes = true;
+}
+
+#[tokio::test]
+async fn project_notes_reach_every_role_and_are_updated_after_the_run() {
+    let h = harness("notes");
+    std::fs::write(h.dir.join("AGENTS.md"), USER_RULES).unwrap();
+    let orchestrator = scripted(vec![
+        plan_call(json!([{ "title": "Fix add", "description": "Make add() add." }])),
+        // The notes after the run:
+        text("```\n**Tests:** `echo ok` works.\n**Structure:** the code lives in src/lib.rs.\n```"),
+    ]);
+    let coder = scripted(vec![
+        call("run_command", json!({"command": "echo ok"})),
+        call("read_file", json!({"path": "src/lib.rs"})),
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("finish", json!({"summary": "add() adds."})),
+    ]);
+    let reviewer = scripted(vec![call("submit_review", json!({"verdict": "approve", "summary": "ok"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone()), ("reviewer", reviewer.clone())]);
+    with_notes(&mut t);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+
+    let report = run(ctx, &t, "Fix add").await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    let first = |m: &Arc<ScriptedModel>| m.requests.lock().unwrap()[0].messages[1].content.clone().unwrap();
+    for (role, model) in [("orchestrator", &orchestrator), ("coder", &coder), ("reviewer", &reviewer)] {
+        let message = first(model);
+        assert!(message.starts_with("Project notes from AGENTS.md") && message.contains("Always use pnpm."), "{role}: {message}");
+    }
+    let notes_request = orchestrator.requests.lock().unwrap()[1].messages[1].content.clone().unwrap();
+    assert!(notes_request.contains("Current notes:\n(none yet)"), "{notes_request}");
+    assert!(notes_request.contains("Commands that worked in this run:\n- echo ok"), "{notes_request}");
+
+    let file = std::fs::read_to_string(h.dir.join("AGENTS.md")).unwrap().replace("\r\n", "\n");
+    assert!(file.starts_with(USER_RULES), "the user's text stays: {file}");
+    assert_eq!(
+        crate::knowledge::notes(&file).as_deref(),
+        Some("**Tests:** `echo ok` works.\n**Structure:** the code lives in src/lib.rs.")
+    );
+    assert!(report.summary.contains("AGENTS.md"), "{}", report.summary);
+    // Written like any change: own checkpoint, so it can be undone.
+    let notes_checkpoint = report.checkpoints.iter().find(|c| c.files.iter().any(|f| f.path == "AGENTS.md")).expect("checkpoint");
+    h.store.restore("run-1", &notes_checkpoint.id, &h.ws).unwrap();
+    assert_eq!(std::fs::read_to_string(h.dir.join("AGENTS.md")).unwrap(), USER_RULES);
+}
+
+#[tokio::test]
+async fn the_first_run_creates_the_notes_file() {
+    let h = harness("notes-new");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }])), text("**Structure:** one crate.")]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone())]);
+    with_notes(&mut t);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    run(ctx, &t, "x").await;
+    // Without a file, no notes go into the prompts.
+    assert!(coder.requests.lock().unwrap()[0].messages[1].content.as_deref().unwrap().starts_with("Team progress:"));
+    let file = std::fs::read_to_string(h.dir.join("AGENTS.md")).unwrap();
+    assert!(file.starts_with("# AGENTS.md"), "{file}");
+    assert_eq!(crate::knowledge::notes(&file).as_deref(), Some("**Structure:** one crate."));
+    let events = h.events.lock().unwrap();
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::ToolResult { change: Some(c), .. } if c.path == "AGENTS.md" && c.kind == ChangeKind::Created)));
+}
+
+#[tokio::test]
+async fn notes_are_read_but_not_written_when_switched_off() {
+    let h = harness("notes-off");
+    std::fs::write(h.dir.join("AGENTS.md"), USER_RULES).unwrap();
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }]))]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone())]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    run(ctx, &t, "x").await;
+    assert!(coder.requests.lock().unwrap()[0].messages[1].content.as_deref().unwrap().contains("Always use pnpm."));
+    assert_eq!(orchestrator.requests.lock().unwrap().len(), 1, "no notes request");
+    assert_eq!(std::fs::read_to_string(h.dir.join("AGENTS.md")).unwrap(), USER_RULES);
+}
+
+#[tokio::test]
+async fn writing_the_notes_asks_first_in_ask_mode() {
+    let h = harness("notes-ask");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }])), text("**Structure:** one crate.")]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator), ("coder", coder)]);
+    with_notes(&mut t);
+    let ask = PermissionSettings { mode: crate::ApprovalMode::Ask, ..PermissionSettings::default() };
+    let ctx = context(&h, ask, Arc::new(Reject));
+    run(ctx, &t, "x").await;
+    assert!(!h.dir.join("AGENTS.md").exists(), "rejected, so not written");
+    let events = h.events.lock().unwrap();
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::ApprovalRequested { request, .. } if request.tool == "write_file" && request.title.contains("AGENTS.md"))));
 }

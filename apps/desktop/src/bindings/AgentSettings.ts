@@ -4,4 +4,9 @@ import type { PromptTemplates } from "./PromptTemplates";
 import type { RoleDefinition } from "./RoleDefinition";
 import type { ShellConfig } from "./ShellConfig";
 
-export type AgentSettings = { permissions: PermissionSettings, roles: Array<RoleDefinition>, templates: PromptTemplates, reviewEnabled: boolean, maxReviewRounds: number, shell: ShellConfig, };
+export type AgentSettings = { permissions: PermissionSettings, roles: Array<RoleDefinition>, templates: PromptTemplates, reviewEnabled: boolean, maxReviewRounds: number, shell: ShellConfig, 
+/**
+ * After a run, the orchestrator writes what it learned into Ylide's
+ * section of the project's AGENTS.md. The file is read either way.
+ */
+updateProjectNotes: boolean, };

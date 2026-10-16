@@ -63,7 +63,8 @@
     "planReady": "Plano pronto",
     "reviewing": "Revisando as alterações",
     "stepLimit": "Limite de passos atingido",
-    "answering": "Respondendo a {{agent}}"
+    "answering": "Respondendo a {{agent}}",
+    "notes": "Atualizando o conhecimento do projeto"
   },
   "idle": {
     "goalLabel": "O que os agentes devem fazer?",
@@ -80,7 +81,10 @@
     "project": "Trabalha em {{name}}",
     "noProject": "Nenhuma pasta está aberta. Os agentes precisam de um projeto onde trabalhar.",
     "previous": "Execução anterior",
-    "showRun": "Mostrar detalhes"
+    "showRun": "Mostrar detalhes",
+    "openTasks_one": "Uma tarefa ainda está pendente. Ao continuar, ela é retomada primeiro.",
+    "openTasks_many": "{{count}} tarefas ainda estão pendentes. Ao continuar, elas são retomadas primeiro.",
+    "openTasks_other": "{{count}} tarefas ainda estão pendentes. Ao continuar, elas são retomadas primeiro."
   },
   "mode": {
     "label": "Aprovações",
@@ -116,6 +120,7 @@
     "stopBody": "Os agentes param imediatamente. As alterações feitas até agora permanecem, e você pode desfazê-las pelos checkpoints.",
     "stopConfirm": "Parar execução",
     "newRun": "Nova execução",
+    "continues": "Continua:",
     "questionWaiting": "{{agent}} está aguardando a sua resposta.",
     "answer": "Responder",
     "tabs": "Detalhes da execução",
@@ -126,7 +131,19 @@
     "tabCheckpoints": "Checkpoints",
     "tabCheckpointsCount": "Checkpoints {{value}}",
     "changedFiles": "Arquivos alterados",
-    "noChanges": "Nenhum arquivo foi alterado."
+    "noChanges": "Nenhum arquivo foi alterado.",
+    "notesUpdated": "Conhecimento do projeto atualizado no AGENTS.md",
+    "openNotes": "Abrir AGENTS.md"
+  },
+  "next": {
+    "label": "O que os agentes devem fazer agora?",
+    "placeholder": "Por exemplo: agora adicione um teste para códigos de desconto",
+    "hint": "Os agentes conhecem o objetivo, as tarefas e os arquivos alterados desta execução. Ctrl+Enter continua.",
+    "hintOpen_one": "Os agentes conhecem o objetivo, as tarefas e os arquivos alterados desta execução, e primeiro concluem a tarefa pendente. Ctrl+Enter continua.",
+    "hintOpen_many": "Os agentes conhecem o objetivo, as tarefas e os arquivos alterados desta execução, e primeiro concluem as {{count}} tarefas pendentes. Ctrl+Enter continua.",
+    "hintOpen_other": "Os agentes conhecem o objetivo, as tarefas e os arquivos alterados desta execução, e primeiro concluem as {{count}} tarefas pendentes. Ctrl+Enter continua.",
+    "continue": "Continuar",
+    "otherProject": "Esta execução pertence a outro projeto. Inicie uma nova execução para este."
   },
   "lines": {
     "label": "Linhas de universo dos agentes",
@@ -162,6 +179,7 @@
   },
   "feed": {
     "empty": "Nada aconteceu ainda.",
+    "stored": "Execuções de uma sessão anterior não guardam o registro de atividade, apenas o objetivo, as tarefas, o resultado e os arquivos alterados.",
     "to": "para",
     "ok": "Bem-sucedido",
     "failed": "Falhou",

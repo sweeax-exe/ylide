@@ -1,6 +1,7 @@
-// Registry catalog: filtering, grouping, recommendation marks and localized text.
+// Registry catalog: filtering, grouping, recommendation marks, fit estimates and localized text.
 
 import type { AlternativeKind } from '../../../bindings/AlternativeKind';
+import type { Candidate } from '../../../bindings/Candidate';
 import type { Model } from '../../../bindings/Model';
 import type { Recommendation } from '../../../bindings/Recommendation';
 import type { Role } from '../../../bindings/Role';
@@ -35,6 +36,25 @@ export function recommendationMarks(rec: Recommendation | null): Map<string, Mar
   if (rec.autocomplete) put(rec.autocomplete.modelId, rec.autocomplete.quant, { kind: 'autocomplete' });
   if (rec.embedding) put(rec.embedding.modelId, rec.embedding.quant, { kind: 'embedding' });
   return marks;
+}
+
+/** The best configuration of each variant with the whole machine, by `selectionKey`. */
+export function fitsByKey(rec: Recommendation | null): Map<string, Candidate> | null {
+  if (!rec) return null;
+  return new Map(rec.fits.map((c) => [selectionKey(c.modelId, c.quant), c]));
+}
+
+/** What "on this computer" says about a variant that is not recommended. */
+export type Fit = { kind: 'estimate'; candidate: Candidate } | { kind: 'noFit' } | { kind: 'unknown' };
+
+/**
+ * A variant missing from `fits` does not fit this machine. `fits` is null while
+ * the recommendation loads and after it failed; then nothing is known.
+ */
+export function fitFor(fits: ReadonlyMap<string, Candidate> | null, key: string): Fit {
+  if (!fits) return { kind: 'unknown' };
+  const candidate = fits.get(key);
+  return candidate ? { kind: 'estimate', candidate } : { kind: 'noFit' };
 }
 
 const markRank = (m: Mark) => (m.kind === 'primary' ? 0 : m.kind === 'alternative' ? 1 : 2);

@@ -13,6 +13,8 @@
     "test:ui": "npm test -w apps/desktop",
     "bindings": "cargo test --workspace export_bindings",
     "runtime:fetch": "node scripts/fetch-runtime.mjs",
+    "licenses": "node scripts/third-party-licenses.mjs",
+    "licenses:check": "node scripts/third-party-licenses.mjs --check",
     "registry:fill": "node tools/registry/fill.mjs",
     "registry:check": "node tools/registry/fill.mjs --check"
   }

@@ -193,6 +193,11 @@
       "label": "Putaran tinjauan per tugas",
       "hint": "Berapa kali peninjau boleh meminta perubahan sebelum tugas dianggap selesai."
     },
+    "notesTitle": "Pengetahuan proyek",
+    "updateProjectNotes": {
+      "label": "Simpan pengetahuan proyek di AGENTS.md",
+      "hint": "Setelah setiap proses, orkestrator menulis apa yang dipelajarinya tentang proyek (perintah yang berhasil, struktur, konvensi, keputusan) ke bagian milik Ylide di AGENTS.md dalam folder proyek. Teks Anda sendiri di file itu tetap seperti adanya. Agen dan chat selalu membaca file itu jika ada."
+    },
     "shellTitle": "Perintah",
     "shellDescription": "Cara run_command memulai perintah di folder proyek.",
     "shellProgram": {
@@ -295,6 +300,10 @@
     "repeatedFailure": {
       "label": "Kegagalan berulang",
       "hint": "Dikirim saat agen mengulangi panggilan alat yang sama yang gagal. Tidak memiliki variabel."
+    },
+    "notes": {
+      "label": "Pengetahuan proyek",
+      "hint": "Dikirim ke orkestrator setelah proses untuk memperbarui bagian Ylide di AGENTS.md."
     }
   },
   "network": {
@@ -529,6 +538,7 @@
     "file": "file {{index}} dari {{count}}",
     "pause": "Jeda unduhan {{name}}",
     "resume": "Lanjutkan unduhan {{name}}",
+    "retry": "Ulangi unduhan {{name}}",
     "cancel": "Batalkan unduhan {{name}}",
     "progressLabel": "Kemajuan unduhan {{name}}",
     "failed": "{{message}}"
@@ -584,6 +594,7 @@
     "plan": "{{placement}} · sekitar {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB VRAM",
     "memRam": "{{value}} GiB RAM",
+    "noFit": "Tidak muat di komputer ini",
     "download": "Unduh",
     "downloadNamed": "Unduh {{name}} {{quant}}",
     "downloadSize": "Unduh {{size}} GB",

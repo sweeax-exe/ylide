@@ -43,7 +43,10 @@ Prerequisites: the "Build from source" setup in README.md (`npm install`,
 
    This builds the NSIS installer, signs it, verifies the signature against the key
    built into the app and writes `target/release/bundle/updates/` with the
-   installer, its `.sig` and `latest.json`.
+   installer, its `.sig` and `latest.json`. Before building it adds missing license
+   texts to the bundled runtimes and stops if `THIRD_PARTY_LICENSES.txt` does not
+   match the dependencies; after dependency updates run `npm run licenses` and
+   commit the result.
 3. Try the installer, then publish:
 
    ```sh
@@ -65,6 +68,38 @@ A published version is never changed: `--publish` refuses to upload an
 installer whose content differs from the one already on the server under the
 same version. Bump the version instead. (`--replace` overrides this, only for a
 version nobody can have installed yet.)
+
+## Publishing the source code
+
+The public repository [github.com/sweeax-exe/ylide](https://github.com/sweeax-exe/ylide)
+gets one commit per released version ("Ylide 0.1.5", tagged `v0.1.5`); the
+development history stays in this checkout. Right after `release.mjs --publish`,
+while `HEAD` is still the commit the release was built from:
+
+```sh
+node scripts/publish-source.mjs
+```
+
+builds the snapshot in `target/public-repo` with `git archive` (only committed
+files, so nothing gitignored can slip in), checks it and shows what changes.
+It refuses key files, private keys and tokens, paths of this machine and every
+term listed in `~/.ylide-publish-deny` (one per line; that file stays out of the
+repository because it names what must stay private). Then:
+
+```sh
+node scripts/publish-source.mjs --publish
+```
+
+commits "Ylide <version>", tags it, pushes both and creates the GitHub release,
+which links to the installer on ylide.app. When the local build in
+`target/release/bundle/updates/` is byte for byte the published one, the
+installer, its `.sig` and its SHA-256 are attached as well.
+
+The script only publishes the version ylide.app offers in `latest.json`, and
+never a tag that already exists. `--commit <rev>` names the release commit when
+`HEAD` has moved on; `--docs-from <rev>` takes README, `.github` and
+`docs/images` from a later commit, for documents written after a release.
+Pull requests on GitHub are applied here and ship with the next release.
 
 ## Publishing the model list
 

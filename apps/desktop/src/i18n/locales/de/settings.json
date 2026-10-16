@@ -193,6 +193,11 @@
       "label": "Review-Runden pro Aufgabe",
       "hint": "Wie oft der Reviewer Änderungen anfordern darf, bevor die Aufgabe als erledigt gilt."
     },
+    "notesTitle": "Projektwissen",
+    "updateProjectNotes": {
+      "label": "Projektwissen in AGENTS.md pflegen",
+      "hint": "Nach jedem Lauf schreibt der Orchestrator, was er über das Projekt gelernt hat (Befehle, die funktioniert haben, Aufbau, Konventionen, Entscheidungen), in Ylides eigenen Abschnitt von AGENTS.md im Projektordner. Dein eigener Text in der Datei bleibt, wie er ist. Agents und Chat lesen die Datei immer, wenn es sie gibt."
+    },
     "shellTitle": "Befehle",
     "shellDescription": "Wie run_command Befehle im Projektordner startet.",
     "shellProgram": {
@@ -297,6 +302,10 @@
     "repeatedFailure": {
       "label": "Wiederholter Fehler",
       "hint": "Wird gesendet, wenn ein Agent denselben fehlschlagenden Tool-Aufruf wiederholt. Hat keine Felder."
+    },
+    "notes": {
+      "label": "Projektwissen",
+      "hint": "Geht nach einem Lauf an den Orchestrator, um Ylides Abschnitt in AGENTS.md zu aktualisieren."
     }
   },
   "network": {
@@ -532,6 +541,7 @@
     "file": "Datei {{index}} von {{count}}",
     "pause": "Download von {{name}} pausieren",
     "resume": "Download von {{name}} fortsetzen",
+    "retry": "Download von {{name}} erneut versuchen",
     "cancel": "Download von {{name}} abbrechen",
     "progressLabel": "Download-Fortschritt von {{name}}",
     "failed": "{{message}}"
@@ -589,6 +599,7 @@
     "plan": "{{placement}} · etwa {{tps}} tok/s · {{memory}}",
     "memVram": "{{value}} GiB VRAM",
     "memRam": "{{value}} GiB RAM",
+    "noFit": "Passt nicht auf diesen Rechner",
     "download": "Herunterladen",
     "downloadNamed": "{{name}} {{quant}} herunterladen",
     "downloadSize": "{{size}} GB herunterladen",

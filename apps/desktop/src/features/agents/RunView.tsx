@@ -1,4 +1,4 @@
-import { CircleCheck, CircleStop, CircleX, MessageCircleMore, Pause, Play, Plus, Square } from 'lucide-react';
+import { BookOpenText, CircleCheck, CircleStop, CircleX, CornerDownRight, MessageCircleMore, Pause, Play, Plus, Square } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { RunOutcome } from '../../bindings/RunOutcome';
@@ -8,9 +8,10 @@ import { Badge, Button, Segmented, Spinner } from '../../components/ui';
 import { ActivityFeed } from './ActivityFeed';
 import { AgentList } from './AgentList';
 import { Checkpoints } from './Checkpoints';
-import { useNow, useRoleName } from './hooks';
+import { openInEditor, useNow, useRoleName } from './hooks';
 import { ChangedFilesList } from './parts';
-import { changedFiles, currentTask, isGenerating, type RunData, type UserQuestion } from './run';
+import { NextStep } from './NextStep';
+import { changedFiles, currentTask, isGenerating, NOTES_FILE, notesUpdated, type ContinuedRun, type RunData, type UserQuestion } from './run';
 import s from './RunView.module.css';
 import { useAgentRun } from './store';
 import { TaskList } from './TaskList';
@@ -84,6 +85,7 @@ export function RunView({ pendingQuestions, onAnswer }: { pendingQuestions: User
         {tab === 'activity' && <ActivityFeed run={run} />}
         {tab === 'checkpoints' && <Checkpoints run={run} />}
       </div>
+      {finished && <NextStep run={run} />}
       <LiveRegion run={run} />
     </div>
   );
@@ -148,6 +150,7 @@ function RunHeader({ run }: { run: RunData }) {
 
   return (
     <header className={s.header}>
+      {run.continues && <Continues from={run.continues} />}
       <Goal text={run.goal} />
       <div className={s.controls}>
         <div className={s.state}>
@@ -210,6 +213,27 @@ function RunHeader({ run }: { run: RunData }) {
   );
 }
 
+/** The run this one continues; opens to show how it ended. */
+function Continues({ from }: { from: ContinuedRun }) {
+  const { t } = useTranslation('agents');
+  return (
+    <details className={s.continues}>
+      <summary className={s.continuesHead} title={from.goal}>
+        <CornerDownRight size={12} aria-hidden />
+        <span className={s.continuesLabel}>{t('run.continues')}</span>
+        <span className={s.continuesGoal}>{from.goal}</span>
+      </summary>
+      <div className={s.continuesBody}>
+        <span className={s.continuesOutcome}>
+          <OutcomeIcon outcome={from.outcome} size={12} />
+          {t(`outcome.${from.outcome}`)}
+        </span>
+        {from.summary?.trim() && <pre className={s.continuesSummary}>{from.summary.trim()}</pre>}
+      </div>
+    </details>
+  );
+}
+
 /** The goal, clamped to two lines; a click shows all of it. */
 function Goal({ text }: { text: string }) {
   const { t } = useTranslation('agents');
@@ -267,6 +291,15 @@ function Summary({ run }: { run: RunData }) {
         {run.finishedAt !== null && <span className={s.outcomeTime}>{formatClock(run.finishedAt - run.startedAt)}</span>}
       </div>
       {run.summary?.trim() && <pre className={s.summaryText}>{run.summary.trim()}</pre>}
+      {notesUpdated(run) && (
+        <div className={s.notes}>
+          <BookOpenText size={14} aria-hidden />
+          <span className={s.notesText}>{t('run.notesUpdated')}</span>
+          <Button size="sm" variant="ghost" onClick={() => openInEditor(NOTES_FILE)}>
+            {t('run.openNotes')}
+          </Button>
+        </div>
+      )}
       <div className={s.filesBlock}>
         <h3 className={s.subheading}>{t('run.changedFiles')}</h3>
         <ChangedFilesList files={files} />

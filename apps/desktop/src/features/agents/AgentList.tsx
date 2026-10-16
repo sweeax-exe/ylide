@@ -23,6 +23,7 @@ function useStepText() {
     if (text === 'plan ready') return t('steps.planReady');
     if (text === 'reviewing diff') return t('steps.reviewing');
     if (text === 'step limit reached') return t('steps.stepLimit');
+    if (text === 'updating project notes') return t('steps.notes');
     const answering = /^answering (\S+)$/.exec(text);
     if (answering) return t('steps.answering', { agent: roleName(answering[1]) });
     return text;

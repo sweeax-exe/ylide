@@ -14,10 +14,12 @@
     "privacy": "Privasi",
     "download": "Unduh",
     "home": "Ylide, halaman beranda",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "discord": "Gabung dengan komunitas Ylide di Discord",
+    "github": "Kode sumber Ylide di GitHub"
   },
   "hero": {
-    "title": "IDE AI yang tak pernah keluar dari komputer Anda.",
+    "title": "Tulis kode dengan AI yang tidak pernah keluar dari komputer Anda.",
     "lead": "Chat, edit inline, dan satu tim agen coding, semuanya ditenagai hanya oleh model yang berjalan di komputer Anda sendiri. Tanpa akun, tanpa cloud, tanpa langganan.",
     "download": "Unduh untuk Windows",
     "meta": "Versi {{version}} untuk Windows 10 dan 11, 64-bit, {{size}} MB. Open source, berlisensi Apache-2.0.",
@@ -98,7 +100,7 @@
   },
   "open": {
     "title": "Terbuka sampai baris terakhir.",
-    "body": "Ylide bersifat open source dengan lisensi Apache-2.0. Kode sumbernya akan segera tersedia di GitHub, sehingga Anda bisa membacanya, mengompilasinya sendiri, dan ikut mengembangkannya.",
+    "body": "Ylide bersifat open source dengan lisensi Apache-2.0. Kode sumber setiap rilis tersedia di GitHub, sehingga Anda bisa membacanya, mengompilasinya sendiri, dan ikut mengembangkannya.",
     "download": "Unduh Ylide {{version}}",
     "smartscreen": "Windows mungkin menampilkan peringatan saat pertama kali dijalankan karena penginstalnya belum ditandatangani secara komersial. Klik “Info selengkapnya”, lalu “Tetap jalankan”."
   },

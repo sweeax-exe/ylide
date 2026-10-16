@@ -32,6 +32,16 @@ pub const SERVER_BINARY: &str = "llama-server.exe";
 #[cfg(not(windows))]
 pub const SERVER_BINARY: &str = "llama-server";
 
+/// License texts of llama.cpp and the libraries its builds link in, which the release archives
+/// leave out. scripts/fetch-runtime.mjs checks them against the pinned release and writes them
+/// next to the bundled builds; downloaded builds get them on extraction.
+const RUNTIME_LICENSES: [(&str, &str); 4] = [
+    ("LICENSE-llama.cpp", include_str!("../licenses/LICENSE-llama.cpp")),
+    ("LICENSE-httplib", include_str!("../licenses/LICENSE-httplib")),
+    ("LICENSE-jsonhpp", include_str!("../licenses/LICENSE-jsonhpp")),
+    ("LICENSE-BoringSSL", include_str!("../licenses/LICENSE-BoringSSL")),
+];
+
 #[derive(Debug, Clone, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -359,6 +369,7 @@ impl RuntimeManager {
                 if !target_dir.join(SERVER_BINARY).exists() {
                     return Err(AppError::new("runtime_invalid", format!("{SERVER_BINARY} missing after extraction")));
                 }
+                write_runtime_licenses(&target_dir)?;
                 for a in &archives {
                     let _ = std::fs::remove_file(a);
                 }
@@ -967,6 +978,13 @@ pub fn extract_archive(archive: &Path, dest: &Path) -> AppResult<()> {
     }
 }
 
+fn write_runtime_licenses(dir: &Path) -> AppResult<()> {
+    for (name, text) in RUNTIME_LICENSES {
+        std::fs::write(dir.join(name), text)?;
+    }
+    Ok(())
+}
+
 /// If the server binary ended up in a single subfolder, move everything up.
 fn flatten_single_subdir(dir: &Path) -> AppResult<()> {
     if dir.join(SERVER_BINARY).exists() {
@@ -1293,6 +1311,16 @@ mod tests {
         assert!(out.join(SERVER_BINARY).exists());
         assert!(out.join("ggml.dll").exists());
         assert_eq!(subdirs_with_server(dir.path()).len(), 1);
+    }
+
+    #[test]
+    fn runtime_licenses_land_next_to_the_binaries() {
+        let dir = tempfile::tempdir().unwrap();
+        write_runtime_licenses(dir.path()).unwrap();
+        let llama = std::fs::read_to_string(dir.path().join("LICENSE-llama.cpp")).unwrap();
+        assert!(llama.starts_with("MIT License") && llama.contains("The ggml authors"));
+        assert!(std::fs::read_to_string(dir.path().join("LICENSE-BoringSSL")).unwrap().contains("Apache License"));
+        assert!(dir.path().join("LICENSE-httplib").exists() && dir.path().join("LICENSE-jsonhpp").exists());
     }
 
     #[test]

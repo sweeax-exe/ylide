@@ -7,11 +7,13 @@ use crate::runtime::ChatHandle;
 use crate::state::AppState;
 use agent::llm::ChatModel;
 use agent::permissions::{ApprovalBroker, ApprovalRequest, ApprovalResponse};
-use agent::{AgentEvent, CheckpointStore, RunContext, ScheduledModel, Team};
+use crate::last_run::{LastRun, record_change};
+use agent::{AgentEvent, CheckpointStore, FileChange, PreviousRun, RunContext, RunOutcome, ScheduledModel, Team};
 use async_trait::async_trait;
 use inference::{ChatRequest, ChatResult, Delta, LlmError, Priority};
 use registry::Model;
 use std::collections::HashMap;
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::ipc::Channel;
@@ -97,7 +99,22 @@ impl ChatModel for AgentModel {
 pub struct RunEntry {
     pub ctx: Arc<RunContext>,
     pub broker: Arc<UiBroker>,
-    pub finished: Mutex<bool>,
+    pub goal: String,
+    /// Requests of the runs this one continues, oldest first.
+    pub earlier_goals: Vec<String>,
+    /// Outcome and summary, recorded before the UI hears that the run ended.
+    pub ended: Arc<Mutex<Option<(RunOutcome, String)>>>,
+    /// File changes so far, without diffs, for the stored record.
+    pub changes: Arc<Mutex<Vec<FileChange>>>,
+}
+
+impl RunEntry {
+    /// What a run that continues this one is told about it; `None` while it still runs.
+    pub fn as_previous(&self) -> Option<PreviousRun> {
+        let (outcome, summary) = self.ended.lock().unwrap().clone()?;
+        let board = self.ctx.blackboard.lock().unwrap();
+        Some(PreviousRun::new(&self.goal, outcome, &summary, &board, self.earlier_goals.clone()))
+    }
 }
 
 #[derive(Default)]
@@ -139,6 +156,7 @@ fn team_for(state: &AppState, handle: &ChatHandle) -> Team {
         default_model: model("agent"),
         max_review_rounds: settings.agent.max_review_rounds,
         review_enabled: settings.agent.review_enabled,
+        update_notes: settings.agent.update_project_notes,
     }
 }
 
@@ -147,22 +165,36 @@ pub fn checkpoint_store(state: &AppState) -> AppResult<CheckpointStore> {
     Ok(CheckpointStore::new(state.paths.checkpoints_for(ws.root())))
 }
 
-/// Starts a run in the background and returns its id. Events stream over `channel`.
-pub async fn start(state: &AppState, goal: String, channel: Channel<AgentEvent>) -> AppResult<String> {
+/// Starts a run in the background and returns its id. Events stream over
+/// `channel`. With `previous_run`, the new run continues that finished run.
+pub async fn start(state: &AppState, goal: String, previous_run: Option<String>, channel: Channel<AgentEvent>) -> AppResult<String> {
     let handle = state
         .runtime
         .chat_handle()
         .await
         .ok_or_else(|| AppError::new("no_model", "start a model first"))?;
     let ws = state.workspace()?;
+    let previous = match previous_run {
+        Some(id) => Some(find_previous(state, ws.root(), &id)?),
+        None => None,
+    };
     let settings = state.settings();
-    let millis = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+    let millis = now_ms();
     let run_id = format!("run-{millis}");
     let broker = Arc::new(UiBroker::default());
     *broker.run_id.lock().unwrap() = run_id.clone();
+    let ended = Arc::new(Mutex::new(None));
+    let changes = Arc::new(Mutex::new(Vec::new()));
+    let (record_end, record_changes) = (ended.clone(), changes.clone());
     let emit: EventSink = Arc::new(move |e| {
+        match &e {
+            AgentEvent::RunFinished { outcome, summary, .. } => *record_end.lock().unwrap() = Some((*outcome, summary.clone())),
+            AgentEvent::ToolResult { change: Some(change), .. } => record_change(&mut record_changes.lock().unwrap(), change),
+            _ => {}
+        }
         let _ = channel.send(e);
     });
+    let project = ws.root().to_path_buf();
     *broker.events.lock().unwrap() = Some(emit.clone());
     let ctx = Arc::new(RunContext::new(
         run_id.clone(),
@@ -177,14 +209,53 @@ pub async fn start(state: &AppState, goal: String, channel: Channel<AgentEvent>)
     let entry = Arc::new(RunEntry {
         ctx: ctx.clone(),
         broker,
-        finished: Mutex::new(false),
+        goal: goal.clone(),
+        earlier_goals: previous.as_ref().map(PreviousRun::goal_chain).unwrap_or_default(),
+        ended,
+        changes,
     });
     state.agents.runs.lock().unwrap().insert(run_id.clone(), entry.clone());
     let team = team_for(state, &handle);
+    let last_runs = state.last_runs.clone();
+    let id = run_id.clone();
     tauri::async_runtime::spawn(async move {
-        let report = agent::run(ctx, &team, &goal).await;
+        let report = agent::run_with_previous(ctx, &team, &goal, previous.as_ref()).await;
         tracing::info!("agent run finished: {:?}", report.outcome);
-        *entry.finished.lock().unwrap() = true;
+        let record = LastRun {
+            run_id: id,
+            goal,
+            started_at_unix_ms: millis,
+            finished_at_unix_ms: now_ms(),
+            outcome: report.outcome,
+            summary: report.summary,
+            plan: report.plan,
+            changes: entry.changes.lock().unwrap().clone(),
+            earlier_goals: entry.earlier_goals.clone(),
+        };
+        if let Err(e) = last_runs.save(&project, &record) {
+            tracing::warn!("could not keep the agent run for later: {e}");
+        }
     });
     Ok(run_id)
+}
+
+/// The finished run `id` of this project: still in memory, or the project's
+/// stored last run after Ylide was restarted.
+fn find_previous(state: &AppState, project: &Path, id: &str) -> AppResult<PreviousRun> {
+    if let Ok(entry) = state.agents.get(id) {
+        if entry.ctx.ws.root() != project {
+            return Err(AppError::new("run_elsewhere", "the previous run belongs to another project"));
+        }
+        return entry.as_previous().ok_or_else(|| AppError::new("run_not_finished", id));
+    }
+    state
+        .last_runs
+        .load(project)
+        .filter(|r| r.run_id == id)
+        .map(|r| r.as_previous())
+        .ok_or_else(|| AppError::new("unknown_run", id))
+}
+
+fn now_ms() -> u64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as u64).unwrap_or(0)
 }

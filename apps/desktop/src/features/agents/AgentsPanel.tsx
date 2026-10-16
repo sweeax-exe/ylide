@@ -1,9 +1,10 @@
 // Agent mode: an orchestrator plans, a coder implements, a reviewer checks,
 // and the user watches (and steers) their world lines in this panel.
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SectionHeader } from '../../components/ui';
+import { useApp } from '../../state/app';
 import s from './AgentsPanel.module.css';
 import { ApprovalHost, QuestionDialog } from './ApprovalDialog';
 import { IdleView } from './IdleView';
@@ -23,6 +24,12 @@ export function AgentsPanel() {
   const later = useAgentRun((st) => st.deferred);
   const reopenQuestion = useAgentRun((st) => st.reopenQuestion);
   const deferred = useMemo(() => questions.filter((q) => later.has(q.id)), [questions, later]);
+  // The project's last run, also from before a restart, so it can be continued.
+  const project = useApp((st) => st.workspace?.root ?? null);
+  const loadLast = useAgentRun((st) => st.loadLast);
+  useEffect(() => {
+    void loadLast(project);
+  }, [project, loadLast]);
 
   return (
     <div className={s.panel}>

@@ -193,6 +193,11 @@
       "label": "タスクあたりのレビュー回数",
       "hint": "タスクが完了と見なされるまでに、レビュアーが変更を要求できる回数。"
     },
+    "notesTitle": "プロジェクトの知識",
+    "updateProjectNotes": {
+      "label": "プロジェクトの知識を AGENTS.md に記録する",
+      "hint": "実行のたびに、オーケストレーターはプロジェクトについて分かったこと（うまくいったコマンド、構成、規約、決定事項）を、プロジェクトフォルダーの AGENTS.md にある Ylide 専用のセクションに書き込みます。ファイル内のあなた自身の文章はそのまま残ります。エージェントとチャットは、ファイルがあれば常に読み込みます。"
+    },
     "shellTitle": "コマンド",
     "shellDescription": "run_command がプロジェクトフォルダーでコマンドを起動する方法。",
     "shellProgram": {
@@ -295,6 +300,10 @@
     "repeatedFailure": {
       "label": "失敗の繰り返し",
       "hint": "エージェントが失敗するツール呼び出しを繰り返したときに送信されます。フィールドはありません。"
+    },
+    "notes": {
+      "label": "プロジェクトの知識",
+      "hint": "実行後にオーケストレーターへ送られ、AGENTS.md の Ylide のセクションを更新します。"
     }
   },
   "network": {
@@ -529,6 +538,7 @@
     "file": "ファイル {{index}}/{{count}}",
     "pause": "{{name}} のダウンロードを一時停止",
     "resume": "{{name}} のダウンロードを再開",
+    "retry": "{{name}} のダウンロードを再試行",
     "cancel": "{{name}} のダウンロードをキャンセル",
     "progressLabel": "{{name}} のダウンロードの進行状況",
     "failed": "{{message}}"
@@ -584,6 +594,7 @@
     "plan": "{{placement}} · 約 {{tps}} tok/s · {{memory}}",
     "memVram": "VRAM {{value}} GiB",
     "memRam": "RAM {{value}} GiB",
+    "noFit": "このコンピューターには収まりません",
     "download": "ダウンロード",
     "downloadNamed": "{{name}} {{quant}} をダウンロード",
     "downloadSize": "{{size}} GB をダウンロード",

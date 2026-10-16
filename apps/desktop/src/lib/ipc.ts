@@ -21,6 +21,7 @@ import type { HardwareProfile } from '../bindings/HardwareProfile';
 import type { InlineEditRequest } from '../bindings/InlineEditRequest';
 import type { InlineEvent } from '../bindings/InlineEvent';
 import type { InstalledModel } from '../bindings/InstalledModel';
+import type { LastRun } from '../bindings/LastRun';
 import type { Mention } from '../bindings/Mention';
 import type { ModelSelection } from '../bindings/ModelSelection';
 import type { NetworkLogEntry } from '../bindings/NetworkLogEntry';
@@ -158,12 +159,16 @@ export const api = {
       call<void>('inline_edit', { request, onEvent: channel(onEvent) }),
   },
   agents: {
-    start: (goal: string, onEvent: (e: AgentEvent) => void) => call<string>('agent_start', { goal, onEvent: channel(onEvent) }),
+    /** With `previousRun`, the new run continues that finished run. */
+    start: (goal: string, onEvent: (e: AgentEvent) => void, previousRun: string | null = null) =>
+      call<string>('agent_start', { goal, previousRun, onEvent: channel(onEvent) }),
     approve: (runId: string, requestId: string, response: ApprovalResponse) =>
       call<boolean>('agent_approve', { runId, requestId, response }),
     answer: (runId: string, questionId: string, answer: string) => call<boolean>('agent_answer', { runId, questionId, answer }),
     control: (runId: string, action: 'pause' | 'resume' | 'cancel') => call<void>('agent_control', { runId, action }),
     intervene: (runId: string, agentId: string, text: string) => call<void>('agent_intervene', { runId, agentId, text }),
+    /** The open project's last run, kept across restarts. */
+    lastRun: () => call<LastRun | null>('agent_last_run'),
     checkpoints: (runId: string) => call<Checkpoint[]>('checkpoints_list', { runId }),
     restore: (runId: string, checkpointId: string) => call<string[]>('checkpoint_restore', { runId, checkpointId }),
   },

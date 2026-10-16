@@ -14,10 +14,12 @@
     "privacy": "Privacidade",
     "download": "Baixar",
     "home": "Ylide, página inicial",
-    "language": "Idioma"
+    "language": "Idioma",
+    "discord": "Entre na comunidade do Ylide no Discord",
+    "github": "O código-fonte do Ylide no GitHub"
   },
   "hero": {
-    "title": "A IDE com IA que nunca sai do seu computador.",
+    "title": "Programe com uma IA que nunca sai do seu computador.",
     "lead": "Chat, edições inline e uma equipe de agentes de código, movidos só por modelos que rodam no seu próprio computador. Sem conta, sem nuvem, sem assinatura.",
     "download": "Baixar para Windows",
     "meta": "Versão {{version}} para Windows 10 e 11, 64 bits, {{size}} MB. Código aberto sob a licença Apache-2.0.",
@@ -98,7 +100,7 @@
   },
   "open": {
     "title": "Aberto até a última linha.",
-    "body": "O Ylide é código aberto sob a licença Apache-2.0. O código-fonte estará no GitHub em breve, para você ler, compilar por conta própria e ajudar a desenvolver.",
+    "body": "O Ylide é código aberto sob a licença Apache-2.0. O código-fonte de cada versão está no GitHub, para você ler, compilar por conta própria e ajudar a desenvolver.",
     "download": "Baixar o Ylide {{version}}",
     "smartscreen": "O Windows pode exibir um aviso na primeira inicialização porque o instalador ainda não tem assinatura comercial. Clique em “Mais informações” e depois em “Executar assim mesmo”."
   },

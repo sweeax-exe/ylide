@@ -111,6 +111,11 @@ pub struct Recommendation {
     pub embedding: Option<Candidate>,
     /// Machine-level notices (no GPU, low disk, ...).
     pub notices: Vec<Reason>,
+    /// The best configuration of every variant for its model's main role, with
+    /// the whole machine to itself, including models that are never recommended:
+    /// what the catalog shows under "on this computer". A variant that does not
+    /// fit is missing.
+    pub fits: Vec<Candidate>,
 }
 
 /// Generation speed (tokens/s) a role needs to feel responsive.
@@ -222,9 +227,21 @@ fn best_configs<'r>(
 ) -> Vec<(Candidate, &'r Model)> {
     let mut out = Vec::new();
     for model in registry.models.iter().filter(|m| offered(m, role)) {
-        if role == Role::Agent && model.capabilities.tool_calling == ToolCalling::None {
-            continue;
-        }
+        configs_of(model, role, budget, allow_slow, per_variant, &mut out);
+    }
+    out.sort_by(|a, b| b.0.score.total_cmp(&a.0.score));
+    out
+}
+
+/// Adds the best configuration of `model` (or of each of its variants) for `role` to `out`.
+fn configs_of<'r>(model: &'r Model, role: Role, budget: &ComputeBudget, allow_slow: bool, per_variant: bool, out: &mut Vec<(Candidate, &'r Model)>) {
+    if role == Role::Agent && model.capabilities.tool_calling == ToolCalling::None {
+        return;
+    }
+    // Autocomplete must not be split between GPU and CPU; a variant too big for
+    // the GPU may still run on the CPU alone.
+    let cpu_only = ComputeBudget { vram_bytes: 0, unified: false, ..budget.clone() };
+    {
         let mut best: Option<Candidate> = None;
         for variant in &model.variants {
             if per_variant && let Some(c) = best.take() {
@@ -236,12 +253,14 @@ fn best_configs<'r>(
             }
             for context in context_options(model, role) {
                 for kv in [KvCacheType::F16, KvCacheType::Q8_0] {
-                    let Some(plan) = estimate::plan(model, variant, context, kv, budget) else {
-                        continue;
+                    let plan = match estimate::plan(model, variant, context, kv, budget) {
+                        Some(p) if placement_allowed(role, p.placement) => p,
+                        Some(_) => match estimate::plan(model, variant, context, kv, &cpu_only) {
+                            Some(p) if placement_allowed(role, p.placement) => p,
+                            _ => continue,
+                        },
+                        None => continue,
                     };
-                    if !placement_allowed(role, plan.placement) {
-                        continue;
-                    }
                     if !allow_slow && plan.est_tokens_per_sec < minimum_tps(role) {
                         continue;
                     }
@@ -263,8 +282,29 @@ fn best_configs<'r>(
             out.push((c, model));
         }
     }
-    out.sort_by(|a, b| b.0.score.total_cmp(&a.0.score));
-    out
+}
+
+/// The role a model is planned for in the catalog: the most demanding one it has.
+fn main_role(model: &Model) -> Option<Role> {
+    [Role::Agent, Role::Chat, Role::Fim, Role::Embedding]
+        .into_iter()
+        .find(|&r| model.has_role(r) && !(r == Role::Agent && model.capabilities.tool_calling == ToolCalling::None))
+}
+
+/// See [`Recommendation::fits`]. Slow configurations count, and free disk space
+/// does not: the catalog says that apart.
+fn variant_fits(registry: &Registry, budget: &ComputeBudget) -> Vec<Candidate> {
+    let budget = ComputeBudget { disk_free_bytes: None, ..budget.clone() };
+    // Like in `recommend`: embeddings stay off the GPU, which belongs to the main model.
+    let embed_budget = ComputeBudget { vram_bytes: 0, unified: false, ..budget.clone() };
+    let mut out = Vec::new();
+    for model in &registry.models {
+        if let Some(role) = main_role(model) {
+            let budget = if role == Role::Embedding { &embed_budget } else { &budget };
+            configs_of(model, role, budget, true, true, &mut out);
+        }
+    }
+    out.into_iter().map(|(c, _)| c).collect()
 }
 
 fn footprint(c: &Candidate) -> u64 {
@@ -495,6 +535,7 @@ pub fn recommend(registry: &Registry, hw: &HardwareProfile) -> Recommendation {
         }
     }
 
+    let fits = variant_fits(registry, &budget);
     Recommendation {
         budget,
         primary,
@@ -502,6 +543,7 @@ pub fn recommend(registry: &Registry, hw: &HardwareProfile) -> Recommendation {
         autocomplete,
         embedding,
         notices,
+        fits,
     }
 }
 
@@ -795,6 +837,42 @@ pub(crate) mod tests {
             }
             assert!(r.primary.is_some(), "{vram}/{ram}: the normal models still get recommended");
         }
+    }
+
+    #[test]
+    fn every_variant_that_fits_gets_an_estimate() {
+        let mut reg = test_registry();
+        let mut variant = reg.models[0].clone();
+        variant.id = "moe-30b-uncensored".into();
+        variant.uncensored = true;
+        reg.models.push(variant);
+        let mut hw = machine(16, 64);
+        hw.disk.as_mut().unwrap().free_bytes = GB; // Too little for any model: still estimated.
+        let r = recommend(&reg, &hw);
+        let fit = |id: &str, quant: &str| r.fits.iter().find(|c| c.model_id == id && c.quant == quant);
+        for m in &reg.models {
+            for v in &m.variants {
+                assert!(fit(&m.id, &v.quant).is_some(), "{} {} has no estimate", m.id, v.quant);
+            }
+        }
+        // Never recommended, but estimated like its original.
+        assert_eq!(fit("moe-30b-uncensored", "Q4_K_M").map(|c| c.plan.placement), fit("moe-30b", "Q4_K_M").map(|c| c.plan.placement));
+        // 63 GB of weights fit (slowly) in 64 GB of RAM, but not in 32 GB.
+        let small = recommend(&reg, &machine(16, 32));
+        assert!(small.fits.iter().all(|c| c.model_id != "big-moe-120b"));
+        // Chat-only models are planned for chat, autocomplete models for autocomplete.
+        assert!(fit("chat-only-14b", "Q4_K_M").is_some());
+        assert!(fit("fim-1.5b", "Q8_0").is_some());
+        // Embeddings are planned off the GPU, as recommended.
+        assert_eq!(fit("embed-0.6b", "Q8_0").map(|c| c.plan.vram_bytes), Some(0));
+    }
+
+    #[test]
+    fn autocomplete_too_big_for_the_gpu_runs_on_the_cpu() {
+        // 4.7 GB of weights do not fit next to the desktop on a 4 GB card, and autocomplete must not split.
+        let r = recommend(&test_registry(), &machine(4, 32));
+        let fim = r.fits.iter().find(|c| c.model_id == "fim-7b" && c.quant == "Q4_K_M").expect("estimated");
+        assert_eq!(fim.plan.placement, Placement::Cpu);
     }
 
     #[test]

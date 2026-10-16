@@ -1,4 +1,4 @@
-import { CircleCheck, CircleCheckBig, CircleStop, CircleX, Cpu, FolderOpen, Play, TriangleAlert } from 'lucide-react';
+import { CircleCheck, CircleCheckBig, CircleStop, CircleX, Cpu, FolderOpen, Play, StepForward, TriangleAlert } from 'lucide-react';
 import { useId, useMemo, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ApprovalMode } from '../../bindings/ApprovalMode';
@@ -10,9 +10,9 @@ import { useApp } from '../../state/app';
 import { useLayout } from '../../state/layout';
 import s from './IdleView.module.css';
 import { ChangedFilesList } from './parts';
-import { changedFiles, type RunData } from './run';
+import { changedFiles, openTaskCount, type RunData } from './run';
 import { useAgentRun } from './store';
-import { formatClock, formatTimeOfDay } from './text';
+import { formatClock, formatWhen } from './text';
 
 const MODES: ApprovalMode[] = ['ask', 'autoSafe', 'autonomous'];
 
@@ -185,6 +185,7 @@ function PreviousRun({ run }: { run: RunData }) {
   const showRun = useAgentRun((st) => st.showRun);
   const headingId = useId();
   const files = useMemo(() => changedFiles(run.changes), [run.changes]);
+  const open = openTaskCount(run);
   if (!run.outcome) return null;
   const tone = run.outcome === 'completed' ? 'success' : run.outcome === 'failed' ? 'danger' : 'neutral';
   const Icon = run.outcome === 'completed' ? CircleCheckBig : run.outcome === 'failed' ? CircleX : CircleStop;
@@ -200,15 +201,19 @@ function PreviousRun({ run }: { run: RunData }) {
         </Badge>
         {run.finishedAt !== null && (
           <span className={s.previousTime}>
-            {formatTimeOfDay(run.finishedAt, i18n.language)} · {formatClock(run.finishedAt - run.startedAt)}
+            {formatWhen(run.finishedAt, i18n.language)} · {formatClock(run.finishedAt - run.startedAt)}
           </span>
         )}
       </header>
       <p className={s.previousGoal}>{run.goal}</p>
       {run.summary?.trim() && <pre className={s.previousSummary}>{run.summary.trim()}</pre>}
       <ChangedFilesList files={files} />
-      <div>
-        <Button size="sm" variant="ghost" onClick={showRun}>
+      {open > 0 && <p className={s.previousOpen}>{t('idle.openTasks', { count: open })}</p>}
+      <div className={s.previousActions}>
+        <Button size="sm" variant="secondary" icon={<StepForward size={13} />} onClick={() => showRun(true)}>
+          {t('next.continue')}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => showRun()}>
           {t('idle.showRun')}
         </Button>
       </div>

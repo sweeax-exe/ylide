@@ -14,10 +14,12 @@
     "privacy": "Datenschutz",
     "download": "Herunterladen",
     "home": "Ylide, zur Startseite",
-    "language": "Sprache"
+    "language": "Sprache",
+    "discord": "Der Ylide-Community auf Discord beitreten",
+    "github": "Der Quellcode von Ylide auf GitHub"
   },
   "hero": {
-    "title": "Die KI-IDE, die deinen Rechner nie verlässt.",
+    "title": "Programmieren mit KI, die deinen Rechner nie verlässt.",
     "lead": "Chat, Inline-Edits und ein Team aus Coding-Agents, angetrieben nur von Modellen auf deinem eigenen Rechner. Kein Konto, keine Cloud, kein Abo.",
     "download": "Für Windows herunterladen",
     "meta": "Version {{version}} für Windows 10 und 11, 64 Bit, {{size}} MB. Open Source unter Apache-2.0.",
@@ -98,7 +100,7 @@
   },
   "open": {
     "title": "Offen bis zur letzten Zeile.",
-    "body": "Ylide ist Open Source unter der Apache-2.0-Lizenz. Der Quellcode erscheint bald auf GitHub, damit du ihn lesen, selbst bauen und mitentwickeln kannst.",
+    "body": "Ylide ist Open Source unter der Apache-2.0-Lizenz. Der Quellcode jeder Version liegt auf GitHub, damit du ihn lesen, selbst bauen und mitentwickeln kannst.",
     "download": "Ylide {{version}} herunterladen",
     "smartscreen": "Windows warnt beim ersten Start vielleicht, weil der Installer noch nicht kommerziell signiert ist. Klicke dann auf „Weitere Informationen“ und „Trotzdem ausführen“."
   },

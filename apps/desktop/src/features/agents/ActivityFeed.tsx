@@ -36,7 +36,7 @@ export function ActivityFeed({ run }: { run: RunData }) {
     }
     return ids;
   }, [run.feed]);
-  if (!run.feed.length) return <p className={s.empty}>{t('feed.empty')}</p>;
+  if (!run.feed.length) return <p className={s.empty}>{t(run.stored ? 'feed.stored' : 'feed.empty')}</p>;
 
   const hidden = Math.max(0, run.feed.length - limit);
   const items = hidden ? run.feed.slice(hidden) : run.feed;

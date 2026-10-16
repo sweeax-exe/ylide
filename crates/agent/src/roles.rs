@@ -83,6 +83,15 @@ pub struct PromptTemplates {
     #[serde(rename = "continue")]
     pub continue_: String,
     pub repeated_failure: String,
+    /// Asks the orchestrator for the new project notes after a run. Settings
+    /// saved before it existed get the default.
+    #[serde(default = "default_notes")]
+    pub notes: String,
+}
+
+fn default_notes() -> String {
+    // The bundled file has the field, so this never recurses.
+    PromptTemplates::default().notes
 }
 
 impl Default for PromptTemplates {
@@ -139,6 +148,17 @@ mod tests {
         assert!(!reviewer.tools.iter().any(|t| t == "edit_file" || t == "write_file"), "reviewer must not edit");
         let t = PromptTemplates::default();
         assert!(t.coder_task.contains("{task_title}"));
+        assert!(t.notes.contains("{notes}") && t.notes.contains("{max_lines}"));
+    }
+
+    #[test]
+    fn templates_saved_before_a_new_one_get_its_default() {
+        let mut saved = serde_json::to_value(PromptTemplates::default()).unwrap();
+        saved.as_object_mut().unwrap().remove("notes");
+        saved["planner"] = "My planner {goal}".into();
+        let t: PromptTemplates = serde_json::from_value(saved).unwrap();
+        assert_eq!(t.planner, "My planner {goal}");
+        assert_eq!(t.notes, PromptTemplates::default().notes);
     }
 
     #[test]

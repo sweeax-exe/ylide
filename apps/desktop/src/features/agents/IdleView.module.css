@@ -175,6 +175,18 @@
   overflow: hidden;
 }
 
+.previousOpen {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.previousActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .previousSummary {
   margin: 0;
   max-height: 180px;

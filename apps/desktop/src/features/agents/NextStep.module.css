@@ -1,0 +1,63 @@
+/* Stays below the tabs, so the next step can be typed from any of them; it
+   sticks to the bottom when the panel is too short for everything. */
+.next {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: none;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--border);
+  background: var(--bg-app);
+  animation: reveal var(--motion-base) var(--motion-ease);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.input {
+  min-height: 56px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px var(--space-2);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 180px;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  color: var(--text-3);
+}
+
+.blocked {
+  align-items: flex-start;
+  color: var(--text-1);
+}
+
+.blocked > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--warning);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}

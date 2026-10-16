@@ -1,0 +1,20 @@
+{
+  "name": "ylide-discord",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Sets up the Ylide Discord server and runs its ticket bot",
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "setup": "node --env-file=.env src/setup/run.js",
+    "start": "node --env-file=.env src/bot/main.js",
+    "test": "node --test test/*.test.js",
+    "art": "node art/render.mjs",
+    "deploy": "node deploy/deploy.mjs"
+  },
+  "dependencies": {
+    "discord.js": "14.27.0"
+  }
+}
