@@ -27,7 +27,7 @@ jobs:
           node-version: 20
       # tauri-build needs the bundled runtimes folder, so fetch it like a local
       # setup does (checksums from registry/models.json).
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: apps/desktop/src-tauri/resources/runtime
           key: runtime-${{ hashFiles('registry/models.json', 'scripts/fetch-runtime.mjs') }}
