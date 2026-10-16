@@ -22,7 +22,7 @@ jobs:
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
       # tauri-build needs the bundled runtimes folder, so fetch it like a local
@@ -53,7 +53,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
@@ -75,7 +75,7 @@ jobs:
         working-directory: .
         run: echo "present=$([ -f tools/discord/package-lock.json ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
       - if: steps.bot.outputs.present == 'yes'
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: npm
