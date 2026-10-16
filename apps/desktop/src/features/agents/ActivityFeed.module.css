@@ -1,0 +1,291 @@
+.empty {
+  margin: 0;
+  padding: var(--space-3) 0;
+  color: var(--text-3);
+}
+
+.earlier {
+  align-self: flex-start;
+  margin: var(--space-1) 0 var(--space-2);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.earlier:hover {
+  text-decoration: underline;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: var(--space-2);
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+
+.item:first-child {
+  border-top: none;
+}
+
+.time {
+  flex: none;
+  width: 4.2ch;
+  padding-top: 1px;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+  text-align: right;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-round);
+}
+
+.tool {
+  flex: none;
+  font-size: var(--text-xs);
+  color: var(--text-2);
+}
+
+.args {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  color: var(--text-3);
+}
+
+.taskRef {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.event {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.result {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  font-size: var(--text-sm);
+}
+
+.result > svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.resultText {
+  min-width: 0;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.ok > svg {
+  color: var(--success);
+}
+
+.fail > svg {
+  color: var(--danger);
+}
+
+.fail .resultText {
+  color: var(--text-1);
+}
+
+.pending .resultText {
+  color: var(--text-3);
+}
+
+.decision {
+  white-space: normal;
+  align-items: flex-start;
+}
+
+.decision > svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.decisionText {
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.reason {
+  margin: 0 0 0 19px;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+/* ---- file changes */
+.change {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.changeHead {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.changeToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 6px 0 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.changeToggle:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.chevron,
+.chevronOpen {
+  flex: none;
+  color: var(--text-3);
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats {
+  display: inline-flex;
+  gap: 6px;
+  flex: none;
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.add {
+  color: var(--success);
+}
+
+.del {
+  color: var(--danger);
+}
+
+.open {
+  flex: none;
+}
+
+/* ---- long text */
+.expandable {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.text {
+  margin: 0;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.more {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.more:hover {
+  text-decoration: underline;
+}

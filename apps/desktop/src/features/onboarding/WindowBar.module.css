@@ -1,0 +1,55 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--layout-title-bar);
+  padding-left: var(--space-4);
+  flex: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-app);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.name {
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-2);
+}
+
+.controls {
+  display: flex;
+  height: 100%;
+}
+
+.control {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+}
+
+.control:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.control:focus-visible {
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+.close:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}

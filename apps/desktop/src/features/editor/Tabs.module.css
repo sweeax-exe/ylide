@@ -1,0 +1,146 @@
+.strip {
+  display: flex;
+  flex: none;
+  height: 36px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-app);
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  max-width: 240px;
+  height: 100%;
+  padding: 0 var(--space-1) 0 var(--space-3);
+  border-right: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+}
+
+.tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.tab:focus-visible {
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+/* The active tab merges with the editor canvas and carries the accent line. */
+.active,
+.active:hover {
+  background: var(--bg-sunken);
+  color: var(--text-1);
+}
+
+.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--bg-sunken);
+}
+
+.icon {
+  flex: none;
+  color: var(--text-3);
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deleted .name {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+
+.hint {
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+}
+
+.close {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-chip);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--bg-active);
+  color: var(--text-1);
+}
+
+.x {
+  opacity: 0;
+}
+
+.tab:hover .x,
+.active .x {
+  opacity: 1;
+}
+
+.dot {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-round);
+  background: var(--text-2);
+  opacity: 0;
+}
+
+.dirty .dot {
+  opacity: 1;
+}
+
+.dirty .x {
+  opacity: 0;
+}
+
+.dirty .close:hover .dot,
+.dirty:hover .dot {
+  opacity: 0;
+}
+
+.dirty:hover .x {
+  opacity: 1;
+}

@@ -1,0 +1,124 @@
+{
+  "title": "チャット",
+  "newChat": "新しいチャット",
+  "newChatDialog": {
+    "title": "新しいチャットを始めますか？",
+    "body": "まだ回答を作成中です。新しいチャットを始めると回答は停止します。この会話は履歴に残ります。",
+    "bodyNotSaved": "まだ回答を作成中です。新しいチャットを始めると回答は停止し、この会話は消去されます。",
+    "confirm": "停止して新しいチャットを開始"
+  },
+  "header": {
+    "generating": "回答を作成中"
+  },
+  "start": {
+    "title": "プロジェクトについて質問しましょう",
+    "titleNoProject": "コードについて質問しましょう",
+    "body": "回答はこのコンピューター上のモデルが生成します。質問した内容がこのコンピューターの外に出ることはありません。",
+    "bodyExternal": "回答は設定で指定したサーバーから返されます。メッセージと添付したコンテキストはそのサーバーに送信されます。",
+    "examples": "例",
+    "mentionHint": "@ を入力すると、ファイル、フォルダー、シンボルを添付できます。その内容はメッセージと一緒に送信されます。",
+    "keys": "<0>Enter</0> で送信、<1>Shift</1> + <2>Enter</2> で改行します。"
+  },
+  "examples": {
+    "overview": "このプロジェクトの概要を説明し、どこから読み始めればよいか教えてください。",
+    "explain": "@ の仕組みを説明してください。",
+    "review": "選択したコードにバグや見落としているエッジケースがないか調べてください。",
+    "tests": "@ のユニットテストを書いてください。",
+    "error": "このエラーメッセージはどういう意味ですか？どうすれば直せますか？\n\n"
+  },
+  "messages": {
+    "label": "会話",
+    "you": "ユーザー",
+    "assistant": "回答",
+    "waiting": "モデルの応答を待っています",
+    "thinking": "思考中",
+    "thoughtFor": "思考時間: {{duration}}",
+    "thoughts": "思考内容",
+    "cancelled": "停止しました。この回答は不完全です。",
+    "empty": "モデルから空の回答が返されました。質問をもう一度送信するか、言い換えてください。",
+    "cutOff": "回答が長さの上限に達したため、途中で切れています。",
+    "copyAnswer": "回答をコピー",
+    "promptTokens": "プロンプト {{value}} トークン",
+    "cachedTokens": "キャッシュ {{value}}",
+    "timings": "プロンプトの読み込み {{prompt}}（{{promptSpeed}} tok/s）、回答の生成 {{generation}}。",
+    "jumpToLatest": "最新へ移動"
+  },
+  "context": {
+    "label": "添付したコンテキスト",
+    "truncated": "コンテキストの上限に収まるよう短縮しました。",
+    "error": "添付できませんでした: {{message}}"
+  },
+  "composer": {
+    "label": "メッセージ",
+    "placeholder": "コードについて質問",
+    "placeholderMentions": "コードについて質問（@ でファイルを添付）",
+    "addContext": "ファイル、フォルダー、シンボルを添付",
+    "attachSelection": "選択範囲を添付",
+    "attachSelectionTitle": "エディターから {{label}} を添付",
+    "noSelection": "添付するコードをエディターで選択してください。",
+    "removeMention": "{{label}} を削除",
+    "attached": "添付したコンテキスト",
+    "contextTotal": "{{tokens}} / {{budget}} トークン",
+    "contextTotalTitle": "添付したコンテキストの推定サイズです。上限は設定で変更できます。",
+    "contextTruncated": "上限に収まるよう、コンテキストの一部を短縮します。",
+    "contextUnknown": "サイズ不明",
+    "noProject": "ファイル、フォルダー、シンボルを添付するには、フォルダーを開いてください。",
+    "measuring": "添付したコンテキストを計測中"
+  },
+  "notice": {
+    "noModel": "モデルが実行されていません。メッセージを送信するにはモデルを起動してください。",
+    "loading": "{{model}} を読み込み中です。準備ができたら送信できます。",
+    "crashed": "モデルが予期せず停止しました。続けるには再起動してください。",
+    "openModels": "モデル画面を開く"
+  },
+  "picker": {
+    "label": "コンテキストを添付",
+    "files": "ファイル",
+    "folders": "フォルダー",
+    "symbols": "シンボル",
+    "root": "プロジェクト全体",
+    "empty": "「{{query}}」に一致するものはありません。",
+    "noFiles": "ファイルが見つかりません。",
+    "searching": "検索中",
+    "symbolsHint": "シンボルを検索するには 2 文字以上入力してください。",
+    "hint": "<0>↑</0> <1>↓</1> で選択、<2>Enter</2> で添付、<3>Esc</3> で閉じる"
+  },
+  "symbolKind": {
+    "function": "関数",
+    "class": "クラス",
+    "struct": "構造体",
+    "interface": "インターフェイス",
+    "enum": "列挙型",
+    "type": "型",
+    "constant": "定数",
+    "module": "モジュール"
+  },
+  "code": {
+    "copy": "コードをコピー",
+    "open": "{{name}} を開く",
+    "openTitle": "{{path}} をエディターで開く",
+    "plain": "テキスト"
+  },
+  "markdown": {
+    "openLink": "{{url}} をブラウザーで開く",
+    "image": "画像: {{alt}}",
+    "imageTitle": "画像は自動では読み込まれません。{{url}} をブラウザーで開いてください。"
+  },
+  "announce": {
+    "started": "回答を作成中",
+    "answer": "回答: {{text}}",
+    "stopped": "回答を停止しました"
+  },
+  "history": {
+    "open": "チャット履歴",
+    "title": "以前のチャット",
+    "empty": "このプロジェクトには、保存されたチャットはまだありません。",
+    "untitled": "質問のないチャット",
+    "delete": "チャットを削除",
+    "deleteTitle": "このチャットを削除しますか？",
+    "deleteBody": "「{{title}}」をこのコンピューターから削除します。",
+    "deleteConfirm": "削除",
+    "saveFailed": "チャットを履歴に保存できませんでした",
+    "messages_other": "{{count}} 件のメッセージ"
+  }
+}

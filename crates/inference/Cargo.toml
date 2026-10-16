@@ -1,0 +1,30 @@
+[package]
+name = "inference"
+description = "llama.cpp server management, OpenAI-compatible streaming client and request scheduling"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+futures-util = { workspace = true }
+getrandom = { workspace = true }
+hardware = { path = "../hardware" }
+hex = { workspace = true }
+process-wrap = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sysinfo = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["process", "io-util", "time", "macros", "rt", "sync", "net"] }
+tokio-util = { workspace = true }
+tracing = { workspace = true }
+ts-rs = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = ["Win32_System_Threading"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }

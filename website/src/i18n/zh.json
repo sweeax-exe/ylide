@@ -1,0 +1,111 @@
+{
+  "lang": "zh-Hans",
+  "langName": "简体中文",
+  "suggest": "用简体中文阅读本页",
+  "meta": {
+    "title": "Ylide：从不离开你电脑的 AI IDE",
+    "description": "聊天、行内编辑和编程智能体，全部由你自己电脑上的模型驱动。无需账号，无需云端，无需订阅。开源。",
+    "privacyTitle": "隐私：Ylide",
+    "imprintTitle": "法律声明：Ylide"
+  },
+  "nav": {
+    "label": "主导航",
+    "features": "功能",
+    "privacy": "隐私",
+    "download": "下载",
+    "home": "Ylide，返回首页",
+    "language": "语言"
+  },
+  "hero": {
+    "title": "AI IDE，从不离开你的电脑。",
+    "lead": "聊天、行内编辑，再加一支编程智能体团队，完全由你自己电脑上运行的模型驱动。无需账号，无需云端，无需订阅。",
+    "download": "下载 Windows 版",
+    "meta": "版本 {{version}}，适用于 64 位 Windows 10 和 11，大小 {{size}} MB。基于 Apache-2.0 许可开源。",
+    "tube": "你的电脑"
+  },
+  "showcase": {
+    "alt": "Ylide 编辑器，显示文件树、一个 JavaScript 文件和聊天面板",
+    "caption": "文件、编辑器和聊天都在一个窗口里。一切都在你的电脑上运行。"
+  },
+  "chat": {
+    "title": "问问你的项目。",
+    "body": "用 @ 附加文件、文件夹或符号。回答由你显卡上的模型逐字流式输出，你问的一切都留在本机。",
+    "question": "<code>@cart.js</code> 里的 applyDiscount 是做什么的？",
+    "answer": "它按百分比给每件商品打折，金额四舍五入到分。小于 0 或大于 100 的值会被拒绝，并抛出 <code>TypeError</code>。",
+    "stats": "每秒 75 个 token，就在这台电脑上",
+    "you": "你",
+    "model": "Qwen3.6 35B-A3B"
+  },
+  "inline": {
+    "title": "就地修改代码。",
+    "body": "选中代码，按 <kbd>Ctrl</kbd> <kbd>K</kbd>，描述要改成什么样。Ylide 以 diff 形式显示改动，由你决定接受还是放弃。",
+    "prompt": "严格比较 id",
+    "accept": "接受",
+    "reject": "放弃"
+  },
+  "agents": {
+    "title": "一支互相接力的团队。",
+    "body": "编排者负责规划，编码者负责编写，审查者负责检查。每一次交接，都是它们世界线的一次交汇。命令和删除操作只有在你批准后才会执行，每一步都可以通过检查点撤销。",
+    "legend": "角色",
+    "orchestrator": "编排者",
+    "coder": "编码者",
+    "reviewer": "审查者",
+    "stepsLabel": "一次智能体运行的过程",
+    "step1": "编排者读取项目，把请求拆成三个任务。",
+    "step2": "编码者修改 <code>cart.js</code> 并运行测试。",
+    "step3": "审查者检查 diff，并要求补一个空购物车的测试。",
+    "step4": "编码者补上测试。12 个测试全部通过。",
+    "step5": "审查者批准这项任务。所有改动在保留之前，你都会看到。",
+    "task": "任务"
+  },
+  "hardware": {
+    "title": "量身适配你的硬件。",
+    "body": "首次启动时，Ylide 会检测你的显卡、内存和处理器，并推荐能在上面流畅运行的最强模型。随后它会下载模型、校验文件并启动模型。"
+  },
+  "setup": {
+    "label": "五步完成 Ylide 设置",
+    "s1": "欢迎",
+    "s1b": "选择语言和主题。",
+    "s2": "扫描",
+    "s2b": "显卡、内存和处理器，五分之一秒内测完。",
+    "s3": "模型",
+    "s3b": "能在这台电脑上流畅运行的最强模型。",
+    "s4": "下载",
+    "s4b": "每个文件都会核对 SHA-256 校验和，随时可以暂停。",
+    "s5": "就绪",
+    "s5b": "聊天、编辑和智能体现在都在你的电脑上运行。",
+    "figure": "Ylide 设置过程截图",
+    "alt1": "欢迎步骤，可选择语言和主题",
+    "alt2": "硬件扫描，显示显卡、内存、处理器和磁盘",
+    "alt3": "模型推荐，显示速度、上下文和内存占用",
+    "alt4": "模型和 CUDA 加速组件的下载进度",
+    "alt5": "就绪界面，显示运行时、设备和键盘快捷键",
+    "note": "英文界面截图，截取自开发者的电脑。"
+  },
+  "privacy": {
+    "title": "通往外界的四扇门，全由你掌控。",
+    "body": "Ylide 不收集使用数据，无需登录，也从不上传你的代码。它只为以下四个用途联网。每一项都可以单独关闭，每个请求都会记录在网络日志中。",
+    "listLabel": "Ylide 仅有的几种网络连接",
+    "registry": "更新模型列表",
+    "registryHost": "ylide.app",
+    "models": "下载模型",
+    "modelsHost": "huggingface.co",
+    "runtimes": "下载运行时",
+    "runtimesHost": "github.com",
+    "updates": "检查更新",
+    "updatesHost": "ylide.app",
+    "on": "开启"
+  },
+  "open": {
+    "title": "每一行代码，都开源。",
+    "body": "Ylide 基于 Apache-2.0 许可证开源。源代码很快会发布到 GitHub 上，你可以阅读、自行构建，并参与开发。",
+    "download": "下载 Ylide {{version}}",
+    "smartscreen": "由于安装程序暂未进行商业签名，Windows 可能会在首次启动时发出警告。请点击“更多信息”，然后点击“仍要运行”。"
+  },
+  "footer": {
+    "copyright": "© 2026 Ylide contributors",
+    "privacy": "隐私",
+    "imprint": "法律声明",
+    "legal": "法律信息"
+  }
+}

@@ -1,0 +1,239 @@
+{
+  "title": "エージェント",
+  "roles": {
+    "orchestrator": "オーケストレーター",
+    "coder": "コーダー",
+    "reviewer": "レビュアー",
+    "user": "ユーザー"
+  },
+  "states": {
+    "idle": "待機中",
+    "queued": "順番待ち",
+    "thinking": "思考中",
+    "callingTool": "ツールを呼び出し中",
+    "waitingForApproval": "承認待ち",
+    "waitingForAnswer": "回答待ち",
+    "paused": "一時停止中",
+    "done": "完了",
+    "failed": "失敗"
+  },
+  "taskStatus": {
+    "pending": "未着手",
+    "inProgress": "進行中",
+    "inReview": "レビュー中",
+    "done": "完了",
+    "failed": "失敗",
+    "skipped": "スキップ"
+  },
+  "risk": {
+    "read": "読み取り",
+    "write": "書き込み",
+    "delete": "削除",
+    "execute": "実行",
+    "communicate": "連絡"
+  },
+  "severity": {
+    "blocker": "ブロッカー",
+    "major": "重大",
+    "minor": "軽微",
+    "nit": "細かい指摘"
+  },
+  "verdict": {
+    "approve": "承認済み",
+    "request_changes": "変更を要求"
+  },
+  "messageKind": {
+    "question": "質問",
+    "answer": "回答",
+    "feedback": "フィードバック",
+    "intervention": "ユーザーのメッセージ",
+    "note": "メモ"
+  },
+  "changeKind": {
+    "created": "新規ファイル",
+    "modified": "変更",
+    "deleted": "削除"
+  },
+  "outcome": {
+    "completed": "実行が完了しました",
+    "cancelled": "実行を停止しました",
+    "failed": "実行に失敗しました"
+  },
+  "steps": {
+    "planReady": "計画を作成しました",
+    "reviewing": "変更をレビュー中",
+    "stepLimit": "ステップ上限に達しました",
+    "answering": "{{agent}} に回答中"
+  },
+  "idle": {
+    "goalLabel": "エージェントに何を依頼しますか？",
+    "goalPlaceholder": "例: カートの合計金額を修正し、空のカートのテストを追加する",
+    "goalHint": "求める結果を記述してください。Ctrl+Enter で実行を開始します。",
+    "start": "エージェントを開始",
+    "readiness": "必要な条件",
+    "modelReady": "{{model}} を実行中",
+    "modelLoading": "{{model}} を読み込み中",
+    "noModel": "モデルが実行されていません。エージェントにはローカルモデルが必要です。",
+    "modelCrashed": "モデルが予期せず停止しました。モデル画面から再起動してください。",
+    "openModels": "モデル画面を開く",
+    "toolCallsFailed": "このモデルはツールを確実に呼び出せないため、エージェントが途中で止まることがあります。より高性能なモデルのほうが適しています。",
+    "project": "{{name}} で作業します",
+    "noProject": "フォルダーが開かれていません。エージェントには作業対象のプロジェクトが必要です。",
+    "previous": "前回の実行",
+    "showRun": "詳細を表示"
+  },
+  "mode": {
+    "label": "承認",
+    "ask": "毎回確認",
+    "autoSafe": "安全な操作",
+    "autonomous": "自律",
+    "askHint": "エージェントはプロジェクトを自由に読み取りますが、変更、削除、コマンドはすべて、クリックで承認されるまで待機します。",
+    "autoSafeHint": "読み取りと元に戻せる編集は自動で実行し、コマンドと削除は事前に確認します。",
+    "autonomousHint": "下の 2 つのスイッチで保護されている操作を除き、すべて自動で実行します。",
+    "allowedCommands_other": "許可された {{count}} 個のコマンドは確認なしで実行されます。",
+    "confirmCommands": "コマンドの実行前に確認",
+    "confirmDeletes": "ファイルの削除前に確認",
+    "unguardedCommands": "エージェントは確認なしでコマンドを実行します。その影響は元に戻せません。",
+    "unguardedDeletes": "エージェントは確認なしでファイルを削除します。削除したファイルはチェックポイントから復元できます。",
+    "unguardedBoth": "エージェントは確認なしでコマンドを実行し、ファイルを削除します。コマンドの影響は元に戻せません。"
+  },
+  "run": {
+    "elapsed": "経過時間",
+    "expandGoal": "目標全体を表示",
+    "collapseGoal": "折りたたむ",
+    "starting": "開始中",
+    "planning": "計画中",
+    "progress": "タスク {{index}}/{{total}}",
+    "wrappingUp": "仕上げ中",
+    "paused": "一時停止中",
+    "stopping": "停止中",
+    "pause": "一時停止",
+    "resume": "再開",
+    "stop": "停止",
+    "stopTitle": "実行を停止しますか？",
+    "stopBody": "エージェントはすぐに停止します。ここまでの変更はそのまま残り、チェックポイントから元に戻せます。",
+    "stopConfirm": "実行を停止",
+    "newRun": "新しい実行",
+    "questionWaiting": "{{agent}} が回答を待っています。",
+    "answer": "回答する",
+    "tabs": "実行の詳細",
+    "tabSummary": "概要",
+    "tabTasks": "タスク",
+    "tabTasksCount": "タスク {{done}}/{{total}}",
+    "tabActivity": "アクティビティ",
+    "tabCheckpoints": "チェックポイント",
+    "tabCheckpointsCount": "チェックポイント {{value}}",
+    "changedFiles": "変更されたファイル",
+    "noChanges": "変更されたファイルはありません。"
+  },
+  "lines": {
+    "label": "エージェントの世界線",
+    "summaryEmpty": "実行を開始しています。",
+    "summaryPlanning": "オーケストレーターが計画中です。",
+    "summaryTask": "タスク {{id}}/{{total}}、{{title}}: {{status}}。",
+    "summaryTasks": "{{total}} 件中 {{done}} 件のタスクが完了しました。",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "エージェント",
+    "waiting": "アクティブなエージェントはまだありません。",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "生成速度",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "この実行で生成されたトークン数",
+    "intervene": "介入",
+    "intervenePlaceholder": "{{agent}} へのメッセージ",
+    "interveneSent": "送信しました。{{agent}} は次のステップの前にこれを読みます。"
+  },
+  "tasks": {
+    "planning": "オーケストレーターがタスクを計画中です。",
+    "noPlan": "計画は作成されませんでした。",
+    "plan": "計画:",
+    "rounds_other": "レビュー {{count}} 回",
+    "showDetails": "{{id}} の詳細を表示",
+    "hideDetails": "{{id}} の詳細を非表示",
+    "files": "対象予定のファイル",
+    "general": "全般",
+    "openAt": "{{location}} を開く"
+  },
+  "feed": {
+    "empty": "まだ何も起きていません。",
+    "to": "から",
+    "ok": "成功",
+    "failed": "失敗",
+    "running": "実行中",
+    "awaitingApproval": "承認待ち",
+    "rejected": "ユーザーが拒否しました",
+    "rejectedReason": "ユーザーが拒否しました: {{reason}}",
+    "plan_other": "{{count}} 件のタスクからなる計画",
+    "approved": "承認しました: {{title}}",
+    "approvedAlways": "{{title}} を承認し、この実行の終了まで `{{tool}}` を許可しました",
+    "rejectedAction": "拒否しました: {{title}}",
+    "reason": "理由: {{reason}}",
+    "openFile": "ファイルを開く",
+    "openPath": "{{path}} を開く",
+    "showDiff": "{{path}} の変更を表示",
+    "hideDiff": "{{path}} の変更を非表示",
+    "showMore": "さらに表示",
+    "showLess": "折りたたむ",
+    "earlier_other": "以前のエントリーを {{count}} 件表示"
+  },
+  "diff": {
+    "label": "{{path}} の変更",
+    "showAll": "全 {{total}} 行を表示",
+    "empty": "表示する変更はありません。"
+  },
+  "checkpoints": {
+    "empty": "チェックポイントはタスクの開始時に作成されます。エージェントによる変更を元に戻すのに使えます。",
+    "intro": "Ylide は各タスクの前に、エージェントが手を加えるすべてのファイルのコピーを保存します。",
+    "undo": "ここ以降を元に戻す",
+    "undone": "元に戻しました",
+    "busyHint": "変更を元に戻すには、実行を一時停止または停止してください。",
+    "confirmTitle": "ここ以降を元に戻しますか？",
+    "confirmBody": "「{{label}}」以降にエージェントが行った変更をすべて取り消します。ファイルはこのステップの前の状態に戻ります。",
+    "confirmWarning": "インストールされたパッケージやプロジェクト外に作成されたファイルなど、シェルコマンドの影響は元に戻せません。",
+    "confirm": "変更を元に戻す",
+    "restored_other": "{{count}} 個のファイルを復元しました",
+    "restoredMore": "{{files}} ほか {{more}} 個",
+    "nothing": "復元するものはありませんでした。"
+  },
+  "approval": {
+    "titleWrite": "{{agent}} がファイルの変更を求めています",
+    "titleDelete": "{{agent}} がファイルの削除を求めています",
+    "titleExecute": "{{agent}} がコマンドの実行を求めています",
+    "titleOther": "{{agent}} が許可を求めています",
+    "changes": "変更内容",
+    "command": "コマンド",
+    "path": "パス",
+    "detail": "詳細",
+    "undoable": "これは後でチェックポイントから元に戻せます。",
+    "notUndoable": "コマンドはプロジェクトのファイル以外にも変更を加えることがあります。その影響は元に戻せません。",
+    "approve": "承認",
+    "approveAlways": "この実行中は常に承認",
+    "approveAlwaysHint": "「この実行中は常に承認」を選ぶと、実行が終わるまでエージェントは確認なしで {{tool}} を使えます。",
+    "reject": "拒否",
+    "reasonLabel": "理由（任意）",
+    "reasonHint": "エージェントはこれを読み、別の方法を選びます。",
+    "reasonPlaceholder": "例: 代わりに npm run test:unit でテストを実行する",
+    "queue_other": "ほかに {{count}} 件のリクエストが待機中"
+  },
+  "question": {
+    "title": "{{agent}} から質問があります",
+    "answerLabel": "回答",
+    "hint": "Ctrl+Enter で回答を送信します。",
+    "later": "後で回答",
+    "send": "回答を送信"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "エージェントが承認を待っています。"
+  },
+  "errors": {
+    "start": "エージェントを開始できませんでした",
+    "approve": "判断を送信できませんでした",
+    "answer": "回答を送信できませんでした",
+    "intervene": "メッセージを送信できませんでした",
+    "restore": "変更を元に戻せませんでした",
+    "settings": "承認の設定を保存できませんでした"
+  }
+}

@@ -1,0 +1,682 @@
+{
+  "saved": "已保存",
+  "saveFailed": "无法保存该设置。",
+  "page": {
+    "title": "设置",
+    "intro": "Ylide 使用的所有选项和提示词都集中在这里。离开输入框时会保存更改。",
+    "loading": "正在加载设置",
+    "sectionsLabel": "{{page}} 的各个部分"
+  },
+  "units": {
+    "px": "px",
+    "times": "× 字号",
+    "spaces": "个空格",
+    "tokens": "token",
+    "rounds": "轮",
+    "seconds": "秒",
+    "characters": "个字符",
+    "slots": "个槽位",
+    "steps": "步"
+  },
+  "validation": {
+    "required": "请输入一个值。",
+    "notNumber": "请输入数字。",
+    "notInteger": "请输入整数。",
+    "tooSmall": "允许的最小值为 {{min}}。",
+    "tooLarge": "允许的最大值为 {{max}}。",
+    "url": "请输入以 http:// 或 https:// 开头的完整地址。"
+  },
+  "prompt": {
+    "isDefault": "默认",
+    "isChanged": "已修改",
+    "placeholders": "字段",
+    "insertPlaceholder": "插入字段",
+    "insertNamed": "在光标处插入 {{name}}",
+    "resetNamed": "将 {{name}} 恢复为默认值",
+    "size": "{{chars}} 个字符，约 {{tokens}} 个 token"
+  },
+  "general": {
+    "title": "常规",
+    "description": "Ylide 的语言和外观。",
+    "lookTitle": "语言和主题",
+    "language": {
+      "label": "语言",
+      "hint": "“跟随系统”使用操作系统的语言，当前为 {{language}}。",
+      "system": "跟随系统"
+    },
+    "theme": {
+      "label": "主题",
+      "hint": "“跟随系统”会随操作系统的浅色或深色模式切换。",
+      "dark": "深色",
+      "light": "浅色",
+      "system": "跟随系统"
+    },
+    "updates": {
+      "title": "版本和更新",
+      "version": "版本",
+      "versionValue": "Ylide {{version}}",
+      "label": "更新",
+      "check": "检查更新",
+      "install": "安装 Ylide {{version}}",
+      "openNetwork": "打开网络设置",
+      "notChecked": "Ylide 自启动以来尚未检查更新。",
+      "checking": "Ylide 正在检查更新。",
+      "upToDate": "Ylide 已是最新版本。",
+      "available": "Ylide {{version}} 现已可用。",
+      "disabled": "检查更新已在“网络和隐私”中关闭。",
+      "failed": "检查更新失败：{{message}}",
+      "installFailed": "更新未安装：{{message}}",
+      "preparing": "正在准备更新。",
+      "downloading": "正在下载更新：{{done}} / {{total}}",
+      "downloadingUnknown": "正在下载更新：{{done}}",
+      "handedOver": "安装程序正在运行。Ylide 会先关闭，然后重新启动。",
+      "progress": "进度",
+      "notes": "此版本的新内容",
+      "ready": "更新已下载并通过校验。安装时 Ylide 会重新启动。",
+      "installReady": "安装并重启"
+    }
+  },
+  "editor": {
+    "title": "编辑器",
+    "description": "代码在编辑器中的显示方式。",
+    "textTitle": "文本和布局",
+    "fontFamily": {
+      "label": "字体",
+      "hint": "CSS 字体列表。如果第一个字体未安装，则使用下一个。"
+    },
+    "fontSize": {
+      "label": "字号"
+    },
+    "lineHeight": {
+      "label": "行高",
+      "hint": "行与行之间的间距，以字号的倍数表示。"
+    },
+    "tabSize": {
+      "label": "制表符宽度",
+      "hint": "一个制表符占多少个空格。"
+    },
+    "wordWrap": {
+      "label": "自动换行",
+      "hint": "在编辑器边缘换行，而不是横向滚动。"
+    },
+    "minimap": {
+      "label": "显示缩略图",
+      "hint": "在右侧边缘显示整个文件的小型概览。"
+    },
+    "preview": "预览"
+  },
+  "chat": {
+    "title": "聊天和提示词",
+    "description": "模型在聊天和行内编辑中收到的指令。",
+    "chatTitle": "聊天",
+    "systemPrompt": {
+      "label": "聊天系统提示词",
+      "hint": "在每次聊天对话开始时发送，位于你的消息和附件之前。"
+    },
+    "contextBudget": {
+      "label": "附件的上下文预算",
+      "hint": "用 @ 附加的文件、文件夹和选中内容的上限，当前为 {{tokens}} 个 token。更大的附件会被缩短。"
+    },
+    "inlineTitle": "行内编辑",
+    "inlineDescription": "在你选中代码并按 Ctrl+K 时使用。",
+    "inlinePrompt": {
+      "label": "行内编辑提示词",
+      "hint": "与选中的代码、周围的代码行和你的指令一起发送。"
+    },
+    "history": {
+      "label": "保存聊天",
+      "hint": "将每个项目的聊天保存在这台电脑上 Ylide 的数据文件夹中，方便你再次打开。聊天不会被发送到任何地方。"
+    },
+    "deleteAll": {
+      "label": "已保存的聊天",
+      "hint": "从这台电脑上删除所有项目的已保存聊天。",
+      "button": "删除所有聊天",
+      "confirmTitle": "删除所有已保存的聊天？",
+      "confirmBody": "所有项目的已保存聊天都将从这台电脑上删除。此操作无法撤销。",
+      "confirm": "全部删除",
+      "done": "已删除保存的聊天"
+    }
+  },
+  "agents": {
+    "title": "智能体",
+    "description": "智能体无需询问可以做什么、如何运行命令，以及它们使用的角色和消息。",
+    "approvalsTitle": "批准设置",
+    "approvalsDescription": "智能体始终会自行读取。这些设置决定它们何时需要你批准更改。",
+    "mode": {
+      "label": "批准模式",
+      "ask": {
+        "title": "先询问",
+        "body": "每次编辑、删除和命令都要等待你的批准。"
+      },
+      "autoSafe": {
+        "title": "安全步骤",
+        "body": "编辑自动运行，可通过检查点撤销。删除和命令总是先询问，允许的命令除外。"
+      },
+      "autonomous": {
+        "title": "自主",
+        "body": "所有操作都自动运行，下方两个开关留给你批准的操作除外。"
+      }
+    },
+    "onlyAutonomous": "仅在自主模式下生效。“先询问”和“安全步骤”在删除和运行命令前总是会询问。",
+    "confirmCommands": {
+      "label": "确认命令",
+      "hint": "智能体运行不在下方允许列表中的命令前先询问。",
+      "off": "智能体可以不经询问运行任何命令。会破坏项目外数据的命令仍会被阻止。"
+    },
+    "confirmDeletes": {
+      "label": "确认删除",
+      "hint": "智能体删除文件或文件夹前先询问。",
+      "off": "智能体可以不经询问删除文件。你可以从检查点恢复它们。"
+    },
+    "commands": {
+      "title": "允许的命令",
+      "description": "命令以下列任一前缀开头时，无需询问即可运行，例如 cargo test 也允许 cargo test --release。使用 &&、||、;、|、`、$(、> 或 < 进行串联或重定向的命令总是会先询问，即使它以允许的前缀开头。",
+      "askMode": "在“先询问”模式下，允许的命令也要等待你的批准。",
+      "empty": "尚未允许任何命令。智能体在每条命令前都会询问。",
+      "alsoMatches": "也允许 {{example}}",
+      "remove": "移除 {{prefix}}",
+      "newLabel": "新命令前缀",
+      "placeholder": "npm test",
+      "add": "添加",
+      "problem": {
+        "chaining": "前缀不能包含 &&、||、;、|、`、$(、> 或 <。",
+        "duplicate": "此前缀已在列表中。",
+        "empty": "请输入命令前缀。"
+      }
+    },
+    "reviewTitle": "审查",
+    "reviewEnabled": {
+      "label": "审查每个任务",
+      "hint": "审查者检查每个已完成任务的更改，并可将任务退回给编码者。"
+    },
+    "maxReviewRounds": {
+      "label": "每个任务的审查轮数",
+      "hint": "在任务被视为完成之前，审查者最多可以要求修改的次数。"
+    },
+    "shellTitle": "命令",
+    "shellDescription": "run_command 如何在项目文件夹中启动命令。",
+    "shellProgram": {
+      "label": "Shell 程序",
+      "hint": "例如 powershell.exe、cmd.exe、bash 或 zsh。"
+    },
+    "shellArgs": {
+      "label": "Shell 参数",
+      "hint": "每行一个参数，放在命令之前。"
+    },
+    "shellTimeout": {
+      "label": "默认时间限制",
+      "hint": "运行时间超过此限制的命令会被停止。智能体可以为单条命令申请更长的时限。"
+    },
+    "shellOutput": {
+      "label": "输出上限",
+      "hint": "超出上限的输出会先从中间截短，再交给智能体。"
+    }
+  },
+  "roles": {
+    "title": "角色",
+    "description": "每个智能体都以某个角色工作：角色决定它的系统提示词、可使用的工具以及最多可执行的步数。",
+    "add": "添加角色",
+    "builtin": "内置",
+    "custom": "自定义",
+    "noDescription": "无描述",
+    "toolCount_other": "{{count}} 个工具",
+    "stepCount_other": "{{count}} 步",
+    "name": "名称",
+    "namePlaceholder": "测试编写者",
+    "id": "ID",
+    "idHint": "用于计划以及智能体之间互相询问。可使用小写字母、数字、- 和 _。",
+    "idProblem": {
+      "empty": "请输入 ID。",
+      "format": "以小写字母开头；只能使用小写字母、数字、- 和 _（最多 32 个字符）。",
+      "taken": "已有其他角色使用此 ID。"
+    },
+    "descriptionLabel": "描述",
+    "descriptionHint": "编排者会读取此描述，以决定将任务分配给哪个角色。",
+    "systemPrompt": "系统提示词",
+    "systemPromptHint": "在此角色处理的每个任务开始时发送。",
+    "tools": "允许的工具",
+    "toolsHint": "该角色只能调用已勾选的工具。写入、删除和命令仍遵循上面的批准设置。",
+    "unknownTools": "也已允许，但此版本无法识别：{{tools}}",
+    "risk": {
+      "read": "读取项目",
+      "write": "修改文件",
+      "delete": "删除文件",
+      "execute": "运行命令",
+      "communicate": "交流和汇报"
+    },
+    "temperature": "温度",
+    "temperatureHint": "值越高，回答越多样。留空则使用模型推荐的值。",
+    "modelDefault": "模型默认值",
+    "maxSteps": "步数上限",
+    "maxStepsHint": "每个任务最多允许的模型轮次。达到上限时任务会停止。",
+    "builtinHint": "内置角色可以修改和重置，但不能删除。",
+    "customHint": "编排者可以为自定义角色分配任务。",
+    "reset": "将角色恢复为默认",
+    "delete": "删除角色",
+    "deleteTitle": "删除角色 {{name}}？",
+    "deleteBody": "将任务分配给 {{id}} 的计划将无法再使用它。此操作无法撤销。",
+    "addTitle": "添加角色",
+    "startFrom": "基于",
+    "startFromHint": "复制系统提示词、工具和限制，之后你可以修改。",
+    "startBlank": "仅含读取工具的空白角色",
+    "startCopy": "{{name}} 的副本",
+    "create": "创建角色"
+  },
+  "templates": {
+    "title": "消息模板",
+    "description": "运行期间由 Ylide 自动发送给智能体的消息。花括号中的字段会自动填充；可用按钮插入字段。",
+    "resetAll": "重置所有模板",
+    "unknown": "未填充，按原文发送：{{names}}",
+    "missing": "未使用：{{names}}",
+    "planner": {
+      "label": "规划请求",
+      "hint": "与你的请求、可用的角色和项目结构一起发送给编排者。"
+    },
+    "coderTask": {
+      "label": "编码者的任务",
+      "hint": "发送给处理任务的角色，并附带团队的进度。"
+    },
+    "reviewerTask": {
+      "label": "审查请求",
+      "hint": "与编码者的总结以及以 diff 形式呈现的更改一起发送给审查者。"
+    },
+    "feedback": {
+      "label": "要求的修改",
+      "hint": "当审查者要求修改时，发回给编码者。"
+    },
+    "question": {
+      "label": "来自其他智能体的问题",
+      "hint": "当一个智能体向另一个智能体求助时发送。"
+    },
+    "continue": {
+      "label": "继续",
+      "hint": "当模型以文本回答而不是调用工具时发送。没有字段。"
+    },
+    "repeatedFailure": {
+      "label": "重复失败",
+      "hint": "当智能体重复同一个失败的工具调用时发送。没有字段。"
+    }
+  },
+  "network": {
+    "title": "网络和隐私",
+    "statementTitle": "没有遥测，没有账号。",
+    "statementBody": "Ylide 不收集使用数据，无需登录，也从不上传你的代码。它只为下面四种用途连接互联网，而且只在相应开关开启时才会连接。你的提示词和文件会发送给这台电脑上的模型，或发送给你在“高级”中设置的外部服务器。",
+    "allowedTitle": "允许的连接",
+    "allowedDescription": "关闭其中任意一项，Ylide 就不会发出相应的请求。",
+    "registry": {
+      "label": "模型列表更新",
+      "hint": "在启动时以及你手动刷新时，从下面的地址检查是否有更新的模型列表。"
+    },
+    "registryUrl": {
+      "label": "模型列表地址",
+      "hint": "下载模型列表的地址。列表列出了 Ylide 下载的模型文件和运行时程序及其校验和。官方地址上的列表必须带有 Ylide 的签名。其他地址上的列表如果旁边有签名文件（models.json.sig），会用 Ylide 的签名验证；没有则直接使用。"
+    },
+    "models": {
+      "label": "模型下载",
+      "hint": "在你开始下载时，从 Hugging Face（huggingface.co）下载模型文件。"
+    },
+    "runtimes": {
+      "label": "运行时下载",
+      "hint": "在你安装推理运行时（例如 CUDA 包）时，从 GitHub（github.com）下载该运行时。"
+    },
+    "logTitle": "网络日志",
+    "logDescription": "Ylide 自启动以来发出的每个请求。新请求发生时会显示在这里。",
+    "logLoading": "正在加载网络日志",
+    "logFailed": "无法加载网络日志：{{message}}",
+    "logEmpty": "还没有请求。自 Ylide 启动以来，没有任何数据离开这台电脑。",
+    "logTime": "时间",
+    "logPurpose": "用途",
+    "logUrl": "地址",
+    "logOutcome": "结果",
+    "updates": {
+      "label": "检查更新",
+      "hint": "启动时向 ylide.app 查询一次是否有新版本的 Ylide。只发送版本号。只有在你安装更新时才会下载更新本身。"
+    }
+  },
+  "advanced": {
+    "title": "高级",
+    "description": "存储、本地模型服务器、外部服务器以及 Ylide 使用的文件夹。",
+    "storageTitle": "模型存储",
+    "modelsDir": {
+      "label": "模型文件夹",
+      "hint": "下载和导入的模型存放在这里。",
+      "change": "更改文件夹",
+      "useDefault": "使用默认文件夹"
+    },
+    "serverTitle": "模型服务器",
+    "serverDescription": "llama-server 的选项，它负责在这台电脑上运行模型。",
+    "slots": {
+      "label": "并行请求",
+      "hint": "主模型可同时处理的请求数，例如一个智能体和聊天。各槽位共享上下文。"
+    },
+    "context": {
+      "label": "上下文大小",
+      "hint": "留空则使用该模型的推荐大小。",
+      "hintModel": "留空则使用 {{model}} 的推荐大小：{{tokens}} 个 token（最多 {{max}}）。",
+      "placeholder": "推荐值"
+    },
+    "runtime": {
+      "label": "运行时",
+      "hint": "由哪个已安装的 llama.cpp 构建来运行模型。",
+      "auto": "自动",
+      "autoCurrent": "自动（当前为 {{variant}}）",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}}（未安装）"
+    },
+    "extraArgs": {
+      "label": "额外的 llama-server 参数",
+      "hint": "每行一个参数，追加到命令行末尾。错误的参数可能导致模型无法启动。",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "启动时运行模型",
+      "hint": "Ylide 打开时启动所选模型。",
+      "hintModel": "Ylide 打开时启动 {{model}}。"
+    },
+    "appliesOnRestart": "对模型服务器的更改会在下次启动模型时生效。",
+    "restart": "重启模型"
+  },
+  "endpoint": {
+    "title": "外部服务器",
+    "description": "使用兼容 OpenAI 的服务器（例如 Ollama、LM Studio 或其他 llama-server）代替内置运行时。之后你的提示词和代码会发送到该地址。",
+    "enabled": {
+      "label": "使用外部服务器",
+      "hint": "聊天、行内编辑和智能体使用此服务器，而不是本地模型。"
+    },
+    "baseUrl": {
+      "label": "地址",
+      "hint": "API 的基础 URL，通常以 /v1 结尾。"
+    },
+    "apiKey": {
+      "label": "API 密钥",
+      "hint": "可选。存储在这台电脑上的设置文件中，只发送给此服务器。",
+      "placeholder": "无",
+      "show": "显示 API 密钥",
+      "hide": "隐藏 API 密钥"
+    },
+    "model": {
+      "label": "模型",
+      "hint": "服务器所需的模型名称。留空则使用服务器的默认模型。",
+      "placeholder": "服务器默认"
+    },
+    "context": {
+      "label": "上下文大小",
+      "hint": "外部模型的上下文窗口。留空则按 {{tokens}} 个 token 计算。"
+    },
+    "connect": "连接",
+    "connectHint": "“连接”会保存这些值并切换到外部服务器。",
+    "activeHint": "已连接到 {{model}}。",
+    "needUrl": "请先输入服务器地址。",
+    "connected": "已连接",
+    "connecting": "正在连接",
+    "unreachable": "无法连接"
+  },
+  "about": {
+    "title": "关于 Ylide",
+    "description": "版本以及 Ylide 在这台电脑上使用的文件夹。",
+    "loading": "正在加载应用信息",
+    "version": "版本",
+    "system": "系统",
+    "systemValue": "{{os}}，{{arch}}",
+    "configDir": "设置文件夹",
+    "dataDir": "数据文件夹",
+    "modelsDir": "模型文件夹",
+    "copyPath": "复制 {{name}} 的路径",
+    "logFile": "日志文件"
+  },
+  "modelsPage": {
+    "title": "模型",
+    "intro": "这台电脑上正在运行什么、安装了什么，以及你可以下载什么。所有模型都在本地运行。"
+  },
+  "active": {
+    "title": "当前模型",
+    "description": "在聊天中回答、改写代码并运行智能体的模型。",
+    "none": "没有运行中的模型",
+    "noneSelected": "已为聊天和智能体选择 {{model}} {{quant}}。启动它即可开始。",
+    "noneEndpoint": "外部服务器 {{url}} 已开启。连接后即可使用。",
+    "noneChoose": "从下方选择一个已安装的模型，或从模型目录下载一个。",
+    "startAgain": "重新启动",
+    "status": {
+      "starting": "正在启动服务器",
+      "loading": "正在将模型加载到内存",
+      "ready": "就绪",
+      "stopped": "已停止",
+      "crashed": "意外停止"
+    },
+    "exitCode": "退出码 {{code}}：{{message}}",
+    "runtime": "运行时",
+    "device": "设备",
+    "noDevice": "无",
+    "context": "上下文",
+    "contextValue": "{{tokens}} token",
+    "slots": "并行请求",
+    "toolCalls": "工具调用",
+    "tools": {
+      "unknown": {
+        "label": "未测试",
+        "body": "模型就绪后不久，Ylide 会测试工具调用。在此之前，智能体的工作可能不太可靠。"
+      },
+      "native": {
+        "label": "原生",
+        "body": "模型以标准格式返回工具调用，因此智能体可以可靠地工作。"
+      },
+      "repaired": {
+        "label": "已修复",
+        "body": "模型以文本形式写出工具调用，由 Ylide 进行转换。智能体可以工作，但偶尔某次调用可能需要重试。"
+      },
+      "failed": {
+        "label": "失败",
+        "body": "自检没有产生可用的工具调用。智能体可能无法使用此模型；聊天和行内编辑不受影响。"
+      }
+    },
+    "commandLine": "命令行",
+    "commandLineHint": "服务器的确切启动方式",
+    "copyCommand": "复制命令行",
+    "noCommand": "没有本地进程：Ylide 直接与外部服务器通信。",
+    "log": "服务器日志",
+    "logHint": "llama-server 的输出",
+    "logLoading": "正在加载服务器日志",
+    "logFailed": "无法加载服务器日志：{{message}}",
+    "logEmpty": "服务器还没有输出任何内容。"
+  },
+  "installed": {
+    "title": "已安装的模型",
+    "description": "这台电脑上的模型文件及其各自的用途。",
+    "import": "导入 GGUF 文件",
+    "imported": "已导入 {{name}}。",
+    "importFailed": "无法导入该文件。",
+    "emptyTitle": "还没有模型",
+    "emptyBody": "从下方的模型目录下载一个，或导入 GGUF 文件。",
+    "unknownQuant": "GGUF",
+    "active": "运行中",
+    "custom": "已导入",
+    "usedFor": {
+      "chat": "聊天和智能体",
+      "autocomplete": "自动补全",
+      "embedding": "代码搜索"
+    },
+    "use": {
+      "chat": "用于聊天和智能体",
+      "autocomplete": "用于自动补全",
+      "embedding": "用于代码搜索"
+    },
+    "start": "启动",
+    "size": "{{size}} GB",
+    "files_other": "{{count}} 个文件",
+    "delete": "删除 {{name}}",
+    "deleteTitle": "删除 {{name}}？",
+    "deleteBody": "模型文件（{{size}} GB）将从这台电脑上删除。",
+    "forgetBody": "Ylide 会从列表中移除此模型。文件保留在原处，不会删除任何内容。",
+    "deleteActive": "此模型正在运行，会先将其停止。",
+    "deleteAssigned": "如果它已被选用于聊天、自动补全或代码搜索，该选择会被清除。",
+    "deleteAgain": "你可以从模型目录重新下载它。"
+  },
+  "downloads": {
+    "title": "下载",
+    "description": "正在进行、已暂停和失败的下载。已暂停的下载会从中断处继续。",
+    "empty": "没有正在进行的下载。",
+    "state": {
+      "downloading": "正在下载",
+      "resuming": "正在恢复",
+      "verifying": "正在校验文件",
+      "paused": "已暂停",
+      "failed": "失败"
+    },
+    "amount": "{{done}} / {{total}} GB（{{percent}}%）",
+    "percent": "{{percent}}%",
+    "speed": "{{speed}}/s",
+    "remaining": "剩余 {{time}}",
+    "file": "第 {{index}} 个文件，共 {{count}} 个",
+    "pause": "暂停下载 {{name}}",
+    "resume": "继续下载 {{name}}",
+    "cancel": "取消下载 {{name}}",
+    "progressLabel": "{{name}} 的下载进度",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "模型目录",
+    "description_other": "Ylide 模型列表中的 {{count}} 个模型，均已检查可在本地使用。",
+    "filter": "按用途筛选",
+    "all": "全部",
+    "shown_other": "{{count}} 个模型",
+    "none": "列表中没有适用于此用途的模型。",
+    "model": "模型",
+    "parameters": "参数",
+    "paramsValue": "{{value}}B",
+    "activeValue": "{{value}}B 激活",
+    "paramsMoe": "总计 {{total}}B，每个 token 激活 {{active}}B（混合专家）",
+    "paramsDense": "{{total}}B（稠密）",
+    "maxContext": "最大上下文",
+    "toolCalling": "工具调用",
+    "license": "许可证",
+    "commercialYes": "允许商用",
+    "commercialCheck": "商用前请查看条款",
+    "readLicense": "阅读许可证",
+    "publisher": "发布方",
+    "released": "发布日期",
+    "context": "上下文",
+    "contextValue": "最大 {{max}}，推荐 {{recommended}}",
+    "reasoning": "思考",
+    "reasoningLevel": {
+      "none": "否",
+      "optional": "可选",
+      "always": "始终开启"
+    },
+    "roles": "适用于",
+    "source": "来源",
+    "modelCard": "模型卡",
+    "strengths": "优势",
+    "benchmarks": "基准测试",
+    "benchmark": "基准测试",
+    "score": "得分",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "测评方",
+    "selfReported": "发布方",
+    "independent": "独立机构",
+    "date": "日期",
+    "sourceLink": "来源",
+    "openSource": "打开 {{name}} 的来源",
+    "quantizations": "量化版本",
+    "quant": "量化",
+    "bits": "每权重位数",
+    "size": "下载大小",
+    "fit": "在这台电脑上",
+    "plan": "{{placement}} · 约 {{tps}} tok/s · {{memory}}",
+    "memVram": "{{value}} GiB 显存",
+    "memRam": "{{value}} GiB 内存",
+    "download": "下载",
+    "downloadNamed": "下载 {{name}} {{quant}}",
+    "downloadSize": "下载 {{size}} GB",
+    "downloadsOff": "模型下载已在“网络和隐私”中关闭。",
+    "downloadsOffNote": "模型下载已关闭。在“网络和隐私”中开启后，即可从模型目录下载。",
+    "openNetwork": "打开网络设置",
+    "noSpace": "磁盘可用空间不足（剩余 {{free}} GB）。",
+    "noSpaceShort": "磁盘空间不足",
+    "installedBadge": "已安装",
+    "downloadingBadge": "正在下载",
+    "mark": {
+      "primary": "推荐",
+      "autocomplete": "推荐用于自动补全",
+      "embedding": "推荐用于代码搜索"
+    },
+    "recTitle": "推荐用于这台电脑",
+    "recLoading": "正在为这台电脑匹配模型",
+    "recFailed": "无法计算推荐结果：{{message}}",
+    "recNone": "列表中没有很适合这台电脑的模型。",
+    "recPlan": "{{placement}} · 约 {{tps}} tok/s · {{context}} 上下文",
+    "budgetGpu": "{{gpu}}：可用 {{vram}} GiB 显存、{{ram}} GiB 内存",
+    "budgetUnified": "可用 {{memory}} GiB 统一内存",
+    "budgetCpu": "无 GPU：可用 {{ram}} GiB 内存",
+    "showEntry": "显示详情",
+    "alternatives": "备选",
+    "uncensored": {
+      "title": "无审查版本",
+      "note": "无审查版本由上方列表中的模型去除拒答训练而来。原版会拒绝的请求，它们也会回答。Ylide 从不自动选择它们，它们在编程和工具使用方面的表现也未经独立测评。",
+      "badge": "无审查",
+      "badgeHint": "已去除拒答训练。Ylide 从不自动选择此模型。"
+    },
+    "own": {
+      "title": "不在列表中？",
+      "body": "使用这台电脑上的任意 GGUF 模型文件。"
+    }
+  },
+  "runtimes": {
+    "title": "运行时",
+    "description": "运行模型的 llama.cpp 构建。除非你自己选择，否则 Ylide 会为你的硬件挑选最合适的一个。",
+    "loading": "正在检查已安装的运行时",
+    "loadFailed": "无法检查运行时：{{message}}",
+    "installed": "已安装的运行时",
+    "available": "可供下载",
+    "variant": "变体",
+    "backend": "后端",
+    "version": "版本",
+    "origin": "来源",
+    "size": "下载大小",
+    "action": "操作",
+    "bundled": "内置",
+    "downloaded": "已下载",
+    "selected": "已选择",
+    "inUse": "使用中",
+    "use": "使用此运行时",
+    "chooseAuto": "自动选择",
+    "fixed": "你选择了 {{variant}}。即使有更合适的运行时，Ylide 也会使用它。",
+    "noneInstalled": "未安装运行时。",
+    "recommended": "推荐",
+    "install": "安装",
+    "installNamed": "安装 {{variant}}",
+    "busy": "正在安装另一个运行时。",
+    "downloadsOff": "运行时下载已在“网络和隐私”中关闭。",
+    "extracting": "正在解压",
+    "percent": "{{percent}}%",
+    "progressLabel": "{{variant}} 的安装进度",
+    "failed": "无法安装 {{variant}}：{{message}}",
+    "done": "{{variant}} 已安装。",
+    "applyHint": "更换的运行时会在下次启动模型时生效。"
+  },
+  "registry": {
+    "title": "模型列表",
+    "description": "构建模型目录所依据的模型、量化版本和校验和列表。",
+    "version": "版本",
+    "updatedAt": "更新时间",
+    "origin": "来源",
+    "originName": {
+      "bundled": "内置",
+      "cache": "已保存",
+      "remote": "已下载"
+    },
+    "originHint": {
+      "bundled": "此版本 Ylide 自带的列表。",
+      "cache": "之前下载的较新列表。",
+      "remote": "在本次会话中下载。"
+    },
+    "models": "模型",
+    "url": "地址",
+    "refresh": "检查更新",
+    "refreshHint": "检查时只下载模型列表，不下载其他内容。",
+    "updated": "已更新到版本 {{version}}。",
+    "upToDate": "模型列表已是最新。",
+    "disabled": "模型列表更新已在“网络和隐私”中关闭。",
+    "disabledHint": "模型列表更新已关闭。",
+    "failed": "更新失败：{{message}}"
+  }
+}

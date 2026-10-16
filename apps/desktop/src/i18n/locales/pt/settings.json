@@ -1,0 +1,692 @@
+{
+  "saved": "Salvo",
+  "saveFailed": "Não foi possível salvar a configuração.",
+  "page": {
+    "title": "Configurações",
+    "intro": "Todas as opções e todos os prompts que o Ylide usa, em um só lugar. As alterações são salvas quando você sai de um campo.",
+    "loading": "Carregando configurações",
+    "sectionsLabel": "Seções de {{page}}"
+  },
+  "units": {
+    "px": "px",
+    "times": "× tamanho da fonte",
+    "spaces": "espaços",
+    "tokens": "tokens",
+    "rounds": "rodadas",
+    "seconds": "segundos",
+    "characters": "caracteres",
+    "slots": "slots",
+    "steps": "passos"
+  },
+  "validation": {
+    "required": "Digite um valor.",
+    "notNumber": "Digite um número.",
+    "notInteger": "Digite um número inteiro.",
+    "tooSmall": "O menor valor permitido é {{min}}.",
+    "tooLarge": "O maior valor permitido é {{max}}.",
+    "url": "Digite um endereço completo que comece com http:// ou https://."
+  },
+  "prompt": {
+    "isDefault": "Padrão",
+    "isChanged": "Alterado",
+    "placeholders": "Campos",
+    "insertPlaceholder": "Inserir um campo",
+    "insertNamed": "Inserir {{name}} no cursor",
+    "resetNamed": "Restaurar {{name}} para o padrão",
+    "size": "{{chars}} caracteres, cerca de {{tokens}} tokens"
+  },
+  "general": {
+    "title": "Geral",
+    "description": "Idioma e aparência do Ylide.",
+    "lookTitle": "Idioma e tema",
+    "language": {
+      "label": "Idioma",
+      "hint": "A opção Sistema usa o idioma do seu sistema operacional, atualmente {{language}}.",
+      "system": "Sistema"
+    },
+    "theme": {
+      "label": "Tema",
+      "hint": "A opção Sistema segue o modo claro ou escuro do seu sistema operacional.",
+      "dark": "Escuro",
+      "light": "Claro",
+      "system": "Sistema"
+    },
+    "updates": {
+      "title": "Versão e atualizações",
+      "version": "Versão",
+      "versionValue": "Ylide {{version}}",
+      "label": "Atualizações",
+      "check": "Verificar atualizações",
+      "install": "Instalar o Ylide {{version}}",
+      "openNetwork": "Abrir configurações de rede",
+      "notChecked": "O Ylide ainda não verificou se há atualizações desde que foi iniciado.",
+      "checking": "O Ylide está verificando se há atualizações.",
+      "upToDate": "O Ylide está atualizado.",
+      "available": "O Ylide {{version}} está disponível.",
+      "disabled": "A verificação de atualizações está desativada em Rede e privacidade.",
+      "failed": "A verificação de atualizações falhou: {{message}}",
+      "installFailed": "A atualização não foi instalada: {{message}}",
+      "preparing": "Preparando a atualização.",
+      "downloading": "Baixando a atualização: {{done}} de {{total}}",
+      "downloadingUnknown": "Baixando a atualização: {{done}}",
+      "handedOver": "O instalador está em execução. O Ylide será fechado e iniciado de novo.",
+      "progress": "Progresso",
+      "notes": "Novidades desta versão",
+      "ready": "A atualização foi baixada e verificada. Ao instalar, o Ylide reinicia.",
+      "installReady": "Instalar e reiniciar"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "description": "Como o código aparece no editor.",
+    "textTitle": "Texto e layout",
+    "fontFamily": {
+      "label": "Fonte",
+      "hint": "Uma lista de fontes CSS. Se a primeira fonte não estiver instalada, a próxima é usada."
+    },
+    "fontSize": {
+      "label": "Tamanho da fonte"
+    },
+    "lineHeight": {
+      "label": "Altura da linha",
+      "hint": "Espaço entre as linhas como múltiplo do tamanho da fonte."
+    },
+    "tabSize": {
+      "label": "Largura da tabulação",
+      "hint": "Quantos espaços um caractere de tabulação ocupa."
+    },
+    "wordWrap": {
+      "label": "Quebrar linhas longas",
+      "hint": "Quebra as linhas na borda do editor em vez de rolar para o lado."
+    },
+    "minimap": {
+      "label": "Mostrar minimapa",
+      "hint": "Uma pequena visão geral do arquivo inteiro na borda direita."
+    },
+    "preview": "Prévia"
+  },
+  "chat": {
+    "title": "Chat e prompts",
+    "description": "As instruções que o modelo recebe no chat e nas edições inline.",
+    "chatTitle": "Chat",
+    "systemPrompt": {
+      "label": "Prompt de sistema do chat",
+      "hint": "Enviado no início de cada conversa do chat, antes das suas mensagens e anexos."
+    },
+    "contextBudget": {
+      "label": "Limite de contexto para anexos",
+      "hint": "Limite máximo para arquivos, pastas e seleções anexados com @, atualmente {{tokens}} tokens. Anexos maiores são encurtados."
+    },
+    "inlineTitle": "Edição inline",
+    "inlineDescription": "Usado quando você seleciona código e pressiona Ctrl+K.",
+    "inlinePrompt": {
+      "label": "Prompt de edição inline",
+      "hint": "Enviado com o código selecionado, as linhas ao redor e a sua instrução."
+    },
+    "history": {
+      "label": "Salvar chats",
+      "hint": "Guarda os chats de cada projeto neste computador, na pasta de dados do Ylide, para que você possa abri-los de novo. Eles nunca são enviados a lugar nenhum."
+    },
+    "deleteAll": {
+      "label": "Chats salvos",
+      "hint": "Exclui deste computador os chats salvos de todos os projetos.",
+      "button": "Excluir todos os chats",
+      "confirmTitle": "Excluir todos os chats salvos?",
+      "confirmBody": "Os chats salvos de todos os projetos são excluídos deste computador. Isso não pode ser desfeito.",
+      "confirm": "Excluir tudo",
+      "done": "Chats salvos excluídos"
+    }
+  },
+  "agents": {
+    "title": "Agentes",
+    "description": "O que os agentes podem fazer sem perguntar, como executam comandos e com quais papéis e mensagens trabalham.",
+    "approvalsTitle": "Aprovações",
+    "approvalsDescription": "Os agentes sempre leem por conta própria. Estas configurações decidem quando eles precisam da sua aprovação para alterações.",
+    "mode": {
+      "label": "Modo de aprovação",
+      "ask": {
+        "title": "Perguntar antes",
+        "body": "Cada edição, exclusão e comando espera a sua aprovação."
+      },
+      "autoSafe": {
+        "title": "Passos seguros",
+        "body": "Edições rodam automaticamente e podem ser desfeitas com checkpoints. Exclusões e comandos sempre pedem aprovação antes, exceto os comandos permitidos."
+      },
+      "autonomous": {
+        "title": "Autônomo",
+        "body": "Tudo roda automaticamente, exceto o que as duas opções abaixo reservam para a sua aprovação."
+      }
+    },
+    "onlyAutonomous": "Só vale no modo “Autônomo”. “Perguntar antes” e “Passos seguros” sempre perguntam antes de exclusões e comandos.",
+    "confirmCommands": {
+      "label": "Confirmar comandos",
+      "hint": "Perguntar antes que um agente execute um comando que não esteja na lista de permitidos abaixo.",
+      "off": "Os agentes podem executar qualquer comando sem perguntar. Comandos que destroem dados fora do projeto continuam bloqueados."
+    },
+    "confirmDeletes": {
+      "label": "Confirmar exclusões",
+      "hint": "Perguntar antes que um agente exclua um arquivo ou pasta.",
+      "off": "Os agentes podem excluir arquivos sem perguntar. Você pode restaurá-los a partir de um checkpoint."
+    },
+    "commands": {
+      "title": "Comandos permitidos",
+      "description": "Um comando roda sem perguntar quando começa com um destes prefixos: cargo test também permite cargo test --release. Um comando que encadeia ou redireciona com &&, ||, ;, |, `, $(, > ou < sempre pede aprovação, mesmo quando começa com um prefixo permitido.",
+      "askMode": "No modo “Perguntar antes”, os comandos permitidos também esperam a sua aprovação.",
+      "empty": "Nenhum comando permitido ainda. Os agentes perguntam antes de cada comando.",
+      "alsoMatches": "também permite {{example}}",
+      "remove": "Remover {{prefix}}",
+      "newLabel": "Novo prefixo de comando",
+      "placeholder": "npm test",
+      "add": "Adicionar",
+      "problem": {
+        "chaining": "Um prefixo não pode conter &&, ||, ;, |, `, $(, > ou <.",
+        "duplicate": "Este prefixo já está na lista.",
+        "empty": "Digite um prefixo de comando."
+      }
+    },
+    "reviewTitle": "Revisão",
+    "reviewEnabled": {
+      "label": "Revisar cada tarefa",
+      "hint": "O revisor verifica as alterações de cada tarefa concluída e pode devolvê-la ao programador."
+    },
+    "maxReviewRounds": {
+      "label": "Rodadas de revisão por tarefa",
+      "hint": "Quantas vezes o revisor pode pedir alterações antes de a tarefa contar como concluída."
+    },
+    "shellTitle": "Comandos",
+    "shellDescription": "Como run_command inicia comandos na pasta do projeto.",
+    "shellProgram": {
+      "label": "Programa de shell",
+      "hint": "Por exemplo powershell.exe, cmd.exe, bash ou zsh."
+    },
+    "shellArgs": {
+      "label": "Argumentos do shell",
+      "hint": "Um argumento por linha. Eles vêm antes do comando."
+    },
+    "shellTimeout": {
+      "label": "Limite de tempo padrão",
+      "hint": "Um comando que roda por mais tempo é interrompido. Os agentes podem pedir um limite maior por comando."
+    },
+    "shellOutput": {
+      "label": "Limite de saída",
+      "hint": "Saídas mais longas são encurtadas no meio antes que o agente as veja."
+    }
+  },
+  "roles": {
+    "title": "Papéis",
+    "description": "Cada agente trabalha em um papel: o prompt de sistema dele, as ferramentas que pode usar e quantos passos pode dar.",
+    "add": "Adicionar papel",
+    "builtin": "Integrado",
+    "custom": "Personalizado",
+    "noDescription": "Sem descrição",
+    "toolCount_one": "{{count}} ferramenta",
+    "toolCount_many": "{{count}} ferramentas",
+    "toolCount_other": "{{count}} ferramentas",
+    "stepCount_one": "{{count}} passo",
+    "stepCount_many": "{{count}} passos",
+    "stepCount_other": "{{count}} passos",
+    "name": "Nome",
+    "namePlaceholder": "Autor de testes",
+    "id": "ID",
+    "idHint": "Usado nos planos e quando os agentes perguntam uns aos outros. Letras minúsculas, dígitos, - e _.",
+    "idProblem": {
+      "empty": "Digite um ID.",
+      "format": "Comece com uma letra minúscula; use só letras minúsculas, dígitos, - e _ (até 32).",
+      "taken": "Outro papel já usa este ID."
+    },
+    "descriptionLabel": "Descrição",
+    "descriptionHint": "O orquestrador lê isto para decidir qual papel recebe uma tarefa.",
+    "systemPrompt": "Prompt de sistema",
+    "systemPromptHint": "Enviado no início de cada tarefa em que este papel trabalha.",
+    "tools": "Ferramentas permitidas",
+    "toolsHint": "O papel só pode chamar as ferramentas marcadas. Escritas, exclusões e comandos continuam seguindo as configurações de aprovação acima.",
+    "unknownTools": "Também permitidas, mas desconhecidas nesta versão: {{tools}}",
+    "risk": {
+      "read": "Ler o projeto",
+      "write": "Alterar arquivos",
+      "delete": "Excluir arquivos",
+      "execute": "Executar comandos",
+      "communicate": "Conversar e relatar"
+    },
+    "temperature": "Temperatura",
+    "temperatureHint": "Valores mais altos geram respostas mais variadas. Deixe vazio para usar o valor recomendado pelo modelo.",
+    "modelDefault": "Padrão do modelo",
+    "maxSteps": "Limite de passos",
+    "maxStepsHint": "Máximo de turnos do modelo por tarefa. A tarefa para quando o limite é atingido.",
+    "builtinHint": "Papéis integrados podem ser alterados e restaurados, mas não excluídos.",
+    "customHint": "O orquestrador pode atribuir tarefas a papéis personalizados.",
+    "reset": "Restaurar papel para o padrão",
+    "delete": "Excluir papel",
+    "deleteTitle": "Excluir o papel {{name}}?",
+    "deleteBody": "Planos que atribuem tarefas a {{id}} não poderão mais usá-lo. Isso não pode ser desfeito.",
+    "addTitle": "Adicionar um papel",
+    "startFrom": "Basear em",
+    "startFromHint": "Copia o prompt de sistema, as ferramentas e os limites, que você pode alterar depois.",
+    "startBlank": "Papel vazio com ferramentas de leitura",
+    "startCopy": "Cópia de {{name}}",
+    "create": "Criar papel"
+  },
+  "templates": {
+    "title": "Templates de mensagem",
+    "description": "As mensagens que o próprio Ylide envia aos agentes durante uma execução. Campos entre chaves são preenchidos automaticamente; insira-os com os botões.",
+    "resetAll": "Restaurar todos os templates",
+    "unknown": "Não preenchidos, enviados como estão: {{names}}",
+    "missing": "Não usados: {{names}}",
+    "planner": {
+      "label": "Pedido de planejamento",
+      "hint": "Enviado ao orquestrador com a sua solicitação, os papéis disponíveis e a estrutura do projeto."
+    },
+    "coderTask": {
+      "label": "Tarefa para o programador",
+      "hint": "Enviada ao papel que trabalha em uma tarefa, com o progresso da equipe."
+    },
+    "reviewerTask": {
+      "label": "Pedido de revisão",
+      "hint": "Enviado ao revisor com o resumo do programador e as alterações como diff."
+    },
+    "feedback": {
+      "label": "Alterações solicitadas",
+      "hint": "Enviadas de volta ao programador quando o revisor solicita alterações."
+    },
+    "question": {
+      "label": "Pergunta de outro agente",
+      "hint": "Enviada quando um agente pede ajuda a outro."
+    },
+    "continue": {
+      "label": "Continuar",
+      "hint": "Mensagem enviada quando um modelo responde com texto em vez de chamar uma ferramenta. Não tem campos."
+    },
+    "repeatedFailure": {
+      "label": "Falha repetida",
+      "hint": "Mensagem enviada quando um agente repete a mesma chamada de ferramenta que falha. Não tem campos."
+    }
+  },
+  "network": {
+    "title": "Rede e privacidade",
+    "statementTitle": "Sem telemetria, sem contas.",
+    "statementBody": "O Ylide não coleta dados de uso, não tem login e nunca faz upload do seu código. Ele só se conecta à internet para as quatro finalidades abaixo, e apenas enquanto estiverem ativadas. Seus prompts e arquivos vão para o modelo neste computador ou para o servidor externo que você configurar em Avançado.",
+    "allowedTitle": "Conexões permitidas",
+    "allowedDescription": "Desative qualquer uma delas e o Ylide não fará essa solicitação.",
+    "registry": {
+      "label": "Atualizações da lista de modelos",
+      "hint": "Verifica se há uma lista de modelos mais recente ao iniciar e quando você a atualiza, no endereço abaixo."
+    },
+    "registryUrl": {
+      "label": "Endereço da lista de modelos",
+      "hint": "De onde a lista de modelos é baixada. Ela indica os arquivos de modelos e os programas de runtime que o Ylide baixa, com suas somas de verificação. A lista no endereço oficial precisa ser assinada pelo Ylide. Uma lista em outro endereço é conferida com a assinatura do Ylide quando há um arquivo de assinatura (models.json.sig) ao lado dela, e é usada como está quando não há."
+    },
+    "models": {
+      "label": "Downloads de modelos",
+      "hint": "Baixa arquivos de modelos do Hugging Face (huggingface.co) quando você inicia um download."
+    },
+    "runtimes": {
+      "label": "Downloads de runtimes",
+      "hint": "Baixa runtimes de inferência, como o pacote CUDA, do GitHub (github.com) quando você instala um."
+    },
+    "logTitle": "Registro de rede",
+    "logDescription": "Todas as solicitações que o Ylide fez desde que foi iniciado. Novas solicitações aparecem aqui assim que acontecem.",
+    "logLoading": "Carregando o registro de rede",
+    "logFailed": "Não foi possível carregar o registro de rede: {{message}}",
+    "logEmpty": "Nenhuma solicitação ainda. Nada saiu deste computador desde que o Ylide foi iniciado.",
+    "logTime": "Hora",
+    "logPurpose": "Finalidade",
+    "logUrl": "Endereço",
+    "logOutcome": "Resultado",
+    "updates": {
+      "label": "Verificar atualizações",
+      "hint": "Consulta o ylide.app uma vez, ao iniciar, para saber se existe uma versão mais nova do Ylide. Só o número da versão é enviado. A atualização em si só é baixada quando você a instala."
+    }
+  },
+  "advanced": {
+    "title": "Avançado",
+    "description": "Armazenamento, o servidor de modelo local, um servidor externo e as pastas que o Ylide usa.",
+    "storageTitle": "Armazenamento de modelos",
+    "modelsDir": {
+      "label": "Pasta de modelos",
+      "hint": "Os modelos baixados e importados ficam aqui.",
+      "change": "Alterar pasta",
+      "useDefault": "Usar pasta padrão"
+    },
+    "serverTitle": "Servidor de modelo",
+    "serverDescription": "Opções do llama-server, que roda o modelo neste computador.",
+    "slots": {
+      "label": "Solicitações paralelas",
+      "hint": "Quantas solicitações o modelo principal atende ao mesmo tempo, por exemplo um agente e o chat. Os slots dividem o contexto."
+    },
+    "context": {
+      "label": "Tamanho do contexto",
+      "hint": "Deixe vazio para usar o tamanho recomendado para o modelo.",
+      "hintModel": "Deixe vazio para usar o tamanho recomendado para {{model}}: {{tokens}} tokens (no máximo {{max}}).",
+      "placeholder": "Recomendado"
+    },
+    "runtime": {
+      "label": "Runtime",
+      "hint": "Qual build instalado do llama.cpp roda o modelo.",
+      "auto": "Automático",
+      "autoCurrent": "Automático (atualmente {{variant}})",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}} (não instalado)"
+    },
+    "extraArgs": {
+      "label": "Argumentos extras do llama-server",
+      "hint": "Um argumento por linha. Eles são adicionados ao fim da linha de comando. Argumentos errados podem impedir que o modelo inicie.",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "Iniciar o modelo ao abrir",
+      "hint": "Inicia o modelo escolhido quando o Ylide abre.",
+      "hintModel": "Inicia {{model}} quando o Ylide abre."
+    },
+    "appliesOnRestart": "As alterações no servidor de modelo valem na próxima vez que o modelo iniciar.",
+    "restart": "Reiniciar modelo"
+  },
+  "endpoint": {
+    "title": "Servidor externo",
+    "description": "Use um servidor compatível com a API da OpenAI, como Ollama, LM Studio ou outro llama-server, em vez do runtime integrado. Seus prompts e seu código passam a ser enviados para esse endereço.",
+    "enabled": {
+      "label": "Usar o servidor externo",
+      "hint": "Chat, edições inline e agentes usam este servidor em vez de um modelo local."
+    },
+    "baseUrl": {
+      "label": "Endereço",
+      "hint": "A URL base da API, geralmente terminando em /v1."
+    },
+    "apiKey": {
+      "label": "Chave de API",
+      "hint": "Opcional. Armazenada no arquivo de configurações neste computador e enviada só para este servidor.",
+      "placeholder": "Nenhuma",
+      "show": "Mostrar chave de API",
+      "hide": "Ocultar chave de API"
+    },
+    "model": {
+      "label": "Modelo",
+      "hint": "O nome do modelo que o servidor espera. Deixe vazio para usar o padrão do servidor.",
+      "placeholder": "Padrão do servidor"
+    },
+    "context": {
+      "label": "Tamanho do contexto",
+      "hint": "A janela de contexto do modelo externo. Se ficar vazio, o Ylide assume {{tokens}} tokens."
+    },
+    "connect": "Conectar",
+    "connectHint": "Conectar salva estes valores e muda para o servidor externo.",
+    "activeHint": "Conectado a {{model}}.",
+    "needUrl": "Digite primeiro o endereço do servidor.",
+    "connected": "Conectado",
+    "connecting": "Conectando",
+    "unreachable": "Inacessível"
+  },
+  "about": {
+    "title": "Sobre o Ylide",
+    "description": "A versão e as pastas que o Ylide usa neste computador.",
+    "loading": "Carregando informações do app",
+    "version": "Versão",
+    "system": "Sistema",
+    "systemValue": "{{os}}, {{arch}}",
+    "configDir": "Pasta de configurações",
+    "dataDir": "Pasta de dados",
+    "modelsDir": "Pasta de modelos",
+    "copyPath": "Copiar caminho de {{name}}",
+    "logFile": "Arquivo de registro"
+  },
+  "modelsPage": {
+    "title": "Modelos",
+    "intro": "O que roda neste computador, o que está instalado e o que você pode baixar. Todos os modelos rodam localmente."
+  },
+  "active": {
+    "title": "Modelo ativo",
+    "description": "O modelo que responde no chat, reescreve código e executa os agentes.",
+    "none": "Nenhum modelo em execução",
+    "noneSelected": "{{model}} {{quant}} foi escolhido para o chat e os agentes. Inicie-o para começar.",
+    "noneEndpoint": "O servidor externo {{url}} está ativado. Conecte-se para usá-lo.",
+    "noneChoose": "Escolha um modelo instalado abaixo ou baixe um do catálogo.",
+    "startAgain": "Iniciar de novo",
+    "status": {
+      "starting": "Iniciando o servidor",
+      "loading": "Carregando o modelo na memória",
+      "ready": "Pronto",
+      "stopped": "Parado",
+      "crashed": "Parou inesperadamente"
+    },
+    "exitCode": "código de saída {{code}}: {{message}}",
+    "runtime": "Runtime",
+    "device": "Dispositivo",
+    "noDevice": "Nenhum",
+    "context": "Contexto",
+    "contextValue": "{{tokens}} tokens",
+    "slots": "Solicitações paralelas",
+    "toolCalls": "Chamadas de ferramentas",
+    "tools": {
+      "unknown": {
+        "label": "Não testado",
+        "body": "O Ylide testa as chamadas de ferramentas logo depois que o modelo fica pronto. Até lá, os agentes podem ser menos confiáveis."
+      },
+      "native": {
+        "label": "Nativo",
+        "body": "O modelo retorna chamadas de ferramentas no formato padrão, então os agentes funcionam de forma confiável."
+      },
+      "repaired": {
+        "label": "Reparado",
+        "body": "O modelo escreve as chamadas de ferramentas como texto e o Ylide as converte. Os agentes funcionam, mas de vez em quando uma chamada pode precisar de nova tentativa."
+      },
+      "failed": {
+        "label": "Falhou",
+        "body": "O autoteste não produziu uma chamada de ferramenta utilizável. Os agentes podem não funcionar com este modelo; o chat e as edições inline não são afetados."
+      }
+    },
+    "commandLine": "Linha de comando",
+    "commandLineHint": "Exatamente como o servidor foi iniciado",
+    "copyCommand": "Copiar linha de comando",
+    "noCommand": "Nenhum processo local: o Ylide se comunica diretamente com o servidor externo.",
+    "log": "Registro do servidor",
+    "logHint": "Saída do llama-server",
+    "logLoading": "Carregando o registro do servidor",
+    "logFailed": "Não foi possível carregar o registro do servidor: {{message}}",
+    "logEmpty": "O servidor ainda não escreveu nada."
+  },
+  "installed": {
+    "title": "Modelos instalados",
+    "description": "Arquivos de modelo neste computador e para que cada um é usado.",
+    "import": "Importar arquivo GGUF",
+    "imported": "{{name}} foi importado.",
+    "importFailed": "Não foi possível importar o arquivo.",
+    "emptyTitle": "Nenhum modelo ainda",
+    "emptyBody": "Baixe um do catálogo abaixo ou importe um arquivo GGUF.",
+    "unknownQuant": "GGUF",
+    "active": "Em execução",
+    "custom": "Importado",
+    "usedFor": {
+      "chat": "Chat e agentes",
+      "autocomplete": "Autocompletar",
+      "embedding": "Busca de código"
+    },
+    "use": {
+      "chat": "Usar para chat e agentes",
+      "autocomplete": "Usar para autocompletar",
+      "embedding": "Usar para busca de código"
+    },
+    "start": "Iniciar",
+    "size": "{{size}} GB",
+    "files_one": "{{count}} arquivo",
+    "files_many": "{{count}} arquivos",
+    "files_other": "{{count}} arquivos",
+    "delete": "Excluir {{name}}",
+    "deleteTitle": "Excluir {{name}}?",
+    "deleteBody": "Os arquivos do modelo ({{size}} GB) serão removidos deste computador.",
+    "forgetBody": "O Ylide esquece este modelo. O arquivo fica onde está; nada é excluído.",
+    "deleteActive": "Este modelo está em execução. Ele será parado primeiro.",
+    "deleteAssigned": "Se ele estiver escolhido para chat, autocompletar ou busca de código, essa escolha será removida.",
+    "deleteAgain": "Você pode baixá-lo de novo pelo catálogo."
+  },
+  "downloads": {
+    "title": "Downloads",
+    "description": "Downloads em andamento, pausados e com falha. Downloads pausados continuam de onde pararam.",
+    "empty": "Nenhum download em andamento.",
+    "state": {
+      "downloading": "Baixando",
+      "resuming": "Retomando",
+      "verifying": "Verificando arquivo",
+      "paused": "Pausado",
+      "failed": "Falhou"
+    },
+    "amount": "{{done}} de {{total}} GB ({{percent}}%)",
+    "percent": "{{percent}}%",
+    "speed": "{{speed}}/s",
+    "remaining": "faltam {{time}}",
+    "file": "arquivo {{index}} de {{count}}",
+    "pause": "Pausar download de {{name}}",
+    "resume": "Retomar download de {{name}}",
+    "cancel": "Cancelar download de {{name}}",
+    "progressLabel": "Progresso do download de {{name}}",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "Catálogo",
+    "description_one": "{{count}} modelo da lista de modelos do Ylide, verificado para uso local.",
+    "description_many": "{{count}} modelos da lista de modelos do Ylide, verificados para uso local.",
+    "description_other": "{{count}} modelos da lista de modelos do Ylide, verificados para uso local.",
+    "filter": "Mostrar modelos para",
+    "all": "Todos",
+    "shown_one": "{{count}} modelo",
+    "shown_many": "{{count}} modelos",
+    "shown_other": "{{count}} modelos",
+    "none": "Nenhum modelo da lista tem esta função.",
+    "model": "Modelo",
+    "parameters": "Parâmetros",
+    "paramsValue": "{{value}}B",
+    "activeValue": "{{value}}B ativos",
+    "paramsMoe": "{{total}}B no total, {{active}}B ativos por token (mistura de especialistas)",
+    "paramsDense": "{{total}}B (denso)",
+    "maxContext": "Contexto máx.",
+    "toolCalling": "Uso de ferramentas",
+    "license": "Licença",
+    "commercialYes": "Uso comercial permitido",
+    "commercialCheck": "Confira os termos antes do uso comercial",
+    "readLicense": "Ler licença",
+    "publisher": "Desenvolvedor",
+    "released": "Lançamento",
+    "context": "Contexto",
+    "contextValue": "{{max}} máx., {{recommended}} recomendado",
+    "reasoning": "Raciocínio",
+    "reasoningLevel": {
+      "none": "Não",
+      "optional": "Opcional",
+      "always": "Sempre ativo"
+    },
+    "roles": "Indicado para",
+    "source": "Fonte",
+    "modelCard": "Ficha do modelo",
+    "strengths": "Pontos fortes",
+    "benchmarks": "Benchmarks",
+    "benchmark": "Benchmark",
+    "score": "Pontuação",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "Medido por",
+    "selfReported": "Desenvolvedor",
+    "independent": "Independente",
+    "date": "Data",
+    "sourceLink": "Fonte",
+    "openSource": "Abrir fonte de {{name}}",
+    "quantizations": "Quantizações",
+    "quant": "Quantização",
+    "bits": "Bits por peso",
+    "size": "Download",
+    "fit": "Neste computador",
+    "plan": "{{placement}} · cerca de {{tps}} tok/s · {{memory}}",
+    "memVram": "{{value}} GiB de VRAM",
+    "memRam": "{{value}} GiB de RAM",
+    "download": "Baixar",
+    "downloadNamed": "Baixar {{name}} {{quant}}",
+    "downloadSize": "Baixar {{size}} GB",
+    "downloadsOff": "Os downloads de modelos estão desativados em Rede e privacidade.",
+    "downloadsOffNote": "Os downloads de modelos estão desativados. Ative-os em Rede e privacidade para baixar do catálogo.",
+    "openNetwork": "Abrir configurações de rede",
+    "noSpace": "Espaço livre em disco insuficiente ({{free}} GB livres).",
+    "noSpaceShort": "Espaço em disco insuficiente",
+    "installedBadge": "Instalado",
+    "downloadingBadge": "Baixando",
+    "mark": {
+      "primary": "Recomendado",
+      "autocomplete": "Recomendado para autocompletar",
+      "embedding": "Recomendado para busca de código"
+    },
+    "recTitle": "Recomendado para este computador",
+    "recLoading": "Comparando os modelos com este computador",
+    "recFailed": "Não foi possível calcular a recomendação: {{message}}",
+    "recNone": "Nenhum modelo da lista é adequado para este computador.",
+    "recPlan": "{{placement}} · cerca de {{tps}} tok/s · {{context}} de contexto",
+    "budgetGpu": "{{gpu}}: {{vram}} GiB de VRAM, {{ram}} GiB de RAM utilizáveis",
+    "budgetUnified": "{{memory}} GiB de memória unificada utilizáveis",
+    "budgetCpu": "Sem GPU: {{ram}} GiB de RAM utilizáveis",
+    "showEntry": "Mostrar detalhes",
+    "alternatives": "Alternativas",
+    "uncensored": {
+      "title": "Variantes sem censura",
+      "note": "As variantes sem censura são versões de modelos da lista acima com o treinamento de recusa removido. Elas também respondem a pedidos que o modelo original recusa. O Ylide nunca as escolhe por conta própria, e o desempenho delas em programação e no uso de ferramentas não foi medido de forma independente.",
+      "badge": "Sem censura",
+      "badgeHint": "Treinamento de recusa removido. O Ylide nunca escolhe este modelo por conta própria."
+    },
+    "own": {
+      "title": "Não está na lista?",
+      "body": "Use qualquer arquivo de modelo GGUF do seu computador."
+    }
+  },
+  "runtimes": {
+    "title": "Runtimes",
+    "description": "Os builds do llama.cpp que rodam os modelos. O Ylide escolhe o melhor para o seu hardware, a menos que você escolha um.",
+    "loading": "Verificando os runtimes instalados",
+    "loadFailed": "Não foi possível verificar os runtimes: {{message}}",
+    "installed": "Runtimes instalados",
+    "available": "Disponíveis para download",
+    "variant": "Variante",
+    "backend": "Backend",
+    "version": "Versão",
+    "origin": "Origem",
+    "size": "Download",
+    "action": "Ação",
+    "bundled": "Incluído",
+    "downloaded": "Baixado",
+    "selected": "Selecionado",
+    "inUse": "Em uso",
+    "use": "Usar este runtime",
+    "chooseAuto": "Escolher automaticamente",
+    "fixed": "Você escolheu {{variant}}. O Ylide o usa mesmo que haja um runtime melhor disponível.",
+    "noneInstalled": "Nenhum runtime está instalado.",
+    "recommended": "Recomendado",
+    "install": "Instalar",
+    "installNamed": "Instalar {{variant}}",
+    "busy": "Outro runtime está sendo instalado.",
+    "downloadsOff": "Os downloads de runtimes estão desativados em Rede e privacidade.",
+    "extracting": "Descompactando",
+    "percent": "{{percent}}%",
+    "progressLabel": "Progresso da instalação de {{variant}}",
+    "failed": "Não foi possível instalar {{variant}}: {{message}}",
+    "done": "{{variant}} está instalado.",
+    "applyHint": "A troca de runtime vale na próxima vez que o modelo iniciar."
+  },
+  "registry": {
+    "title": "Lista de modelos",
+    "description": "A lista de modelos, quantizações e somas de verificação a partir da qual o catálogo é montado.",
+    "version": "Versão",
+    "updatedAt": "Atualizada em",
+    "origin": "Origem",
+    "originName": {
+      "bundled": "Incluída",
+      "cache": "Salva",
+      "remote": "Baixada"
+    },
+    "originHint": {
+      "bundled": "A lista que veio com esta versão do Ylide.",
+      "cache": "Uma lista mais recente que foi baixada antes.",
+      "remote": "Baixada durante esta sessão."
+    },
+    "models": "Modelos",
+    "url": "Endereço",
+    "refresh": "Verificar atualização",
+    "refreshHint": "A verificação baixa só a lista de modelos, nada mais.",
+    "updated": "Atualizada para a versão {{version}}.",
+    "upToDate": "A lista de modelos está atualizada.",
+    "disabled": "As atualizações da lista de modelos estão desativadas em Rede e privacidade.",
+    "disabledHint": "As atualizações da lista de modelos estão desativadas.",
+    "failed": "A atualização falhou: {{message}}"
+  }
+}

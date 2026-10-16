@@ -1,0 +1,163 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+  max-width: 760px;
+}
+
+@media (min-width: 1280px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    max-width: none;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.notices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--warning);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  line-height: var(--leading-prose);
+}
+
+.notice svg {
+  flex: none;
+  margin-top: 4px;
+  color: var(--warning);
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.asideTitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+/* Bordered blocks in the aside: the own file and the CUDA download. */
+.own,
+.runtime {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+}
+
+.runtime {
+  gap: var(--space-2);
+}
+
+.own {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.ownIcon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--text-3);
+}
+
+.ownText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ownBody {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+}
+
+.runtimeLabel {
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: var(--leading-ui);
+}
+
+.runtimeBody {
+  margin: 0 0 0 44px;
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+}
+
+.otherWays {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.otherWays .asideTitle {
+  margin-bottom: var(--space-1);
+}
+
+/* Ghost buttons line their icons up with the text above. */
+.otherWays button {
+  margin-left: calc(-1 * var(--space-3));
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-2);
+}
+
+.failure,
+.nothing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-dialog);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.failure p,
+.nothing p {
+  margin: 0;
+  max-width: 62ch;
+}

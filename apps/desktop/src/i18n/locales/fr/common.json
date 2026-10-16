@@ -1,0 +1,181 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Codez avec une IA qui ne quitte jamais votre ordinateur."
+  },
+  "actions": {
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "retry": "Réessayer",
+    "delete": "Supprimer",
+    "confirm": "Confirmer",
+    "copy": "Copier",
+    "copied": "Copié",
+    "openFolder": "Ouvrir un dossier",
+    "reset": "Réinitialiser",
+    "back": "Retour",
+    "continue": "Continuer",
+    "stop": "Arrêter",
+    "send": "Envoyer",
+    "apply": "Appliquer",
+    "browse": "Parcourir"
+  },
+  "window": {
+    "minimize": "Réduire",
+    "maximize": "Agrandir",
+    "restore": "Restaurer",
+    "close": "Fermer la fenêtre"
+  },
+  "rail": {
+    "explorer": "Fichiers",
+    "search": "Recherche",
+    "chat": "Chat",
+    "agents": "Agents",
+    "models": "Modèles",
+    "settings": "Paramètres"
+  },
+  "titlebar": {
+    "noProject": "Aucun dossier ouvert",
+    "quickOpen": "Aller au fichier",
+    "modelMenu": "Modèle et runtime"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Maj",
+    "enter": "Entrée"
+  },
+  "switchProject": {
+    "title": "Abandonner les modifications non enregistrées ?",
+    "body_one": "Un fichier contient des modifications non enregistrées. Ouvrir {{name}} le fermera et les modifications seront perdues.",
+    "body_many": "{{count}} de fichiers contiennent des modifications non enregistrées. Ouvrir {{name}} les fermera et les modifications seront perdues.",
+    "body_other": "{{count}} fichiers contiennent des modifications non enregistrées. Ouvrir {{name}} les fermera et les modifications seront perdues.",
+    "confirm": "Abandonner et ouvrir"
+  },
+  "server": {
+    "none": "Aucun modèle lancé",
+    "starting": "Démarrage de {{model}}",
+    "loading": "Chargement de {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Modèle arrêté",
+    "crashed": "Modèle arrêté de manière inattendue",
+    "external": "Serveur externe",
+    "start": "Lancer le modèle",
+    "stop": "Arrêter le modèle"
+  },
+  "status": {
+    "context": "Contexte {{tokens}}",
+    "speed": "{{value}} tok/s",
+    "offline": "Hors ligne : rien ne quitte cet ordinateur",
+    "networkActivity": "Dernière requête réseau : {{purpose}}",
+    "runtime": "Runtime : {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} tokens",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}} %"
+  },
+  "netPurpose": {
+    "registry": "mise à jour de la liste des modèles",
+    "modelDownload": "téléchargement de modèle",
+    "runtimeDownload": "téléchargement de runtime",
+    "updateCheck": "recherche de mises à jour",
+    "updateDownload": "téléchargement de mise à jour"
+  },
+  "errors": {
+    "generic": "Une erreur s’est produite : {{message}}",
+    "no_model": "Aucun modèle n’est lancé. Lancez-en un depuis le menu du modèle.",
+    "no_project": "Ouvrez d’abord un dossier.",
+    "network_disabled": "Cet accès réseau est désactivé dans les paramètres.",
+    "disk_full": "Espace disque insuffisant ({{message}}).",
+    "model_not_installed": "Ce modèle n’est pas encore téléchargé.",
+    "no_model_selected": "Choisissez d’abord un modèle.",
+    "no_runtime": "Aucun runtime d’inférence n’est installé.",
+    "server": "Le serveur du modèle a signalé un problème : {{message}}",
+    "model": "Le modèle a renvoyé une erreur : {{message}}",
+    "download": "Le téléchargement a échoué : {{message}}",
+    "workspace": "Erreur de fichier : {{message}}",
+    "endpoint_unreachable": "Le serveur externe est injoignable : {{message}}",
+    "not_found": "Le fichier est introuvable.",
+    "not_gguf": "Ce n’est pas un fichier de modèle GGUF.",
+    "busy": "Veuillez patienter, une autre installation est en cours.",
+    "update_none": "Aucune mise à jour à installer. Recherchez d’abord les mises à jour.",
+    "update_busy": "La mise à jour est déjà en cours d’installation.",
+    "update_signature": "La mise à jour a été refusée car sa signature ne correspond pas. Rien n’a été installé.",
+    "update_format": "La mise à jour a un format qu’Ylide ne peut pas installer : {{message}}",
+    "update_too_large": "La mise à jour est anormalement volumineuse et n’a pas été téléchargée.",
+    "update_launch": "Le programme d’installation n’a pas pu être lancé : {{message}}",
+    "update_unsupported": "Sur ce système, installez les mises à jour manuellement."
+  },
+  "reasons": {
+    "fitsInVram": "Tient entièrement dans votre mémoire graphique ({{vramGb}} GB utilisés).",
+    "moeOffload": "Mélange d’experts : la partie toujours active et {{vramGb}} GB restent sur le GPU, {{cpuExpertLayers}} couches d’experts ({{ramGb}} GB) sont en RAM système. Seuls quelques experts travaillent à chaque token, cela reste donc rapide.",
+    "partialOffload": "{{gpuLayers}} couches s’exécutent sur le GPU ({{vramGb}} GB), le reste en RAM système ({{ramGb}} GB). Cela fonctionne, mais plus lentement.",
+    "unifiedMemory": "S’exécute en mémoire unifiée ({{ramGb}} GB) sur le GPU Apple.",
+    "cpuOnly": "S’exécute sur le processeur ({{ramGb}} GB de RAM). Aucun GPU adapté n’a été trouvé.",
+    "speedEstimate": "Environ {{tps}} tokens par seconde (estimation).",
+    "topQualityForBudget": "Le modèle de code le plus puissant qui fonctionne bien sur cette machine.",
+    "benchmark": "{{name}} : {{score}} {{unit}}",
+    "benchmarkSelfReported": "déclaré par l’éditeur",
+    "benchmarkIndependent": "mesuré de façon indépendante",
+    "toolCalling": "Utilisation fiable des outils pour le mode agent ({{level}}).",
+    "longContext": "Contexte long de {{tokens}} tokens : suffisant pour les gros fichiers et les longues sessions d’agents.",
+    "reasoningModel": "Peut réfléchir avant de répondre ; Ylide désactive cela pour les modifications rapides.",
+    "permissiveLicense": "{{license}} : libre d’utilisation, y compris commerciale.",
+    "restrictedLicense": "{{license}} : vérifiez les conditions de la licence avant un usage commercial.",
+    "slowWarning": "Ce modèle sera lent sur cette machine.",
+    "quantizedKvCache": "Utilise un cache de contexte compressé ({{type}}) pour tenir en mémoire.",
+    "sharesGpuWithMain": "S’exécute sur le GPU à côté du modèle principal.",
+    "runsOnCpu": "S’exécute sur le processeur et laisse le GPU au modèle principal.",
+    "autocompleteMovesToCpu": "Utilise la mémoire GPU normalement réservée à l’autocomplétion.",
+    "noGpu": "Aucune carte graphique adaptée n’a été trouvée. Les modèles s’exécutent sur le processeur, ce qui est plus lent.",
+    "lowDiskSpace": "Il ne reste que {{freeGb}} GB d’espace disque libre.",
+    "nothingFits": "Aucun des modèles connus ne convient à cette machine. Vous pouvez toujours utiliser votre propre fichier GGUF ou un serveur externe."
+  },
+  "alternatives": {
+    "faster": "Plus rapide",
+    "stronger": "Plus puissant",
+    "lighter": "Moins de mémoire"
+  },
+  "toolCallingLevel": {
+    "none": "aucune",
+    "basic": "basique",
+    "good": "bonne",
+    "excellent": "excellente"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agent",
+    "fim": "Autocomplétion",
+    "embedding": "Recherche de code"
+  },
+  "placement": {
+    "gpu": "Sur le GPU",
+    "moeOffload": "GPU et RAM (experts en RAM)",
+    "partialOffload": "Réparti entre GPU et RAM",
+    "unified": "Mémoire unifiée",
+    "cpu": "Sur le processeur"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} est disponible",
+    "availableBody": "L’installation prend environ une minute, puis Ylide redémarre.",
+    "install": "Installer",
+    "confirmTitle": "Installer Ylide {{version}} ?",
+    "confirmBody": "La mise à jour est téléchargée et vérifiée. Ylide va maintenant arrêter le modèle, installer la mise à jour, puis redémarrer.",
+    "confirmDirty_one": "Un fichier contient des modifications non enregistrées. Enregistrez-le d’abord, sinon les modifications seront perdues.",
+    "confirmDirty_many": "{{count}} de fichiers contiennent des modifications non enregistrées. Enregistrez-les d’abord, sinon les modifications seront perdues.",
+    "confirmDirty_other": "{{count}} fichiers contiennent des modifications non enregistrées. Enregistrez-les d’abord, sinon les modifications seront perdues.",
+    "confirmAgent": "L’agent en cours d’exécution sera arrêté.",
+    "confirm": "Installer et redémarrer",
+    "failedTitle": "La mise à jour n’a pas été installée"
+  }
+}

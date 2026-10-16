@@ -1,0 +1,36 @@
+# Rust
+target/
+
+# Node / frontend
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Tauri
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/resources/runtime/
+
+# Local tooling
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Website build output and the publisher details for the imprint (kept out of the repository)
+website/dist/
+website/imprint.json
+website/operator.json
+
+# Keys and certificates never belong in the repository (the release key lives in
+# ~/.tauri, see docs/releasing.md); model files are far too large for it
+*.key
+*.pem
+*.p12
+*.pfx
+*.gguf

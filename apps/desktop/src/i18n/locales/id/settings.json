@@ -1,0 +1,682 @@
+{
+  "saved": "Tersimpan",
+  "saveFailed": "Pengaturan tidak dapat disimpan.",
+  "page": {
+    "title": "Pengaturan",
+    "intro": "Setiap opsi dan setiap prompt yang digunakan Ylide, di satu tempat. Perubahan disimpan saat Anda meninggalkan kolom.",
+    "loading": "Memuat pengaturan",
+    "sectionsLabel": "Bagian {{page}}"
+  },
+  "units": {
+    "px": "px",
+    "times": "× ukuran font",
+    "spaces": "spasi",
+    "tokens": "token",
+    "rounds": "putaran",
+    "seconds": "detik",
+    "characters": "karakter",
+    "slots": "slot",
+    "steps": "langkah"
+  },
+  "validation": {
+    "required": "Masukkan nilai.",
+    "notNumber": "Masukkan angka.",
+    "notInteger": "Masukkan bilangan bulat.",
+    "tooSmall": "Nilai terkecil yang diizinkan adalah {{min}}.",
+    "tooLarge": "Nilai terbesar yang diizinkan adalah {{max}}.",
+    "url": "Masukkan alamat lengkap yang diawali http:// atau https://."
+  },
+  "prompt": {
+    "isDefault": "Default",
+    "isChanged": "Diubah",
+    "placeholders": "Variabel",
+    "insertPlaceholder": "Sisipkan variabel",
+    "insertNamed": "Sisipkan {{name}} di kursor",
+    "resetNamed": "Kembalikan {{name}} ke default",
+    "size": "{{chars}} karakter, sekitar {{tokens}} token"
+  },
+  "general": {
+    "title": "Umum",
+    "description": "Bahasa dan tampilan Ylide.",
+    "lookTitle": "Bahasa dan tema",
+    "language": {
+      "label": "Bahasa",
+      "hint": "“Sistem” menggunakan bahasa sistem operasi Anda, saat ini {{language}}.",
+      "system": "Sistem"
+    },
+    "theme": {
+      "label": "Tema",
+      "hint": "“Sistem” mengikuti mode terang atau gelap sistem operasi Anda.",
+      "dark": "Gelap",
+      "light": "Terang",
+      "system": "Sistem"
+    },
+    "updates": {
+      "title": "Versi dan pembaruan",
+      "version": "Versi",
+      "versionValue": "Ylide {{version}}",
+      "label": "Pembaruan",
+      "check": "Periksa pembaruan",
+      "install": "Instal Ylide {{version}}",
+      "openNetwork": "Buka pengaturan jaringan",
+      "notChecked": "Ylide belum memeriksa pembaruan sejak dimulai.",
+      "checking": "Ylide sedang memeriksa pembaruan.",
+      "upToDate": "Ylide sudah versi terbaru.",
+      "available": "Ylide {{version}} tersedia.",
+      "disabled": "Pemeriksaan pembaruan dimatikan di Jaringan dan privasi.",
+      "failed": "Pemeriksaan pembaruan tidak berhasil: {{message}}",
+      "installFailed": "Pembaruan tidak diinstal: {{message}}",
+      "preparing": "Menyiapkan pembaruan.",
+      "downloading": "Mengunduh pembaruan: {{done}} dari {{total}}",
+      "downloadingUnknown": "Mengunduh pembaruan: {{done}}",
+      "handedOver": "Penginstal sedang berjalan. Ylide akan ditutup lalu dimulai lagi.",
+      "progress": "Kemajuan",
+      "notes": "Yang baru di versi ini",
+      "ready": "Pembaruan sudah diunduh dan diperiksa. Saat diinstal, Ylide akan dimulai ulang.",
+      "installReady": "Instal dan mulai ulang"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "description": "Tampilan kode di editor.",
+    "textTitle": "Teks dan tata letak",
+    "fontFamily": {
+      "label": "Font",
+      "hint": "Daftar font CSS. Jika font pertama tidak terinstal, font berikutnya digunakan."
+    },
+    "fontSize": {
+      "label": "Ukuran font"
+    },
+    "lineHeight": {
+      "label": "Tinggi baris",
+      "hint": "Jarak antarbaris sebagai kelipatan ukuran font."
+    },
+    "tabSize": {
+      "label": "Lebar tab",
+      "hint": "Jumlah spasi yang ditempati satu karakter tab."
+    },
+    "wordWrap": {
+      "label": "Bungkus baris panjang",
+      "hint": "Melanjutkan baris panjang ke baris berikutnya di tepi editor, alih-alih menggulir ke samping."
+    },
+    "minimap": {
+      "label": "Tampilkan minimap",
+      "hint": "Gambaran kecil seluruh file di tepi kanan."
+    },
+    "preview": "Pratinjau"
+  },
+  "chat": {
+    "title": "Chat dan prompt",
+    "description": "Instruksi yang diterima model di chat dan untuk edit inline.",
+    "chatTitle": "Chat",
+    "systemPrompt": {
+      "label": "Prompt sistem chat",
+      "hint": "Dikirim di awal setiap percakapan chat, sebelum pesan dan lampiran Anda."
+    },
+    "contextBudget": {
+      "label": "Anggaran konteks untuk lampiran",
+      "hint": "Batas atas untuk file, folder, dan pilihan yang dilampirkan dengan @, saat ini {{tokens}} token. Lampiran yang lebih besar dipersingkat."
+    },
+    "inlineTitle": "Edit inline",
+    "inlineDescription": "Digunakan saat Anda memilih kode dan menekan Ctrl+K.",
+    "inlinePrompt": {
+      "label": "Prompt edit inline",
+      "hint": "Dikirim bersama kode yang dipilih, baris di sekitarnya, dan instruksi Anda."
+    },
+    "history": {
+      "label": "Simpan chat",
+      "hint": "Menyimpan chat setiap proyek di komputer ini, di folder data Ylide, agar Anda bisa membukanya lagi. Chat tidak pernah dikirim ke mana pun."
+    },
+    "deleteAll": {
+      "label": "Chat tersimpan",
+      "hint": "Menghapus chat tersimpan dari semua proyek di komputer ini.",
+      "button": "Hapus semua chat",
+      "confirmTitle": "Hapus semua chat tersimpan?",
+      "confirmBody": "Chat tersimpan dari setiap proyek akan dihapus dari komputer ini. Tindakan ini tidak dapat diurungkan.",
+      "confirm": "Hapus semua",
+      "done": "Chat tersimpan dihapus"
+    }
+  },
+  "agents": {
+    "title": "Agen",
+    "description": "Apa yang boleh dilakukan agen tanpa bertanya, cara agen menjalankan perintah, serta peran dan pesan yang mereka gunakan.",
+    "approvalsTitle": "Persetujuan",
+    "approvalsDescription": "Agen selalu membaca secara mandiri. Pengaturan ini menentukan kapan agen memerlukan persetujuan Anda untuk perubahan.",
+    "mode": {
+      "label": "Mode persetujuan",
+      "ask": {
+        "title": "Tanya dulu",
+        "body": "Setiap edit, penghapusan, dan perintah menunggu persetujuan Anda."
+      },
+      "autoSafe": {
+        "title": "Langkah aman",
+        "body": "Edit berjalan otomatis dan dapat diurungkan dengan checkpoint. Penghapusan dan perintah selalu bertanya dulu, kecuali perintah yang diizinkan."
+      },
+      "autonomous": {
+        "title": "Otonom",
+        "body": "Semuanya berjalan otomatis, kecuali yang tetap menunggu persetujuan Anda melalui dua sakelar di bawah."
+      }
+    },
+    "onlyAutonomous": "Hanya berlaku dalam mode Otonom. “Tanya dulu” dan “Langkah aman” selalu bertanya sebelum penghapusan dan perintah.",
+    "confirmCommands": {
+      "label": "Konfirmasi perintah",
+      "hint": "Tanya sebelum agen menjalankan perintah yang tidak ada di daftar perintah yang diizinkan di bawah.",
+      "off": "Agen dapat menjalankan perintah apa pun tanpa bertanya. Perintah yang menghancurkan data di luar proyek tetap diblokir."
+    },
+    "confirmDeletes": {
+      "label": "Konfirmasi penghapusan",
+      "hint": "Tanya sebelum agen menghapus file atau folder.",
+      "off": "Agen dapat menghapus file tanpa bertanya. Anda dapat memulihkannya dari checkpoint."
+    },
+    "commands": {
+      "title": "Perintah yang diizinkan",
+      "description": "Perintah berjalan tanpa bertanya jika diawali salah satu prefiks ini: cargo test juga mengizinkan cargo test --release. Perintah yang dirangkai atau dialihkan dengan &&, ||, ;, |, `, $(, > atau < selalu bertanya, meskipun diawali prefiks yang diizinkan.",
+      "askMode": "Dalam mode “Tanya dulu”, perintah yang diizinkan juga menunggu persetujuan Anda.",
+      "empty": "Belum ada perintah yang diizinkan. Agen bertanya sebelum setiap perintah.",
+      "alsoMatches": "juga mengizinkan {{example}}",
+      "remove": "Hapus {{prefix}}",
+      "newLabel": "Prefiks perintah baru",
+      "placeholder": "npm test",
+      "add": "Tambah",
+      "problem": {
+        "chaining": "Prefiks tidak boleh berisi &&, ||, ;, |, `, $(, > atau <.",
+        "duplicate": "Prefiks ini sudah ada di daftar.",
+        "empty": "Masukkan prefiks perintah."
+      }
+    },
+    "reviewTitle": "Tinjauan",
+    "reviewEnabled": {
+      "label": "Tinjau setiap tugas",
+      "hint": "Peninjau memeriksa perubahan setiap tugas yang selesai dan dapat mengembalikannya ke pemrogram."
+    },
+    "maxReviewRounds": {
+      "label": "Putaran tinjauan per tugas",
+      "hint": "Berapa kali peninjau boleh meminta perubahan sebelum tugas dianggap selesai."
+    },
+    "shellTitle": "Perintah",
+    "shellDescription": "Cara run_command memulai perintah di folder proyek.",
+    "shellProgram": {
+      "label": "Program shell",
+      "hint": "Misalnya powershell.exe, cmd.exe, bash, atau zsh."
+    },
+    "shellArgs": {
+      "label": "Argumen shell",
+      "hint": "Satu argumen per baris, ditempatkan sebelum perintah."
+    },
+    "shellTimeout": {
+      "label": "Batas waktu default",
+      "hint": "Perintah yang berjalan lebih lama akan dihentikan. Agen dapat meminta batas lebih lama per perintah."
+    },
+    "shellOutput": {
+      "label": "Batas output",
+      "hint": "Output yang lebih panjang dipersingkat di bagian tengah sebelum dilihat agen."
+    }
+  },
+  "roles": {
+    "title": "Peran",
+    "description": "Setiap agen bekerja dalam satu peran: prompt sistemnya, alat yang boleh digunakan, dan berapa langkah yang boleh diambil.",
+    "add": "Tambah peran",
+    "builtin": "Bawaan",
+    "custom": "Kustom",
+    "noDescription": "Tanpa deskripsi",
+    "toolCount_other": "{{count}} alat",
+    "stepCount_other": "{{count}} langkah",
+    "name": "Nama",
+    "namePlaceholder": "Penulis tes",
+    "id": "ID",
+    "idHint": "Digunakan dalam rencana dan saat agen saling bertanya. Huruf kecil, angka, - dan _.",
+    "idProblem": {
+      "empty": "Masukkan ID.",
+      "format": "Awali dengan huruf kecil; gunakan hanya huruf kecil, angka, - dan _ (maksimal 32).",
+      "taken": "Peran lain sudah menggunakan ID ini."
+    },
+    "descriptionLabel": "Deskripsi",
+    "descriptionHint": "Orkestrator membaca ini untuk menentukan peran mana yang mendapat tugas.",
+    "systemPrompt": "Prompt sistem",
+    "systemPromptHint": "Dikirim di awal setiap tugas yang dikerjakan peran ini.",
+    "tools": "Alat yang diizinkan",
+    "toolsHint": "Peran hanya dapat memanggil alat yang dicentang. Penulisan, penghapusan, dan perintah tetap mengikuti pengaturan persetujuan di atas.",
+    "unknownTools": "Juga diizinkan, tetapi tidak dikenal oleh versi ini: {{tools}}",
+    "risk": {
+      "read": "Membaca proyek",
+      "write": "Mengubah file",
+      "delete": "Menghapus file",
+      "execute": "Menjalankan perintah",
+      "communicate": "Berbicara dan melapor"
+    },
+    "temperature": "Temperatur",
+    "temperatureHint": "Nilai yang lebih tinggi memberi jawaban yang lebih beragam. Kosongkan untuk menggunakan nilai yang disarankan model.",
+    "modelDefault": "Default model",
+    "maxSteps": "Batas langkah",
+    "maxStepsHint": "Jumlah giliran model maksimum per tugas. Tugas berhenti saat batas tercapai.",
+    "builtinHint": "Peran bawaan dapat diubah dan dikembalikan ke default, tetapi tidak dapat dihapus.",
+    "customHint": "Orkestrator dapat memberikan tugas kepada peran kustom.",
+    "reset": "Kembalikan peran ke default",
+    "delete": "Hapus peran",
+    "deleteTitle": "Hapus peran {{name}}?",
+    "deleteBody": "Rencana yang memberikan tugas kepada {{id}} tidak dapat menggunakannya lagi. Tindakan ini tidak dapat diurungkan.",
+    "addTitle": "Tambah peran",
+    "startFrom": "Mulai dari",
+    "startFromHint": "Menyalin prompt sistem, alat, dan batas, yang dapat Anda ubah setelahnya.",
+    "startBlank": "Peran kosong dengan alat baca",
+    "startCopy": "Salinan {{name}}",
+    "create": "Buat peran"
+  },
+  "templates": {
+    "title": "Templat pesan",
+    "description": "Pesan yang dikirim Ylide sendiri kepada agen selama proses. Variabel dalam kurung kurawal diisi otomatis; sisipkan dengan tombol.",
+    "resetAll": "Kembalikan semua templat",
+    "unknown": "Tidak diisi, dikirim apa adanya: {{names}}",
+    "missing": "Tidak digunakan: {{names}}",
+    "planner": {
+      "label": "Permintaan perencanaan",
+      "hint": "Dikirim ke orkestrator bersama permintaan Anda, peran yang tersedia, dan struktur proyek."
+    },
+    "coderTask": {
+      "label": "Tugas untuk pemrogram",
+      "hint": "Dikirim ke peran yang mengerjakan tugas, beserta kemajuan tim."
+    },
+    "reviewerTask": {
+      "label": "Permintaan tinjauan",
+      "hint": "Dikirim ke peninjau bersama ringkasan pemrogram dan perubahan dalam bentuk diff."
+    },
+    "feedback": {
+      "label": "Perubahan yang diminta",
+      "hint": "Dikirim kembali ke pemrogram saat peninjau meminta perubahan."
+    },
+    "question": {
+      "label": "Pertanyaan dari agen lain",
+      "hint": "Dikirim saat satu agen meminta bantuan agen lain."
+    },
+    "continue": {
+      "label": "Lanjutkan",
+      "hint": "Dikirim saat model menjawab dengan teks alih-alih memanggil alat. Tidak memiliki variabel."
+    },
+    "repeatedFailure": {
+      "label": "Kegagalan berulang",
+      "hint": "Dikirim saat agen mengulangi panggilan alat yang sama yang gagal. Tidak memiliki variabel."
+    }
+  },
+  "network": {
+    "title": "Jaringan dan privasi",
+    "statementTitle": "Tanpa telemetri, tanpa akun.",
+    "statementBody": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide terhubung ke internet hanya untuk empat tujuan di bawah, dan hanya selama tujuan tersebut diaktifkan. Prompt dan file Anda dikirim ke model di komputer ini, atau ke server eksternal yang Anda siapkan di Lanjutan.",
+    "allowedTitle": "Koneksi yang diizinkan",
+    "allowedDescription": "Jika salah satunya dimatikan, Ylide tidak akan melakukan permintaan tersebut.",
+    "registry": {
+      "label": "Pembaruan daftar model",
+      "hint": "Memeriksa daftar model yang lebih baru saat Ylide dimulai dan saat Anda menyegarkannya, dari alamat di bawah."
+    },
+    "registryUrl": {
+      "label": "Alamat daftar model",
+      "hint": "Tempat daftar model diunduh. Daftar ini menyebutkan file model dan program runtime yang diunduh Ylide, beserta checksum-nya. Daftar di alamat resmi harus ditandatangani oleh Ylide. Daftar di alamat lain diperiksa dengan tanda tangan Ylide jika ada file tanda tangan (models.json.sig) di sebelahnya, dan dipakai apa adanya jika tidak ada."
+    },
+    "models": {
+      "label": "Unduhan model",
+      "hint": "Mengunduh file model dari Hugging Face (huggingface.co) saat Anda memulai unduhan."
+    },
+    "runtimes": {
+      "label": "Unduhan runtime",
+      "hint": "Mengunduh runtime inferensi seperti paket CUDA dari GitHub (github.com) saat Anda menginstalnya."
+    },
+    "logTitle": "Log jaringan",
+    "logDescription": "Setiap permintaan yang dibuat Ylide sejak dimulai. Permintaan baru muncul di sini saat terjadi.",
+    "logLoading": "Memuat log jaringan",
+    "logFailed": "Log jaringan tidak dapat dimuat: {{message}}",
+    "logEmpty": "Belum ada permintaan. Tidak ada yang keluar dari komputer ini sejak Ylide dimulai.",
+    "logTime": "Waktu",
+    "logPurpose": "Tujuan",
+    "logUrl": "Alamat",
+    "logOutcome": "Hasil",
+    "updates": {
+      "label": "Periksa pembaruan",
+      "hint": "Menanyakan ke ylide.app sekali saat Ylide dimulai apakah ada versi Ylide yang lebih baru. Hanya nomor versi yang dikirim. Pembaruannya sendiri baru diunduh saat Anda menginstalnya."
+    }
+  },
+  "advanced": {
+    "title": "Lanjutan",
+    "description": "Penyimpanan, server model lokal, server eksternal, dan folder yang digunakan Ylide.",
+    "storageTitle": "Penyimpanan model",
+    "modelsDir": {
+      "label": "Folder model",
+      "hint": "Model yang diunduh dan diimpor disimpan di sini.",
+      "change": "Ganti folder",
+      "useDefault": "Gunakan folder default"
+    },
+    "serverTitle": "Server model",
+    "serverDescription": "Opsi untuk llama-server, yang menjalankan model di komputer ini.",
+    "slots": {
+      "label": "Permintaan paralel",
+      "hint": "Berapa banyak permintaan yang ditangani model utama secara bersamaan, misalnya agen dan chat. Slot berbagi konteks."
+    },
+    "context": {
+      "label": "Ukuran konteks",
+      "hint": "Kosongkan untuk menggunakan ukuran yang disarankan untuk model.",
+      "hintModel": "Kosongkan untuk menggunakan ukuran yang disarankan untuk {{model}}: {{tokens}} token (maksimal {{max}}).",
+      "placeholder": "Disarankan"
+    },
+    "runtime": {
+      "label": "Runtime",
+      "hint": "Build llama.cpp terinstal yang dipakai untuk menjalankan model.",
+      "auto": "Otomatis",
+      "autoCurrent": "Otomatis (saat ini {{variant}})",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}} (tidak terinstal)"
+    },
+    "extraArgs": {
+      "label": "Argumen llama-server tambahan",
+      "hint": "Satu argumen per baris, ditambahkan paling akhir ke baris perintah. Argumen yang salah dapat membuat model gagal dimulai.",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "Jalankan model saat Ylide dibuka",
+      "hint": "Menjalankan model yang dipilih saat Ylide dibuka.",
+      "hintModel": "Menjalankan {{model}} saat Ylide dibuka."
+    },
+    "appliesOnRestart": "Perubahan pada server model berlaku saat model dijalankan lagi.",
+    "restart": "Mulai ulang model"
+  },
+  "endpoint": {
+    "title": "Server eksternal",
+    "description": "Gunakan server yang kompatibel dengan OpenAI seperti Ollama, LM Studio, atau llama-server lain alih-alih runtime bawaan. Prompt dan kode Anda kemudian dikirim ke alamat tersebut.",
+    "enabled": {
+      "label": "Gunakan server eksternal",
+      "hint": "Chat, edit inline, dan agen menggunakan server ini alih-alih model lokal."
+    },
+    "baseUrl": {
+      "label": "Alamat",
+      "hint": "URL dasar API, biasanya diakhiri /v1."
+    },
+    "apiKey": {
+      "label": "Kunci API",
+      "hint": "Opsional. Disimpan di file pengaturan di komputer ini dan hanya dikirim ke server ini.",
+      "placeholder": "Tidak ada",
+      "show": "Tampilkan kunci API",
+      "hide": "Sembunyikan kunci API"
+    },
+    "model": {
+      "label": "Model",
+      "hint": "Nama model yang diharapkan server. Kosongkan untuk menggunakan default server.",
+      "placeholder": "Default server"
+    },
+    "context": {
+      "label": "Ukuran konteks",
+      "hint": "Jendela konteks model eksternal. Jika kosong, Ylide mengasumsikan {{tokens}} token."
+    },
+    "connect": "Hubungkan",
+    "connectHint": "“Hubungkan” menyimpan nilai-nilai ini dan beralih ke server eksternal.",
+    "activeHint": "Terhubung ke {{model}}.",
+    "needUrl": "Masukkan alamat server terlebih dahulu.",
+    "connected": "Terhubung",
+    "connecting": "Menghubungkan",
+    "unreachable": "Tak terjangkau"
+  },
+  "about": {
+    "title": "Tentang Ylide",
+    "description": "Versi dan folder yang digunakan Ylide di komputer ini.",
+    "loading": "Memuat informasi aplikasi",
+    "version": "Versi",
+    "system": "Sistem",
+    "systemValue": "{{os}}, {{arch}}",
+    "configDir": "Folder pengaturan",
+    "dataDir": "Folder data",
+    "modelsDir": "Folder model",
+    "copyPath": "Salin jalur {{name}}",
+    "logFile": "File log"
+  },
+  "modelsPage": {
+    "title": "Model",
+    "intro": "Apa yang berjalan di komputer ini, apa yang terinstal, dan apa yang dapat Anda unduh. Setiap model berjalan secara lokal."
+  },
+  "active": {
+    "title": "Model aktif",
+    "description": "Model yang menjawab di chat, menulis ulang kode, dan menjalankan agen.",
+    "none": "Tidak ada model berjalan",
+    "noneSelected": "{{model}} {{quant}} dipilih untuk chat dan agen. Jalankan untuk memulai.",
+    "noneEndpoint": "Server eksternal {{url}} diaktifkan. Hubungkan untuk menggunakannya.",
+    "noneChoose": "Pilih model yang terinstal di bawah, atau unduh dari katalog.",
+    "startAgain": "Mulai lagi",
+    "status": {
+      "starting": "Memulai server",
+      "loading": "Memuat model ke memori",
+      "ready": "Siap",
+      "stopped": "Berhenti",
+      "crashed": "Berhenti secara tak terduga"
+    },
+    "exitCode": "kode keluar {{code}}: {{message}}",
+    "runtime": "Runtime",
+    "device": "Perangkat",
+    "noDevice": "Tidak ada",
+    "context": "Konteks",
+    "contextValue": "{{tokens}} token",
+    "slots": "Permintaan paralel",
+    "toolCalls": "Panggilan alat",
+    "tools": {
+      "unknown": {
+        "label": "Belum diuji",
+        "body": "Ylide menguji pemanggilan alat sesaat setelah model siap. Sampai saat itu, agen mungkin bekerja kurang andal."
+      },
+      "native": {
+        "label": "Native",
+        "body": "Model mengembalikan panggilan alat dalam format standar, sehingga agen bekerja dengan andal."
+      },
+      "repaired": {
+        "label": "Diperbaiki",
+        "body": "Model menulis panggilan alat sebagai teks dan Ylide mengonversinya. Agen berfungsi, tetapi sesekali panggilan mungkin perlu diulang."
+      },
+      "failed": {
+        "label": "Gagal",
+        "body": "Uji mandiri tidak menghasilkan panggilan alat yang dapat digunakan. Agen mungkin tidak berfungsi dengan model ini; chat dan edit inline tidak terpengaruh."
+      }
+    },
+    "commandLine": "Baris perintah",
+    "commandLineHint": "Persis seperti cara server dimulai",
+    "copyCommand": "Salin baris perintah",
+    "noCommand": "Tidak ada proses lokal: Ylide berkomunikasi langsung dengan server eksternal.",
+    "log": "Log server",
+    "logHint": "Output llama-server",
+    "logLoading": "Memuat log server",
+    "logFailed": "Log server tidak dapat dimuat: {{message}}",
+    "logEmpty": "Server belum menulis apa pun."
+  },
+  "installed": {
+    "title": "Model terinstal",
+    "description": "File model di komputer ini dan kegunaan masing-masing.",
+    "import": "Impor file GGUF",
+    "imported": "{{name}} telah diimpor.",
+    "importFailed": "File tidak dapat diimpor.",
+    "emptyTitle": "Belum ada model",
+    "emptyBody": "Unduh dari katalog di bawah atau impor file GGUF.",
+    "unknownQuant": "GGUF",
+    "active": "Berjalan",
+    "custom": "Diimpor",
+    "usedFor": {
+      "chat": "Chat dan agen",
+      "autocomplete": "Pelengkapan otomatis",
+      "embedding": "Pencarian kode"
+    },
+    "use": {
+      "chat": "Gunakan untuk chat dan agen",
+      "autocomplete": "Gunakan untuk pelengkapan otomatis",
+      "embedding": "Gunakan untuk pencarian kode"
+    },
+    "start": "Jalankan",
+    "size": "{{size}} GB",
+    "files_other": "{{count}} file",
+    "delete": "Hapus {{name}}",
+    "deleteTitle": "Hapus {{name}}?",
+    "deleteBody": "File model ({{size}} GB) dihapus dari komputer ini.",
+    "forgetBody": "Ylide melupakan model ini. File tetap di tempatnya; tidak ada yang dihapus.",
+    "deleteActive": "Model ini sedang berjalan. Model akan dihentikan terlebih dahulu.",
+    "deleteAssigned": "Jika model ini dipilih untuk chat, pelengkapan otomatis, atau pencarian kode, pilihan tersebut dihapus.",
+    "deleteAgain": "Anda dapat mengunduhnya lagi dari katalog."
+  },
+  "downloads": {
+    "title": "Unduhan",
+    "description": "Unduhan yang berjalan, dijeda, dan gagal. Unduhan yang dijeda dilanjutkan dari titik berhentinya.",
+    "empty": "Tidak ada unduhan yang berjalan.",
+    "state": {
+      "downloading": "Mengunduh",
+      "resuming": "Melanjutkan",
+      "verifying": "Memeriksa file",
+      "paused": "Dijeda",
+      "failed": "Gagal"
+    },
+    "amount": "{{done}} dari {{total}} GB ({{percent}}%)",
+    "percent": "{{percent}}%",
+    "speed": "{{speed}}/s",
+    "remaining": "sisa {{time}}",
+    "file": "file {{index}} dari {{count}}",
+    "pause": "Jeda unduhan {{name}}",
+    "resume": "Lanjutkan unduhan {{name}}",
+    "cancel": "Batalkan unduhan {{name}}",
+    "progressLabel": "Kemajuan unduhan {{name}}",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "Katalog",
+    "description_other": "{{count}} model dari daftar model Ylide, diperiksa untuk penggunaan lokal.",
+    "filter": "Tampilkan model untuk",
+    "all": "Semua",
+    "shown_other": "{{count}} model",
+    "none": "Tidak ada model di daftar dengan peran ini.",
+    "model": "Model",
+    "parameters": "Parameter",
+    "paramsValue": "{{value}}B",
+    "activeValue": "{{value}}B aktif",
+    "paramsMoe": "Total {{total}}B, {{active}}B aktif per token (mixture of experts)",
+    "paramsDense": "{{total}}B (dense)",
+    "maxContext": "Konteks maks.",
+    "toolCalling": "Penggunaan alat",
+    "license": "Lisensi",
+    "commercialYes": "Penggunaan komersial diizinkan",
+    "commercialCheck": "Periksa ketentuan sebelum penggunaan komersial",
+    "readLicense": "Baca lisensi",
+    "publisher": "Penerbit",
+    "released": "Dirilis",
+    "context": "Konteks",
+    "contextValue": "maks. {{max}}, {{recommended}} disarankan",
+    "reasoning": "Berpikir",
+    "reasoningLevel": {
+      "none": "Tidak",
+      "optional": "Opsional",
+      "always": "Selalu aktif"
+    },
+    "roles": "Cocok untuk",
+    "source": "Sumber",
+    "modelCard": "Kartu model",
+    "strengths": "Kelebihan",
+    "benchmarks": "Benchmark",
+    "benchmark": "Benchmark",
+    "score": "Skor",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "Diukur oleh",
+    "selfReported": "Penerbit",
+    "independent": "Independen",
+    "date": "Tanggal",
+    "sourceLink": "Sumber",
+    "openSource": "Buka sumber {{name}}",
+    "quantizations": "Kuantisasi",
+    "quant": "Kuantisasi",
+    "bits": "Bit per bobot",
+    "size": "Unduhan",
+    "fit": "Di komputer ini",
+    "plan": "{{placement}} · sekitar {{tps}} tok/s · {{memory}}",
+    "memVram": "{{value}} GiB VRAM",
+    "memRam": "{{value}} GiB RAM",
+    "download": "Unduh",
+    "downloadNamed": "Unduh {{name}} {{quant}}",
+    "downloadSize": "Unduh {{size}} GB",
+    "downloadsOff": "Unduhan model dimatikan di Jaringan dan privasi.",
+    "downloadsOffNote": "Unduhan model dimatikan. Aktifkan di Jaringan dan privasi untuk mengunduh dari katalog.",
+    "openNetwork": "Buka pengaturan jaringan",
+    "noSpace": "Ruang disk tidak cukup (tersisa {{free}} GB).",
+    "noSpaceShort": "Ruang disk tidak cukup",
+    "installedBadge": "Terinstal",
+    "downloadingBadge": "Mengunduh",
+    "mark": {
+      "primary": "Disarankan",
+      "autocomplete": "Disarankan untuk pelengkapan otomatis",
+      "embedding": "Disarankan untuk pencarian kode"
+    },
+    "recTitle": "Disarankan untuk komputer ini",
+    "recLoading": "Mencocokkan model dengan komputer ini",
+    "recFailed": "Rekomendasi tidak dapat dihitung: {{message}}",
+    "recNone": "Tidak ada model di daftar yang cocok untuk komputer ini.",
+    "recPlan": "{{placement}} · sekitar {{tps}} tok/s · konteks {{context}}",
+    "budgetGpu": "{{gpu}}: {{vram}} GiB VRAM, {{ram}} GiB RAM dapat digunakan",
+    "budgetUnified": "{{memory}} GiB memori terpadu dapat digunakan",
+    "budgetCpu": "Tanpa GPU: {{ram}} GiB RAM dapat digunakan",
+    "showEntry": "Tampilkan detail",
+    "alternatives": "Alternatif",
+    "uncensored": {
+      "title": "Varian tanpa sensor",
+      "note": "Varian tanpa sensor adalah versi model dalam daftar di atas yang pelatihan penolakannya telah dihapus. Varian ini juga menjawab permintaan yang ditolak oleh model aslinya. Ylide tidak pernah memilihnya secara otomatis, dan seberapa baik varian ini menulis kode dan menggunakan alat belum diukur secara independen.",
+      "badge": "Tanpa sensor",
+      "badgeHint": "Pelatihan penolakan telah dihapus. Ylide tidak pernah memilih model ini secara otomatis."
+    },
+    "own": {
+      "title": "Tidak ada di daftar?",
+      "body": "Gunakan file model GGUF apa pun dari komputer Anda."
+    }
+  },
+  "runtimes": {
+    "title": "Runtime",
+    "description": "Build llama.cpp yang menjalankan model. Ylide memilih yang terbaik untuk perangkat keras Anda kecuali Anda memilih sendiri.",
+    "loading": "Memeriksa runtime yang terinstal",
+    "loadFailed": "Runtime tidak dapat diperiksa: {{message}}",
+    "installed": "Runtime terinstal",
+    "available": "Tersedia untuk diunduh",
+    "variant": "Varian",
+    "backend": "Backend",
+    "version": "Versi",
+    "origin": "Asal",
+    "size": "Unduhan",
+    "action": "Tindakan",
+    "bundled": "Disertakan",
+    "downloaded": "Diunduh",
+    "selected": "Dipilih",
+    "inUse": "Digunakan",
+    "use": "Gunakan runtime ini",
+    "chooseAuto": "Pilih otomatis",
+    "fixed": "Anda memilih {{variant}}. Ylide menggunakannya meskipun ada runtime yang lebih baik.",
+    "noneInstalled": "Belum ada runtime yang terinstal.",
+    "recommended": "Disarankan",
+    "install": "Instal",
+    "installNamed": "Instal {{variant}}",
+    "busy": "Runtime lain sedang diinstal.",
+    "downloadsOff": "Unduhan runtime dimatikan di Jaringan dan privasi.",
+    "extracting": "Mengekstrak",
+    "percent": "{{percent}}%",
+    "progressLabel": "Kemajuan instalasi {{variant}}",
+    "failed": "{{variant}} tidak dapat diinstal: {{message}}",
+    "done": "{{variant}} sudah terinstal.",
+    "applyHint": "Runtime yang baru dipilih digunakan saat model dijalankan lagi."
+  },
+  "registry": {
+    "title": "Daftar model",
+    "description": "Daftar model, kuantisasi, dan checksum yang menjadi dasar katalog.",
+    "version": "Versi",
+    "updatedAt": "Diperbarui",
+    "origin": "Asal",
+    "originName": {
+      "bundled": "Disertakan",
+      "cache": "Tersimpan",
+      "remote": "Diunduh"
+    },
+    "originHint": {
+      "bundled": "Daftar yang disertakan dengan versi Ylide ini.",
+      "cache": "Daftar lebih baru yang diunduh sebelumnya.",
+      "remote": "Diunduh selama sesi ini."
+    },
+    "models": "Model",
+    "url": "Alamat",
+    "refresh": "Periksa pembaruan",
+    "refreshHint": "Pemeriksaan hanya mengunduh daftar model, tidak ada yang lain.",
+    "updated": "Diperbarui ke versi {{version}}.",
+    "upToDate": "Daftar model sudah terbaru.",
+    "disabled": "Pembaruan daftar model dimatikan di Jaringan dan privasi.",
+    "disabledHint": "Pembaruan daftar model dimatikan.",
+    "failed": "Pembaruan gagal: {{message}}"
+  }
+}

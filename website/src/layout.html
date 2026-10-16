@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="{{t.lang}}" dir="{{dir}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{t.meta.description}}">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0C111B">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="canonical" href="https://ylide.app{{path}}">
+{{alternates}}
+<link rel="preload" href="/assets/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site.css?v={{build}}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{t.meta.description}}">
+<meta property="og:url" content="https://ylide.app{{path}}">
+</head>
+<body class="{{pageClass}}">
+<header class="top">
+  <a class="brand" href="{{home}}" aria-label="{{t.nav.home}}">{{brandMark}}<span>Ylide</span><span class="slogan" lang="en">Your Local IDE</span></a>
+  <nav class="nav" aria-label="{{t.nav.label}}">
+    <a class="nav-link" href="{{home}}#features">{{t.nav.features}}</a>
+    <a class="nav-link" href="{{home}}#privacy">{{t.nav.privacy}}</a>
+    {{langMenu}}
+    <a class="button small" href="{{installer}}">{{t.nav.download}}</a>
+  </nav>
+</header>
+{{langData}}
+<main id="main">
+{{body}}
+</main>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <span>{{t.footer.copyright}}</span>
+    <nav class="foot-links" aria-label="{{t.footer.legal}}">
+      <a href="{{privacyHref}}">{{t.footer.privacy}}</a>
+      {{imprintLink}}
+    </nav>
+  </div>
+</footer>
+<script src="/assets/site.js?v={{build}}" defer></script>
+</body>
+</html>

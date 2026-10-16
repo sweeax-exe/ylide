@@ -1,0 +1,177 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Tulis kode dengan AI yang tidak pernah keluar dari komputer Anda."
+  },
+  "actions": {
+    "cancel": "Batal",
+    "close": "Tutup",
+    "save": "Simpan",
+    "retry": "Coba lagi",
+    "delete": "Hapus",
+    "confirm": "Konfirmasi",
+    "copy": "Salin",
+    "copied": "Disalin",
+    "openFolder": "Buka folder",
+    "reset": "Kembalikan ke default",
+    "back": "Kembali",
+    "continue": "Lanjutkan",
+    "stop": "Hentikan",
+    "send": "Kirim",
+    "apply": "Terapkan",
+    "browse": "Telusuri"
+  },
+  "window": {
+    "minimize": "Minimalkan",
+    "maximize": "Maksimalkan",
+    "restore": "Pulihkan",
+    "close": "Tutup jendela"
+  },
+  "rail": {
+    "explorer": "File",
+    "search": "Cari",
+    "chat": "Chat",
+    "agents": "Agen",
+    "models": "Model",
+    "settings": "Pengaturan"
+  },
+  "titlebar": {
+    "noProject": "Tidak ada folder terbuka",
+    "quickOpen": "Pergi ke file",
+    "modelMenu": "Model dan runtime"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "Buang perubahan yang belum disimpan?",
+    "body_other": "{{count}} file memiliki perubahan yang belum disimpan. Membuka {{name}} akan menutupnya dan perubahannya hilang.",
+    "confirm": "Buang dan buka"
+  },
+  "server": {
+    "none": "Tidak ada model berjalan",
+    "starting": "Memulai {{model}}",
+    "loading": "Memuat {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Model berhenti",
+    "crashed": "Model berhenti secara tak terduga",
+    "external": "Server eksternal",
+    "start": "Jalankan model",
+    "stop": "Hentikan model"
+  },
+  "status": {
+    "context": "Konteks {{tokens}}",
+    "speed": "{{value}} tok/s",
+    "offline": "Offline: tidak ada yang keluar dari komputer ini",
+    "networkActivity": "Permintaan jaringan terakhir: {{purpose}}",
+    "runtime": "Runtime: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} token",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}}%"
+  },
+  "netPurpose": {
+    "registry": "pembaruan daftar model",
+    "modelDownload": "unduhan model",
+    "runtimeDownload": "unduhan runtime",
+    "updateCheck": "pemeriksaan pembaruan",
+    "updateDownload": "unduhan pembaruan"
+  },
+  "errors": {
+    "generic": "Terjadi kesalahan: {{message}}",
+    "no_model": "Tidak ada model yang berjalan. Jalankan model dari menu model.",
+    "no_project": "Buka folder terlebih dahulu.",
+    "network_disabled": "Akses jaringan ini dimatikan di pengaturan.",
+    "disk_full": "Ruang disk kosong tidak cukup ({{message}}).",
+    "model_not_installed": "Model ini belum diunduh.",
+    "no_model_selected": "Pilih model terlebih dahulu.",
+    "no_runtime": "Belum ada runtime inferensi yang terinstal.",
+    "server": "Server model melaporkan masalah: {{message}}",
+    "model": "Model mengembalikan kesalahan: {{message}}",
+    "download": "Unduhan gagal: {{message}}",
+    "workspace": "Kesalahan file: {{message}}",
+    "endpoint_unreachable": "Server eksternal tidak dapat dijangkau: {{message}}",
+    "not_found": "File tidak ditemukan.",
+    "not_gguf": "Ini bukan file model GGUF.",
+    "busy": "Harap tunggu, instalasi lain sedang berjalan.",
+    "update_none": "Tidak ada pembaruan untuk diinstal. Periksa pembaruan terlebih dahulu.",
+    "update_busy": "Pembaruan sedang diinstal.",
+    "update_signature": "Pembaruan ditolak karena tanda tangannya tidak cocok. Tidak ada yang diinstal.",
+    "update_format": "Pembaruan memiliki format yang tidak dapat diinstal Ylide: {{message}}",
+    "update_too_large": "Ukuran pembaruan jauh lebih besar dari biasanya, jadi tidak diunduh.",
+    "update_launch": "Penginstal tidak dapat dimulai: {{message}}",
+    "update_unsupported": "Di sistem ini, instal pembaruan secara manual."
+  },
+  "reasons": {
+    "fitsInVram": "Muat sepenuhnya di memori grafis Anda ({{vramGb}} GB terpakai).",
+    "moeOffload": "Mixture of experts: bagian yang selalu aktif dan {{vramGb}} GB tetap di GPU, {{cpuExpertLayers}} lapisan expert ({{ramGb}} GB) berada di RAM sistem. Hanya beberapa expert yang berjalan per token, jadi tetap cepat.",
+    "partialOffload": "{{gpuLayers}} lapisan berjalan di GPU ({{vramGb}} GB), sisanya di RAM sistem ({{ramGb}} GB). Ini berfungsi, tetapi lebih lambat.",
+    "unifiedMemory": "Berjalan di memori terpadu ({{ramGb}} GB) pada GPU Apple.",
+    "cpuOnly": "Berjalan di prosesor ({{ramGb}} GB RAM). Tidak ditemukan GPU yang sesuai.",
+    "speedEstimate": "Sekitar {{tps}} token per detik (perkiraan).",
+    "topQualityForBudget": "Model coding terkuat yang berjalan baik di mesin ini.",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "dilaporkan oleh penerbit",
+    "benchmarkIndependent": "diukur secara independen",
+    "toolCalling": "Penggunaan alat yang andal untuk mode agen ({{level}}).",
+    "longContext": "Konteks panjang {{tokens}} token: cukup untuk file besar dan sesi agen yang panjang.",
+    "reasoningModel": "Dapat berpikir sebelum menjawab; Ylide mematikan ini untuk edit cepat.",
+    "permissiveLicense": "{{license}}: bebas digunakan, termasuk untuk keperluan komersial.",
+    "restrictedLicense": "{{license}}: periksa ketentuan lisensi sebelum penggunaan komersial.",
+    "slowWarning": "Ini akan terasa lambat di mesin ini.",
+    "quantizedKvCache": "Menggunakan cache konteks terkompresi ({{type}}) agar muat.",
+    "sharesGpuWithMain": "Berjalan di GPU bersama model utama.",
+    "runsOnCpu": "Berjalan di prosesor dan menyisakan GPU untuk model utama.",
+    "autocompleteMovesToCpu": "Menggunakan memori GPU yang biasanya disediakan untuk pelengkapan otomatis.",
+    "noGpu": "Tidak ditemukan kartu grafis yang sesuai. Model berjalan di prosesor, yang lebih lambat.",
+    "lowDiskSpace": "Hanya {{freeGb}} GB ruang disk yang kosong.",
+    "nothingFits": "Tidak satu pun model yang dikenal cocok untuk mesin ini. Anda tetap dapat menggunakan file GGUF sendiri atau server eksternal."
+  },
+  "alternatives": {
+    "faster": "Lebih cepat",
+    "stronger": "Lebih kuat",
+    "lighter": "Lebih hemat memori"
+  },
+  "toolCallingLevel": {
+    "none": "tidak ada",
+    "basic": "dasar",
+    "good": "baik",
+    "excellent": "sangat baik"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agen",
+    "fim": "Pelengkapan otomatis",
+    "embedding": "Pencarian kode"
+  },
+  "placement": {
+    "gpu": "Di GPU",
+    "moeOffload": "GPU dan RAM (expert di RAM)",
+    "partialOffload": "Dibagi antara GPU dan RAM",
+    "unified": "Memori terpadu",
+    "cpu": "Di prosesor"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} tersedia",
+    "availableBody": "Instalasi memakan waktu sekitar satu menit, lalu Ylide dimulai ulang.",
+    "install": "Instal",
+    "confirmTitle": "Instal Ylide {{version}}?",
+    "confirmBody": "Pembaruan sudah diunduh dan diperiksa. Sekarang Ylide akan menghentikan model, menginstal pembaruan, lalu dimulai ulang.",
+    "confirmDirty_other": "{{count}} file memiliki perubahan yang belum disimpan. Simpan terlebih dahulu, atau perubahannya hilang.",
+    "confirmAgent": "Agen yang sedang berjalan akan dihentikan.",
+    "confirm": "Instal dan mulai ulang",
+    "failedTitle": "Pembaruan tidak diinstal"
+  }
+}

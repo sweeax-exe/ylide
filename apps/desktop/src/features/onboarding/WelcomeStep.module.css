@@ -1,0 +1,32 @@
+.prefs {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  justify-content: start;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border);
+  max-width: 62ch;
+}
+
+.pref {
+  display: contents;
+}
+
+.prefLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.slogan {
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  letter-spacing: 0.01em;
+}

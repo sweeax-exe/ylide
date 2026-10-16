@@ -1,0 +1,251 @@
+{
+  "title": "Agentes",
+  "roles": {
+    "orchestrator": "Orquestador",
+    "coder": "Programador",
+    "reviewer": "Revisor",
+    "user": "Tú"
+  },
+  "states": {
+    "idle": "Inactivo",
+    "queued": "En cola",
+    "thinking": "Pensando",
+    "callingTool": "Usando una herramienta",
+    "waitingForApproval": "Esperando aprobación",
+    "waitingForAnswer": "Esperando respuesta",
+    "paused": "En pausa",
+    "done": "Terminado",
+    "failed": "Fallido"
+  },
+  "taskStatus": {
+    "pending": "Pendiente",
+    "inProgress": "En curso",
+    "inReview": "En revisión",
+    "done": "Hecha",
+    "failed": "Fallida",
+    "skipped": "Omitida"
+  },
+  "risk": {
+    "read": "Lectura",
+    "write": "Escritura",
+    "delete": "Eliminación",
+    "execute": "Ejecución",
+    "communicate": "Comunicación"
+  },
+  "severity": {
+    "blocker": "Bloqueante",
+    "major": "Grave",
+    "minor": "Leve",
+    "nit": "Detalle"
+  },
+  "verdict": {
+    "approve": "Aprobado",
+    "request_changes": "Cambios solicitados"
+  },
+  "messageKind": {
+    "question": "Pregunta",
+    "answer": "Respuesta",
+    "feedback": "Comentarios",
+    "intervention": "Tu mensaje",
+    "note": "Nota"
+  },
+  "changeKind": {
+    "created": "Archivo nuevo",
+    "modified": "Modificado",
+    "deleted": "Eliminado"
+  },
+  "outcome": {
+    "completed": "Ejecución completada",
+    "cancelled": "Ejecución detenida",
+    "failed": "Ejecución fallida"
+  },
+  "steps": {
+    "planReady": "Plan listo",
+    "reviewing": "Revisando los cambios",
+    "stepLimit": "Límite de pasos alcanzado",
+    "answering": "Respondiendo a {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "¿Qué deben hacer los agentes?",
+    "goalPlaceholder": "Por ejemplo: corrige el total del carrito y añade una prueba para carritos vacíos",
+    "goalHint": "Describe el resultado que quieres. Ctrl+Intro inicia la ejecución.",
+    "start": "Iniciar agentes",
+    "readiness": "Requisitos",
+    "modelReady": "{{model}} está en ejecución",
+    "modelLoading": "{{model}} se está cargando",
+    "noModel": "No hay ningún modelo en ejecución. Los agentes necesitan un modelo local.",
+    "modelCrashed": "El modelo se detuvo inesperadamente. Vuelve a iniciarlo en la vista de modelos.",
+    "openModels": "Abrir modelos",
+    "toolCallsFailed": "Este modelo no llama a las herramientas de forma fiable, así que los agentes pueden detenerse antes de tiempo. Un modelo más potente funciona mejor.",
+    "project": "Trabaja en {{name}}",
+    "noProject": "No hay ninguna carpeta abierta. Los agentes necesitan un proyecto en el que trabajar.",
+    "previous": "Ejecución anterior",
+    "showRun": "Mostrar detalles"
+  },
+  "mode": {
+    "label": "Aprobaciones",
+    "ask": "Preguntar antes",
+    "autoSafe": "Pasos seguros",
+    "autonomous": "Autónomo",
+    "askHint": "Los agentes leen el proyecto por su cuenta, pero cada cambio, eliminación y comando espera a que hagas clic.",
+    "autoSafeHint": "Las lecturas y las ediciones que se pueden deshacer se ejecutan automáticamente; los comandos y las eliminaciones piden confirmación antes.",
+    "autonomousHint": "Todo se ejecuta automáticamente, excepto lo que todavía protegen los dos interruptores de abajo.",
+    "allowedCommands_one": "{{count}} comando permitido se ejecuta sin preguntar.",
+    "allowedCommands_many": "{{count}} comandos permitidos se ejecutan sin preguntar.",
+    "allowedCommands_other": "{{count}} comandos permitidos se ejecutan sin preguntar.",
+    "confirmCommands": "Preguntar antes de ejecutar comandos",
+    "confirmDeletes": "Preguntar antes de eliminar archivos",
+    "unguardedCommands": "Los agentes ejecutan comandos sin preguntar. Sus efectos no se pueden deshacer.",
+    "unguardedDeletes": "Los agentes eliminan archivos sin preguntar. Puedes restaurarlos desde los puntos de control.",
+    "unguardedBoth": "Los agentes ejecutan comandos y eliminan archivos sin preguntar. Los efectos de los comandos no se pueden deshacer."
+  },
+  "run": {
+    "elapsed": "Tiempo transcurrido",
+    "expandGoal": "Mostrar objetivo completo",
+    "collapseGoal": "Mostrar menos",
+    "starting": "Iniciando",
+    "planning": "Planificando",
+    "progress": "Tarea {{index}} de {{total}}",
+    "wrappingUp": "Finalizando",
+    "paused": "En pausa",
+    "stopping": "Deteniendo",
+    "pause": "Pausar",
+    "resume": "Reanudar",
+    "stop": "Detener",
+    "stopTitle": "¿Detener la ejecución?",
+    "stopBody": "Los agentes se detienen de inmediato. Los cambios hechos hasta ahora se mantienen y puedes deshacerlos desde los puntos de control.",
+    "stopConfirm": "Detener ejecución",
+    "newRun": "Nueva ejecución",
+    "questionWaiting": "{{agent}} espera tu respuesta.",
+    "answer": "Responder",
+    "tabs": "Detalles de la ejecución",
+    "tabSummary": "Resumen",
+    "tabTasks": "Tareas",
+    "tabTasksCount": "Tareas {{done}}/{{total}}",
+    "tabActivity": "Actividad",
+    "tabCheckpoints": "Puntos de control",
+    "tabCheckpointsCount": "Puntos de control {{value}}",
+    "changedFiles": "Archivos modificados",
+    "noChanges": "No se modificó ningún archivo."
+  },
+  "lines": {
+    "label": "Líneas de universo de los agentes",
+    "summaryEmpty": "La ejecución está empezando.",
+    "summaryPlanning": "El orquestador está planificando.",
+    "summaryTask": "Tarea {{id}} de {{total}}, {{title}}: {{status}}.",
+    "summaryTasks": "{{done}} de {{total}} tareas hechas.",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "Agentes",
+    "waiting": "Todavía no hay ningún agente activo.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "Velocidad de generación",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "Tokens generados en esta ejecución",
+    "intervene": "Intervenir",
+    "intervenePlaceholder": "Mensaje para {{agent}}",
+    "interveneSent": "Enviado. {{agent}} lo lee antes del siguiente paso."
+  },
+  "tasks": {
+    "planning": "El orquestador está planificando las tareas.",
+    "noPlan": "No se creó ningún plan.",
+    "plan": "Plan:",
+    "rounds_one": "{{count}} ronda de revisión",
+    "rounds_many": "{{count}} rondas de revisión",
+    "rounds_other": "{{count}} rondas de revisión",
+    "showDetails": "Mostrar detalles de {{id}}",
+    "hideDetails": "Ocultar detalles de {{id}}",
+    "files": "Archivos previstos",
+    "general": "General",
+    "openAt": "Abrir {{location}}"
+  },
+  "feed": {
+    "empty": "Todavía no ha pasado nada.",
+    "to": "para",
+    "ok": "Correcto",
+    "failed": "Fallido",
+    "running": "En ejecución",
+    "awaitingApproval": "Esperando tu aprobación",
+    "rejected": "Rechazado por ti",
+    "rejectedReason": "Rechazado por ti: {{reason}}",
+    "plan_one": "Plan con {{count}} tarea",
+    "plan_many": "Plan con {{count}} tareas",
+    "plan_other": "Plan con {{count}} tareas",
+    "approved": "Aprobaste: {{title}}",
+    "approvedAlways": "Aprobaste {{title}} y permitiste `{{tool}}` durante el resto de esta ejecución",
+    "rejectedAction": "Rechazaste: {{title}}",
+    "reason": "Motivo: {{reason}}",
+    "openFile": "Abrir archivo",
+    "openPath": "Abrir {{path}}",
+    "showDiff": "Mostrar los cambios en {{path}}",
+    "hideDiff": "Ocultar los cambios en {{path}}",
+    "showMore": "Mostrar más",
+    "showLess": "Mostrar menos",
+    "earlier_one": "Mostrar {{count}} entrada anterior",
+    "earlier_many": "Mostrar {{count}} entradas anteriores",
+    "earlier_other": "Mostrar {{count}} entradas anteriores"
+  },
+  "diff": {
+    "label": "Cambios en {{path}}",
+    "showAll": "Mostrar las {{total}} líneas",
+    "empty": "No hay cambios que mostrar."
+  },
+  "checkpoints": {
+    "empty": "Los puntos de control aparecen cuando empieza una tarea. Te permiten deshacer lo que cambiaron los agentes.",
+    "intro": "Antes de cada tarea, Ylide guarda una copia de cada archivo que tocan los agentes.",
+    "undo": "Deshacer desde aquí",
+    "undone": "Deshecho",
+    "busyHint": "Pausa o detén la ejecución para deshacer cambios.",
+    "confirmTitle": "¿Deshacer desde aquí?",
+    "confirmBody": "Se revierten todos los cambios que hicieron los agentes a partir de “{{label}}”. Los archivos vuelven al estado que tenían antes de este paso.",
+    "confirmWarning": "Los efectos de los comandos de shell, como paquetes instalados o archivos creados fuera del proyecto, no se pueden deshacer.",
+    "confirm": "Deshacer cambios",
+    "restored_one": "Se restauró {{count}} archivo",
+    "restored_many": "Se restauraron {{count}} archivos",
+    "restored_other": "Se restauraron {{count}} archivos",
+    "restoredMore": "{{files}} y {{more}} más",
+    "nothing": "No había nada que restaurar."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} quiere modificar un archivo",
+    "titleDelete": "{{agent}} quiere eliminar un archivo",
+    "titleExecute": "{{agent}} quiere ejecutar un comando",
+    "titleOther": "{{agent}} pide permiso",
+    "changes": "Cambios",
+    "command": "Comando",
+    "path": "Ruta",
+    "detail": "Detalles",
+    "undoable": "Puedes deshacerlo más tarde desde los puntos de control.",
+    "notUndoable": "Los comandos pueden cambiar cosas fuera de los archivos del proyecto. Sus efectos no se pueden deshacer.",
+    "approve": "Aprobar",
+    "approveAlways": "Aprobar para esta ejecución",
+    "approveAlwaysHint": "Aprobar para esta ejecución permite que los agentes usen {{tool}} sin volver a preguntar hasta que termine la ejecución.",
+    "reject": "Rechazar",
+    "reasonLabel": "Motivo (opcional)",
+    "reasonHint": "El agente lo lee y elige otro enfoque.",
+    "reasonPlaceholder": "Por ejemplo: ejecuta mejor las pruebas con npm run test:unit",
+    "queue_one": "{{count}} solicitud más en espera",
+    "queue_many": "{{count}} solicitudes más en espera",
+    "queue_other": "{{count}} solicitudes más en espera"
+  },
+  "question": {
+    "title": "{{agent}} tiene una pregunta",
+    "answerLabel": "Tu respuesta",
+    "hint": "Ctrl+Intro envía la respuesta.",
+    "later": "Responder más tarde",
+    "send": "Enviar respuesta"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "Un agente espera tu aprobación."
+  },
+  "errors": {
+    "start": "No se pudieron iniciar los agentes",
+    "approve": "No se pudo enviar tu decisión",
+    "answer": "No se pudo enviar tu respuesta",
+    "intervene": "No se pudo enviar tu mensaje",
+    "restore": "No se pudieron deshacer los cambios",
+    "settings": "No se pudo guardar el ajuste de aprobaciones"
+  }
+}

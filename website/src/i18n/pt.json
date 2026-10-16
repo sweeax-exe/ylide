@@ -1,0 +1,111 @@
+{
+  "lang": "pt-BR",
+  "langName": "Português (Brasil)",
+  "suggest": "Ler esta página em português (Brasil)",
+  "meta": {
+    "title": "Ylide: a IDE com IA que nunca sai do seu computador",
+    "description": "Chat, edições inline e agentes de código com modelos rodando no seu próprio computador. Sem conta, sem nuvem, sem assinatura. Código aberto.",
+    "privacyTitle": "Privacidade: Ylide",
+    "imprintTitle": "Aviso legal: Ylide"
+  },
+  "nav": {
+    "label": "Navegação principal",
+    "features": "Recursos",
+    "privacy": "Privacidade",
+    "download": "Baixar",
+    "home": "Ylide, página inicial",
+    "language": "Idioma"
+  },
+  "hero": {
+    "title": "A IDE com IA que nunca sai do seu computador.",
+    "lead": "Chat, edições inline e uma equipe de agentes de código, movidos só por modelos que rodam no seu próprio computador. Sem conta, sem nuvem, sem assinatura.",
+    "download": "Baixar para Windows",
+    "meta": "Versão {{version}} para Windows 10 e 11, 64 bits, {{size}} MB. Código aberto sob a licença Apache-2.0.",
+    "tube": "seu computador"
+  },
+  "showcase": {
+    "alt": "O editor do Ylide com a árvore de arquivos, um arquivo JavaScript e o painel de chat",
+    "caption": "Arquivos, editor e chat em uma só janela. Tudo roda no seu computador."
+  },
+  "chat": {
+    "title": "Pergunte ao seu projeto.",
+    "body": "Anexe arquivos, pastas ou símbolos com @. A resposta chega palavra por palavra, direto do modelo na sua placa de vídeo, e o que você pergunta fica aqui.",
+    "question": "O que applyDiscount faz em <code>@cart.js</code>?",
+    "answer": "Aplica um desconto percentual a cada item e arredonda para centavos inteiros. Valores abaixo de 0 ou acima de 100 são rejeitados com um <code>TypeError</code>.",
+    "stats": "75 tokens por segundo, neste computador",
+    "you": "Você",
+    "model": "Qwen3.6 35B-A3B"
+  },
+  "inline": {
+    "title": "Edite o código ali mesmo.",
+    "body": "Selecione, pressione <kbd>Ctrl</kbd> <kbd>K</kbd> e descreva o que deve mudar. O Ylide mostra a alteração como um diff, e você aceita ou descarta.",
+    "prompt": "Compare os ids de forma estrita",
+    "accept": "Aceitar",
+    "reject": "Descartar"
+  },
+  "agents": {
+    "title": "Uma equipe que passa o trabalho de mão em mão.",
+    "body": "O orquestrador planeja, o programador escreve, o revisor confere. Cada passagem é um cruzamento das linhas de universo deles. Comandos e exclusões só rodam depois da sua aprovação, e cada passo pode ser desfeita com checkpoints.",
+    "legend": "Papéis",
+    "orchestrator": "Orquestrador",
+    "coder": "Programador",
+    "reviewer": "Revisor",
+    "stepsLabel": "Como funciona uma execução dos agentes",
+    "step1": "O orquestrador lê o projeto e divide o pedido em três tarefas.",
+    "step2": "O programador altera <code>cart.js</code> e roda os testes.",
+    "step3": "O revisor confere o diff e pede um teste para carrinhos vazios.",
+    "step4": "O programador adiciona o teste. Doze de doze testes passam.",
+    "step5": "O revisor aprova a tarefa. Você vê cada alteração antes que ela seja mantida.",
+    "task": "Tarefa"
+  },
+  "hardware": {
+    "title": "Sob medida para o seu hardware.",
+    "body": "Na primeira inicialização, o Ylide mede sua placa de vídeo, memória e processador e sugere o modelo mais potente que roda bem nessa configuração. Depois baixa o modelo, verifica o arquivo e o inicia."
+  },
+  "setup": {
+    "label": "Configure o Ylide em cinco etapas",
+    "s1": "Boas-vindas",
+    "s1b": "Escolha o idioma e o tema.",
+    "s2": "Análise",
+    "s2b": "Placa de vídeo, memória e processador, medidos em um quinto de segundo.",
+    "s3": "Modelo",
+    "s3b": "O modelo mais potente que roda bem neste computador.",
+    "s4": "Download",
+    "s4b": "Cada arquivo é conferido com a soma de verificação SHA-256, e você pode pausar a qualquer momento.",
+    "s5": "Pronto",
+    "s5b": "Chat, edições e agentes agora rodam no seu computador.",
+    "figure": "Capturas de tela da configuração do Ylide",
+    "alt1": "Etapa de boas-vindas com a escolha de idioma e tema",
+    "alt2": "Análise do hardware mostrando placa de vídeo, memória, processador e disco",
+    "alt3": "Recomendação de modelo com velocidade, contexto e uso de memória",
+    "alt4": "Download do modelo e da aceleração CUDA mostrando o progresso",
+    "alt5": "Tela “Pronto” com runtime, dispositivo e atalhos de teclado",
+    "note": "Capturas de tela da interface em inglês, feitas no computador do desenvolvedor."
+  },
+  "privacy": {
+    "title": "Quatro portas para a internet. Todas sob seu controle.",
+    "body": "O Ylide não coleta dados de uso, não tem login e nunca faz upload do seu código. Ele só se conecta à internet para estas quatro finalidades. Cada uma pode ser desativada, e toda solicitação aparece no registro de rede.",
+    "listLabel": "As únicas conexões que o Ylide faz",
+    "registry": "Atualizar a lista de modelos",
+    "registryHost": "ylide.app",
+    "models": "Baixar modelos",
+    "modelsHost": "huggingface.co",
+    "runtimes": "Baixar runtimes",
+    "runtimesHost": "github.com",
+    "updates": "Verificar atualizações",
+    "updatesHost": "ylide.app",
+    "on": "ativado"
+  },
+  "open": {
+    "title": "Aberto até a última linha.",
+    "body": "O Ylide é código aberto sob a licença Apache-2.0. O código-fonte estará no GitHub em breve, para você ler, compilar por conta própria e ajudar a desenvolver.",
+    "download": "Baixar o Ylide {{version}}",
+    "smartscreen": "O Windows pode exibir um aviso na primeira inicialização porque o instalador ainda não tem assinatura comercial. Clique em “Mais informações” e depois em “Executar assim mesmo”."
+  },
+  "footer": {
+    "copyright": "© 2026 Ylide contributors",
+    "privacy": "Privacidade",
+    "imprint": "Aviso legal",
+    "legal": "Informações legais"
+  }
+}

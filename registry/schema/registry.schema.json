@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "registry.schema.json",
+  "title": "Local model registry",
+  "description": "Models and inference runtimes the IDE can download. Schema major version 2 (version 1 lists are the same without uncensored models). Field semantics are documented in docs/registry.md.",
+  "type": "object",
+  "required": ["schemaVersion", "registryVersion", "updatedAt", "models"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "enum": [1, 2] },
+    "registryVersion": {
+      "type": "string",
+      "pattern": "^[0-9]{4}\\.[0-9]{1,2}\\.[0-9]{1,2}(\\.[0-9]+)?$",
+      "description": "Calendar version of the data (YYYY.M.D[.N]). A higher version replaces the cached copy."
+    },
+    "updatedAt": { "type": "string", "format": "date" },
+    "runtimes": { "type": "array", "items": { "$ref": "#/$defs/runtime" } },
+    "gpuHints": { "type": "array", "items": { "$ref": "#/$defs/gpuHint" } },
+    "models": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/model" } }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "modeDefaults": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "temperature": { "type": ["number", "null"], "minimum": 0 },
+        "topP": { "type": ["number", "null"] },
+        "topK": { "type": ["integer", "null"] },
+        "minP": { "type": ["number", "null"] },
+        "presencePenalty": { "type": ["number", "null"] },
+        "repeatPenalty": { "type": ["number", "null"] },
+        "templateKwargs": { "type": ["object", "null"] }
+      }
+    },
+    "localizedText": {
+      "type": "object",
+      "required": ["en"],
+      "propertyNames": { "pattern": "^[a-z]{2}(-[A-Z]{2})?$" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "license": {
+      "type": "object",
+      "required": ["id", "name", "url", "commercialUse"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "SPDX identifier or LicenseRef-<name>" },
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "commercialUse": { "type": "boolean" },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "backend": { "enum": ["cuda", "vulkan", "metal", "rocm", "cpu"] },
+    "remoteFile": {
+      "type": "object",
+      "required": ["url", "sizeBytes", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "pattern": "^https://" },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["id", "version", "license", "assets"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" },
+        "license": { "$ref": "#/$defs/license" },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["os", "arch", "backend", "variant", "files"],
+            "additionalProperties": false,
+            "properties": {
+              "os": { "enum": ["windows", "macos", "linux"] },
+              "arch": { "enum": ["x86_64", "aarch64"] },
+              "backend": { "$ref": "#/$defs/backend" },
+              "variant": { "type": "string" },
+              "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/remoteFile" } },
+              "bundled": { "type": "boolean" },
+              "minCudaDriver": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "gpuHint": {
+      "type": "object",
+      "required": ["nameContains", "bandwidthGbps"],
+      "additionalProperties": false,
+      "properties": {
+        "nameContains": { "type": "string", "minLength": 2 },
+        "bandwidthGbps": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "id", "name", "family", "publisher", "releaseDate", "roles", "description", "license",
+        "architecture", "context", "capabilities", "quality", "source", "variants"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "name": { "type": "string" },
+        "family": { "type": "string" },
+        "publisher": { "type": "string" },
+        "releaseDate": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}(-[0-9]{2})?$" },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["chat", "agent", "fim", "embedding"] }
+        },
+        "description": { "$ref": "#/$defs/localizedText" },
+        "strengths": { "type": "array", "items": { "$ref": "#/$defs/localizedText" } },
+        "license": { "$ref": "#/$defs/license" },
+        "architecture": {
+          "type": "object",
+          "required": ["type", "paramsTotalB", "paramsActiveB", "layers", "kvHeads", "headDimK", "headDimV"],
+          "additionalProperties": false,
+          "properties": {
+            "type": { "enum": ["dense", "moe"] },
+            "paramsTotalB": { "type": "number", "exclusiveMinimum": 0 },
+            "paramsActiveB": { "type": "number", "exclusiveMinimum": 0 },
+            "layers": { "type": "integer", "minimum": 1 },
+            "attentionLayers": { "type": ["integer", "null"], "minimum": 0 },
+            "kvHeads": { "type": "integer", "minimum": 1 },
+            "headDimK": { "type": "integer", "minimum": 1 },
+            "headDimV": { "type": "integer", "minimum": 1 },
+            "slidingWindow": { "type": ["integer", "null"], "minimum": 1 },
+            "slidingWindowLayers": { "type": ["integer", "null"], "minimum": 0 },
+            "kvBytesPerTokenF16": { "type": ["integer", "null"], "minimum": 1 },
+            "expertFraction": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "recurrentStateMib": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "context": {
+          "type": "object",
+          "required": ["max", "recommended"],
+          "additionalProperties": false,
+          "properties": {
+            "max": { "type": "integer", "minimum": 512 },
+            "recommended": { "type": "integer", "minimum": 512 }
+          }
+        },
+        "capabilities": {
+          "type": "object",
+          "required": ["toolCalling", "reasoning"],
+          "additionalProperties": false,
+          "properties": {
+            "toolCalling": { "enum": ["none", "basic", "good", "excellent"] },
+            "reasoning": { "enum": ["none", "optional", "always"] },
+            "vision": { "type": "boolean" }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "required": ["coding", "agentic"],
+          "additionalProperties": false,
+          "description": "Curated 0-100 scores derived from the listed benchmarks; used for ranking only.",
+          "properties": {
+            "coding": { "type": "number", "minimum": 0, "maximum": 100 },
+            "agentic": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "requestDefaults": {
+          "type": ["object", "null"],
+          "description": "Per-request sampling and chat-template switches for agent, chat and inline-edit requests.",
+          "additionalProperties": false,
+          "properties": {
+            "agent": { "$ref": "#/$defs/modeDefaults" },
+            "chat": { "$ref": "#/$defs/modeDefaults" },
+            "inline": { "$ref": "#/$defs/modeDefaults" }
+          }
+        },
+        "source": {
+          "type": "object",
+          "required": ["hfRepo", "revision"],
+          "additionalProperties": false,
+          "properties": {
+            "hfRepo": { "type": "string", "pattern": "^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$" },
+            "revision": { "type": "string", "minLength": 1 },
+            "homepage": { "type": ["string", "null"] }
+          }
+        },
+        "variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["quant", "bitsPerWeight", "files", "qualityPenalty"],
+            "additionalProperties": false,
+            "properties": {
+              "quant": { "type": "string" },
+              "bitsPerWeight": { "type": "number", "exclusiveMinimum": 0, "maximum": 32 },
+              "qualityPenalty": { "type": "number", "minimum": 0 },
+              "files": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["path", "sizeBytes", "sha256"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": { "type": "string", "pattern": "\\.gguf$" },
+                    "sizeBytes": { "type": "integer", "minimum": 1 },
+                    "sha256": { "$ref": "#/$defs/sha256" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fim": {
+          "type": ["object", "null"],
+          "required": ["prefix", "suffix", "middle"],
+          "additionalProperties": false,
+          "properties": {
+            "prefix": { "type": "string" },
+            "suffix": { "type": "string" },
+            "middle": { "type": "string" },
+            "fileSeparator": { "type": ["string", "null"] },
+            "stop": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "embedding": {
+          "type": ["object", "null"],
+          "required": ["dimensions", "pooling", "maxTokens"],
+          "additionalProperties": false,
+          "properties": {
+            "dimensions": { "type": "integer", "minimum": 1 },
+            "pooling": { "enum": ["mean", "cls", "last", "rank"] },
+            "maxTokens": { "type": "integer", "minimum": 1 },
+            "queryPrefix": { "type": "string" },
+            "documentPrefix": { "type": "string" }
+          }
+        },
+        "benchmarks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "score", "unit", "sourceUrl", "selfReported"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "score": { "type": "number" },
+              "unit": { "type": "string" },
+              "sourceUrl": { "type": "string", "format": "uri" },
+              "selfReported": { "type": "boolean" },
+              "date": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "llamaArgs": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": ["string", "null"] },
+        "uncensored": {
+          "type": "boolean",
+          "description": "A variant with the refusal training removed. Never recommended automatically; marked in the catalog. Requires schemaVersion 2."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+.previewRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-top: 1px solid var(--border);
+}
+
+.previewLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.preview {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  color: var(--syntax-variable);
+  overflow-x: auto;
+  font-variant-ligatures: none;
+}
+
+.kw {
+  color: var(--syntax-keyword);
+}
+
+.fn {
+  color: var(--syntax-function);
+}
+
+.ty {
+  color: var(--syntax-type);
+}
+
+.num {
+  color: var(--syntax-number);
+}

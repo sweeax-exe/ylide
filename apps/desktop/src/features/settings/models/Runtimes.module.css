@@ -1,0 +1,117 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.tableWrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  /* Scrolls on its own in a narrow column, so the page does not. */
+  overflow-x: auto;
+  /* Also clips the visually hidden header labels, which are absolutely positioned. */
+  position: relative;
+}
+
+.table {
+  width: 100%;
+  /* Room for every column before the frame starts to scroll. */
+  min-width: 520px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+}
+
+.table th {
+  height: 32px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: left;
+}
+
+.table td {
+  height: 44px;
+  padding: var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-1);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.selected td {
+  background: var(--bg-selected);
+}
+
+.variant {
+  font-size: var(--text-sm);
+  color: var(--metal);
+  white-space: nowrap;
+}
+
+.variantLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.table th.num {
+  text-align: right;
+}
+
+.actionHead {
+  width: 1%;
+}
+
+.actionCell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.emptyCell {
+  color: var(--text-2);
+}
+
+.subTitle {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.progress {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.progressBar {
+  width: 120px;
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}

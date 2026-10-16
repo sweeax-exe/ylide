@@ -1,0 +1,177 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "用 AI 写代码，一切都不离开你的电脑。"
+  },
+  "actions": {
+    "cancel": "取消",
+    "close": "关闭",
+    "save": "保存",
+    "retry": "重试",
+    "delete": "删除",
+    "confirm": "确认",
+    "copy": "复制",
+    "copied": "已复制",
+    "openFolder": "打开文件夹",
+    "reset": "恢复默认",
+    "back": "返回",
+    "continue": "继续",
+    "stop": "停止",
+    "send": "发送",
+    "apply": "应用",
+    "browse": "浏览"
+  },
+  "window": {
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "restore": "还原",
+    "close": "关闭窗口"
+  },
+  "rail": {
+    "explorer": "文件",
+    "search": "搜索",
+    "chat": "聊天",
+    "agents": "智能体",
+    "models": "模型",
+    "settings": "设置"
+  },
+  "titlebar": {
+    "noProject": "未打开文件夹",
+    "quickOpen": "转到文件",
+    "modelMenu": "模型和运行时"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "放弃未保存的更改？",
+    "body_other": "{{count}} 个文件有未保存的更改。打开 {{name}} 会关闭这些文件，更改将丢失。",
+    "confirm": "放弃并打开"
+  },
+  "server": {
+    "none": "没有运行中的模型",
+    "starting": "正在启动 {{model}}",
+    "loading": "正在加载 {{model}}",
+    "ready": "{{model}}",
+    "stopped": "模型已停止",
+    "crashed": "模型意外停止",
+    "external": "外部服务器",
+    "start": "启动模型",
+    "stop": "停止模型"
+  },
+  "status": {
+    "context": "上下文 {{tokens}}",
+    "speed": "{{value}} tok/s",
+    "offline": "离线：没有任何数据离开这台电脑",
+    "networkActivity": "最近一次网络请求：{{purpose}}",
+    "runtime": "运行时：{{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} token",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}}%"
+  },
+  "netPurpose": {
+    "registry": "模型列表更新",
+    "modelDownload": "模型下载",
+    "runtimeDownload": "运行时下载",
+    "updateCheck": "更新检查",
+    "updateDownload": "更新下载"
+  },
+  "errors": {
+    "generic": "出现错误：{{message}}",
+    "no_model": "没有运行中的模型。请在模型菜单中启动一个。",
+    "no_project": "请先打开一个文件夹。",
+    "network_disabled": "此项网络访问已在设置中关闭。",
+    "disk_full": "磁盘可用空间不足（{{message}}）。",
+    "model_not_installed": "此模型尚未下载。",
+    "no_model_selected": "请先选择一个模型。",
+    "no_runtime": "未安装推理运行时。",
+    "server": "模型服务器报告了问题：{{message}}",
+    "model": "模型返回了错误：{{message}}",
+    "download": "下载失败：{{message}}",
+    "workspace": "文件错误：{{message}}",
+    "endpoint_unreachable": "无法连接外部服务器：{{message}}",
+    "not_found": "找不到该文件。",
+    "not_gguf": "这不是 GGUF 模型文件。",
+    "busy": "请稍候，另一项安装正在进行。",
+    "update_none": "没有可安装的更新。请先检查更新。",
+    "update_busy": "更新已在安装中。",
+    "update_signature": "更新的签名不匹配，已被拒绝。没有安装任何内容。",
+    "update_format": "Ylide 无法安装这种格式的更新：{{message}}",
+    "update_too_large": "此更新体积异常大，因此未下载。",
+    "update_launch": "无法启动安装程序：{{message}}",
+    "update_unsupported": "在此系统上，请手动安装更新。"
+  },
+  "reasons": {
+    "fitsInVram": "可完全放入你的显存（占用 {{vramGb}} GB）。",
+    "moeOffload": "混合专家模型：始终激活的部分和 {{vramGb}} GB 留在 GPU 上，{{cpuExpertLayers}} 个专家层（{{ramGb}} GB）放在系统内存中。每个 token 只运行少数专家，因此速度依然很快。",
+    "partialOffload": "{{gpuLayers}} 层在 GPU 上运行（{{vramGb}} GB），其余在系统内存中（{{ramGb}} GB）。可以运行，但速度较慢。",
+    "unifiedMemory": "在 Apple GPU 上使用统一内存运行（{{ramGb}} GB）。",
+    "cpuOnly": "在处理器上运行（{{ramGb}} GB 内存）。未找到合适的 GPU。",
+    "speedEstimate": "每秒约 {{tps}} 个 token（估计值）。",
+    "topQualityForBudget": "能在这台电脑上流畅运行的最强编程模型。",
+    "benchmark": "{{name}}：{{score}} {{unit}}",
+    "benchmarkSelfReported": "发布方自报",
+    "benchmarkIndependent": "独立测得",
+    "toolCalling": "在智能体模式下能可靠地使用工具（{{level}}）。",
+    "longContext": "{{tokens}} token 的长上下文：足以处理大文件和长时间的智能体会话。",
+    "reasoningModel": "可以先思考再回答；快速编辑时 Ylide 会关闭此功能。",
+    "permissiveLicense": "{{license}}：可免费使用，也可用于商业用途。",
+    "restrictedLicense": "{{license}}：商业使用前请查看许可条款。",
+    "slowWarning": "在这台电脑上运行会比较慢。",
+    "quantizedKvCache": "使用压缩的上下文缓存（{{type}}），以便放得下。",
+    "sharesGpuWithMain": "与主模型共用 GPU 运行。",
+    "runsOnCpu": "在处理器上运行，把 GPU 留给主模型。",
+    "autocompleteMovesToCpu": "使用原本为自动补全预留的显存。",
+    "noGpu": "未找到合适的显卡。模型将在处理器上运行，速度较慢。",
+    "lowDiskSpace": "磁盘仅剩 {{freeGb}} GB 可用空间。",
+    "nothingFits": "已知的模型都不适合这台电脑。你仍然可以使用自己的 GGUF 文件或外部服务器。"
+  },
+  "alternatives": {
+    "faster": "更快",
+    "stronger": "更强",
+    "lighter": "更省内存"
+  },
+  "toolCallingLevel": {
+    "none": "无",
+    "basic": "基础",
+    "good": "良好",
+    "excellent": "优秀"
+  },
+  "modelRoles": {
+    "chat": "聊天",
+    "agent": "智能体",
+    "fim": "自动补全",
+    "embedding": "代码搜索"
+  },
+  "placement": {
+    "gpu": "在 GPU 上",
+    "moeOffload": "GPU 和内存（专家在内存中）",
+    "partialOffload": "分摊到 GPU 和内存",
+    "unified": "统一内存",
+    "cpu": "在处理器上"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} 现已可用",
+    "availableBody": "安装大约需要一分钟，之后 Ylide 会重新启动。",
+    "install": "安装",
+    "confirmTitle": "安装 Ylide {{version}}？",
+    "confirmBody": "更新已下载并通过校验。Ylide 现在会停止模型、安装更新，然后重新启动。",
+    "confirmDirty_other": "{{count}} 个文件有未保存的更改。请先保存，否则更改将丢失。",
+    "confirmAgent": "正在运行的智能体将被停止。",
+    "confirm": "安装并重启",
+    "failedTitle": "更新未安装"
+  }
+}

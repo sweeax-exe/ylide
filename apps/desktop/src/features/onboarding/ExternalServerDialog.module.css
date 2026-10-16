@@ -1,0 +1,36 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.intro {
+  margin: 0;
+}
+
+.fieldError {
+  font-size: var(--text-sm);
+  color: var(--danger);
+}
+
+.remote {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--warning-muted);
+  color: var(--text-1);
+  line-height: var(--leading-ui);
+}
+
+.remote svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--warning);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+}

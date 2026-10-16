@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: Rust
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      # tauri-build needs the bundled runtimes folder, so fetch it like a local
+      # setup does (checksums from registry/models.json).
+      - uses: actions/cache@v4
+        with:
+          path: apps/desktop/src-tauri/resources/runtime
+          key: runtime-${{ hashFiles('registry/models.json', 'scripts/fetch-runtime.mjs') }}
+      - run: node scripts/fetch-runtime.mjs --if-missing
+      - name: Formatting
+        # Not enforced until the code base has been formatted once with `cargo fmt --all`.
+        continue-on-error: true
+        run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - name: Generated TypeScript bindings are committed
+        shell: bash
+        run: |
+          changes=$(git status --porcelain -- apps/desktop/src/bindings)
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            echo "::error::Run 'cargo test --workspace export_bindings' and commit apps/desktop/src/bindings."
+            exit 1
+          fi
+
+  ui:
+    name: UI
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: node node_modules/typescript/bin/tsc --noEmit -p apps/desktop
+      - run: npm test -w apps/desktop
+
+  discord:
+    name: Discord bot
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/discord
+    steps:
+      - uses: actions/checkout@v5
+      # Releases before 0.1.5 do not contain the bot yet.
+      - id: bot
+        shell: bash
+        working-directory: .
+        run: echo "present=$([ -f tools/discord/package-lock.json ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - if: steps.bot.outputs.present == 'yes'
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/discord/package-lock.json
+      - if: steps.bot.outputs.present == 'yes'
+        run: npm ci
+      - if: steps.bot.outputs.present == 'yes'
+        run: npm test

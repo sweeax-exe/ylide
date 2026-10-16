@@ -1,0 +1,61 @@
+name: Bug report
+description: Something in Ylide does not work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Security problems go through [SECURITY.md](https://github.com/sweeax-exe/ylide/blob/main/SECURITY.md), not here.
+        If you would rather not share details in public (log files, paths, hardware), open a private ticket on the [Ylide Discord](https://discord.gg/GRzTvRGHpr) with **Report a bug** instead.
+  - type: input
+    id: version
+    attributes:
+      label: Ylide version
+      description: Shown in Settings and at the bottom left during setup.
+      placeholder: "0.1.4"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: Windows version, graphics card and RAM (the setup scan shows them).
+      placeholder: "Windows 11 24H2, NVIDIA RTX 4070 12 GB, 32 GB RAM"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model and runtime
+      description: Which model was loaded, and the runtime (CPU, Vulkan, CUDA, or an external server).
+      placeholder: "Qwen3.6 35B-A3B UD-IQ4_XS on CUDA 13.4"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a project
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Error messages, screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log excerpt
+      description: |
+        From `%LOCALAPPDATA%\app.ylide\logs\ylide.log` (and `ylide.previous.log` for the run before).
+        The log can contain project paths and file names: check it before you paste it here.
+      render: text

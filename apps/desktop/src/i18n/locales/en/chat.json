@@ -1,0 +1,125 @@
+{
+  "title": "Chat",
+  "newChat": "New chat",
+  "newChatDialog": {
+    "title": "Start a new chat?",
+    "body": "An answer is still being written. A new chat stops it; this conversation stays in the history.",
+    "bodyNotSaved": "An answer is still being written. A new chat stops it and clears this conversation.",
+    "confirm": "Stop and start new chat"
+  },
+  "header": {
+    "generating": "Writing an answer"
+  },
+  "start": {
+    "title": "Ask about your project",
+    "titleNoProject": "Ask about your code",
+    "body": "Answers come from the model on this computer. What you ask never leaves it.",
+    "bodyExternal": "Answers come from the server you set up in the settings. Your messages and the attached context are sent to it.",
+    "examples": "Examples",
+    "mentionHint": "Type @ to attach files, folders or symbols. Their content is sent with your message.",
+    "keys": "<0>Enter</0> sends, <1>Shift</1> + <2>Enter</2> starts a new line."
+  },
+  "examples": {
+    "overview": "Give me an overview of this project and tell me where to start reading.",
+    "explain": "Explain how @ works.",
+    "review": "Look for bugs and missed edge cases in the selected code.",
+    "tests": "Write unit tests for @",
+    "error": "What does this error message mean, and how do I fix it?\n\n"
+  },
+  "messages": {
+    "label": "Conversation",
+    "you": "You",
+    "assistant": "Answer",
+    "waiting": "Waiting for the model",
+    "thinking": "Thinking",
+    "thoughtFor": "Thought for {{duration}}",
+    "thoughts": "Thoughts",
+    "cancelled": "Stopped. This answer is incomplete.",
+    "empty": "The model sent back an empty answer. Send the question again or rephrase it.",
+    "cutOff": "The answer reached the length limit and is cut off.",
+    "copyAnswer": "Copy answer",
+    "promptTokens": "{{value}} prompt tokens",
+    "cachedTokens": "{{value}} cached",
+    "timings": "Prompt read in {{prompt}} ({{promptSpeed}} tok/s), answer written in {{generation}}.",
+    "jumpToLatest": "Jump to latest"
+  },
+  "context": {
+    "label": "Attached context",
+    "truncated": "Shortened to fit the context limit.",
+    "error": "Not attached: {{message}}"
+  },
+  "composer": {
+    "label": "Message",
+    "placeholder": "Ask about your code",
+    "placeholderMentions": "Ask about your code, type @ to attach files",
+    "addContext": "Attach file, folder or symbol",
+    "attachSelection": "Attach selection",
+    "attachSelectionTitle": "Attach {{label}} from the editor",
+    "noSelection": "Select code in the editor to attach it.",
+    "removeMention": "Remove {{label}}",
+    "attached": "Attached context",
+    "contextTotal": "{{tokens}} / {{budget}} tokens",
+    "contextTotalTitle": "Estimated size of the attached context. You can change the limit in the settings.",
+    "contextTruncated": "Some of the context is shortened to fit the limit.",
+    "contextUnknown": "Size unknown",
+    "noProject": "Open a folder to attach files, folders and symbols.",
+    "measuring": "Measuring the attached context"
+  },
+  "notice": {
+    "noModel": "No model is running. Start one to send messages.",
+    "loading": "{{model}} is loading. You can send once it is ready.",
+    "crashed": "The model stopped unexpectedly. Restart it to continue.",
+    "openModels": "Open models"
+  },
+  "picker": {
+    "label": "Attach context",
+    "files": "Files",
+    "folders": "Folders",
+    "symbols": "Symbols",
+    "root": "Whole project",
+    "empty": "Nothing matches “{{query}}”.",
+    "noFiles": "No files found.",
+    "searching": "Searching",
+    "symbolsHint": "Type two or more characters to search symbols.",
+    "hint": "<0>↑</0> <1>↓</1> to choose, <2>Enter</2> to attach, <3>Esc</3> to close"
+  },
+  "symbolKind": {
+    "function": "function",
+    "class": "class",
+    "struct": "struct",
+    "interface": "interface",
+    "enum": "enum",
+    "type": "type",
+    "constant": "constant",
+    "module": "module"
+  },
+  "code": {
+    "copy": "Copy code",
+    "open": "Open {{name}}",
+    "openTitle": "Open {{path}} in the editor",
+    "plain": "Text"
+  },
+  "markdown": {
+    "openLink": "Open {{url}} in your browser",
+    "image": "Image: {{alt}}",
+    "imageTitle": "Images are not loaded automatically. Open {{url}} in your browser."
+  },
+  "announce": {
+    "started": "Writing an answer",
+    "answer": "Answer: {{text}}",
+    "stopped": "Answer stopped"
+  },
+  "history": {
+    "open": "Chat history",
+    "title": "Earlier chats",
+    "empty": "There are no saved chats in this project yet.",
+    "untitled": "Chat without a question",
+    "delete": "Delete chat",
+    "deleteTitle": "Delete this chat?",
+    "deleteBody": "“{{title}}” is deleted from this computer.",
+    "deleteConfirm": "Delete",
+    "saveFailed": "The chat could not be saved to the history",
+    "messages_one": "{{count}} message",
+    "messages_other": "{{count}} messages"
+  }
+}

@@ -1,0 +1,146 @@
+<canvas class="braid" aria-hidden="true" data-tube-label="{{t.hero.tube}}"></canvas>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <h1>{{t.hero.title}}</h1>
+      <p class="lead">{{t.hero.lead}}</p>
+      <div class="cta">
+        <a class="button" href="{{installer}}">{{t.hero.download}}</a>
+        <p class="meta">{{t.hero.meta}}</p>
+      </div>
+    </div>
+    <div class="hero-mark-wrap" aria-hidden="true">{{heroMark}}</div>
+  </div>
+</section>
+
+<section class="showcase" data-showcase>
+  <div class="wrap">
+    <figure class="showcase-figure">
+      <div class="showcase-window">
+        <img src="/assets/shots/ide.png" width="1919" height="1029" alt="{{t.showcase.alt}}" decoding="async">
+      </div>
+      <figcaption>{{t.showcase.caption}}</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="feature" id="features">
+  <div class="wrap feature-grid">
+    <div class="feature-text">
+      <h2 data-cross>{{t.chat.title}}</h2>
+      <p>{{t.chat.body}}</p>
+    </div>
+    <div class="feature-visual">
+      <div class="panel chat">
+        <div class="msg msg-user">
+          <span class="who">{{t.chat.you}}</span>
+          <p>{{t.chat.question}}</p>
+        </div>
+        <div class="msg msg-model">
+          <span class="who"><span class="dot dot-qubit"></span>{{t.chat.model}}</span>
+          <p>{{t.chat.answer}}</p>
+          <span class="stats">{{t.chat.stats}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature">
+  <div class="wrap feature-grid">
+    <div class="feature-text">
+      <h2 data-cross>{{t.inline.title}}</h2>
+      <p>{{t.inline.body}}</p>
+    </div>
+    <div class="feature-visual">
+      <div class="panel diff">
+        <div class="diff-prompt"><span class="kbd-hint">Ctrl K</span>{{t.inline.prompt}}</div>
+        <pre class="code" dir="ltr"><code><span class="ln"> </span>export function removeItem(items, id) {
+<span class="del"><span class="ln">−</span>  return items.filter((item) =&gt; item.id != id);</span>
+<span class="add"><span class="ln">+</span>  return items.filter((item) =&gt; item.id !== id);</span>
+<span class="ln"> </span>}</code></pre>
+        <div class="diff-actions"><span class="chip chip-accept">{{t.inline.accept}}</span><span class="chip">{{t.inline.reject}}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="agents" data-agents>
+  <div class="agents-pin">
+    <div class="wrap feature-grid">
+      <div class="feature-text">
+        <h2>{{t.agents.title}}</h2>
+        <p>{{t.agents.body}}</p>
+        <ul class="legend" aria-label="{{t.agents.legend}}">
+          <li><span class="swatch swatch-qubit"></span>{{t.agents.orchestrator}}</li>
+          <li><span class="swatch swatch-brass"></span>{{t.agents.coder}}</li>
+          <li><span class="swatch swatch-frost"></span>{{t.agents.reviewer}}</li>
+        </ul>
+      </div>
+      <div class="feature-visual">
+        <ol class="steps" aria-label="{{t.agents.stepsLabel}}" data-task-label="{{t.agents.task}}">
+          <li data-step data-owner="0"><span class="role role-qubit">{{t.agents.orchestrator}}</span><span class="step-text">{{t.agents.step1}}</span></li>
+          <li data-step data-owner="1"><span class="role role-brass">{{t.agents.coder}}</span><span class="step-text">{{t.agents.step2}}</span></li>
+          <li data-step data-owner="2"><span class="role role-frost">{{t.agents.reviewer}}</span><span class="step-text">{{t.agents.step3}}</span></li>
+          <li data-step data-owner="1"><span class="role role-brass">{{t.agents.coder}}</span><span class="step-text">{{t.agents.step4}}</span></li>
+          <li data-step data-owner="2"><span class="role role-frost">{{t.agents.reviewer}}</span><span class="step-text">{{t.agents.step5}}</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="setup" data-setup>
+  <div class="setup-pin">
+    <div class="wrap feature-grid">
+      <div class="feature-text">
+        <h2>{{t.hardware.title}}</h2>
+        <p>{{t.hardware.body}}</p>
+        <ol class="setup-steps" aria-label="{{t.setup.label}}">
+          <li data-setup-step><span class="setup-num">1</span><span class="setup-copy"><strong>{{t.setup.s1}}</strong> {{t.setup.s1b}}</span></li>
+          <li data-setup-step><span class="setup-num">2</span><span class="setup-copy"><strong>{{t.setup.s2}}</strong> {{t.setup.s2b}}</span></li>
+          <li data-setup-step><span class="setup-num">3</span><span class="setup-copy"><strong>{{t.setup.s3}}</strong> {{t.setup.s3b}}</span></li>
+          <li data-setup-step><span class="setup-num">4</span><span class="setup-copy"><strong>{{t.setup.s4}}</strong> {{t.setup.s4b}}</span></li>
+          <li data-setup-step><span class="setup-num">5</span><span class="setup-copy"><strong>{{t.setup.s5}}</strong> {{t.setup.s5b}}</span></li>
+        </ol>
+      </div>
+      <figure class="setup-figure" aria-label="{{t.setup.figure}}">
+        <div class="window">
+          <img class="shot" src="/assets/shots/1-welcome.png" width="1438" height="896" alt="{{t.setup.alt1}}" decoding="async" data-shot>
+          <img class="shot" src="/assets/shots/2-scan.png" width="1424" height="993" alt="{{t.setup.alt2}}" loading="lazy" decoding="async" data-shot>
+          <img class="shot" src="/assets/shots/3-model.png" width="1424" height="995" alt="{{t.setup.alt3}}" loading="lazy" decoding="async" data-shot>
+          <img class="shot" src="/assets/shots/4-download.png" width="1423" height="994" alt="{{t.setup.alt4}}" loading="lazy" decoding="async" data-shot>
+          <img class="shot" src="/assets/shots/5-ready.png" width="1422" height="994" alt="{{t.setup.alt5}}" loading="lazy" decoding="async" data-shot>
+        </div>
+        <figcaption class="note">{{t.setup.note}}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="feature" id="privacy">
+  <div class="wrap feature-grid">
+    <div class="feature-text">
+      <h2 data-cross>{{t.privacy.title}}</h2>
+      <p>{{t.privacy.body}}</p>
+    </div>
+    <div class="feature-visual">
+      <ul class="gates" aria-label="{{t.privacy.listLabel}}">
+        <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.registry}}</span><span class="host">{{t.privacy.registryHost}}</span></li>
+        <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.models}}</span><span class="host">{{t.privacy.modelsHost}}</span></li>
+        <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.runtimes}}</span><span class="host">{{t.privacy.runtimesHost}}</span></li>
+        <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.updates}}</span><span class="host">{{t.privacy.updatesHost}}</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="wrap finale-inner">
+    <h2>{{t.open.title}}</h2>
+    <p>{{t.open.body}}</p>
+    <a class="button large" href="{{installer}}" data-end>{{t.open.download}}</a>
+    <p class="meta">{{t.open.smartscreen}}</p>
+  </div>
+</section>

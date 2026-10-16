@@ -1,0 +1,172 @@
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  min-width: 0;
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 38px;
+  flex: none;
+  padding: 0 var(--space-2) 0 var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+.model {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  height: 24px;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+}
+
+.model:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.modelName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+
+.dot.ready {
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-muted);
+}
+
+.dot.loading {
+  background: var(--warning);
+}
+
+.dot.crashed {
+  background: var(--danger);
+}
+
+.grow {
+  flex: 1;
+}
+
+/* ---------- Body ---------- */
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------- History ---------- */
+.history {
+  position: absolute;
+  top: 42px;
+  right: var(--space-2);
+  left: var(--space-2);
+  z-index: 20;
+  max-height: min(60%, 420px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+
+.historyHead {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.historyEmpty {
+  margin: 0;
+  padding: var(--space-4) var(--space-3);
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}
+
+.historyList {
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+  overflow-y: auto;
+}
+
+.historyRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-control);
+}
+
+.historyRow:hover {
+  background: var(--bg-hover);
+}
+
+.historyCurrent {
+  background: var(--bg-selected);
+}
+
+.historyItem {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  color: var(--text-1);
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
+}
+
+.historyTitle {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.historyCurrent .historyTitle {
+  color: var(--accent);
+}
+
+.historyMeta {
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}

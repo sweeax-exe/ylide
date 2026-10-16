@@ -1,0 +1,150 @@
+{
+  "loading": "エディターを読み込み中",
+  "editorLabel": "{{path}} のエディター",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "プロジェクトフォルダーを開く",
+    "body": "Ylide はこのコンピューター上のフォルダーで作業します。ファイル、チャット、エージェントの実行はこのマシンから出ません。",
+    "reopen": "{{name}} を再度開く"
+  },
+  "failed": {
+    "title": "エディターを起動できませんでした",
+    "body": "コードエディターの読み込み中に問題が発生しました。再試行し、それでも失敗する場合は Ylide を再起動してください。"
+  },
+  "welcome": {
+    "body": "サイドバーからファイルを開くか、ファイルへ直接移動してください。",
+    "shortcuts": {
+      "goToFile": "ファイルへ移動",
+      "editWithAi": "AI で編集",
+      "chat": "チャット",
+      "agents": "エージェント",
+      "search": "ファイル内を検索"
+    }
+  },
+  "tabs": {
+    "label": "開いているファイル",
+    "unsaved": "未保存の変更あり",
+    "deleted": "ディスク上で削除済み",
+    "close": "{{name}} を閉じる"
+  },
+  "disk": {
+    "changed": "編集中に {{name}} がディスク上で変更されました。",
+    "deleted": "{{name}} はディスク上で削除されました。保存すると再作成されます。",
+    "reload": "ディスクから再読み込み",
+    "keepMine": "編集中の内容を保持",
+    "close": "ファイルを閉じる",
+    "keep": "編集を続ける"
+  },
+  "closeDialog": {
+    "title": "{{name}} への変更を保存しますか？",
+    "body": "保存せずに閉じると、変更は失われます。",
+    "save": "保存して閉じる",
+    "discard": "保存せずに閉じる"
+  },
+  "commands": {
+    "addSelectionToChat": "選択範囲をチャットに追加",
+    "openChat": "チャットを開く",
+    "save": "ファイルを保存"
+  },
+  "inline": {
+    "action": "AI で編集",
+    "title": "AI で編集",
+    "placeholder": "変更内容を入力",
+    "instructionLabel": "指示（{{scope}}）",
+    "scopeLine": "{{line}} 行目",
+    "scopeLines": "{{start}}–{{end}} 行目",
+    "scopeInsert": "{{line}} 行目に挿入",
+    "cancel": "編集をキャンセル",
+    "streaming": "変更を作成中",
+    "noModel": "モデルが実行されていません。AI で編集するにはモデルを起動してください。",
+    "openModels": "モデル画面を開く",
+    "noChange": "モデルは変更を提案しませんでした。より具体的な指示を試してください。",
+    "noResult": "モデルから結果が返されませんでした。もう一度お試しください。"
+  },
+  "review": {
+    "title": "変更を確認",
+    "added_other": "{{count}} 行追加",
+    "removed_other": "{{count}} 行削除",
+    "layout": "差分の表示形式",
+    "inline": "インライン",
+    "split": "左右に並べて表示",
+    "accept": "適用",
+    "acceptHint": "変更を適用します（Enter）。Ctrl+Z で元に戻せます。",
+    "reject": "破棄",
+    "rejectHint": "変更を破棄します（Esc）",
+    "retry": "再試行"
+  },
+  "errors": {
+    "open": "{{name}} を開けませんでした",
+    "save": "{{name}} を保存できませんでした",
+    "reload": "{{name}} を再読み込みできませんでした",
+    "delete": "{{name}} を削除できませんでした",
+    "openFolder": "フォルダーを開けませんでした"
+  },
+  "tree": {
+    "title": "ファイル",
+    "label": "{{name}} 内のファイル",
+    "noProject": "フォルダーが開かれていません。ファイルを表示するにはフォルダーを開いてください。",
+    "loading": "ファイルを読み込み中",
+    "empty": "このフォルダーは空です。",
+    "newFile": "新しいファイル",
+    "newFolder": "新しいフォルダー",
+    "newFileName": "新しいファイルの名前",
+    "newFolderName": "新しいフォルダーの名前",
+    "collapseAll": "すべてのフォルダーを折りたたむ",
+    "refresh": "最新の情報に更新",
+    "rename": "名前の変更",
+    "renameLabel": "{{name}} の新しい名前",
+    "delete": "削除",
+    "deleteKey": "Del",
+    "addToChat": "チャットに追加",
+    "copyPath": "パスをコピー",
+    "menuLabel": "ファイル操作",
+    "exists": "この名前のファイルまたはフォルダーはすでに存在します。",
+    "nameProblem": {
+      "empty": "名前を入力してください。",
+      "invalid": "この名前は使用できません。\\ : * ? \" < > | と空のフォルダー名は使えません。"
+    },
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteFileBody": "{{path}} をディスクから削除します。この操作は Ylide では元に戻せません。",
+    "deleteFolderBody": "{{path}} とその中のすべてをディスクから削除します。この操作は Ylide では元に戻せません。"
+  },
+  "search": {
+    "title": "検索",
+    "placeholder": "ファイル内を検索",
+    "matchCase": "大文字と小文字を区別",
+    "wholeWord": "単語単位で検索",
+    "regex": "正規表現を使用",
+    "globsLabel": "含める、または除外するファイル",
+    "globsPlaceholder": "ファイル（例: *.ts, !test/**）",
+    "globsHint": "パターンをカンマで区切って入力します。先頭に ! を付けると、一致するファイルを除外します。",
+    "searching": "検索中",
+    "summary": "{{results}}（{{files}}）",
+    "resultCount_other": "{{value}} 件の結果",
+    "fileCount_other": "{{value}} ファイル",
+    "noResults": "「{{pattern}}」の結果はありません。",
+    "truncated": "最初の {{max}} 件の結果を表示しています。残りを表示するには検索を絞り込んでください。",
+    "hint": "プロジェクトのすべてのファイルからテキストを検索します。ファイルフィルターで範囲を絞り込めます。",
+    "noProject": "検索するにはフォルダーを開いてください。",
+    "matchLabel": "{{line}} 行目: {{text}}",
+    "collapseAll": "すべての結果を折りたたむ",
+    "expandAll": "すべての結果を展開",
+    "clear": "検索をクリア"
+  },
+  "quickOpen": {
+    "title": "ファイルへ移動",
+    "placeholder": "ファイル名を入力（:12 を付けると行を指定）",
+    "noProject": "先にフォルダーを開いてください",
+    "loading": "ファイルを検索中",
+    "results": "ファイル",
+    "empty": "「{{query}}」に一致するファイルはありません。",
+    "open": "開いています",
+    "hintMove": "移動",
+    "hintOpen": "開く",
+    "hintLine": "行へ移動"
+  }
+}

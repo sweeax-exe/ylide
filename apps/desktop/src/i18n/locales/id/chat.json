@@ -1,0 +1,124 @@
+{
+  "title": "Chat",
+  "newChat": "Chat baru",
+  "newChatDialog": {
+    "title": "Mulai chat baru?",
+    "body": "Jawaban masih ditulis. Chat baru akan menghentikannya; percakapan ini tetap ada di riwayat.",
+    "bodyNotSaved": "Jawaban masih ditulis. Chat baru akan menghentikannya dan menghapus percakapan ini.",
+    "confirm": "Hentikan dan mulai chat baru"
+  },
+  "header": {
+    "generating": "Menulis jawaban"
+  },
+  "start": {
+    "title": "Tanyakan tentang proyek Anda",
+    "titleNoProject": "Tanyakan tentang kode Anda",
+    "body": "Jawaban berasal dari model di komputer ini. Pertanyaan Anda tidak pernah keluar dari komputer ini.",
+    "bodyExternal": "Jawaban berasal dari server yang Anda siapkan di pengaturan. Pesan Anda dan konteks yang dilampirkan dikirim ke server tersebut.",
+    "examples": "Contoh",
+    "mentionHint": "Ketik @ untuk melampirkan file, folder, atau simbol. Isinya dikirim bersama pesan Anda.",
+    "keys": "<0>Enter</0> mengirim, <1>Shift</1> + <2>Enter</2> membuat baris baru."
+  },
+  "examples": {
+    "overview": "Beri saya gambaran umum proyek ini dan beri tahu dari mana sebaiknya saya mulai membaca.",
+    "explain": "Jelaskan cara kerja @.",
+    "review": "Cari bug dan kasus tepi yang terlewat di kode yang dipilih.",
+    "tests": "Tulis unit test untuk @",
+    "error": "Apa arti pesan error ini, dan bagaimana cara memperbaikinya?\n\n"
+  },
+  "messages": {
+    "label": "Percakapan",
+    "you": "Anda",
+    "assistant": "Jawaban",
+    "waiting": "Menunggu model",
+    "thinking": "Berpikir",
+    "thoughtFor": "Berpikir selama {{duration}}",
+    "thoughts": "Pemikiran",
+    "cancelled": "Dihentikan. Jawaban ini tidak lengkap.",
+    "empty": "Model mengirim jawaban kosong. Kirim pertanyaan lagi atau ubah susunan katanya.",
+    "cutOff": "Jawaban mencapai batas panjang dan terpotong.",
+    "copyAnswer": "Salin jawaban",
+    "promptTokens": "{{value}} token prompt",
+    "cachedTokens": "{{value}} dari cache",
+    "timings": "Prompt dibaca dalam {{prompt}} ({{promptSpeed}} tok/s), jawaban ditulis dalam {{generation}}.",
+    "jumpToLatest": "Ke pesan terbaru"
+  },
+  "context": {
+    "label": "Konteks terlampir",
+    "truncated": "Dipersingkat agar muat dalam batas konteks.",
+    "error": "Tidak dilampirkan: {{message}}"
+  },
+  "composer": {
+    "label": "Pesan",
+    "placeholder": "Tanyakan tentang kode Anda",
+    "placeholderMentions": "Tanyakan tentang kode Anda, ketik @ untuk melampirkan file",
+    "addContext": "Lampirkan file, folder, atau simbol",
+    "attachSelection": "Lampirkan pilihan",
+    "attachSelectionTitle": "Lampirkan {{label}} dari editor",
+    "noSelection": "Pilih kode di editor untuk melampirkannya.",
+    "removeMention": "Hapus {{label}}",
+    "attached": "Konteks terlampir",
+    "contextTotal": "{{tokens}} / {{budget}} token",
+    "contextTotalTitle": "Perkiraan ukuran konteks yang dilampirkan. Anda dapat mengubah batasnya di pengaturan.",
+    "contextTruncated": "Sebagian konteks dipersingkat agar muat dalam batas.",
+    "contextUnknown": "Ukuran tidak diketahui",
+    "noProject": "Buka folder untuk melampirkan file, folder, dan simbol.",
+    "measuring": "Mengukur konteks yang dilampirkan"
+  },
+  "notice": {
+    "noModel": "Tidak ada model yang berjalan. Jalankan model untuk mengirim pesan.",
+    "loading": "{{model}} sedang dimuat. Anda dapat mengirim setelah model siap.",
+    "crashed": "Model berhenti secara tak terduga. Mulai ulang model untuk melanjutkan.",
+    "openModels": "Buka model"
+  },
+  "picker": {
+    "label": "Lampirkan konteks",
+    "files": "File",
+    "folders": "Folder",
+    "symbols": "Simbol",
+    "root": "Seluruh proyek",
+    "empty": "Tidak ada yang cocok dengan “{{query}}”.",
+    "noFiles": "Tidak ada file yang ditemukan.",
+    "searching": "Mencari",
+    "symbolsHint": "Ketik dua karakter atau lebih untuk mencari simbol.",
+    "hint": "<0>↑</0> <1>↓</1> untuk memilih, <2>Enter</2> untuk melampirkan, <3>Esc</3> untuk menutup"
+  },
+  "symbolKind": {
+    "function": "fungsi",
+    "class": "kelas",
+    "struct": "struct",
+    "interface": "antarmuka",
+    "enum": "enum",
+    "type": "tipe",
+    "constant": "konstanta",
+    "module": "modul"
+  },
+  "code": {
+    "copy": "Salin kode",
+    "open": "Buka {{name}}",
+    "openTitle": "Buka {{path}} di editor",
+    "plain": "Teks"
+  },
+  "markdown": {
+    "openLink": "Buka {{url}} di browser Anda",
+    "image": "Gambar: {{alt}}",
+    "imageTitle": "Gambar tidak dimuat secara otomatis. Buka {{url}} di browser Anda."
+  },
+  "announce": {
+    "started": "Menulis jawaban",
+    "answer": "Jawaban: {{text}}",
+    "stopped": "Jawaban dihentikan"
+  },
+  "history": {
+    "open": "Riwayat chat",
+    "title": "Chat sebelumnya",
+    "empty": "Belum ada chat tersimpan di proyek ini.",
+    "untitled": "Chat tanpa pertanyaan",
+    "delete": "Hapus chat",
+    "deleteTitle": "Hapus chat ini?",
+    "deleteBody": "“{{title}}” akan dihapus dari komputer ini.",
+    "deleteConfirm": "Hapus",
+    "saveFailed": "Chat tidak dapat disimpan ke riwayat",
+    "messages_other": "{{count}} pesan"
+  }
+}

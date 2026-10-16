@@ -1,0 +1,95 @@
+.wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  /* Scrolls on its own in a narrow column, so the page does not. */
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  /* Room for the address next to the fixed-width columns. */
+  min-width: 480px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--text-sm);
+}
+
+.table th {
+  height: 32px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-app);
+  color: var(--text-2);
+  font-weight: 600;
+  text-align: left;
+}
+
+.table th:nth-child(1) {
+  width: 116px;
+}
+
+.table th:nth-child(2) {
+  width: 200px;
+}
+
+.table th:nth-child(4) {
+  width: 132px;
+}
+
+.table td {
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.purpose {
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.url {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outcome {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.empty {
+  padding: var(--space-5);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-panel);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.loading {
+  display: flex;
+  padding: var(--space-5);
+}
+
+@container (max-width: 720px) {
+  .table th:nth-child(2) {
+    width: 132px;
+  }
+}

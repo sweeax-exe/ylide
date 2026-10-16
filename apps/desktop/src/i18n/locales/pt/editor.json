@@ -1,0 +1,158 @@
+{
+  "loading": "Carregando o editor",
+  "editorLabel": "Editor de {{path}}",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "Abra uma pasta de projeto",
+    "body": "O Ylide trabalha em uma pasta deste computador. Seus arquivos, chats e execuções de agentes ficam nesta máquina.",
+    "reopen": "Reabrir {{name}}"
+  },
+  "failed": {
+    "title": "Não foi possível iniciar o editor",
+    "body": "Algo deu errado ao carregar o editor de código. Tente de novo e, se o erro continuar, reinicie o Ylide."
+  },
+  "welcome": {
+    "body": "Abra um arquivo pela barra lateral ou vá direto para um.",
+    "shortcuts": {
+      "goToFile": "Ir para arquivo",
+      "editWithAi": "Editar com IA",
+      "chat": "Chat",
+      "agents": "Agentes",
+      "search": "Buscar nos arquivos"
+    }
+  },
+  "tabs": {
+    "label": "Arquivos abertos",
+    "unsaved": "alterações não salvas",
+    "deleted": "excluído do disco",
+    "close": "Fechar {{name}}"
+  },
+  "disk": {
+    "changed": "{{name}} foi alterado no disco enquanto você o editava.",
+    "deleted": "{{name}} foi excluído do disco. Ao salvar, ele é criado de novo.",
+    "reload": "Recarregar do disco",
+    "keepMine": "Manter minha versão",
+    "close": "Fechar arquivo",
+    "keep": "Continuar editando"
+  },
+  "closeDialog": {
+    "title": "Salvar as alterações em {{name}}?",
+    "body": "Suas alterações serão perdidas se você fechar o arquivo sem salvar.",
+    "save": "Salvar e fechar",
+    "discard": "Fechar sem salvar"
+  },
+  "commands": {
+    "addSelectionToChat": "Adicionar seleção ao chat",
+    "openChat": "Abrir chat",
+    "save": "Salvar arquivo"
+  },
+  "inline": {
+    "action": "Editar com IA",
+    "title": "Editar com IA",
+    "placeholder": "Descreva a alteração",
+    "instructionLabel": "Instrução ({{scope}})",
+    "scopeLine": "Linha {{line}}",
+    "scopeLines": "Linhas {{start}}–{{end}}",
+    "scopeInsert": "Inserir na linha {{line}}",
+    "cancel": "Cancelar edição",
+    "streaming": "Escrevendo a alteração",
+    "noModel": "Nenhum modelo está em execução. Inicie um para editar com IA.",
+    "openModels": "Abrir modelos",
+    "noChange": "O modelo não sugeriu alterações. Tente uma instrução mais específica.",
+    "noResult": "O modelo não retornou um resultado. Tente de novo."
+  },
+  "review": {
+    "title": "Revise a alteração",
+    "added_one": "{{count}} linha adicionada",
+    "added_many": "{{count}} linhas adicionadas",
+    "added_other": "{{count}} linhas adicionadas",
+    "removed_one": "{{count}} linha removida",
+    "removed_many": "{{count}} linhas removidas",
+    "removed_other": "{{count}} linhas removidas",
+    "layout": "Layout do diff",
+    "inline": "Inline",
+    "split": "Lado a lado",
+    "accept": "Aceitar",
+    "acceptHint": "Aplicar a alteração (Enter). Ctrl+Z a desfaz.",
+    "reject": "Rejeitar",
+    "rejectHint": "Descartar a alteração (Esc)",
+    "retry": "Tentar de novo"
+  },
+  "errors": {
+    "open": "Não foi possível abrir {{name}}",
+    "save": "Não foi possível salvar {{name}}",
+    "reload": "Não foi possível recarregar {{name}}",
+    "delete": "Não foi possível excluir {{name}}",
+    "openFolder": "Não foi possível abrir a pasta"
+  },
+  "tree": {
+    "title": "Arquivos",
+    "label": "Arquivos em {{name}}",
+    "noProject": "Nenhuma pasta está aberta. Abra uma para ver os arquivos dela.",
+    "loading": "Carregando arquivos",
+    "empty": "Esta pasta está vazia.",
+    "newFile": "Novo arquivo",
+    "newFolder": "Nova pasta",
+    "newFileName": "Nome do novo arquivo",
+    "newFolderName": "Nome da nova pasta",
+    "collapseAll": "Recolher todas as pastas",
+    "refresh": "Atualizar",
+    "rename": "Renomear",
+    "renameLabel": "Novo nome para {{name}}",
+    "delete": "Excluir",
+    "deleteKey": "Del",
+    "addToChat": "Adicionar ao chat",
+    "copyPath": "Copiar caminho",
+    "menuLabel": "Ações de arquivo",
+    "exists": "Já existe um arquivo ou pasta com este nome.",
+    "nameProblem": {
+      "empty": "Digite um nome.",
+      "invalid": "Este nome não é permitido. Evite \\ : * ? \" < > | e nomes de pasta vazios."
+    },
+    "deleteTitle": "Excluir {{name}}?",
+    "deleteFileBody": "{{path}} será removido do disco. Isso não pode ser desfeito no Ylide.",
+    "deleteFolderBody": "{{path}} e tudo o que há dentro serão removidos do disco. Isso não pode ser desfeito no Ylide."
+  },
+  "search": {
+    "title": "Busca",
+    "placeholder": "Buscar nos arquivos",
+    "matchCase": "Diferenciar maiúsculas e minúsculas",
+    "wholeWord": "Somente palavras inteiras",
+    "regex": "Usar expressão regular",
+    "globsLabel": "Arquivos a incluir ou excluir",
+    "globsPlaceholder": "Arquivos, ex.: *.ts, !test/**",
+    "globsHint": "Padrões separados por vírgula. Um ! no início exclui os arquivos correspondentes.",
+    "searching": "Buscando",
+    "summary": "{{results}} em {{files}}",
+    "resultCount_one": "{{value}} resultado",
+    "resultCount_many": "{{value}} resultados",
+    "resultCount_other": "{{value}} resultados",
+    "fileCount_one": "{{value}} arquivo",
+    "fileCount_many": "{{value}} arquivos",
+    "fileCount_other": "{{value}} arquivos",
+    "noResults": "Nenhum resultado para “{{pattern}}”.",
+    "truncated": "Mostrando os primeiros {{max}} resultados. Refine a busca para ver o resto.",
+    "hint": "Encontre texto em todos os arquivos do projeto. Use o filtro de arquivos para restringir a busca.",
+    "noProject": "Abra uma pasta para buscar nela.",
+    "matchLabel": "Linha {{line}}: {{text}}",
+    "collapseAll": "Recolher todos os resultados",
+    "expandAll": "Expandir todos os resultados",
+    "clear": "Limpar busca"
+  },
+  "quickOpen": {
+    "title": "Ir para arquivo",
+    "placeholder": "Digite um nome de arquivo, adicione :12 para uma linha",
+    "noProject": "Abra uma pasta primeiro",
+    "loading": "Procurando arquivos",
+    "results": "Arquivos",
+    "empty": "Nenhum arquivo corresponde a “{{query}}”.",
+    "open": "aberto",
+    "hintMove": "mover",
+    "hintOpen": "abrir",
+    "hintLine": "ir para a linha"
+  }
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>Ylide</title>
+  <!-- App icon: the Ylide mark (two world lines braiding into a Y; the gap shows
+       which one passes under) in one colour on a flat cryostat-blue tile.
+       Source of every icon in this folder: regenerate them with
+       `node ../../node_modules/@tauri-apps/cli/tauri.js icon src-tauri/icons/ylide.svg`
+       from apps/desktop. -->
+  <defs>
+    <clipPath id="ylide-cut"><rect x="0" y="128" width="1024" height="768"/></clipPath>
+    <clipPath id="ylide-under"><path clip-rule="evenodd" d="M-64 -64 H1088 V1088 H-64 Z M430.04 83.53 L725.72 435.91 L593.96 546.47 L298.28 194.09 Z"/></clipPath>
+  </defs>
+  <rect width="1024" height="1024" rx="232" fill="#111726"/>
+  <g transform="translate(102.4 102.4) scale(0.8)" clip-path="url(#ylide-cut)" fill="none" stroke="#E6ECF5" stroke-width="120" stroke-linecap="butt">
+    <path d="M736.04 48 L512 315 L436.05 405.51 A175 175 0 0 0 436.05 630.49 L474.57 676.39 A160 160 0 0 1 512 779.24 L512 976" clip-path="url(#ylide-under)"/>
+    <path d="M287.96 48 L512 315 L587.95 405.51 A175 175 0 0 1 587.95 630.49 L549.43 676.39 A160 160 0 0 0 512 779.24 L512 976"/>
+  </g>
+</svg>

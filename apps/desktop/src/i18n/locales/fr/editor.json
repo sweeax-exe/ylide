@@ -1,0 +1,158 @@
+{
+  "loading": "Chargement de l’éditeur",
+  "editorLabel": "Éditeur pour {{path}}",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Maj",
+    "enter": "Entrée"
+  },
+  "noProject": {
+    "title": "Ouvrir un dossier de projet",
+    "body": "Ylide travaille sur un dossier de cet ordinateur. Vos fichiers, conversations et exécutions d’agents restent sur cette machine.",
+    "reopen": "Rouvrir {{name}}"
+  },
+  "failed": {
+    "title": "L’éditeur n’a pas pu démarrer",
+    "body": "Une erreur s’est produite lors du chargement de l’éditeur de code. Réessayez, et redémarrez Ylide si le problème persiste."
+  },
+  "welcome": {
+    "body": "Ouvrez un fichier depuis la barre latérale ou accédez-y directement.",
+    "shortcuts": {
+      "goToFile": "Aller au fichier",
+      "editWithAi": "Modifier avec l’IA",
+      "chat": "Chat",
+      "agents": "Agents",
+      "search": "Rechercher dans les fichiers"
+    }
+  },
+  "tabs": {
+    "label": "Fichiers ouverts",
+    "unsaved": "modifications non enregistrées",
+    "deleted": "supprimé du disque",
+    "close": "Fermer {{name}}"
+  },
+  "disk": {
+    "changed": "{{name}} a changé sur le disque pendant que vous le modifiiez.",
+    "deleted": "{{name}} a été supprimé du disque. Si vous l’enregistrez, il sera recréé.",
+    "reload": "Recharger depuis le disque",
+    "keepMine": "Garder ma version",
+    "close": "Fermer le fichier",
+    "keep": "Continuer à modifier"
+  },
+  "closeDialog": {
+    "title": "Enregistrer les modifications de {{name}} ?",
+    "body": "Vos modifications seront perdues si vous fermez le fichier sans enregistrer.",
+    "save": "Enregistrer et fermer",
+    "discard": "Fermer sans enregistrer"
+  },
+  "commands": {
+    "addSelectionToChat": "Ajouter la sélection au chat",
+    "openChat": "Ouvrir le chat",
+    "save": "Enregistrer le fichier"
+  },
+  "inline": {
+    "action": "Modifier avec l’IA",
+    "title": "Modifier avec l’IA",
+    "placeholder": "Décrivez la modification",
+    "instructionLabel": "Instruction ({{scope}})",
+    "scopeLine": "Ligne {{line}}",
+    "scopeLines": "Lignes {{start}}–{{end}}",
+    "scopeInsert": "Insertion à la ligne {{line}}",
+    "cancel": "Annuler la modification",
+    "streaming": "Écriture de la modification",
+    "noModel": "Aucun modèle n’est lancé. Lancez-en un pour modifier avec l’IA.",
+    "openModels": "Ouvrir les modèles",
+    "noChange": "Le modèle n’a proposé aucune modification. Essayez une instruction plus précise.",
+    "noResult": "Le modèle n’a renvoyé aucun résultat. Réessayez."
+  },
+  "review": {
+    "title": "Vérifier la modification",
+    "added_one": "{{count}} ligne ajoutée",
+    "added_many": "{{count}} de lignes ajoutées",
+    "added_other": "{{count}} lignes ajoutées",
+    "removed_one": "{{count}} ligne supprimée",
+    "removed_many": "{{count}} de lignes supprimées",
+    "removed_other": "{{count}} lignes supprimées",
+    "layout": "Affichage du diff",
+    "inline": "Unifié",
+    "split": "Côte à côte",
+    "accept": "Accepter",
+    "acceptHint": "Appliquer la modification (Entrée). Ctrl+Z l’annule.",
+    "reject": "Refuser",
+    "rejectHint": "Abandonner la modification (Échap)",
+    "retry": "Réessayer"
+  },
+  "errors": {
+    "open": "Impossible d’ouvrir {{name}}",
+    "save": "Impossible d’enregistrer {{name}}",
+    "reload": "Impossible de recharger {{name}}",
+    "delete": "Impossible de supprimer {{name}}",
+    "openFolder": "Impossible d’ouvrir le dossier"
+  },
+  "tree": {
+    "title": "Fichiers",
+    "label": "Fichiers de {{name}}",
+    "noProject": "Aucun dossier n’est ouvert. Ouvrez-en un pour voir ses fichiers.",
+    "loading": "Chargement des fichiers",
+    "empty": "Ce dossier est vide.",
+    "newFile": "Nouveau fichier",
+    "newFolder": "Nouveau dossier",
+    "newFileName": "Nom du nouveau fichier",
+    "newFolderName": "Nom du nouveau dossier",
+    "collapseAll": "Réduire tous les dossiers",
+    "refresh": "Actualiser",
+    "rename": "Renommer",
+    "renameLabel": "Nouveau nom pour {{name}}",
+    "delete": "Supprimer",
+    "deleteKey": "Suppr",
+    "addToChat": "Ajouter au chat",
+    "copyPath": "Copier le chemin",
+    "menuLabel": "Actions sur le fichier",
+    "exists": "Un fichier ou un dossier portant ce nom existe déjà.",
+    "nameProblem": {
+      "empty": "Saisissez un nom.",
+      "invalid": "Ce nom n’est pas autorisé. Évitez \\ : * ? \" < > | et les noms de dossier vides."
+    },
+    "deleteTitle": "Supprimer {{name}} ?",
+    "deleteFileBody": "{{path}} sera supprimé du disque. Cette action ne peut pas être annulée dans Ylide.",
+    "deleteFolderBody": "{{path}} et tout son contenu seront supprimés du disque. Cette action ne peut pas être annulée dans Ylide."
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher dans les fichiers",
+    "matchCase": "Respecter la casse",
+    "wholeWord": "Mot entier uniquement",
+    "regex": "Utiliser une expression régulière",
+    "globsLabel": "Fichiers à inclure ou exclure",
+    "globsPlaceholder": "Fichiers, p. ex. *.ts, !test/**",
+    "globsHint": "Motifs séparés par des virgules. Un ! en tête exclut les fichiers correspondants.",
+    "searching": "Recherche en cours",
+    "summary": "{{results}} dans {{files}}",
+    "resultCount_one": "{{value}} résultat",
+    "resultCount_many": "{{value}} de résultats",
+    "resultCount_other": "{{value}} résultats",
+    "fileCount_one": "{{value}} fichier",
+    "fileCount_many": "{{value}} de fichiers",
+    "fileCount_other": "{{value}} fichiers",
+    "noResults": "Aucun résultat pour « {{pattern}} ».",
+    "truncated": "Affichage des {{max}} premiers résultats. Affinez la recherche pour voir la suite.",
+    "hint": "Recherchez du texte dans tous les fichiers du projet. Utilisez le filtre de fichiers pour affiner.",
+    "noProject": "Ouvrez un dossier pour y effectuer une recherche.",
+    "matchLabel": "Ligne {{line}} : {{text}}",
+    "collapseAll": "Réduire tous les résultats",
+    "expandAll": "Développer tous les résultats",
+    "clear": "Effacer la recherche"
+  },
+  "quickOpen": {
+    "title": "Aller au fichier",
+    "placeholder": "Tapez un nom de fichier, ajoutez :12 pour une ligne",
+    "noProject": "Ouvrez d’abord un dossier",
+    "loading": "Recherche des fichiers",
+    "results": "Fichiers",
+    "empty": "Aucun fichier ne correspond à « {{query}} ».",
+    "open": "ouvert",
+    "hintMove": "naviguer",
+    "hintOpen": "ouvrir",
+    "hintLine": "aller à la ligne"
+  }
+}

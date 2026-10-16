@@ -1,0 +1,19 @@
+{
+  "name": "ylide-workspace",
+  "private": true,
+  "license": "Apache-2.0",
+  "workspaces": [
+    "apps/desktop"
+  ],
+  "scripts": {
+    "dev": "npm run tauri -w apps/desktop -- dev",
+    "build": "npm run tauri -w apps/desktop -- build",
+    "test": "cargo test --workspace && npm test -w apps/desktop",
+    "test:rust": "cargo test --workspace",
+    "test:ui": "npm test -w apps/desktop",
+    "bindings": "cargo test --workspace export_bindings",
+    "runtime:fetch": "node scripts/fetch-runtime.mjs",
+    "registry:fill": "node tools/registry/fill.mjs",
+    "registry:check": "node tools/registry/fill.mjs --check"
+  }
+}

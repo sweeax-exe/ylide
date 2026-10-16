@@ -1,0 +1,53 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/desktop/src-tauri"]
+
+[workspace.package]
+version = "0.1.4"
+edition = "2024"
+license = "Apache-2.0"
+rust-version = "1.88"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.39"
+thiserror = "2"
+tracing = "0.1"
+libloading = "0.9"
+ts-rs = { version = "12", features = ["serde-compat"] }
+windows = "0.62"
+futures-util = "0.3"
+hex = "0.4"
+reqwest = { version = "0.13", features = ["stream", "json"] }
+sha2 = "0.11"
+tokio = "1"
+tokio-util = "0.7"
+getrandom = "0.4"
+dunce = "1"
+# Same crate and version Tauri uses to find the per-user folders.
+dirs = "7"
+grep-matcher = "0.1"
+grep-regex = "0.1"
+grep-searcher = "0.1"
+ignore = "0.4"
+regex = "1"
+similar = "3"
+async-trait = "0.1"
+zip = { version = "9", default-features = false, features = ["deflate"] }
+notify = "8"
+notify-debouncer-full = "0.7"
+tauri = "2.12"
+tauri-build = "2.7"
+tauri-plugin-dialog = "2.8"
+tauri-plugin-opener = "2.7"
+tauri-plugin-window-state = "2.5"
+tauri-plugin-single-instance = "2.5"
+# Update signatures (the format of `tauri signer`) and version comparison.
+minisign-verify = "0.3"
+semver = "1"
+base64 = "0.22"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+flate2 = "1"
+tar = "0.4"
+process-wrap = { version = "10", default-features = false, features = ["tokio1", "job-object", "kill-on-drop", "process-group", "creation-flags"] }

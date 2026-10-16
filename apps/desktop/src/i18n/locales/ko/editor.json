@@ -1,0 +1,150 @@
+{
+  "loading": "편집기 불러오는 중",
+  "editorLabel": "{{path}} 편집기",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "프로젝트 폴더 열기",
+    "body": "Ylide는 이 컴퓨터의 폴더에서 작업합니다. 파일, 채팅, 에이전트 실행 기록은 모두 이 컴퓨터에 남습니다.",
+    "reopen": "{{name}} 다시 열기"
+  },
+  "failed": {
+    "title": "편집기를 시작하지 못했습니다",
+    "body": "코드 편집기를 불러오는 중 문제가 발생했습니다. 다시 시도하고, 계속 실패하면 Ylide를 다시 시작하세요."
+  },
+  "welcome": {
+    "body": "사이드바에서 파일을 열거나 바로 파일로 이동하세요.",
+    "shortcuts": {
+      "goToFile": "파일로 이동",
+      "editWithAi": "AI로 편집",
+      "chat": "채팅",
+      "agents": "에이전트",
+      "search": "파일에서 검색"
+    }
+  },
+  "tabs": {
+    "label": "열린 파일",
+    "unsaved": "저장하지 않은 변경 사항",
+    "deleted": "디스크에서 삭제됨",
+    "close": "{{name}} 닫기"
+  },
+  "disk": {
+    "changed": "편집하는 동안 디스크에서 {{name}} 파일이 변경되었습니다.",
+    "deleted": "디스크에서 {{name}} 파일이 삭제되었습니다. 저장하면 다시 생성됩니다.",
+    "reload": "디스크에서 다시 불러오기",
+    "keepMine": "내 버전 유지",
+    "close": "파일 닫기",
+    "keep": "계속 편집"
+  },
+  "closeDialog": {
+    "title": "{{name}}의 변경 사항을 저장하시겠습니까?",
+    "body": "저장하지 않고 파일을 닫으면 변경 사항이 사라집니다.",
+    "save": "저장 후 닫기",
+    "discard": "저장하지 않고 닫기"
+  },
+  "commands": {
+    "addSelectionToChat": "선택 영역을 채팅에 추가",
+    "openChat": "채팅 열기",
+    "save": "파일 저장"
+  },
+  "inline": {
+    "action": "AI로 편집",
+    "title": "AI로 편집",
+    "placeholder": "변경 내용을 설명하세요",
+    "instructionLabel": "지시 사항({{scope}})",
+    "scopeLine": "{{line}}번 줄",
+    "scopeLines": "{{start}}–{{end}}번 줄",
+    "scopeInsert": "{{line}}번 줄에 삽입",
+    "cancel": "편집 취소",
+    "streaming": "변경 내용 작성 중",
+    "noModel": "실행 중인 모델이 없습니다. AI로 편집하려면 모델을 시작하세요.",
+    "openModels": "모델 화면 열기",
+    "noChange": "모델이 변경을 제안하지 않았습니다. 더 구체적으로 지시해 보세요.",
+    "noResult": "모델이 결과를 반환하지 않았습니다. 다시 시도하세요."
+  },
+  "review": {
+    "title": "변경 내용 검토",
+    "added_other": "{{count}}줄 추가됨",
+    "removed_other": "{{count}}줄 삭제됨",
+    "layout": "diff 표시 방식",
+    "inline": "인라인",
+    "split": "나란히",
+    "accept": "수락",
+    "acceptHint": "변경 내용 적용(Enter). Ctrl+Z로 되돌릴 수 있습니다.",
+    "reject": "거부",
+    "rejectHint": "변경 내용 버리기(Esc)",
+    "retry": "다시 시도"
+  },
+  "errors": {
+    "open": "{{name}} 파일을 열지 못했습니다",
+    "save": "{{name}} 파일을 저장하지 못했습니다",
+    "reload": "{{name}} 파일을 다시 불러오지 못했습니다",
+    "delete": "{{name}} 항목을 삭제하지 못했습니다",
+    "openFolder": "폴더를 열지 못했습니다"
+  },
+  "tree": {
+    "title": "파일",
+    "label": "{{name}}의 파일",
+    "noProject": "열린 폴더가 없습니다. 폴더를 열면 파일이 표시됩니다.",
+    "loading": "파일 불러오는 중",
+    "empty": "이 폴더는 비어 있습니다.",
+    "newFile": "새 파일",
+    "newFolder": "새 폴더",
+    "newFileName": "새 파일 이름",
+    "newFolderName": "새 폴더 이름",
+    "collapseAll": "모든 폴더 접기",
+    "refresh": "새로 고침",
+    "rename": "이름 바꾸기",
+    "renameLabel": "{{name}}의 새 이름",
+    "delete": "삭제",
+    "deleteKey": "Del",
+    "addToChat": "채팅에 추가",
+    "copyPath": "경로 복사",
+    "menuLabel": "파일 작업",
+    "exists": "같은 이름의 파일 또는 폴더가 이미 있습니다.",
+    "nameProblem": {
+      "empty": "이름을 입력하세요.",
+      "invalid": "사용할 수 없는 이름입니다. \\ : * ? \" < > | 문자와 빈 폴더 이름은 사용하지 마세요."
+    },
+    "deleteTitle": "{{name}} 항목을 삭제하시겠습니까?",
+    "deleteFileBody": "{{path}} 파일이 디스크에서 삭제됩니다. Ylide에서는 되돌릴 수 없습니다.",
+    "deleteFolderBody": "{{path}} 폴더와 그 안의 모든 항목이 디스크에서 삭제됩니다. Ylide에서는 되돌릴 수 없습니다."
+  },
+  "search": {
+    "title": "검색",
+    "placeholder": "파일에서 검색",
+    "matchCase": "대/소문자 구분",
+    "wholeWord": "단어 단위로 일치",
+    "regex": "정규식 사용",
+    "globsLabel": "포함하거나 제외할 파일",
+    "globsPlaceholder": "파일, 예: *.ts, !test/**",
+    "globsHint": "패턴을 쉼표로 구분합니다. 앞에 !를 붙이면 일치하는 파일을 제외합니다.",
+    "searching": "검색 중",
+    "summary": "{{files}}에서 {{results}}",
+    "resultCount_other": "결과 {{value}}개",
+    "fileCount_other": "파일 {{value}}개",
+    "noResults": "“{{pattern}}”에 대한 결과가 없습니다.",
+    "truncated": "처음 {{max}}개 결과를 표시합니다. 나머지를 보려면 검색 범위를 좁히세요.",
+    "hint": "프로젝트의 모든 파일에서 텍스트를 찾습니다. 파일 필터로 범위를 좁힐 수 있습니다.",
+    "noProject": "검색하려면 폴더를 여세요.",
+    "matchLabel": "{{line}}번 줄: {{text}}",
+    "collapseAll": "모든 결과 접기",
+    "expandAll": "모든 결과 펼치기",
+    "clear": "검색 지우기"
+  },
+  "quickOpen": {
+    "title": "파일로 이동",
+    "placeholder": "파일 이름 입력, 줄로 이동하려면 :12 추가",
+    "noProject": "먼저 폴더를 여세요",
+    "loading": "파일 찾는 중",
+    "results": "파일",
+    "empty": "“{{query}}”에 일치하는 파일이 없습니다.",
+    "open": "열림",
+    "hintMove": "이동",
+    "hintOpen": "열기",
+    "hintLine": "줄로 이동"
+  }
+}

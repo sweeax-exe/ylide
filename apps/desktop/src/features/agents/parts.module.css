@@ -1,0 +1,78 @@
+.code {
+  padding: 0 4px;
+  border-radius: var(--radius-chip);
+  background: var(--bg-hover);
+  font-family: var(--font-code);
+  font-size: 0.92em;
+  color: var(--text-1);
+}
+
+.created {
+  color: var(--success);
+  flex: none;
+}
+
+.modified {
+  color: var(--accent);
+  flex: none;
+}
+
+.deleted {
+  color: var(--danger);
+  flex: none;
+}
+
+.muted {
+  margin: 0;
+  color: var(--text-3);
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: 24px;
+}
+
+.path,
+.pathButton {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-1);
+}
+
+.pathButton {
+  padding: 1px 4px;
+  margin-left: -4px;
+  border: none;
+  border-radius: var(--radius-chip);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pathButton:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+.kind {
+  flex: none;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}

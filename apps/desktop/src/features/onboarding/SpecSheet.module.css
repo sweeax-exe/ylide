@@ -1,0 +1,348 @@
+.sheet {
+  container-type: inline-size;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-dialog);
+  background: var(--bg-raised);
+  overflow: hidden;
+  animation: swap var(--motion-base) var(--motion-ease);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.kicker {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.name {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xxl);
+  font-weight: 650;
+  font-stretch: 100%;
+  letter-spacing: -0.012em;
+  line-height: var(--leading-tight);
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-4);
+  margin-top: var(--space-2);
+  color: var(--text-2);
+}
+
+.quant {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-chip);
+  font-size: var(--text-sm);
+  color: var(--text-1);
+}
+
+/* ---------- Spec grid ---------- */
+.specs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.spec {
+  padding: var(--space-4) var(--space-5);
+  border-left: 1px solid var(--border);
+}
+
+.spec:first-child {
+  border-left: none;
+}
+
+.spec dt {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.spec dd {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+}
+
+.specValue {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+
+.specUnit {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.specText {
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--text-1);
+}
+
+.specNote {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.specNote.success {
+  color: var(--success);
+}
+
+.specNote.warning {
+  color: var(--warning);
+}
+
+@container (max-width: 600px) {
+  .specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .spec:nth-child(3) {
+    border-left: none;
+  }
+  .spec:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* ---------- Memory ---------- */
+.memory {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+}
+
+.barHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.barName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.barDevice {
+  font-weight: 500;
+  color: var(--metal);
+}
+
+.barTotal {
+  flex: none;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-xs);
+  color: var(--text-2);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendValue {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+
+.swatch {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: var(--radius-chip);
+}
+
+.swatch-weights {
+  background: var(--metal);
+}
+
+.swatch-kv {
+  background: var(--accent);
+}
+
+.swatch-overhead {
+  background: var(--border-strong);
+}
+
+.swatch-free {
+  background: var(--bg-active);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+/* ---------- Why this model ---------- */
+.why {
+  border-top: 1px solid var(--border);
+}
+
+.whyToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-1);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--motion-ease);
+}
+
+.whyToggle:hover {
+  background: var(--bg-hover);
+}
+
+.whyToggle:focus-visible {
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+.chevron {
+  color: var(--text-3);
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+.whyToggle[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+}
+
+.whyPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: 0 var(--space-6) var(--space-6);
+  animation: unfold var(--motion-base) var(--motion-ease);
+}
+
+.whyPanel[hidden] {
+  display: none;
+}
+
+.description {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+.strengths {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reasons li {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 72ch;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.reasonIcon {
+  display: inline-flex;
+  padding-top: 3px;
+  flex: none;
+  color: var(--text-3);
+}
+
+.caution .reasonIcon {
+  color: var(--warning);
+}
+
+.provenance {
+  color: var(--text-3);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-left: calc(-1 * var(--space-2));
+}
+
+@keyframes swap {
+  from {
+    opacity: 0.4;
+  }
+}
+
+@keyframes unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

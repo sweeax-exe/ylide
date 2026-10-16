@@ -1,0 +1,343 @@
+/* ---------- Group ---------- */
+.group + .group {
+  margin-top: var(--space-7);
+}
+
+.groupHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.groupText {
+  min-width: 0;
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.groupDesc {
+  margin: 2px 0 0;
+  max-width: 72ch;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.groupActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+}
+
+/* ---------- Saved label ---------- */
+.saved {
+  display: inline-flex;
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}
+
+.savedInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: savedIn var(--motion-base) var(--motion-ease);
+}
+
+.savedInner svg {
+  color: var(--success);
+}
+
+@keyframes savedIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+/* ---------- Rows ---------- */
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-4) var(--space-5);
+}
+
+.row + .row,
+.prompt + .row,
+.row + .prompt,
+.prompt + .prompt {
+  border-top: 1px solid var(--border);
+}
+
+.wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* A switch stays beside its label at every width. */
+.row.switchRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.rowText {
+  min-width: 0;
+}
+
+.rowLabel {
+  display: block;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.rowHint {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+  max-width: 64ch;
+}
+
+.rowHint code,
+.groupDesc code,
+.sectionDesc code {
+  font-size: 0.95em;
+  padding: 0 3px;
+  border-radius: var(--radius-chip);
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.rowControl {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.end {
+  align-items: flex-end;
+}
+
+.wide .end {
+  align-items: flex-start;
+}
+
+/* ---------- Warnings and notes ---------- */
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--warning);
+}
+
+.warningIcon {
+  flex: none;
+  margin-top: 3px;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.note-warning {
+  border-color: transparent;
+  background: var(--warning-muted);
+  color: var(--text-1);
+}
+
+.note-warning .noteIcon {
+  color: var(--warning);
+}
+
+.note-danger {
+  border-color: transparent;
+  background: var(--danger-muted);
+  color: var(--text-1);
+}
+
+.note-danger .noteIcon {
+  color: var(--danger);
+}
+
+.note-metal {
+  border-color: transparent;
+  background: var(--metal-muted);
+  color: var(--text-1);
+}
+
+.note-metal .noteIcon {
+  color: var(--metal);
+}
+
+.noteIcon {
+  display: flex;
+  flex: none;
+  margin-top: 2px;
+}
+
+.noteText {
+  flex: 1;
+  min-width: 0;
+}
+
+.noteAction {
+  flex: none;
+  align-self: center;
+}
+
+/* ---------- Inputs ---------- */
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.mono {
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  font-variant-ligatures: none;
+}
+
+.numberLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.number {
+  width: 132px;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.error {
+  font-size: var(--text-sm);
+  color: var(--danger);
+}
+
+.control [aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+/* ---------- Prompt editor ---------- */
+.prompt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+}
+
+/* In a narrow column the reset button wraps below the label instead of
+   pushing the page wider. */
+.promptHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 26px;
+}
+
+.grow {
+  flex: 1;
+}
+
+.promptArea {
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  font-variant-ligatures: none;
+  min-height: 160px;
+  tab-size: 2;
+}
+
+.promptFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.promptIssues {
+  min-width: 0;
+}
+
+.placeholders {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.placeholdersLabel {
+  margin-right: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.placeholder {
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-chip);
+  background: var(--bg-sunken);
+  color: var(--text-1);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--motion-ease);
+}
+
+.placeholder:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@container (max-width: 640px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .end {
+    align-items: flex-start;
+  }
+}

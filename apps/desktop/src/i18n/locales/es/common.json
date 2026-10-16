@@ -1,0 +1,181 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Programa con una IA que nunca sale de tu equipo."
+  },
+  "actions": {
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "retry": "Reintentar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "openFolder": "Abrir carpeta",
+    "reset": "Restablecer",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "stop": "Detener",
+    "send": "Enviar",
+    "apply": "Aplicar",
+    "browse": "Examinar"
+  },
+  "window": {
+    "minimize": "Minimizar",
+    "maximize": "Maximizar",
+    "restore": "Restaurar",
+    "close": "Cerrar ventana"
+  },
+  "rail": {
+    "explorer": "Archivos",
+    "search": "Buscar",
+    "chat": "Chat",
+    "agents": "Agentes",
+    "models": "Modelos",
+    "settings": "Configuración"
+  },
+  "titlebar": {
+    "noProject": "Ninguna carpeta abierta",
+    "quickOpen": "Ir al archivo",
+    "modelMenu": "Modelo y runtime"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Mayús",
+    "enter": "Intro"
+  },
+  "switchProject": {
+    "title": "¿Descartar los cambios sin guardar?",
+    "body_one": "Un archivo tiene cambios sin guardar. Si abres {{name}}, se cerrará y se perderán los cambios.",
+    "body_many": "{{count}} archivos tienen cambios sin guardar. Si abres {{name}}, se cerrarán y se perderán los cambios.",
+    "body_other": "{{count}} archivos tienen cambios sin guardar. Si abres {{name}}, se cerrarán y se perderán los cambios.",
+    "confirm": "Descartar y abrir"
+  },
+  "server": {
+    "none": "Ningún modelo en ejecución",
+    "starting": "Iniciando {{model}}",
+    "loading": "Cargando {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Modelo detenido",
+    "crashed": "El modelo se detuvo inesperadamente",
+    "external": "Servidor externo",
+    "start": "Iniciar modelo",
+    "stop": "Detener modelo"
+  },
+  "status": {
+    "context": "{{tokens}} de contexto",
+    "speed": "{{value}} tok/s",
+    "offline": "Sin conexión: nada sale de este equipo",
+    "networkActivity": "Última solicitud de red: {{purpose}}",
+    "runtime": "Runtime: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} tokens",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}} %"
+  },
+  "netPurpose": {
+    "registry": "actualización de la lista de modelos",
+    "modelDownload": "descarga de modelo",
+    "runtimeDownload": "descarga de runtime",
+    "updateCheck": "búsqueda de actualizaciones",
+    "updateDownload": "descarga de actualización"
+  },
+  "errors": {
+    "generic": "Se ha producido un error: {{message}}",
+    "no_model": "No hay ningún modelo en ejecución. Inicia uno en el menú del modelo.",
+    "no_project": "Abre primero una carpeta.",
+    "network_disabled": "Este acceso a la red está desactivado en la configuración.",
+    "disk_full": "No hay suficiente espacio libre en disco ({{message}}).",
+    "model_not_installed": "Este modelo aún no se ha descargado.",
+    "no_model_selected": "Elige primero un modelo.",
+    "no_runtime": "No hay ningún runtime de inferencia instalado.",
+    "server": "El servidor del modelo informó de un problema: {{message}}",
+    "model": "El modelo devolvió un error: {{message}}",
+    "download": "La descarga ha fallado: {{message}}",
+    "workspace": "Error de archivo: {{message}}",
+    "endpoint_unreachable": "No se puede acceder al servidor externo: {{message}}",
+    "not_found": "No se encontró el archivo.",
+    "not_gguf": "Este no es un archivo de modelo GGUF.",
+    "busy": "Espera, hay otra instalación en curso.",
+    "update_none": "No hay ninguna actualización que instalar. Busca actualizaciones primero.",
+    "update_busy": "La actualización ya se está instalando.",
+    "update_signature": "Se rechazó la actualización porque su firma no coincide. No se ha instalado nada.",
+    "update_format": "La actualización tiene un formato que Ylide no puede instalar: {{message}}",
+    "update_too_large": "La actualización es inusualmente grande y no se ha descargado.",
+    "update_launch": "No se pudo iniciar el instalador: {{message}}",
+    "update_unsupported": "En este sistema, instala las actualizaciones manualmente."
+  },
+  "reasons": {
+    "fitsInVram": "Cabe por completo en tu memoria gráfica ({{vramGb}} GB en uso).",
+    "moeOffload": "Mezcla de expertos: la parte siempre activa y {{vramGb}} GB se quedan en la GPU, y {{cpuExpertLayers}} capas de expertos ({{ramGb}} GB) están en la RAM del sistema. Solo se ejecutan unos pocos expertos por token, así que sigue siendo rápido.",
+    "partialOffload": "{{gpuLayers}} capas se ejecutan en la GPU ({{vramGb}} GB) y el resto en la RAM del sistema ({{ramGb}} GB). Funciona, pero es más lento.",
+    "unifiedMemory": "Se ejecuta en memoria unificada ({{ramGb}} GB) en la GPU de Apple.",
+    "cpuOnly": "Se ejecuta en el procesador ({{ramGb}} GB de RAM). No se encontró ninguna GPU adecuada.",
+    "speedEstimate": "Unos {{tps}} tokens por segundo (estimación).",
+    "topQualityForBudget": "El modelo de programación más potente que funciona bien en este equipo.",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "según el autor",
+    "benchmarkIndependent": "medido de forma independiente",
+    "toolCalling": "Uso fiable de herramientas para el modo agente ({{level}}).",
+    "longContext": "Contexto largo de {{tokens}} tokens: suficiente para archivos grandes y sesiones largas de agentes.",
+    "reasoningModel": "Puede pensar antes de responder; Ylide lo desactiva para las ediciones rápidas.",
+    "permissiveLicense": "{{license}}: uso libre, también comercial.",
+    "restrictedLicense": "{{license}}: revisa los términos de la licencia antes de un uso comercial.",
+    "slowWarning": "En este equipo irá lento.",
+    "quantizedKvCache": "Usa una caché de contexto comprimida ({{type}}) para que quepa.",
+    "sharesGpuWithMain": "Se ejecuta en la GPU junto al modelo principal.",
+    "runsOnCpu": "Se ejecuta en el procesador y deja la GPU al modelo principal.",
+    "autocompleteMovesToCpu": "Usa la memoria de la GPU que, de lo contrario, se reservaría para el autocompletado.",
+    "noGpu": "No se encontró ninguna tarjeta gráfica adecuada. Los modelos se ejecutan en el procesador, que es más lento.",
+    "lowDiskSpace": "Solo quedan {{freeGb}} GB libres en disco.",
+    "nothingFits": "Ninguno de los modelos conocidos cabe en este equipo. Aún puedes usar tu propio archivo GGUF o un servidor externo."
+  },
+  "alternatives": {
+    "faster": "Más rápido",
+    "stronger": "Más potente",
+    "lighter": "Menos memoria"
+  },
+  "toolCallingLevel": {
+    "none": "ninguno",
+    "basic": "básico",
+    "good": "bueno",
+    "excellent": "excelente"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agente",
+    "fim": "Autocompletado",
+    "embedding": "Búsqueda de código"
+  },
+  "placement": {
+    "gpu": "En la GPU",
+    "moeOffload": "GPU y RAM (expertos en RAM)",
+    "partialOffload": "Repartido entre GPU y RAM",
+    "unified": "Memoria unificada",
+    "cpu": "En el procesador"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} está disponible",
+    "availableBody": "La instalación tarda alrededor de un minuto y después Ylide se reinicia.",
+    "install": "Instalar",
+    "confirmTitle": "¿Instalar Ylide {{version}}?",
+    "confirmBody": "La actualización ya está descargada y comprobada. Ylide detendrá ahora el modelo, instalará la actualización y después se reiniciará.",
+    "confirmDirty_one": "Un archivo tiene cambios sin guardar. Guárdalo antes o se perderán los cambios.",
+    "confirmDirty_many": "{{count}} archivos tienen cambios sin guardar. Guárdalos antes o se perderán los cambios.",
+    "confirmDirty_other": "{{count}} archivos tienen cambios sin guardar. Guárdalos antes o se perderán los cambios.",
+    "confirmAgent": "El agente en ejecución se detendrá.",
+    "confirm": "Instalar y reiniciar",
+    "failedTitle": "La actualización no se instaló"
+  }
+}

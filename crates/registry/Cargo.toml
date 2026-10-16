@@ -1,0 +1,19 @@
+[package]
+name = "registry"
+description = "Model registry: schema, loading/caching and hardware-aware recommendations"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+hardware = { path = "../hardware" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+ts-rs = { workspace = true }
+
+[dev-dependencies]
+jsonschema = { version = "0.58", default-features = false }

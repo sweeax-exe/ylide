@@ -1,0 +1,120 @@
+.step {
+  --column: 720px;
+  --gutter: var(--space-9);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  animation: enter var(--motion-base) var(--motion-ease);
+}
+
+.wide {
+  --column: 1120px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--column) + 2 * var(--gutter));
+  padding: var(--space-8) var(--gutter) var(--space-8);
+}
+
+/* The welcome sits a little above the optical centre. */
+.hero .inner {
+  justify-content: center;
+  padding-bottom: 12vh;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.title,
+.display {
+  margin: 0;
+  color: var(--text-1);
+  font-stretch: 100%;
+  line-height: var(--leading-tight);
+}
+
+.title:focus,
+.display:focus {
+  outline: none;
+}
+
+.title {
+  font-size: var(--text-xxl);
+  font-weight: 650;
+  letter-spacing: -0.012em;
+}
+
+.display {
+  max-width: 15em;
+  font-size: var(--text-display);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.lead,
+.heroLead {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.lead {
+  font-size: var(--text-md);
+}
+
+.heroLead {
+  margin-top: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  background: var(--bg-app);
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: calc(var(--column) + 2 * var(--gutter));
+  min-height: 64px;
+  padding: var(--space-3) var(--gutter);
+}
+
+.note {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  line-height: var(--leading-ui);
+}
+
+.grow {
+  flex: 1;
+}
+
+@media (max-width: 1100px) {
+  .step {
+    --gutter: var(--space-7);
+  }
+  .inner {
+    padding-top: var(--space-7);
+  }
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+  }
+}

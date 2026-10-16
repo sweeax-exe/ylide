@@ -1,0 +1,154 @@
+{
+  "loading": "Loading the editor",
+  "editorLabel": "Editor for {{path}}",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "Open a project folder",
+    "body": "Ylide works on a folder on this computer. Your files, chats and agent runs stay on this machine.",
+    "reopen": "Reopen {{name}}"
+  },
+  "failed": {
+    "title": "The editor could not start",
+    "body": "Something went wrong while loading the code editor. Try again, and restart Ylide if it keeps failing."
+  },
+  "welcome": {
+    "body": "Open a file from the sidebar or jump straight to one.",
+    "shortcuts": {
+      "goToFile": "Go to file",
+      "editWithAi": "Edit with AI",
+      "chat": "Chat",
+      "agents": "Agents",
+      "search": "Search in files"
+    }
+  },
+  "tabs": {
+    "label": "Open files",
+    "unsaved": "unsaved changes",
+    "deleted": "deleted on disk",
+    "close": "Close {{name}}"
+  },
+  "disk": {
+    "changed": "{{name}} changed on disk while you were editing it.",
+    "deleted": "{{name}} was deleted on disk. Saving creates it again.",
+    "reload": "Reload from disk",
+    "keepMine": "Keep my version",
+    "close": "Close file",
+    "keep": "Keep editing"
+  },
+  "closeDialog": {
+    "title": "Save changes to {{name}}?",
+    "body": "Your changes are lost if you close the file without saving.",
+    "save": "Save and close",
+    "discard": "Close without saving"
+  },
+  "commands": {
+    "addSelectionToChat": "Add selection to chat",
+    "openChat": "Open chat",
+    "save": "Save file"
+  },
+  "inline": {
+    "action": "Edit with AI",
+    "title": "Edit with AI",
+    "placeholder": "Describe the change",
+    "instructionLabel": "Instruction ({{scope}})",
+    "scopeLine": "Line {{line}}",
+    "scopeLines": "Lines {{start}}–{{end}}",
+    "scopeInsert": "Insert at line {{line}}",
+    "cancel": "Cancel edit",
+    "streaming": "Writing the change",
+    "noModel": "No model is running. Start one to edit with AI.",
+    "openModels": "Open models",
+    "noChange": "The model suggested no changes. Try a more specific instruction.",
+    "noResult": "The model did not return a result. Try again."
+  },
+  "review": {
+    "title": "Review the change",
+    "added_one": "{{count}} line added",
+    "added_other": "{{count}} lines added",
+    "removed_one": "{{count}} line removed",
+    "removed_other": "{{count}} lines removed",
+    "layout": "Diff layout",
+    "inline": "Inline",
+    "split": "Side by side",
+    "accept": "Accept",
+    "acceptHint": "Apply the change (Enter). Ctrl+Z undoes it.",
+    "reject": "Reject",
+    "rejectHint": "Discard the change (Esc)",
+    "retry": "Try again"
+  },
+  "errors": {
+    "open": "Could not open {{name}}",
+    "save": "Could not save {{name}}",
+    "reload": "Could not reload {{name}}",
+    "delete": "Could not delete {{name}}",
+    "openFolder": "Could not open the folder"
+  },
+  "tree": {
+    "title": "Files",
+    "label": "Files in {{name}}",
+    "noProject": "No folder is open. Open one to see its files.",
+    "loading": "Loading files",
+    "empty": "This folder is empty.",
+    "newFile": "New file",
+    "newFolder": "New folder",
+    "newFileName": "Name of the new file",
+    "newFolderName": "Name of the new folder",
+    "collapseAll": "Collapse all folders",
+    "refresh": "Refresh",
+    "rename": "Rename",
+    "renameLabel": "New name for {{name}}",
+    "delete": "Delete",
+    "deleteKey": "Del",
+    "addToChat": "Add to chat",
+    "copyPath": "Copy path",
+    "menuLabel": "File actions",
+    "exists": "A file or folder with this name already exists.",
+    "nameProblem": {
+      "empty": "Enter a name.",
+      "invalid": "This name is not allowed. Avoid \\ : * ? \" < > | and empty folder names."
+    },
+    "deleteTitle": "Delete {{name}}?",
+    "deleteFileBody": "{{path}} is removed from disk. This cannot be undone in Ylide.",
+    "deleteFolderBody": "{{path}} and everything in it is removed from disk. This cannot be undone in Ylide."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search in files",
+    "matchCase": "Match case",
+    "wholeWord": "Match whole word",
+    "regex": "Use regular expression",
+    "globsLabel": "Files to include or exclude",
+    "globsPlaceholder": "Files, e.g. *.ts, !test/**",
+    "globsHint": "Comma-separated patterns. A leading ! excludes matching files.",
+    "searching": "Searching",
+    "summary": "{{results}} in {{files}}",
+    "resultCount_one": "{{value}} result",
+    "resultCount_other": "{{value}} results",
+    "fileCount_one": "{{value}} file",
+    "fileCount_other": "{{value}} files",
+    "noResults": "No results for “{{pattern}}”.",
+    "truncated": "Showing the first {{max}} results. Narrow the search to see the rest.",
+    "hint": "Find text in every file of the project. Use the file filter to narrow it down.",
+    "noProject": "Open a folder to search in it.",
+    "matchLabel": "Line {{line}}: {{text}}",
+    "collapseAll": "Collapse all results",
+    "expandAll": "Expand all results",
+    "clear": "Clear search"
+  },
+  "quickOpen": {
+    "title": "Go to file",
+    "placeholder": "Type a file name, add :12 for a line",
+    "noProject": "Open a folder first",
+    "loading": "Finding files",
+    "results": "Files",
+    "empty": "No file matches “{{query}}”.",
+    "open": "open",
+    "hintMove": "move",
+    "hintOpen": "open",
+    "hintLine": "go to line"
+  }
+}

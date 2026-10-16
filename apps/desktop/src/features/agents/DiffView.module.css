@@ -1,0 +1,152 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  overflow: hidden;
+  animation: reveal var(--motion-base) var(--motion-ease);
+}
+
+.scroller {
+  overflow: auto;
+  border-radius: inherit;
+}
+
+.scroller:focus-visible {
+  outline-offset: -2px;
+}
+
+.inner {
+  display: inline-block;
+  min-width: 100%;
+  padding: 4px 0;
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  font-variant-ligatures: none;
+  user-select: text;
+}
+
+.fileHeader {
+  position: sticky;
+  left: 0;
+  padding: 4px var(--space-3);
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.file + .file {
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 4px;
+}
+
+.line {
+  display: flex;
+  white-space: pre;
+  color: var(--text-1);
+}
+
+.gutter {
+  position: sticky;
+  left: 0;
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 0 6px 0 4px;
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  user-select: none;
+}
+
+.no {
+  display: inline-block;
+  min-width: 3ch;
+}
+
+.sign {
+  flex: none;
+  width: 2ch;
+  padding-left: 2px;
+  color: var(--text-3);
+  user-select: none;
+}
+
+.text {
+  padding-right: var(--space-4);
+}
+
+.add {
+  background: var(--diff-add-bg);
+}
+
+.add .gutter {
+  background: linear-gradient(var(--diff-add-bg), var(--diff-add-bg)), var(--bg-sunken);
+}
+
+.add .sign {
+  color: var(--success);
+}
+
+.del {
+  background: var(--diff-del-bg);
+}
+
+.del .gutter {
+  background: linear-gradient(var(--diff-del-bg), var(--diff-del-bg)), var(--bg-sunken);
+}
+
+.del .sign {
+  color: var(--danger);
+}
+
+.hunk {
+  color: var(--text-3);
+  background: var(--bg-hover);
+}
+
+.hunk .gutter {
+  min-width: calc(6ch + 12px);
+  background: var(--bg-hover);
+}
+
+.hunk .text {
+  padding-left: 2ch;
+}
+
+.note {
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.more {
+  height: 28px;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.more:hover {
+  color: var(--text-1);
+  background: var(--bg-hover);
+}
+
+.empty {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}

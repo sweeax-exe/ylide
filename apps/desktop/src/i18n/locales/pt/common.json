@@ -1,0 +1,181 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Programe com uma IA que nunca sai do seu computador."
+  },
+  "actions": {
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "save": "Salvar",
+    "retry": "Tentar de novo",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "openFolder": "Abrir pasta",
+    "reset": "Restaurar padrão",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "stop": "Parar",
+    "send": "Enviar",
+    "apply": "Aplicar",
+    "browse": "Procurar"
+  },
+  "window": {
+    "minimize": "Minimizar",
+    "maximize": "Maximizar",
+    "restore": "Restaurar",
+    "close": "Fechar janela"
+  },
+  "rail": {
+    "explorer": "Arquivos",
+    "search": "Busca",
+    "chat": "Chat",
+    "agents": "Agentes",
+    "models": "Modelos",
+    "settings": "Configurações"
+  },
+  "titlebar": {
+    "noProject": "Nenhuma pasta aberta",
+    "quickOpen": "Ir para arquivo",
+    "modelMenu": "Modelo e runtime"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "Descartar alterações não salvas?",
+    "body_one": "Um arquivo tem alterações não salvas. Ao abrir {{name}}, ele é fechado e as alterações são perdidas.",
+    "body_many": "{{count}} arquivos têm alterações não salvas. Ao abrir {{name}}, eles são fechados e as alterações são perdidas.",
+    "body_other": "{{count}} arquivos têm alterações não salvas. Ao abrir {{name}}, eles são fechados e as alterações são perdidas.",
+    "confirm": "Descartar e abrir"
+  },
+  "server": {
+    "none": "Nenhum modelo em execução",
+    "starting": "Iniciando {{model}}",
+    "loading": "Carregando {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Modelo parado",
+    "crashed": "O modelo parou inesperadamente",
+    "external": "Servidor externo",
+    "start": "Iniciar modelo",
+    "stop": "Parar modelo"
+  },
+  "status": {
+    "context": "{{tokens}} de contexto",
+    "speed": "{{value}} tok/s",
+    "offline": "Offline: nada sai deste computador",
+    "networkActivity": "Última solicitação de rede: {{purpose}}",
+    "runtime": "Runtime: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} tokens",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}}%"
+  },
+  "netPurpose": {
+    "registry": "atualização da lista de modelos",
+    "modelDownload": "download de modelo",
+    "runtimeDownload": "download de runtime",
+    "updateCheck": "verificação de atualizações",
+    "updateDownload": "download de atualização"
+  },
+  "errors": {
+    "generic": "Algo deu errado: {{message}}",
+    "no_model": "Nenhum modelo está em execução. Inicie um no menu de modelos.",
+    "no_project": "Abra uma pasta primeiro.",
+    "network_disabled": "Este acesso à rede está desativado nas configurações.",
+    "disk_full": "Não há espaço livre suficiente em disco ({{message}}).",
+    "model_not_installed": "Este modelo ainda não foi baixado.",
+    "no_model_selected": "Escolha um modelo primeiro.",
+    "no_runtime": "Nenhum runtime de inferência está instalado.",
+    "server": "O servidor do modelo informou um problema: {{message}}",
+    "model": "O modelo retornou um erro: {{message}}",
+    "download": "O download falhou: {{message}}",
+    "workspace": "Erro de arquivo: {{message}}",
+    "endpoint_unreachable": "O servidor externo não está acessível: {{message}}",
+    "not_found": "O arquivo não foi encontrado.",
+    "not_gguf": "Este não é um arquivo de modelo GGUF.",
+    "busy": "Aguarde, outra instalação está em andamento.",
+    "update_none": "Não há atualização para instalar. Verifique se há atualizações primeiro.",
+    "update_busy": "A atualização já está sendo instalada.",
+    "update_signature": "A atualização foi recusada porque a assinatura não confere. Nada foi instalado.",
+    "update_format": "A atualização tem um formato que o Ylide não consegue instalar: {{message}}",
+    "update_too_large": "A atualização é excepcionalmente grande e não foi baixada.",
+    "update_launch": "Não foi possível iniciar o instalador: {{message}}",
+    "update_unsupported": "Neste sistema, instale as atualizações manualmente."
+  },
+  "reasons": {
+    "fitsInVram": "Cabe totalmente na memória de vídeo ({{vramGb}} GB em uso).",
+    "moeOffload": "Mistura de especialistas: a parte sempre ativa e {{vramGb}} GB ficam na GPU; {{cpuExpertLayers}} camadas de especialistas ({{ramGb}} GB) ficam na RAM do sistema. Só alguns especialistas rodam por token, por isso continua rápido.",
+    "partialOffload": "{{gpuLayers}} camadas rodam na GPU ({{vramGb}} GB), o resto na RAM do sistema ({{ramGb}} GB). Funciona, mas é mais lento.",
+    "unifiedMemory": "Roda na GPU da Apple, com memória unificada ({{ramGb}} GB).",
+    "cpuOnly": "Roda no processador ({{ramGb}} GB de RAM). Nenhuma GPU adequada foi encontrada.",
+    "speedEstimate": "Cerca de {{tps}} tokens por segundo (estimativa).",
+    "topQualityForBudget": "O modelo de programação mais forte que roda bem nesta máquina.",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "informado pelo desenvolvedor",
+    "benchmarkIndependent": "medido de forma independente",
+    "toolCalling": "Uso confiável de ferramentas no modo agente ({{level}}).",
+    "longContext": "Contexto longo de {{tokens}} tokens: suficiente para arquivos grandes e sessões longas de agentes.",
+    "reasoningModel": "Pode pensar antes de responder; o Ylide desativa isso em edições rápidas.",
+    "permissiveLicense": "{{license}}: uso livre, inclusive comercial.",
+    "restrictedLicense": "{{license}}: confira os termos da licença antes do uso comercial.",
+    "slowWarning": "Vai rodar devagar nesta máquina.",
+    "quantizedKvCache": "Usa um cache de contexto comprimido ({{type}}) para caber.",
+    "sharesGpuWithMain": "Roda na GPU junto com o modelo principal.",
+    "runsOnCpu": "Roda no processador e deixa a GPU para o modelo principal.",
+    "autocompleteMovesToCpu": "Usa a memória de vídeo normalmente reservada ao autocompletar.",
+    "noGpu": "Nenhuma placa de vídeo adequada foi encontrada. Os modelos rodam no processador, o que é mais lento.",
+    "lowDiskSpace": "Só há {{freeGb}} GB livres em disco.",
+    "nothingFits": "Nenhum dos modelos conhecidos cabe nesta máquina. Você ainda pode usar seu próprio arquivo GGUF ou um servidor externo."
+  },
+  "alternatives": {
+    "faster": "Mais rápido",
+    "stronger": "Mais forte",
+    "lighter": "Menos memória"
+  },
+  "toolCallingLevel": {
+    "none": "nenhum",
+    "basic": "básico",
+    "good": "bom",
+    "excellent": "excelente"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agente",
+    "fim": "Autocompletar",
+    "embedding": "Busca de código"
+  },
+  "placement": {
+    "gpu": "Na GPU",
+    "moeOffload": "GPU e RAM (especialistas na RAM)",
+    "partialOffload": "Dividido entre GPU e RAM",
+    "unified": "Memória unificada",
+    "cpu": "No processador"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "O Ylide {{version}} está disponível",
+    "availableBody": "A instalação leva cerca de um minuto, depois o Ylide reinicia.",
+    "install": "Instalar",
+    "confirmTitle": "Instalar o Ylide {{version}}?",
+    "confirmBody": "A atualização já foi baixada e verificada. Agora o Ylide vai interromper o modelo, instalar a atualização e reiniciar.",
+    "confirmDirty_one": "Um arquivo tem alterações não salvas. Salve-o antes, ou as alterações serão perdidas.",
+    "confirmDirty_many": "{{count}} arquivos têm alterações não salvas. Salve-os antes, ou as alterações serão perdidas.",
+    "confirmDirty_other": "{{count}} arquivos têm alterações não salvas. Salve-os antes, ou as alterações serão perdidas.",
+    "confirmAgent": "O agente em execução será interrompido.",
+    "confirm": "Instalar e reiniciar",
+    "failedTitle": "A atualização não foi instalada"
+  }
+}

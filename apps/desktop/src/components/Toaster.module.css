@@ -1,0 +1,72 @@
+.stack {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--layout-status-bar) + var(--space-3));
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 360px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--text-3);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-float);
+  pointer-events: auto;
+  animation: slide var(--motion-base) var(--motion-ease);
+}
+
+.success {
+  border-left-color: var(--success);
+}
+
+.warning {
+  border-left-color: var(--warning);
+}
+
+.danger {
+  border-left-color: var(--danger);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.body {
+  margin-top: 2px;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  user-select: text;
+}
+
+.action {
+  margin-top: var(--space-2);
+}
+
+.close {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 2px;
+}
+
+@keyframes slide {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}

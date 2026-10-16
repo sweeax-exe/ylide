@@ -1,0 +1,8 @@
+# Keeps the GitHub Actions in .github/workflows up to date. Cargo and npm
+# dependencies are updated by hand, together with a test run.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -1,0 +1,163 @@
+.page {
+  /* Containing block for absolutely positioned descendants (switch inputs,
+     visually hidden labels). Without it they are positioned against the body,
+     grow the document, and focusing one scrolls the whole window away. */
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  container-type: inline-size;
+  background: var(--bg-sunken);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 184px minmax(0, 880px);
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-7) var(--space-10);
+}
+
+.nav {
+  position: sticky;
+  top: var(--space-8);
+  align-self: start;
+  padding-top: 52px;
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navItem {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--text-base);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease);
+}
+
+.navItem:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.navItem[aria-current='location'] {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.navItem[aria-current='location']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  border-radius: var(--radius-round);
+  background: var(--accent);
+}
+
+.content {
+  min-width: 0;
+}
+
+.header {
+  margin-bottom: var(--space-8);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 650;
+  line-height: var(--leading-tight);
+  color: var(--text-1);
+}
+
+.intro {
+  margin: var(--space-2) 0 0;
+  max-width: 68ch;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.section + .section {
+  margin-top: var(--space-10);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.sectionText {
+  min-width: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 650;
+  line-height: var(--leading-tight);
+  color: var(--text-1);
+}
+
+.sectionTitle:focus-visible {
+  outline-offset: 4px;
+}
+
+.sectionDesc {
+  margin: var(--space-1) 0 0;
+  max-width: 72ch;
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.sectionActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+@container (max-width: 980px) {
+  .layout {
+    grid-template-columns: minmax(0, 880px);
+    padding: var(--space-6) var(--space-5) var(--space-10);
+  }
+  .nav {
+    display: none;
+  }
+}
+
+@container (max-width: 520px) {
+  .layout {
+    padding: var(--space-5) var(--space-4) var(--space-9);
+  }
+  .sectionHead {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+}

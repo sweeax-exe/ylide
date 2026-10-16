@@ -1,0 +1,119 @@
+.review {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sunken);
+  animation: show var(--motion-base) var(--motion-ease);
+}
+
+/* The bar, not the review, is the query container: containment on the review
+   would make it the containing block of Monaco's fixed overflow widgets. */
+.bar {
+  container-type: inline-size;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  min-height: 40px;
+  padding: var(--space-1) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-app);
+  flex: none;
+  flex-wrap: wrap;
+}
+
+/* Sized by title and stats only, so the actions move to a row of their own
+   before they could cover the summary. */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.title {
+  flex: none;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+/* Zero width keeps the instruction out of the summary's size except for a
+   small floor, so the actions wrap to a row of their own before it shrinks to
+   just the ellipsis; it grows into whatever room is left, up to its own
+   length, and truncates below that. */
+.instruction {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 6ch;
+  max-width: max-content;
+  overflow: hidden;
+  color: var(--text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats {
+  display: inline-flex;
+  gap: var(--space-2);
+  flex: none;
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.added {
+  color: var(--success);
+}
+
+.removed {
+  color: var(--danger);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.diff {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* A little above the width where one row with full labels stops fitting
+   (about 730px of editor in German, the longest locale), the secondary buttons
+   keep only their icon; the label stays as accessible name and the title as
+   tooltip. Accept always keeps its label. */
+/* Too narrow even for title, a short instruction and the stats: let the
+   instruction collapse rather than push the stats out of the bar. */
+@container (max-width: 240px) {
+  .instruction {
+    min-width: 0;
+  }
+}
+
+@container (max-width: 760px) {
+  .collapsible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+}

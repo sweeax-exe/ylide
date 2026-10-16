@@ -1,0 +1,159 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.tree {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--space-2);
+}
+
+.tree:focus-visible {
+  outline: none;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-3);
+  line-height: var(--leading-prose);
+}
+
+.message p {
+  margin: 0;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding-right: var(--space-2);
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.active,
+.active:hover {
+  background: var(--bg-selected);
+  color: var(--text-1);
+}
+
+.focused {
+  background: var(--bg-hover);
+}
+
+.active.focused {
+  background: var(--bg-selected);
+}
+
+/* The focus ring sits on the focused row while the tree has keyboard focus. */
+.tree:focus-visible .focused {
+  outline: 1px solid var(--focus);
+  outline-offset: -1px;
+}
+
+.guide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.chevron,
+.chevronSpace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--text-3);
+}
+
+.chevron {
+  transition: transform var(--motion-fast) var(--motion-ease);
+}
+
+.chevron.open {
+  transform: rotate(90deg);
+}
+
+.chevronSpace :global(*) {
+  transform: scale(0.8);
+}
+
+.icon {
+  flex: none;
+  color: var(--text-3);
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spacer {
+  min-height: 24px;
+  flex: 1;
+}
+
+/* ---------- Inline name field ---------- */
+.nameField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.nameInput {
+  width: 100%;
+  height: 20px;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-chip);
+  background: var(--bg-sunken);
+  color: var(--text-1);
+  font-size: var(--text-base);
+  user-select: text;
+}
+
+.nameInput:focus-visible {
+  outline: none;
+}
+
+.nameInvalid {
+  border-color: var(--danger);
+}
+
+.nameError {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-chip);
+  background: var(--bg-raised);
+  color: var(--danger);
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  white-space: normal;
+}

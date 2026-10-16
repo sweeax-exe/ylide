@@ -1,0 +1,111 @@
+{
+  "lang": "id",
+  "langName": "Bahasa Indonesia",
+  "suggest": "Baca halaman ini dalam bahasa Indonesia",
+  "meta": {
+    "title": "Ylide: IDE AI yang tak pernah keluar dari komputer Anda",
+    "description": "Chat, edit inline, dan agen coding yang ditenagai model di komputer Anda sendiri. Tanpa akun, tanpa cloud, tanpa langganan. Open source.",
+    "privacyTitle": "Privasi: Ylide",
+    "imprintTitle": "Impresum: Ylide"
+  },
+  "nav": {
+    "label": "Navigasi utama",
+    "features": "Fitur",
+    "privacy": "Privasi",
+    "download": "Unduh",
+    "home": "Ylide, halaman beranda",
+    "language": "Bahasa"
+  },
+  "hero": {
+    "title": "IDE AI yang tak pernah keluar dari komputer Anda.",
+    "lead": "Chat, edit inline, dan satu tim agen coding, semuanya ditenagai hanya oleh model yang berjalan di komputer Anda sendiri. Tanpa akun, tanpa cloud, tanpa langganan.",
+    "download": "Unduh untuk Windows",
+    "meta": "Versi {{version}} untuk Windows 10 dan 11, 64-bit, {{size}} MB. Open source, berlisensi Apache-2.0.",
+    "tube": "komputer Anda"
+  },
+  "showcase": {
+    "alt": "Editor Ylide dengan pohon berkas, sebuah berkas JavaScript, dan panel chat",
+    "caption": "Berkas, editor, dan chat dalam satu jendela. Semuanya berjalan di komputer Anda."
+  },
+  "chat": {
+    "title": "Tanyai proyek Anda.",
+    "body": "Lampirkan file, folder, atau simbol dengan @. Jawaban mengalir kata demi kata dari model di kartu grafis Anda, dan apa yang Anda tanyakan tetap di sini.",
+    "question": "Apa fungsi applyDiscount di <code>@cart.js</code>?",
+    "answer": "Fungsi ini memotong harga setiap item sebesar persentase tertentu dan membulatkannya ke sen utuh. Nilai di bawah 0 atau di atas 100 ditolak dengan <code>TypeError</code>.",
+    "stats": "75 token per detik, di komputer ini",
+    "you": "Anda",
+    "model": "Qwen3.6 35B-A3B"
+  },
+  "inline": {
+    "title": "Ubah kode di tempatnya.",
+    "body": "Pilih kode, tekan <kbd>Ctrl</kbd> <kbd>K</kbd>, lalu jelaskan apa yang perlu diubah. Ylide menampilkan perubahannya sebagai diff, lalu Anda menerima atau membuangnya.",
+    "prompt": "Bandingkan ID secara ketat",
+    "accept": "Terima",
+    "reject": "Buang"
+  },
+  "agents": {
+    "title": "Satu tim yang saling mengoper pekerjaan.",
+    "body": "Orkestrator merencanakan, pemrogram menulis, peninjau memeriksa. Setiap serah terima adalah persilangan garis dunia mereka. Perintah dan penghapusan baru dijalankan setelah Anda menyetujuinya, dan setiap langkah bisa diurungkan lewat checkpoint.",
+    "legend": "Peran",
+    "orchestrator": "Orkestrator",
+    "coder": "Pemrogram",
+    "reviewer": "Peninjau",
+    "stepsLabel": "Alur kerja agen",
+    "step1": "Orkestrator membaca proyek dan memecah permintaan menjadi tiga tugas.",
+    "step2": "Pemrogram mengubah <code>cart.js</code> dan menjalankan tes.",
+    "step3": "Peninjau memeriksa diff dan meminta tes untuk keranjang kosong.",
+    "step4": "Pemrogram menambahkan tes itu. Dua belas dari dua belas tes lulus.",
+    "step5": "Peninjau menyetujui tugas. Anda melihat setiap perubahan sebelum menjadi permanen.",
+    "task": "Tugas"
+  },
+  "hardware": {
+    "title": "Pas dengan perangkat keras Anda.",
+    "body": "Saat pertama kali dijalankan, Ylide mengukur kartu grafis, memori, dan prosesor Anda, lalu menyarankan model terkuat yang berjalan lancar di perangkat tersebut. Setelah itu Ylide mengunduh model, memeriksa filenya, dan menjalankannya."
+  },
+  "setup": {
+    "label": "Menyiapkan Ylide dalam lima langkah",
+    "s1": "Selamat datang",
+    "s1b": "Pilih bahasa dan tema Anda.",
+    "s2": "Pindai",
+    "s2b": "Kartu grafis, memori, dan prosesor diukur dalam seperlima detik.",
+    "s3": "Model",
+    "s3b": "Model terkuat yang berjalan lancar di komputer ini.",
+    "s4": "Unduh",
+    "s4b": "Setiap file diperiksa dengan checksum SHA-256-nya, dan Anda dapat menjeda kapan saja.",
+    "s5": "Siap",
+    "s5b": "Chat, edit, dan agen kini berjalan di komputer Anda.",
+    "figure": "Tangkapan layar penyiapan Ylide",
+    "alt1": "Langkah selamat datang dengan pilihan bahasa dan tema",
+    "alt2": "Pemindaian perangkat keras yang menampilkan kartu grafis, memori, prosesor, dan disk",
+    "alt3": "Rekomendasi model dengan kecepatan, konteks, dan penggunaan memori",
+    "alt4": "Unduhan model dan akselerasi CUDA beserta kemajuannya",
+    "alt5": "Layar Siap dengan runtime, perangkat, dan pintasan keyboard",
+    "note": "Tangkapan layar antarmuka bahasa Inggris, diambil di komputer pengembang."
+  },
+  "privacy": {
+    "title": "Empat pintu ke dunia luar. Semuanya di tangan Anda.",
+    "body": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide hanya terhubung ke internet untuk empat keperluan ini. Masing-masing bisa dimatikan, dan setiap permintaan tercatat di log jaringan.",
+    "listLabel": "Satu-satunya koneksi yang dibuat Ylide",
+    "registry": "Perbarui daftar model",
+    "registryHost": "ylide.app",
+    "models": "Unduh model",
+    "modelsHost": "huggingface.co",
+    "runtimes": "Unduh runtime",
+    "runtimesHost": "github.com",
+    "updates": "Periksa pembaruan",
+    "updatesHost": "ylide.app",
+    "on": "aktif"
+  },
+  "open": {
+    "title": "Terbuka sampai baris terakhir.",
+    "body": "Ylide bersifat open source dengan lisensi Apache-2.0. Kode sumbernya akan segera tersedia di GitHub, sehingga Anda bisa membacanya, mengompilasinya sendiri, dan ikut mengembangkannya.",
+    "download": "Unduh Ylide {{version}}",
+    "smartscreen": "Windows mungkin menampilkan peringatan saat pertama kali dijalankan karena penginstalnya belum ditandatangani secara komersial. Klik “Info selengkapnya”, lalu “Tetap jalankan”."
+  },
+  "footer": {
+    "copyright": "© 2026 Ylide contributors",
+    "privacy": "Privasi",
+    "imprint": "Impresum",
+    "legal": "Informasi hukum"
+  }
+}

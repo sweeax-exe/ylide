@@ -1,0 +1,179 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Code with AI that never leaves your computer."
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "retry": "Try again",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "copy": "Copy",
+    "copied": "Copied",
+    "openFolder": "Open folder",
+    "reset": "Reset to default",
+    "back": "Back",
+    "continue": "Continue",
+    "stop": "Stop",
+    "send": "Send",
+    "apply": "Apply",
+    "browse": "Browse"
+  },
+  "window": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close window"
+  },
+  "rail": {
+    "explorer": "Files",
+    "search": "Search",
+    "chat": "Chat",
+    "agents": "Agents",
+    "models": "Models",
+    "settings": "Settings"
+  },
+  "titlebar": {
+    "noProject": "No folder open",
+    "quickOpen": "Go to file",
+    "modelMenu": "Model and runtime"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "Discard unsaved changes?",
+    "body_one": "One file has unsaved changes. Opening {{name}} closes it and the changes are lost.",
+    "body_other": "{{count}} files have unsaved changes. Opening {{name}} closes them and the changes are lost.",
+    "confirm": "Discard and open"
+  },
+  "server": {
+    "none": "No model running",
+    "starting": "Starting {{model}}",
+    "loading": "Loading {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Model stopped",
+    "crashed": "Model stopped unexpectedly",
+    "external": "External server",
+    "start": "Start model",
+    "stop": "Stop model"
+  },
+  "status": {
+    "context": "{{tokens}} context",
+    "speed": "{{value}} tok/s",
+    "offline": "Offline: nothing leaves this computer",
+    "networkActivity": "Last network request: {{purpose}}",
+    "runtime": "Runtime: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} tokens",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}} %"
+  },
+  "netPurpose": {
+    "registry": "model list update",
+    "modelDownload": "model download",
+    "runtimeDownload": "runtime download",
+    "updateCheck": "update check",
+    "updateDownload": "update download"
+  },
+  "errors": {
+    "generic": "Something went wrong: {{message}}",
+    "no_model": "No model is running. Start one in the model menu.",
+    "no_project": "Open a folder first.",
+    "network_disabled": "This network access is switched off in the settings.",
+    "disk_full": "Not enough free disk space ({{message}}).",
+    "model_not_installed": "This model is not downloaded yet.",
+    "no_model_selected": "Choose a model first.",
+    "no_runtime": "No inference runtime is installed.",
+    "server": "The model server reported a problem: {{message}}",
+    "model": "The model returned an error: {{message}}",
+    "download": "The download failed: {{message}}",
+    "workspace": "File error: {{message}}",
+    "endpoint_unreachable": "The external server is not reachable: {{message}}",
+    "not_found": "The file could not be found.",
+    "not_gguf": "This is not a GGUF model file.",
+    "busy": "Please wait, another installation is running.",
+    "update_none": "There is no update to install. Check for updates first.",
+    "update_busy": "The update is already being installed.",
+    "update_signature": "The update was refused because its signature does not match. Nothing was installed.",
+    "update_format": "The update has a format Ylide cannot install: {{message}}",
+    "update_too_large": "The update is unusually large and was not downloaded.",
+    "update_launch": "The installer could not be started: {{message}}",
+    "update_unsupported": "On this system, install updates by hand."
+  },
+  "reasons": {
+    "fitsInVram": "Fits completely into your graphics memory ({{vramGb}} GB used).",
+    "moeOffload": "Mixture of experts: the always-active part and {{vramGb}} GB stay on the GPU, {{cpuExpertLayers}} expert layers ({{ramGb}} GB) live in system RAM. Only a few experts run per token, so this stays fast.",
+    "partialOffload": "{{gpuLayers}} layers run on the GPU ({{vramGb}} GB), the rest in system RAM ({{ramGb}} GB). This works, but is slower.",
+    "unifiedMemory": "Runs in unified memory ({{ramGb}} GB) on the Apple GPU.",
+    "cpuOnly": "Runs on the processor ({{ramGb}} GB of RAM). No suitable GPU was found.",
+    "speedEstimate": "About {{tps}} tokens per second (estimate).",
+    "topQualityForBudget": "The strongest coding model that runs well on this machine.",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "reported by the publisher",
+    "benchmarkIndependent": "measured independently",
+    "toolCalling": "Reliable tool use for agent mode ({{level}}).",
+    "longContext": "Long context of {{tokens}} tokens: enough for large files and long agent sessions.",
+    "reasoningModel": "Can think before answering; Ylide turns this off for quick edits.",
+    "permissiveLicense": "{{license}}: free to use, also commercially.",
+    "restrictedLicense": "{{license}}: check the license terms before commercial use.",
+    "slowWarning": "This will feel slow on this machine.",
+    "quantizedKvCache": "Uses a compressed context cache ({{type}}) to fit.",
+    "sharesGpuWithMain": "Runs on the GPU next to the main model.",
+    "runsOnCpu": "Runs on the processor and leaves the GPU to the main model.",
+    "autocompleteMovesToCpu": "Uses the GPU memory otherwise reserved for autocomplete.",
+    "noGpu": "No suitable graphics card was found. Models run on the processor, which is slower.",
+    "lowDiskSpace": "Only {{freeGb}} GB of disk space is free.",
+    "nothingFits": "None of the known models fits this machine. You can still use your own GGUF file or an external server."
+  },
+  "alternatives": {
+    "faster": "Faster",
+    "stronger": "Stronger",
+    "lighter": "Less memory"
+  },
+  "toolCallingLevel": {
+    "none": "none",
+    "basic": "basic",
+    "good": "good",
+    "excellent": "excellent"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agent",
+    "fim": "Autocomplete",
+    "embedding": "Code search"
+  },
+  "placement": {
+    "gpu": "On the GPU",
+    "moeOffload": "GPU and RAM (experts in RAM)",
+    "partialOffload": "Split between GPU and RAM",
+    "unified": "Unified memory",
+    "cpu": "On the processor"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} is available",
+    "availableBody": "Installing takes about a minute, then Ylide restarts.",
+    "install": "Install",
+    "confirmTitle": "Install Ylide {{version}}?",
+    "confirmBody": "The update is downloaded and checked. Ylide now stops the model, installs the update and then restarts.",
+    "confirmDirty_one": "One file has unsaved changes. Save it first, or the changes are lost.",
+    "confirmDirty_other": "{{count}} files have unsaved changes. Save them first, or the changes are lost.",
+    "confirmAgent": "The running agent will be stopped.",
+    "confirm": "Install and restart",
+    "failedTitle": "The update was not installed"
+  }
+}

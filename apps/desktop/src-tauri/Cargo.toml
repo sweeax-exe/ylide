@@ -1,0 +1,60 @@
+[package]
+name = "ylide-desktop"
+description = "Ylide desktop app: Tauri shell around the Rust core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[lib]
+name = "ylide_desktop_lib"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "ylide"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dependencies]
+agent = { path = "../../../crates/agent" }
+async-trait = { workspace = true }
+base64 = { workspace = true }
+dirs = { workspace = true }
+downloader = { path = "../../../crates/downloader" }
+flate2 = { workspace = true }
+getrandom = { workspace = true }
+hardware = { path = "../../../crates/hardware" }
+hex = { workspace = true }
+inference = { path = "../../../crates/inference" }
+minisign-verify = { workspace = true }
+notify = { workspace = true }
+notify-debouncer-full = { workspace = true }
+registry = { path = "../../../crates/registry" }
+reqwest = { workspace = true }
+semver = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+tar = { workspace = true }
+tauri = { workspace = true }
+tauri-plugin-dialog = { workspace = true }
+tauri-plugin-opener = { workspace = true }
+tauri-plugin-single-instance = { workspace = true }
+tauri-plugin-window-state = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+tokio-util = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+ts-rs = { workspace = true }
+workspace = { path = "../../../crates/workspace" }
+zip = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = ["Win32_Foundation", "Win32_Security", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging"] }
+
+[dev-dependencies]
+tempfile = "3"

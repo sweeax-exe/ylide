@@ -1,0 +1,239 @@
+{
+  "title": "Agen",
+  "roles": {
+    "orchestrator": "Orkestrator",
+    "coder": "Pemrogram",
+    "reviewer": "Peninjau",
+    "user": "Anda"
+  },
+  "states": {
+    "idle": "Siaga",
+    "queued": "Mengantre",
+    "thinking": "Berpikir",
+    "callingTool": "Memanggil alat",
+    "waitingForApproval": "Menunggu persetujuan",
+    "waitingForAnswer": "Menunggu jawaban",
+    "paused": "Dijeda",
+    "done": "Selesai",
+    "failed": "Gagal"
+  },
+  "taskStatus": {
+    "pending": "Terbuka",
+    "inProgress": "Dikerjakan",
+    "inReview": "Ditinjau",
+    "done": "Selesai",
+    "failed": "Gagal",
+    "skipped": "Dilewati"
+  },
+  "risk": {
+    "read": "Baca",
+    "write": "Tulis",
+    "delete": "Hapus",
+    "execute": "Jalankan",
+    "communicate": "Komunikasi"
+  },
+  "severity": {
+    "blocker": "Pemblokir",
+    "major": "Berat",
+    "minor": "Ringan",
+    "nit": "Sepele"
+  },
+  "verdict": {
+    "approve": "Disetujui",
+    "request_changes": "Perlu perubahan"
+  },
+  "messageKind": {
+    "question": "Pertanyaan",
+    "answer": "Jawaban",
+    "feedback": "Masukan",
+    "intervention": "Pesan Anda",
+    "note": "Catatan"
+  },
+  "changeKind": {
+    "created": "File baru",
+    "modified": "Diubah",
+    "deleted": "Dihapus"
+  },
+  "outcome": {
+    "completed": "Proses selesai",
+    "cancelled": "Proses dihentikan",
+    "failed": "Proses gagal"
+  },
+  "steps": {
+    "planReady": "Rencana siap",
+    "reviewing": "Meninjau perubahan",
+    "stepLimit": "Batas langkah tercapai",
+    "answering": "Menjawab {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "Apa yang harus dikerjakan agen?",
+    "goalPlaceholder": "Contoh: perbaiki total keranjang dan tambahkan tes untuk keranjang kosong",
+    "goalHint": "Jelaskan hasil yang Anda inginkan. Ctrl+Enter memulai proses.",
+    "start": "Mulai agen",
+    "readiness": "Persyaratan",
+    "modelReady": "{{model}} sedang berjalan",
+    "modelLoading": "{{model}} sedang dimuat",
+    "noModel": "Tidak ada model yang berjalan. Agen memerlukan model lokal.",
+    "modelCrashed": "Model berhenti secara tak terduga. Jalankan lagi di tampilan model.",
+    "openModels": "Buka model",
+    "toolCallsFailed": "Model ini tidak memanggil alat dengan andal, sehingga agen mungkin berhenti lebih awal. Model yang lebih kuat bekerja lebih baik.",
+    "project": "Bekerja di {{name}}",
+    "noProject": "Tidak ada folder yang terbuka. Agen memerlukan proyek untuk bekerja.",
+    "previous": "Proses sebelumnya",
+    "showRun": "Tampilkan detail"
+  },
+  "mode": {
+    "label": "Persetujuan",
+    "ask": "Tanya dulu",
+    "autoSafe": "Langkah aman",
+    "autonomous": "Otonom",
+    "askHint": "Agen membaca proyek secara mandiri, tetapi setiap perubahan, penghapusan, dan perintah menunggu klik Anda.",
+    "autoSafeHint": "Pembacaan dan edit yang dapat diurungkan berjalan otomatis, sedangkan perintah dan penghapusan bertanya dulu.",
+    "autonomousHint": "Semuanya berjalan otomatis, kecuali yang masih dijaga oleh dua sakelar di bawah.",
+    "allowedCommands_other": "{{count}} perintah yang diizinkan berjalan tanpa bertanya.",
+    "confirmCommands": "Tanya sebelum menjalankan perintah",
+    "confirmDeletes": "Tanya sebelum menghapus file",
+    "unguardedCommands": "Agen menjalankan perintah tanpa bertanya. Efeknya tidak dapat diurungkan.",
+    "unguardedDeletes": "Agen menghapus file tanpa bertanya. Anda dapat memulihkannya dari checkpoint.",
+    "unguardedBoth": "Agen menjalankan perintah dan menghapus file tanpa bertanya. Efek perintah tidak dapat diurungkan."
+  },
+  "run": {
+    "elapsed": "Waktu berjalan",
+    "expandGoal": "Lihat seluruh tujuan",
+    "collapseGoal": "Lebih sedikit",
+    "starting": "Memulai",
+    "planning": "Merencanakan",
+    "progress": "Tugas {{index}} dari {{total}}",
+    "wrappingUp": "Menyelesaikan",
+    "paused": "Dijeda",
+    "stopping": "Menghentikan",
+    "pause": "Jeda",
+    "resume": "Lanjutkan",
+    "stop": "Hentikan",
+    "stopTitle": "Hentikan proses?",
+    "stopBody": "Agen langsung berhenti. Perubahan yang sudah dibuat tetap ada, dan Anda dapat mengurungkannya dari checkpoint.",
+    "stopConfirm": "Hentikan proses",
+    "newRun": "Proses baru",
+    "questionWaiting": "{{agent}} menunggu jawaban Anda.",
+    "answer": "Jawab",
+    "tabs": "Detail proses",
+    "tabSummary": "Ringkasan",
+    "tabTasks": "Tugas",
+    "tabTasksCount": "Tugas {{done}}/{{total}}",
+    "tabActivity": "Aktivitas",
+    "tabCheckpoints": "Checkpoint",
+    "tabCheckpointsCount": "Checkpoint {{value}}",
+    "changedFiles": "File yang diubah",
+    "noChanges": "Tidak ada file yang diubah."
+  },
+  "lines": {
+    "label": "Garis dunia agen",
+    "summaryEmpty": "Proses sedang dimulai.",
+    "summaryPlanning": "Orkestrator sedang merencanakan.",
+    "summaryTask": "Tugas {{id}} dari {{total}}, {{title}}: {{status}}.",
+    "summaryTasks": "{{done}} dari {{total}} tugas selesai.",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "Agen",
+    "waiting": "Belum ada agen yang aktif.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "Kecepatan pembuatan",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "Token yang dihasilkan dalam proses ini",
+    "intervene": "Intervensi",
+    "intervenePlaceholder": "Pesan untuk {{agent}}",
+    "interveneSent": "Terkirim. {{agent}} membacanya sebelum langkah berikutnya."
+  },
+  "tasks": {
+    "planning": "Orkestrator sedang merencanakan tugas.",
+    "noPlan": "Tidak ada rencana yang dibuat.",
+    "plan": "Rencana:",
+    "rounds_other": "{{count}} putaran tinjauan",
+    "showDetails": "Tampilkan detail {{id}}",
+    "hideDetails": "Sembunyikan detail {{id}}",
+    "files": "File yang diharapkan",
+    "general": "Umum",
+    "openAt": "Buka {{location}}"
+  },
+  "feed": {
+    "empty": "Belum ada yang terjadi.",
+    "to": "ke",
+    "ok": "Berhasil",
+    "failed": "Gagal",
+    "running": "Berjalan",
+    "awaitingApproval": "Menunggu persetujuan Anda",
+    "rejected": "Ditolak oleh Anda",
+    "rejectedReason": "Ditolak oleh Anda: {{reason}}",
+    "plan_other": "Rencana dengan {{count}} tugas",
+    "approved": "Anda menyetujui: {{title}}",
+    "approvedAlways": "Anda menyetujui {{title}} dan mengizinkan `{{tool}}` untuk sisa proses ini",
+    "rejectedAction": "Anda menolak: {{title}}",
+    "reason": "Alasan: {{reason}}",
+    "openFile": "Buka file",
+    "openPath": "Buka {{path}}",
+    "showDiff": "Tampilkan perubahan di {{path}}",
+    "hideDiff": "Sembunyikan perubahan di {{path}}",
+    "showMore": "Selengkapnya",
+    "showLess": "Lebih sedikit",
+    "earlier_other": "Tampilkan {{count}} entri sebelumnya"
+  },
+  "diff": {
+    "label": "Perubahan di {{path}}",
+    "showAll": "Tampilkan semua {{total}} baris",
+    "empty": "Tidak ada perubahan untuk ditampilkan."
+  },
+  "checkpoints": {
+    "empty": "Checkpoint muncul saat tugas dimulai. Dengan checkpoint, Anda dapat mengurungkan perubahan yang dibuat agen.",
+    "intro": "Sebelum setiap tugas, Ylide menyimpan salinan setiap file yang disentuh agen.",
+    "undo": "Urungkan dari sini",
+    "undone": "Diurungkan",
+    "busyHint": "Jeda atau hentikan proses untuk mengurungkan perubahan.",
+    "confirmTitle": "Urungkan dari sini?",
+    "confirmBody": "Semua perubahan yang dibuat agen sejak “{{label}}” dikembalikan. File kembali ke keadaan sebelum langkah ini.",
+    "confirmWarning": "Efek perintah shell, seperti paket yang diinstal atau file yang dibuat di luar proyek, tidak dapat diurungkan.",
+    "confirm": "Urungkan perubahan",
+    "restored_other": "{{count}} file dipulihkan",
+    "restoredMore": "{{files}} dan {{more}} lainnya",
+    "nothing": "Tidak ada yang perlu dipulihkan."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} ingin mengubah file",
+    "titleDelete": "{{agent}} ingin menghapus file",
+    "titleExecute": "{{agent}} ingin menjalankan perintah",
+    "titleOther": "{{agent}} meminta izin",
+    "changes": "Perubahan",
+    "command": "Perintah",
+    "path": "Jalur",
+    "detail": "Detail",
+    "undoable": "Anda dapat mengurungkan ini nanti dari checkpoint.",
+    "notUndoable": "Perintah dapat mengubah hal di luar file proyek. Efeknya tidak dapat diurungkan.",
+    "approve": "Setujui",
+    "approveAlways": "Setujui untuk proses ini",
+    "approveAlwaysHint": "“Setujui untuk proses ini” mengizinkan agen memakai {{tool}} tanpa bertanya lagi sampai proses berakhir.",
+    "reject": "Tolak",
+    "reasonLabel": "Alasan (opsional)",
+    "reasonHint": "Agen membacanya dan memilih pendekatan lain.",
+    "reasonPlaceholder": "Contoh: jalankan tes dengan npm run test:unit sebagai gantinya",
+    "queue_other": "{{count}} permintaan lain menunggu"
+  },
+  "question": {
+    "title": "{{agent}} mengajukan pertanyaan",
+    "answerLabel": "Jawaban Anda",
+    "hint": "Ctrl+Enter mengirim jawaban.",
+    "later": "Jawab nanti",
+    "send": "Kirim jawaban"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "Agen sedang menunggu persetujuan Anda."
+  },
+  "errors": {
+    "start": "Agen tidak dapat dimulai",
+    "approve": "Keputusan Anda tidak dapat dikirim",
+    "answer": "Jawaban Anda tidak dapat dikirim",
+    "intervene": "Pesan Anda tidak dapat dikirim",
+    "restore": "Perubahan tidak dapat diurungkan",
+    "settings": "Pengaturan persetujuan tidak dapat disimpan"
+  }
+}

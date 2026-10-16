@@ -1,0 +1,237 @@
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+}
+
+.headText {
+  flex: 1;
+  min-width: 180px;
+}
+
+.titleLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 650;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.crash {
+  color: var(--danger);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  margin: 0 7px;
+  border-radius: var(--radius-round);
+  background: var(--border-strong);
+}
+
+.ready {
+  background: var(--success);
+}
+
+.crashed {
+  background: var(--danger);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.metric {
+  min-width: 0;
+  padding: var(--space-3) var(--space-5);
+}
+
+.metric + .metric {
+  border-left: 1px solid var(--border);
+}
+
+.metric dt {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.metric dd {
+  margin: 4px 0 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric dd.metal {
+  color: var(--metal);
+}
+
+.toolsExplain {
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+}
+
+/* ---------- Disclosures ---------- */
+.disclosure {
+  border-top: 1px solid var(--border);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-5);
+  list-style: none;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--motion-ease);
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary:hover {
+  background: var(--bg-hover);
+}
+
+.summary:focus-visible {
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+.disclosure:last-child .summary {
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+
+.disclosure[open]:last-child .summary {
+  border-radius: 0;
+}
+
+.chevron {
+  flex: none;
+  color: var(--text-3);
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+.disclosure[open] .chevron {
+  transform: rotate(90deg);
+}
+
+.summaryTitle {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.summaryHint {
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.disclosureBody {
+  padding: 0 var(--space-5) var(--space-4);
+}
+
+.command {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.commandText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-1);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.log {
+  max-height: 320px;
+  margin: 0;
+  padding: var(--space-3);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  font-size: var(--text-xs);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+  white-space: pre;
+}
+
+.logState {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.logError {
+  color: var(--danger);
+}
+
+@container (max-width: 760px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metric + .metric {
+    border-left: none;
+  }
+  .metric {
+    border-top: 1px solid var(--border);
+  }
+  .metric:nth-child(-n + 2) {
+    border-top: none;
+  }
+  .metric:nth-child(even) {
+    border-left: 1px solid var(--border);
+  }
+}

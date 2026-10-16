@@ -1,0 +1,26 @@
+name: Feature idea
+description: Suggest something Ylide should do.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas can also be posted in `#ideas` on the [Ylide Discord](https://discord.gg/GRzTvRGHpr), where others can vote on them.
+        Ylide stays local: features that send code or usage data anywhere will not be added.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you want to do
+      description: The task or problem, not the solution yet.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How Ylide could help
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you do today instead

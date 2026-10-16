@@ -1,0 +1,239 @@
+{
+  "title": "에이전트",
+  "roles": {
+    "orchestrator": "오케스트레이터",
+    "coder": "코더",
+    "reviewer": "리뷰어",
+    "user": "나"
+  },
+  "states": {
+    "idle": "유휴",
+    "queued": "대기 중",
+    "thinking": "생각하는 중",
+    "callingTool": "도구 호출 중",
+    "waitingForApproval": "승인 대기 중",
+    "waitingForAnswer": "답변 대기 중",
+    "paused": "일시 중지됨",
+    "done": "완료",
+    "failed": "실패"
+  },
+  "taskStatus": {
+    "pending": "시작 전",
+    "inProgress": "진행 중",
+    "inReview": "리뷰 중",
+    "done": "완료",
+    "failed": "실패",
+    "skipped": "건너뜀"
+  },
+  "risk": {
+    "read": "읽기",
+    "write": "쓰기",
+    "delete": "삭제",
+    "execute": "실행",
+    "communicate": "소통"
+  },
+  "severity": {
+    "blocker": "블로커",
+    "major": "주요",
+    "minor": "경미",
+    "nit": "사소"
+  },
+  "verdict": {
+    "approve": "승인됨",
+    "request_changes": "변경 요청됨"
+  },
+  "messageKind": {
+    "question": "질문",
+    "answer": "답변",
+    "feedback": "피드백",
+    "intervention": "내 메시지",
+    "note": "메모"
+  },
+  "changeKind": {
+    "created": "새 파일",
+    "modified": "변경됨",
+    "deleted": "삭제됨"
+  },
+  "outcome": {
+    "completed": "실행 완료",
+    "cancelled": "실행 중지됨",
+    "failed": "실행 실패"
+  },
+  "steps": {
+    "planReady": "계획 준비됨",
+    "reviewing": "변경 사항 리뷰 중",
+    "stepLimit": "단계 한도 도달",
+    "answering": "{{agent}}에게 답변하는 중"
+  },
+  "idle": {
+    "goalLabel": "에이전트에게 맡길 일",
+    "goalPlaceholder": "예: 장바구니 합계를 수정하고 빈 장바구니 테스트 추가",
+    "goalHint": "원하는 결과를 설명하세요. Ctrl+Enter를 누르면 실행이 시작됩니다.",
+    "start": "에이전트 시작",
+    "readiness": "사전 요구 사항",
+    "modelReady": "{{model}} 실행 중",
+    "modelLoading": "{{model}} 불러오는 중",
+    "noModel": "실행 중인 모델이 없습니다. 에이전트에는 로컬 모델이 필요합니다.",
+    "modelCrashed": "모델이 예기치 않게 중지되었습니다. 모델 화면에서 다시 시작하세요.",
+    "openModels": "모델 화면 열기",
+    "toolCallsFailed": "이 모델은 도구를 안정적으로 호출하지 못해 에이전트가 일찍 멈출 수 있습니다. 더 강력한 모델을 사용하면 더 잘 작동합니다.",
+    "project": "작업 폴더: {{name}}",
+    "noProject": "열린 폴더가 없습니다. 에이전트가 작업할 프로젝트가 필요합니다.",
+    "previous": "이전 실행",
+    "showRun": "세부 정보 보기"
+  },
+  "mode": {
+    "label": "승인",
+    "ask": "먼저 묻기",
+    "autoSafe": "안전한 단계",
+    "autonomous": "자율",
+    "askHint": "에이전트는 프로젝트를 스스로 읽지만, 모든 변경, 삭제, 명령은 사용자가 클릭할 때까지 기다립니다.",
+    "autoSafeHint": "읽기와 되돌릴 수 있는 편집은 자동으로 실행되고, 명령과 삭제는 먼저 묻습니다.",
+    "autonomousHint": "아래 두 스위치가 계속 보호하는 항목을 제외하고 모든 것이 자동으로 실행됩니다.",
+    "allowedCommands_other": "허용된 명령 {{count}}개는 묻지 않고 실행됩니다.",
+    "confirmCommands": "명령 실행 전에 묻기",
+    "confirmDeletes": "파일 삭제 전에 묻기",
+    "unguardedCommands": "에이전트가 묻지 않고 명령을 실행합니다. 명령으로 인한 변경은 되돌릴 수 없습니다.",
+    "unguardedDeletes": "에이전트가 묻지 않고 파일을 삭제합니다. 체크포인트에서 복원할 수 있습니다.",
+    "unguardedBoth": "에이전트가 묻지 않고 명령을 실행하고 파일을 삭제합니다. 명령으로 인한 변경은 되돌릴 수 없습니다."
+  },
+  "run": {
+    "elapsed": "경과 시간",
+    "expandGoal": "전체 목표 보기",
+    "collapseGoal": "간단히 보기",
+    "starting": "시작 중",
+    "planning": "계획 중",
+    "progress": "작업 {{index}}/{{total}}",
+    "wrappingUp": "마무리 중",
+    "paused": "일시 중지됨",
+    "stopping": "중지 중",
+    "pause": "일시 중지",
+    "resume": "재개",
+    "stop": "중지",
+    "stopTitle": "실행을 중지하시겠습니까?",
+    "stopBody": "에이전트가 즉시 멈춥니다. 지금까지의 변경 사항은 그대로 남으며, 체크포인트에서 되돌릴 수 있습니다.",
+    "stopConfirm": "실행 중지",
+    "newRun": "새 실행",
+    "questionWaiting": "{{agent}} 에이전트가 답변을 기다리고 있습니다.",
+    "answer": "답변하기",
+    "tabs": "실행 세부 정보",
+    "tabSummary": "요약",
+    "tabTasks": "작업",
+    "tabTasksCount": "작업 {{done}}/{{total}}",
+    "tabActivity": "활동",
+    "tabCheckpoints": "체크포인트",
+    "tabCheckpointsCount": "체크포인트 {{value}}",
+    "changedFiles": "변경된 파일",
+    "noChanges": "변경된 파일이 없습니다."
+  },
+  "lines": {
+    "label": "에이전트 세계선",
+    "summaryEmpty": "실행을 시작하는 중입니다.",
+    "summaryPlanning": "오케스트레이터가 계획을 세우는 중입니다.",
+    "summaryTask": "작업 {{id}}/{{total}}, {{title}}: {{status}}.",
+    "summaryTasks": "작업 {{total}}개 중 {{done}}개 완료.",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "에이전트",
+    "waiting": "아직 활성 에이전트가 없습니다.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "생성 속도",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "이번 실행에서 생성된 토큰",
+    "intervene": "개입",
+    "intervenePlaceholder": "{{agent}}에게 보낼 메시지",
+    "interveneSent": "보냈습니다. {{agent}}에게 다음 단계 전에 전달됩니다."
+  },
+  "tasks": {
+    "planning": "오케스트레이터가 작업을 계획하는 중입니다.",
+    "noPlan": "계획이 만들어지지 않았습니다.",
+    "plan": "계획:",
+    "rounds_other": "리뷰 {{count}}회",
+    "showDetails": "{{id}} 세부 정보 보기",
+    "hideDetails": "{{id}} 세부 정보 숨기기",
+    "files": "예상 파일",
+    "general": "일반",
+    "openAt": "{{location}} 열기"
+  },
+  "feed": {
+    "empty": "아직 아무 일도 일어나지 않았습니다.",
+    "to": "받는 쪽:",
+    "ok": "성공",
+    "failed": "실패",
+    "running": "실행 중",
+    "awaitingApproval": "승인 대기 중",
+    "rejected": "사용자가 거부함",
+    "rejectedReason": "사용자가 거부함: {{reason}}",
+    "plan_other": "계획: 작업 {{count}}개",
+    "approved": "승인함: {{title}}",
+    "approvedAlways": "승인함: {{title}}, 이번 실행이 끝날 때까지 `{{tool}}` 허용",
+    "rejectedAction": "거부함: {{title}}",
+    "reason": "이유: {{reason}}",
+    "openFile": "파일 열기",
+    "openPath": "{{path}} 열기",
+    "showDiff": "{{path}}의 변경 사항 보기",
+    "hideDiff": "{{path}}의 변경 사항 숨기기",
+    "showMore": "더 보기",
+    "showLess": "간단히 보기",
+    "earlier_other": "이전 항목 {{count}}개 보기"
+  },
+  "diff": {
+    "label": "{{path}}의 변경 사항",
+    "showAll": "{{total}}줄 모두 보기",
+    "empty": "표시할 변경 사항이 없습니다."
+  },
+  "checkpoints": {
+    "empty": "체크포인트는 작업이 시작될 때 생깁니다. 체크포인트로 에이전트가 변경한 내용을 되돌릴 수 있습니다.",
+    "intro": "Ylide는 각 작업 전에 에이전트가 건드리는 모든 파일의 사본을 보관합니다.",
+    "undo": "여기부터 되돌리기",
+    "undone": "되돌려짐",
+    "busyHint": "변경 사항을 되돌리려면 실행을 일시 중지하거나 중지하세요.",
+    "confirmTitle": "여기부터 되돌리시겠습니까?",
+    "confirmBody": "“{{label}}”부터 에이전트가 변경한 모든 내용이 되돌려집니다. 파일은 이 단계 이전 상태로 돌아갑니다.",
+    "confirmWarning": "설치된 패키지나 프로젝트 밖에서 생성된 파일 등 셸 명령의 결과는 되돌릴 수 없습니다.",
+    "confirm": "변경 사항 되돌리기",
+    "restored_other": "파일 {{count}}개 복원됨",
+    "restoredMore": "{{files}} 외 {{more}}개",
+    "nothing": "복원할 내용이 없었습니다."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} 에이전트가 파일을 변경하려고 합니다",
+    "titleDelete": "{{agent}} 에이전트가 파일을 삭제하려고 합니다",
+    "titleExecute": "{{agent}} 에이전트가 명령을 실행하려고 합니다",
+    "titleOther": "{{agent}} 에이전트가 권한을 요청합니다",
+    "changes": "변경 사항",
+    "command": "명령",
+    "path": "경로",
+    "detail": "세부 정보",
+    "undoable": "나중에 체크포인트에서 되돌릴 수 있습니다.",
+    "notUndoable": "명령은 프로젝트 파일 밖의 항목도 변경할 수 있습니다. 명령으로 인한 변경은 되돌릴 수 없습니다.",
+    "approve": "승인",
+    "approveAlways": "이번 실행 동안 승인",
+    "approveAlwaysHint": "‘이번 실행 동안 승인’을 선택하면 실행이 끝날 때까지 에이전트가 다시 묻지 않고 {{tool}} 도구를 사용할 수 있습니다.",
+    "reject": "거부",
+    "reasonLabel": "이유(선택 사항)",
+    "reasonHint": "에이전트가 이유를 읽고 다른 방법을 선택합니다.",
+    "reasonPlaceholder": "예: 대신 npm run test:unit으로 테스트를 실행하세요",
+    "queue_other": "요청 {{count}}개 더 대기 중"
+  },
+  "question": {
+    "title": "{{agent}} 에이전트의 질문",
+    "answerLabel": "내 답변",
+    "hint": "Ctrl+Enter를 누르면 답변을 보냅니다.",
+    "later": "나중에 답변",
+    "send": "답변 보내기"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "에이전트가 승인을 기다리고 있습니다."
+  },
+  "errors": {
+    "start": "에이전트를 시작하지 못했습니다",
+    "approve": "결정을 보내지 못했습니다",
+    "answer": "답변을 보내지 못했습니다",
+    "intervene": "메시지를 보내지 못했습니다",
+    "restore": "변경 사항을 되돌리지 못했습니다",
+    "settings": "승인 설정을 저장하지 못했습니다"
+  }
+}

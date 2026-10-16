@@ -1,0 +1,68 @@
+.center {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-6);
+  background: var(--bg-sunken);
+  overflow: auto;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+/* ---------- Welcome (project open, no file) ---------- */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: min(420px, 100%);
+}
+
+.welcomeHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.welcomeTitle {
+  margin: 0;
+  color: var(--text-1);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.welcomeBody {
+  margin: var(--space-1) 0 0;
+  color: var(--text-3);
+}
+
+.shortcuts {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.shortcuts dt,
+.shortcuts dd {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.shortcuts dt {
+  color: var(--text-2);
+}
+
+.shortcuts dd {
+  justify-content: flex-end;
+  gap: 4px;
+}

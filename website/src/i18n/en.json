@@ -1,0 +1,132 @@
+{
+  "lang": "en",
+  "langName": "English",
+  "suggest": "Read this page in English",
+  "meta": {
+    "title": "Ylide: the AI IDE that never leaves your computer",
+    "description": "Chat, inline edits and coding agents powered by models on your own computer. No account, no cloud, no subscription. Open source.",
+    "privacyTitle": "Privacy: Ylide",
+    "imprintTitle": "Imprint: Ylide"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "features": "Features",
+    "privacy": "Privacy",
+    "download": "Download",
+    "home": "Ylide, home page",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "The AI IDE that never leaves your computer.",
+    "lead": "Chat, inline edits and a team of coding agents, powered only by models running on your own computer. No account, no cloud, no subscription.",
+    "download": "Download for Windows",
+    "meta": "Version {{version}} for Windows 10 and 11, 64-bit, {{size}} MB. Open source under Apache-2.0.",
+    "tube": "your computer"
+  },
+  "showcase": {
+    "alt": "The Ylide editor with the file tree, a JavaScript file and the chat panel",
+    "caption": "Files, editor and chat in one window. Everything runs on your computer."
+  },
+  "chat": {
+    "title": "Ask your project.",
+    "body": "Attach files, folders or symbols with @. The answer streams word by word from the model on your graphics card, and what you ask stays here.",
+    "question": "What does applyDiscount in <code>@cart.js</code> do?",
+    "answer": "It takes a percentage off every item and rounds to whole cents. Values below 0 or above 100 are rejected with a <code>TypeError</code>.",
+    "stats": "75 tokens per second, on this computer",
+    "you": "You",
+    "model": "Qwen3.6 35B-A3B"
+  },
+  "inline": {
+    "title": "Change code where it is.",
+    "body": "Select, press <kbd>Ctrl</kbd> <kbd>K</kbd>, describe what should be different. Ylide shows the change as a diff, and you accept or discard it.",
+    "prompt": "Compare the ids strictly",
+    "accept": "Accept",
+    "reject": "Discard"
+  },
+  "agents": {
+    "title": "A team that hands work back and forth.",
+    "body": "The orchestrator plans, the coder writes, the reviewer checks. Every hand-off is a crossing of their world lines. Commands and deletions run only after you approve them, and every step can be undone with checkpoints.",
+    "legend": "Roles",
+    "orchestrator": "Orchestrator",
+    "coder": "Coder",
+    "reviewer": "Reviewer",
+    "stepsLabel": "How an agent run goes",
+    "step1": "The orchestrator reads the project and splits the request into three tasks.",
+    "step2": "The coder changes <code>cart.js</code> and runs the tests.",
+    "step3": "The reviewer checks the diff and asks for a test for empty carts.",
+    "step4": "The coder adds the test. Twelve of twelve tests pass.",
+    "step5": "The reviewer approves the task. You see every change before it stays.",
+    "task": "Task"
+  },
+  "hardware": {
+    "title": "Made to fit your hardware.",
+    "body": "On first start, Ylide measures your graphics card, memory and processor and suggests the strongest model that runs smoothly on them. Then it downloads the model, checks the file and starts it."
+  },
+  "setup": {
+    "label": "Setting up Ylide in five steps",
+    "s1": "Welcome",
+    "s1b": "Pick your language and theme.",
+    "s2": "Scan",
+    "s2b": "Graphics card, memory and processor, measured in a fifth of a second.",
+    "s3": "Model",
+    "s3b": "The strongest model that runs smoothly on this computer.",
+    "s4": "Download",
+    "s4b": "Every file is checked against its SHA-256 checksum. You can pause at any time.",
+    "s5": "Ready",
+    "s5b": "Chat, edits and agents now run on your computer.",
+    "figure": "Screenshots of the Ylide setup",
+    "alt1": "Welcome step with the choice of language and theme",
+    "alt2": "Hardware scan showing graphics card, memory, processor and disk",
+    "alt3": "Model recommendation with speed, context and memory plan",
+    "alt4": "Download of the model and the CUDA acceleration with progress",
+    "alt5": "Ready screen with runtime, device and keyboard shortcuts",
+    "note": "Screenshots of the English interface, taken on the developer's computer."
+  },
+  "privacy": {
+    "title": "Four doors to the outside. All of them yours.",
+    "body": "Ylide collects no usage data, has no sign-in and never uploads your code. It goes online for these four purposes only. Each one can be switched off, and every request appears in the network log.",
+    "listLabel": "The only connections Ylide makes",
+    "registry": "Update the model list",
+    "registryHost": "ylide.app",
+    "models": "Download models",
+    "modelsHost": "huggingface.co",
+    "runtimes": "Download runtimes",
+    "runtimesHost": "github.com",
+    "updates": "Check for updates",
+    "updatesHost": "ylide.app",
+    "on": "on"
+  },
+  "open": {
+    "title": "Open down to the last line.",
+    "body": "Ylide is open source under the Apache-2.0 license. The source code will be on GitHub soon, so you can read it, build it yourself and help develop it.",
+    "download": "Download Ylide {{version}}",
+    "smartscreen": "Windows may warn you on the first start because the installer is not commercially signed yet. Click “More info”, then “Run anyway”."
+  },
+  "footer": {
+    "copyright": "© 2026 Ylide contributors",
+    "privacy": "Privacy",
+    "imprint": "Imprint",
+    "legal": "Legal"
+  },
+  "privacyPage": {
+    "title": "Privacy",
+    "intro": "In short: this website sets no cookies, uses no analytics and loads nothing from other servers. Ylide itself sends your code and your prompts nowhere.",
+    "websiteTitle": "This website",
+    "website": "The website runs on a server of Hetzner Online GmbH in Germany. To deliver the pages, the server processes your IP address and the details your browser sends along. It does not store them: there is no access log. Fonts, images and scripts all come from ylide.app.",
+    "appTitle": "The Ylide app",
+    "app": "Ylide connects to the internet for four purposes only, each one switchable in the settings: updating the model list (ylide.app), downloading models (huggingface.co), downloading runtimes (github.com) and checking for updates (ylide.app). When it updates the model list or checks for updates, our server learns your IP address and the version number of Ylide. Neither is stored. Downloads from github.com and huggingface.co are covered by their privacy policies.",
+    "rightsTitle": "Your rights",
+    "rights": "You have the right to access, correct, delete and restrict the processing of your data, and the right to lodge a complaint with a data protection authority. Since we store no personal data, there is usually nothing to report. Feel free to write to us anyway.",
+    "contactTitle": "Controller",
+    "contact": "Responsible for the processing of data on this website:",
+    "missingOperator": "The operator details are still missing."
+  },
+  "imprintPage": {
+    "title": "Imprint",
+    "law": "Information according to § 5 DDG (German Digital Services Act)",
+    "contact": "Contact",
+    "email": "Email",
+    "responsible": "Responsible for the content according to § 18 (2) MStV",
+    "missing": "The imprint details are still missing. This page will not be published before they are filled in."
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "title": "Agents",
+  "roles": {
+    "orchestrator": "Orchestrateur",
+    "coder": "Codeur",
+    "reviewer": "Relecteur",
+    "user": "Vous"
+  },
+  "states": {
+    "idle": "Inactif",
+    "queued": "En file d’attente",
+    "thinking": "Réflexion",
+    "callingTool": "Appel d’outil",
+    "waitingForApproval": "En attente d’autorisation",
+    "waitingForAnswer": "En attente de réponse",
+    "paused": "En pause",
+    "done": "Terminé",
+    "failed": "Échec"
+  },
+  "taskStatus": {
+    "pending": "À faire",
+    "inProgress": "En cours",
+    "inReview": "En relecture",
+    "done": "Terminée",
+    "failed": "Échec",
+    "skipped": "Ignorée"
+  },
+  "risk": {
+    "read": "Lecture",
+    "write": "Écriture",
+    "delete": "Suppression",
+    "execute": "Exécution",
+    "communicate": "Communication"
+  },
+  "severity": {
+    "blocker": "Bloquant",
+    "major": "Majeur",
+    "minor": "Mineur",
+    "nit": "Détail"
+  },
+  "verdict": {
+    "approve": "Approuvé",
+    "request_changes": "Modifications demandées"
+  },
+  "messageKind": {
+    "question": "Question",
+    "answer": "Réponse",
+    "feedback": "Retour",
+    "intervention": "Votre message",
+    "note": "Note"
+  },
+  "changeKind": {
+    "created": "Nouveau fichier",
+    "modified": "Modifié",
+    "deleted": "Supprimé"
+  },
+  "outcome": {
+    "completed": "Exécution terminée",
+    "cancelled": "Exécution arrêtée",
+    "failed": "Échec de l’exécution"
+  },
+  "steps": {
+    "planReady": "Plan prêt",
+    "reviewing": "Relecture des modifications",
+    "stepLimit": "Limite d’étapes atteinte",
+    "answering": "Répond à {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "Que doivent faire les agents ?",
+    "goalPlaceholder": "Par exemple : corriger le total du panier et ajouter un test pour les paniers vides",
+    "goalHint": "Décrivez le résultat attendu. Ctrl+Entrée lance l’exécution.",
+    "start": "Lancer les agents",
+    "readiness": "Prérequis",
+    "modelReady": "{{model}} est lancé",
+    "modelLoading": "Chargement de {{model}}",
+    "noModel": "Aucun modèle n’est lancé. Les agents ont besoin d’un modèle local.",
+    "modelCrashed": "Le modèle s’est arrêté de manière inattendue. Relancez-le dans la vue des modèles.",
+    "openModels": "Ouvrir les modèles",
+    "toolCallsFailed": "Ce modèle n’appelle pas les outils de façon fiable, les agents risquent donc de s’arrêter prématurément. Un modèle plus puissant fonctionne mieux.",
+    "project": "Dossier de travail : {{name}}",
+    "noProject": "Aucun dossier n’est ouvert. Les agents ont besoin d’un projet dans lequel travailler.",
+    "previous": "Exécution précédente",
+    "showRun": "Afficher les détails"
+  },
+  "mode": {
+    "label": "Autorisations",
+    "ask": "Demander d’abord",
+    "autoSafe": "Étapes sûres",
+    "autonomous": "Autonome",
+    "askHint": "Les agents lisent le projet sans demander, mais chaque modification, suppression et commande attend votre accord.",
+    "autoSafeHint": "Les lectures et les modifications réversibles s’exécutent automatiquement, tandis que les commandes et les suppressions demandent d’abord votre accord.",
+    "autonomousHint": "Tout s’exécute automatiquement, sauf ce que protègent encore les deux interrupteurs ci-dessous.",
+    "allowedCommands_one": "{{count}} commande autorisée s’exécute sans demander.",
+    "allowedCommands_many": "{{count}} de commandes autorisées s’exécutent sans demander.",
+    "allowedCommands_other": "{{count}} commandes autorisées s’exécutent sans demander.",
+    "confirmCommands": "Demander avant d’exécuter des commandes",
+    "confirmDeletes": "Demander avant de supprimer des fichiers",
+    "unguardedCommands": "Les agents exécutent des commandes sans demander. Leurs effets ne peuvent pas être annulés.",
+    "unguardedDeletes": "Les agents suppriment des fichiers sans demander. Vous pouvez les restaurer depuis les points de contrôle.",
+    "unguardedBoth": "Les agents exécutent des commandes et suppriment des fichiers sans demander. Les effets des commandes ne peuvent pas être annulés."
+  },
+  "run": {
+    "elapsed": "Temps écoulé",
+    "expandGoal": "Afficher l’objectif complet",
+    "collapseGoal": "Afficher moins",
+    "starting": "Démarrage",
+    "planning": "Planification",
+    "progress": "Tâche {{index}} sur {{total}}",
+    "wrappingUp": "Finalisation",
+    "paused": "En pause",
+    "stopping": "Arrêt en cours",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "stop": "Arrêter",
+    "stopTitle": "Arrêter l’exécution ?",
+    "stopBody": "Les agents s’arrêtent immédiatement. Les modifications déjà faites restent en place, et vous pouvez les annuler depuis les points de contrôle.",
+    "stopConfirm": "Arrêter l’exécution",
+    "newRun": "Nouvelle exécution",
+    "questionWaiting": "{{agent}} attend votre réponse.",
+    "answer": "Répondre",
+    "tabs": "Détails de l’exécution",
+    "tabSummary": "Résumé",
+    "tabTasks": "Tâches",
+    "tabTasksCount": "Tâches {{done}}/{{total}}",
+    "tabActivity": "Activité",
+    "tabCheckpoints": "Points de contrôle",
+    "tabCheckpointsCount": "Points de contrôle {{value}}",
+    "changedFiles": "Fichiers modifiés",
+    "noChanges": "Aucun fichier n’a été modifié."
+  },
+  "lines": {
+    "label": "Lignes d’univers des agents",
+    "summaryEmpty": "L’exécution démarre.",
+    "summaryPlanning": "L’orchestrateur planifie.",
+    "summaryTask": "Tâche {{id}} sur {{total}}, {{title}} : {{status}}.",
+    "summaryTasks": "Tâches terminées : {{done}} sur {{total}}.",
+    "summaryAgent": "{{agent}} : {{state}}"
+  },
+  "agents": {
+    "heading": "Agents",
+    "waiting": "Aucun agent n’est encore actif.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "Vitesse de génération",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "Tokens générés pendant cette exécution",
+    "intervene": "Intervenir",
+    "intervenePlaceholder": "Message pour {{agent}}",
+    "interveneSent": "Envoyé. {{agent}} le lira avant la prochaine étape."
+  },
+  "tasks": {
+    "planning": "L’orchestrateur planifie les tâches.",
+    "noPlan": "Aucun plan n’a été établi.",
+    "plan": "Plan :",
+    "rounds_one": "{{count}} tour de relecture",
+    "rounds_many": "{{count}} de tours de relecture",
+    "rounds_other": "{{count}} tours de relecture",
+    "showDetails": "Afficher les détails de {{id}}",
+    "hideDetails": "Masquer les détails de {{id}}",
+    "files": "Fichiers prévus",
+    "general": "Général",
+    "openAt": "Ouvrir {{location}}"
+  },
+  "feed": {
+    "empty": "Rien ne s’est encore passé.",
+    "to": "à",
+    "ok": "Réussi",
+    "failed": "Échec",
+    "running": "En cours",
+    "awaitingApproval": "En attente de votre autorisation",
+    "rejected": "Refusé par vous",
+    "rejectedReason": "Refusé par vous : {{reason}}",
+    "plan_one": "Plan avec {{count}} tâche",
+    "plan_many": "Plan avec {{count}} de tâches",
+    "plan_other": "Plan avec {{count}} tâches",
+    "approved": "Vous avez autorisé : {{title}}",
+    "approvedAlways": "Vous avez autorisé {{title}} et permis `{{tool}}` pour le reste de cette exécution",
+    "rejectedAction": "Vous avez refusé : {{title}}",
+    "reason": "Raison : {{reason}}",
+    "openFile": "Ouvrir le fichier",
+    "openPath": "Ouvrir {{path}}",
+    "showDiff": "Afficher les modifications dans {{path}}",
+    "hideDiff": "Masquer les modifications dans {{path}}",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "earlier_one": "Afficher {{count}} entrée précédente",
+    "earlier_many": "Afficher {{count}} d’entrées précédentes",
+    "earlier_other": "Afficher {{count}} entrées précédentes"
+  },
+  "diff": {
+    "label": "Modifications dans {{path}}",
+    "showAll": "Afficher les {{total}} lignes",
+    "empty": "Aucune modification à afficher."
+  },
+  "checkpoints": {
+    "empty": "Les points de contrôle apparaissent au début d’une tâche. Ils permettent d’annuler ce que les agents ont modifié.",
+    "intro": "Avant chaque tâche, Ylide garde une copie de chaque fichier que les agents modifient.",
+    "undo": "Annuler à partir d’ici",
+    "undone": "Annulé",
+    "busyHint": "Mettez en pause ou arrêtez l’exécution pour annuler des modifications.",
+    "confirmTitle": "Annuler à partir d’ici ?",
+    "confirmBody": "Toutes les modifications faites par les agents à partir de « {{label}} » seront annulées. Les fichiers reviendront à leur état d’avant cette étape.",
+    "confirmWarning": "Les effets des commandes shell, comme les paquets installés ou les fichiers créés en dehors du projet, ne peuvent pas être annulés.",
+    "confirm": "Annuler les modifications",
+    "restored_one": "{{count}} fichier restauré",
+    "restored_many": "{{count}} de fichiers restaurés",
+    "restored_other": "{{count}} fichiers restaurés",
+    "restoredMore": "{{files}} et {{more}} autres",
+    "nothing": "Il n’y avait rien à restaurer."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} veut modifier un fichier",
+    "titleDelete": "{{agent}} veut supprimer un fichier",
+    "titleExecute": "{{agent}} veut exécuter une commande",
+    "titleOther": "{{agent}} demande une autorisation",
+    "changes": "Modifications",
+    "command": "Commande",
+    "path": "Chemin",
+    "detail": "Détails",
+    "undoable": "Vous pourrez annuler cela plus tard depuis les points de contrôle.",
+    "notUndoable": "Les commandes peuvent modifier des éléments en dehors des fichiers du projet. Leurs effets ne peuvent pas être annulés.",
+    "approve": "Autoriser",
+    "approveAlways": "Autoriser pour cette exécution",
+    "approveAlwaysHint": "« Autoriser pour cette exécution » permet aux agents d’utiliser {{tool}} sans redemander jusqu’à la fin de l’exécution.",
+    "reject": "Refuser",
+    "reasonLabel": "Raison (facultatif)",
+    "reasonHint": "L’agent la lira et choisira une autre approche.",
+    "reasonPlaceholder": "Par exemple : lancez plutôt les tests avec npm run test:unit",
+    "queue_one": "{{count}} autre demande en attente",
+    "queue_many": "{{count}} d’autres demandes en attente",
+    "queue_other": "{{count}} autres demandes en attente"
+  },
+  "question": {
+    "title": "{{agent}} a une question",
+    "answerLabel": "Votre réponse",
+    "hint": "Ctrl+Entrée envoie la réponse.",
+    "later": "Répondre plus tard",
+    "send": "Envoyer la réponse"
+  },
+  "live": {
+    "task": "{{id}} {{title}} : {{status}}",
+    "approval": "Un agent attend votre autorisation."
+  },
+  "errors": {
+    "start": "Les agents n’ont pas pu démarrer",
+    "approve": "Votre décision n’a pas pu être envoyée",
+    "answer": "Votre réponse n’a pas pu être envoyée",
+    "intervene": "Votre message n’a pas pu être envoyé",
+    "restore": "Les modifications n’ont pas pu être annulées",
+    "settings": "Le réglage d’autorisation n’a pas pu être enregistré"
+  }
+}

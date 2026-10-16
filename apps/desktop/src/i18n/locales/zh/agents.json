@@ -1,0 +1,239 @@
+{
+  "title": "智能体",
+  "roles": {
+    "orchestrator": "编排者",
+    "coder": "编码者",
+    "reviewer": "审查者",
+    "user": "你"
+  },
+  "states": {
+    "idle": "空闲",
+    "queued": "排队中",
+    "thinking": "思考中",
+    "callingTool": "正在调用工具",
+    "waitingForApproval": "等待批准",
+    "waitingForAnswer": "等待回答",
+    "paused": "已暂停",
+    "done": "已完成",
+    "failed": "失败"
+  },
+  "taskStatus": {
+    "pending": "待处理",
+    "inProgress": "进行中",
+    "inReview": "审查中",
+    "done": "已完成",
+    "failed": "失败",
+    "skipped": "已跳过"
+  },
+  "risk": {
+    "read": "读取",
+    "write": "写入",
+    "delete": "删除",
+    "execute": "执行",
+    "communicate": "交流"
+  },
+  "severity": {
+    "blocker": "阻塞",
+    "major": "重要",
+    "minor": "次要",
+    "nit": "细节"
+  },
+  "verdict": {
+    "approve": "已批准",
+    "request_changes": "要求修改"
+  },
+  "messageKind": {
+    "question": "问题",
+    "answer": "回答",
+    "feedback": "反馈",
+    "intervention": "你的消息",
+    "note": "备注"
+  },
+  "changeKind": {
+    "created": "新文件",
+    "modified": "已修改",
+    "deleted": "已删除"
+  },
+  "outcome": {
+    "completed": "运行已完成",
+    "cancelled": "运行已停止",
+    "failed": "运行失败"
+  },
+  "steps": {
+    "planReady": "计划已就绪",
+    "reviewing": "正在审查更改",
+    "stepLimit": "已达到步数上限",
+    "answering": "正在回答 {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "智能体要做什么？",
+    "goalPlaceholder": "例如：修复购物车总价，并为空购物车添加测试",
+    "goalHint": "描述你想要的结果。按 Ctrl+Enter 开始运行。",
+    "start": "启动智能体",
+    "readiness": "前提条件",
+    "modelReady": "{{model}} 正在运行",
+    "modelLoading": "{{model}} 正在加载",
+    "noModel": "没有运行中的模型。智能体需要一个本地模型。",
+    "modelCrashed": "模型意外停止。请在模型视图中重新启动。",
+    "openModels": "打开模型页",
+    "toolCallsFailed": "此模型无法可靠地调用工具，智能体可能会提前停止。换用更强的模型效果更好。",
+    "project": "在 {{name}} 中工作",
+    "noProject": "未打开文件夹。智能体需要一个项目才能工作。",
+    "previous": "上一次运行",
+    "showRun": "显示详情"
+  },
+  "mode": {
+    "label": "批准方式",
+    "ask": "先询问",
+    "autoSafe": "安全步骤",
+    "autonomous": "自主",
+    "askHint": "智能体会自行读取项目，但每次更改、删除和命令都要等你点击确认。",
+    "autoSafeHint": "读取和可撤销的编辑自动运行，命令和删除会先询问。",
+    "autonomousHint": "所有操作都自动运行，下方两个开关仍在把关的操作除外。",
+    "allowedCommands_other": "{{count}} 条已允许的命令无需询问即可运行。",
+    "confirmCommands": "运行命令前询问",
+    "confirmDeletes": "删除文件前询问",
+    "unguardedCommands": "智能体会不经询问运行命令。命令的影响无法撤销。",
+    "unguardedDeletes": "智能体会不经询问删除文件。你可以从检查点恢复它们。",
+    "unguardedBoth": "智能体会不经询问运行命令和删除文件。命令的影响无法撤销。"
+  },
+  "run": {
+    "elapsed": "已用时间",
+    "expandGoal": "显示完整目标",
+    "collapseGoal": "收起",
+    "starting": "正在启动",
+    "planning": "正在规划",
+    "progress": "第 {{index}} 个任务，共 {{total}} 个",
+    "wrappingUp": "正在收尾",
+    "paused": "已暂停",
+    "stopping": "正在停止",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "停止",
+    "stopTitle": "停止运行？",
+    "stopBody": "智能体会立即停止。目前已做的更改会保留，你可以从检查点撤销它们。",
+    "stopConfirm": "停止运行",
+    "newRun": "新建运行",
+    "questionWaiting": "{{agent}} 正在等待你的回答。",
+    "answer": "回答",
+    "tabs": "运行详情",
+    "tabSummary": "摘要",
+    "tabTasks": "任务",
+    "tabTasksCount": "任务 {{done}}/{{total}}",
+    "tabActivity": "活动",
+    "tabCheckpoints": "检查点",
+    "tabCheckpointsCount": "检查点 {{value}}",
+    "changedFiles": "已更改的文件",
+    "noChanges": "没有更改任何文件。"
+  },
+  "lines": {
+    "label": "智能体世界线",
+    "summaryEmpty": "运行正在启动。",
+    "summaryPlanning": "编排者正在规划。",
+    "summaryTask": "任务 {{id}}（共 {{total}} 个），{{title}}：{{status}}。",
+    "summaryTasks": "已完成 {{done}}/{{total}} 个任务。",
+    "summaryAgent": "{{agent}}：{{state}}"
+  },
+  "agents": {
+    "heading": "智能体",
+    "waiting": "还没有活动的智能体。",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "生成速度",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "本次运行中生成的 token",
+    "intervene": "介入",
+    "intervenePlaceholder": "发给 {{agent}} 的消息",
+    "interveneSent": "已发送。{{agent}} 会在下一步之前读取。"
+  },
+  "tasks": {
+    "planning": "编排者正在规划任务。",
+    "noPlan": "未制定计划。",
+    "plan": "计划：",
+    "rounds_other": "{{count}} 轮审查",
+    "showDetails": "显示 {{id}} 的详情",
+    "hideDetails": "隐藏 {{id}} 的详情",
+    "files": "预计涉及的文件",
+    "general": "整体",
+    "openAt": "打开 {{location}}"
+  },
+  "feed": {
+    "empty": "还没有任何动态。",
+    "to": "发给",
+    "ok": "成功",
+    "failed": "失败",
+    "running": "运行中",
+    "awaitingApproval": "等待你的批准",
+    "rejected": "已被你拒绝",
+    "rejectedReason": "已被你拒绝：{{reason}}",
+    "plan_other": "包含 {{count}} 个任务的计划",
+    "approved": "你已批准：{{title}}",
+    "approvedAlways": "你已批准 {{title}}，并允许在本次运行的剩余时间内使用 `{{tool}}`",
+    "rejectedAction": "你已拒绝：{{title}}",
+    "reason": "原因：{{reason}}",
+    "openFile": "打开文件",
+    "openPath": "打开 {{path}}",
+    "showDiff": "显示 {{path}} 中的更改",
+    "hideDiff": "隐藏 {{path}} 中的更改",
+    "showMore": "显示更多",
+    "showLess": "收起",
+    "earlier_other": "显示更早的 {{count}} 条记录"
+  },
+  "diff": {
+    "label": "{{path}} 中的更改",
+    "showAll": "显示全部 {{total}} 行",
+    "empty": "没有可显示的更改。"
+  },
+  "checkpoints": {
+    "empty": "任务开始时会出现检查点。你可以用它们撤销智能体所做的更改。",
+    "intro": "在每个任务开始前，Ylide 会为智能体改动的每个文件保留一份副本。",
+    "undo": "从此处撤销",
+    "undone": "已撤销",
+    "busyHint": "暂停或停止运行后才能撤销更改。",
+    "confirmTitle": "从此处撤销？",
+    "confirmBody": "智能体从“{{label}}”起所做的所有更改都会被还原。文件将恢复到此步骤之前的状态。",
+    "confirmWarning": "Shell 命令的影响（例如已安装的软件包或在项目外创建的文件）无法撤销。",
+    "confirm": "撤销更改",
+    "restored_other": "已恢复 {{count}} 个文件",
+    "restoredMore": "{{files}} 及其他 {{more}} 个文件",
+    "nothing": "没有需要恢复的内容。"
+  },
+  "approval": {
+    "titleWrite": "{{agent}} 想要修改一个文件",
+    "titleDelete": "{{agent}} 想要删除一个文件",
+    "titleExecute": "{{agent}} 想要运行一条命令",
+    "titleOther": "{{agent}} 请求权限",
+    "changes": "更改",
+    "command": "命令",
+    "path": "路径",
+    "detail": "详情",
+    "undoable": "你之后可以从检查点撤销此操作。",
+    "notUndoable": "命令可能会改动项目文件之外的内容。其影响无法撤销。",
+    "approve": "批准",
+    "approveAlways": "本次运行中始终批准",
+    "approveAlwaysHint": "“本次运行中始终批准”允许智能体在本次运行结束前使用 {{tool}}，不再询问。",
+    "reject": "拒绝",
+    "reasonLabel": "原因（可选）",
+    "reasonHint": "智能体会读取原因并换一种做法。",
+    "reasonPlaceholder": "例如：改用 npm run test:unit 运行测试",
+    "queue_other": "还有 {{count}} 个请求在等待"
+  },
+  "question": {
+    "title": "{{agent}} 有一个问题",
+    "answerLabel": "你的回答",
+    "hint": "按 Ctrl+Enter 发送回答。",
+    "later": "稍后回答",
+    "send": "发送回答"
+  },
+  "live": {
+    "task": "{{id}} {{title}}：{{status}}",
+    "approval": "有智能体在等待你的批准。"
+  },
+  "errors": {
+    "start": "智能体无法启动",
+    "approve": "无法发送你的决定",
+    "answer": "无法发送你的回答",
+    "intervene": "无法发送你的消息",
+    "restore": "无法撤销更改",
+    "settings": "无法保存批准设置"
+  }
+}

@@ -1,0 +1,28 @@
+name: Model list
+
+# Checks sizes and SHA-256 checksums in registry/models.json against Hugging
+# Face and the llama.cpp releases. Runs only when the list changes, and weekly
+# to notice upstream files that moved or changed.
+on:
+  pull_request:
+    paths: [registry/**, tools/registry/**]
+  push:
+    branches: [main]
+    paths: [registry/**, tools/registry/**]
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: node tools/registry/fill.mjs --check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

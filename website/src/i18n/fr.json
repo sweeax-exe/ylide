@@ -1,0 +1,111 @@
+{
+  "lang": "fr",
+  "langName": "Français",
+  "suggest": "Lire cette page en français",
+  "meta": {
+    "title": "Ylide : l’IDE IA qui ne quitte jamais votre ordinateur",
+    "description": "Chat, édition de code sur place et agents de codage, propulsés par des modèles qui tournent sur votre propre ordinateur. Sans compte, sans cloud, sans abonnement. Open source.",
+    "privacyTitle": "Confidentialité : Ylide",
+    "imprintTitle": "Mentions légales : Ylide"
+  },
+  "nav": {
+    "label": "Navigation principale",
+    "features": "Fonctionnalités",
+    "privacy": "Confidentialité",
+    "download": "Télécharger",
+    "home": "Ylide, page d’accueil",
+    "language": "Langue"
+  },
+  "hero": {
+    "title": "L’IDE IA qui ne quitte jamais votre ordinateur.",
+    "lead": "Chat, édition de code sur place et une équipe d’agents de codage, propulsés uniquement par des modèles qui tournent sur votre propre ordinateur. Sans compte, sans cloud, sans abonnement.",
+    "download": "Télécharger pour Windows",
+    "meta": "Version {{version}} pour Windows 10 et 11, 64 bits, {{size}} MB. Open source sous licence Apache-2.0.",
+    "tube": "votre ordinateur"
+  },
+  "showcase": {
+    "alt": "L’éditeur de Ylide avec l’arborescence des fichiers, un fichier JavaScript et le panneau de chat",
+    "caption": "Fichiers, éditeur et chat dans une seule fenêtre. Tout tourne sur votre ordinateur."
+  },
+  "chat": {
+    "title": "Interrogez votre projet.",
+    "body": "Joignez des fichiers, des dossiers ou des symboles avec @. La réponse s’affiche mot par mot, générée par le modèle sur votre carte graphique, et vos questions restent ici.",
+    "question": "Que fait applyDiscount dans <code>@cart.js</code> ?",
+    "answer": "Elle retire un pourcentage du prix de chaque article et arrondit au centime près. Les valeurs inférieures à 0 ou supérieures à 100 sont rejetées avec une <code>TypeError</code>.",
+    "stats": "75 tokens par seconde, sur cet ordinateur",
+    "you": "Vous",
+    "model": "Qwen3.6 35B-A3B"
+  },
+  "inline": {
+    "title": "Modifiez le code sur place.",
+    "body": "Sélectionnez, appuyez sur <kbd>Ctrl</kbd> <kbd>K</kbd>, décrivez ce qui doit changer. Ylide affiche la modification sous forme de diff, et vous l’acceptez ou la refusez.",
+    "prompt": "Comparer strictement les ID",
+    "accept": "Accepter",
+    "reject": "Refuser"
+  },
+  "agents": {
+    "title": "Une équipe qui se passe le relais.",
+    "body": "L’orchestrateur planifie, le codeur écrit, le relecteur vérifie. Chaque passage de relais croise leurs lignes d’univers. Les commandes et les suppressions ne s’exécutent qu’après votre accord, et chaque étape peut être annulée grâce aux points de contrôle.",
+    "legend": "Rôles",
+    "orchestrator": "Orchestrateur",
+    "coder": "Codeur",
+    "reviewer": "Relecteur",
+    "stepsLabel": "Déroulement d’une exécution des agents",
+    "step1": "L’orchestrateur lit le projet et découpe la demande en trois tâches.",
+    "step2": "Le codeur modifie <code>cart.js</code> et lance les tests.",
+    "step3": "Le relecteur vérifie le diff et demande un test pour les paniers vides.",
+    "step4": "Le codeur ajoute le test. Douze tests sur douze passent.",
+    "step5": "Le relecteur valide la tâche. Vous voyez chaque modification avant qu’elle ne soit définitive.",
+    "task": "Tâche"
+  },
+  "hardware": {
+    "title": "Taillé pour votre matériel.",
+    "body": "Au premier lancement, Ylide mesure votre carte graphique, votre mémoire et votre processeur, puis propose le modèle le plus puissant qui y tourne de façon fluide. Il télécharge ensuite le modèle, vérifie le fichier et le démarre."
+  },
+  "setup": {
+    "label": "Configurer Ylide en cinq étapes",
+    "s1": "Bienvenue",
+    "s1b": "Choisissez votre langue et votre thème.",
+    "s2": "Analyse",
+    "s2b": "Carte graphique, mémoire et processeur, mesurés en un cinquième de seconde.",
+    "s3": "Modèle",
+    "s3b": "Le modèle le plus puissant qui tourne de façon fluide sur cet ordinateur.",
+    "s4": "Téléchargement",
+    "s4b": "Chaque fichier est vérifié par sa somme de contrôle SHA-256. Vous pouvez mettre en pause à tout moment.",
+    "s5": "Prêt",
+    "s5b": "Le chat, les modifications et les agents s’exécutent désormais sur votre ordinateur.",
+    "figure": "Captures d’écran de la configuration d’Ylide",
+    "alt1": "Étape de bienvenue avec le choix de la langue et du thème",
+    "alt2": "Analyse du matériel avec la carte graphique, la mémoire, le processeur et le disque",
+    "alt3": "Recommandation de modèle avec la vitesse, le contexte et l’utilisation de la mémoire",
+    "alt4": "Téléchargement du modèle et de l’accélération CUDA, avec leur progression",
+    "alt5": "Écran « Prêt » avec le runtime, le périphérique et les raccourcis clavier",
+    "note": "Captures d’écran de l’interface en anglais, réalisées sur l’ordinateur du développeur."
+  },
+  "privacy": {
+    "title": "Quatre portes vers l’extérieur. Toutes entre vos mains.",
+    "body": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il ne se connecte à Internet que pour ces quatre usages. Chacun peut être désactivé, et chaque requête apparaît dans le journal réseau.",
+    "listLabel": "Les seules connexions établies par Ylide",
+    "registry": "Actualiser la liste des modèles",
+    "registryHost": "ylide.app",
+    "models": "Télécharger les modèles",
+    "modelsHost": "huggingface.co",
+    "runtimes": "Télécharger les runtimes",
+    "runtimesHost": "github.com",
+    "updates": "Rechercher des mises à jour",
+    "updatesHost": "ylide.app",
+    "on": "activé"
+  },
+  "open": {
+    "title": "Ouvert jusqu’à la dernière ligne.",
+    "body": "Ylide est open source, sous licence Apache-2.0. Le code source sera bientôt disponible sur GitHub : vous pourrez le lire, le compiler vous-même et contribuer à son développement.",
+    "download": "Télécharger Ylide {{version}}",
+    "smartscreen": "Windows peut afficher un avertissement au premier lancement, car le programme d’installation n’est pas encore signé commercialement. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même »."
+  },
+  "footer": {
+    "copyright": "© 2026 Ylide contributors",
+    "privacy": "Confidentialité",
+    "imprint": "Mentions légales",
+    "legal": "Informations légales"
+  }
+}

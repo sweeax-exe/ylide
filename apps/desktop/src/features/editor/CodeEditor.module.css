@@ -1,0 +1,17 @@
+.host {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-sunken);
+}
+
+.monaco {
+  position: absolute;
+  inset: 0;
+}
+
+/* Monaco decoration for a line opened from search, quick open or chat. */
+.revealedLine {
+  background: var(--accent-muted);
+}

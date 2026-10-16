@@ -1,0 +1,31 @@
+[package]
+name = "agent"
+description = "Agent mode: tools, permissions, checkpoints, orchestrator and sub-agents (Coder, Reviewer, custom roles)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+async-trait = { workspace = true }
+getrandom = { workspace = true }
+hex = { workspace = true }
+inference = { path = "../inference" }
+process-wrap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+similar = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["process", "io-util", "time", "macros", "rt", "sync", "fs"] }
+tokio-util = { workspace = true }
+tracing = { workspace = true }
+ts-rs = { workspace = true }
+workspace = { path = "../workspace" }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = ["Win32_System_Threading"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }

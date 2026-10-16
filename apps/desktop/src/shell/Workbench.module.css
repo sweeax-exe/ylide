@@ -1,0 +1,277 @@
+.workbench {
+  display: grid;
+  grid-template-rows: var(--layout-title-bar) minmax(0, 1fr) var(--layout-status-bar);
+  height: 100%;
+  background: var(--bg-app);
+}
+
+.middle {
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: none;
+  background: var(--bg-app);
+  border-right: 1px solid var(--border);
+}
+
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-sunken);
+}
+
+.right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: none;
+  background: var(--bg-app);
+  border-left: 1px solid var(--border);
+}
+
+.splitter {
+  width: 4px;
+  margin: 0 -2px;
+  z-index: 5;
+  flex: none;
+  cursor: col-resize;
+  background: transparent;
+  transition: background var(--motion-fast) var(--motion-ease);
+}
+
+.splitter:hover,
+.splitter:focus-visible {
+  background: var(--accent);
+}
+
+/* ---------- Title bar ---------- */
+.titleBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-left: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-app);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.projectButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 var(--space-2);
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-1);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.projectButton:hover {
+  background: var(--bg-hover);
+}
+
+.projectButton.muted {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.titleCenter {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.quickOpen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  width: min(420px, 100%);
+  height: 26px;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  color: var(--text-3);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.quickOpen:hover {
+  border-color: var(--border-strong);
+  color: var(--text-2);
+}
+
+.modelPill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 300px;
+  height: 26px;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-round);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.modelPill:hover {
+  border-color: var(--border-strong);
+}
+
+.modelPill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--text-3);
+}
+
+.dot.ready {
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-muted);
+}
+
+.dot.loading {
+  background: var(--warning);
+}
+
+.dot.crashed {
+  background: var(--danger);
+}
+
+.windowControls {
+  display: flex;
+  height: 100%;
+  margin-left: var(--space-2);
+}
+
+.windowButton {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.windowButton:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.windowButton.closeButton:hover {
+  background: #c42b1c;
+  color: #fff;
+}
+
+/* ---------- Activity rail ---------- */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: var(--layout-activity-rail);
+  padding: var(--space-2) 0;
+  flex: none;
+  border-right: 1px solid var(--border);
+  background: var(--bg-app);
+}
+
+.railSpacer {
+  flex: 1;
+}
+
+.railButton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
+}
+
+.railButton:hover {
+  color: var(--text-1);
+  background: var(--bg-hover);
+}
+
+.railButton[aria-pressed='true'] {
+  color: var(--text-1);
+}
+
+.railButton[aria-pressed='true']::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ---------- Status bar ---------- */
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--space-3);
+  border-top: 1px solid var(--border);
+  background: var(--bg-app);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.statusItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.statusGrow {
+  flex: 1;
+}
+
+.local {
+  color: var(--metal);
+}

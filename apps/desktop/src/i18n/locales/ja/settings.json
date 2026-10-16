@@ -1,0 +1,682 @@
+{
+  "saved": "保存しました",
+  "saveFailed": "設定を保存できませんでした。",
+  "page": {
+    "title": "設定",
+    "intro": "Ylide が使うすべてのオプションとプロンプトを、ここにまとめています。変更はフィールドから離れたときに保存されます。",
+    "loading": "設定を読み込み中",
+    "sectionsLabel": "{{page}} のセクション"
+  },
+  "units": {
+    "px": "px",
+    "times": "× フォントサイズ",
+    "spaces": "スペース",
+    "tokens": "トークン",
+    "rounds": "回",
+    "seconds": "秒",
+    "characters": "文字",
+    "slots": "スロット",
+    "steps": "ステップ"
+  },
+  "validation": {
+    "required": "値を入力してください。",
+    "notNumber": "数値を入力してください。",
+    "notInteger": "整数を入力してください。",
+    "tooSmall": "最小値は {{min}} です。",
+    "tooLarge": "最大値は {{max}} です。",
+    "url": "http:// または https:// で始まる完全なアドレスを入力してください。"
+  },
+  "prompt": {
+    "isDefault": "既定",
+    "isChanged": "変更済み",
+    "placeholders": "フィールド",
+    "insertPlaceholder": "フィールドを挿入",
+    "insertNamed": "カーソル位置に {{name}} を挿入",
+    "resetNamed": "{{name}} を既定値に戻す",
+    "size": "{{chars}} 文字、約 {{tokens}} トークン"
+  },
+  "general": {
+    "title": "全般",
+    "description": "Ylide の言語と外観。",
+    "lookTitle": "言語とテーマ",
+    "language": {
+      "label": "言語",
+      "hint": "「システム」を選ぶと、オペレーティングシステムの言語（現在は {{language}}）を使います。",
+      "system": "システム"
+    },
+    "theme": {
+      "label": "テーマ",
+      "hint": "「システム」を選ぶと、オペレーティングシステムのライトモードまたはダークモードに従います。",
+      "dark": "ダーク",
+      "light": "ライト",
+      "system": "システム"
+    },
+    "updates": {
+      "title": "バージョンとアップデート",
+      "version": "バージョン",
+      "versionValue": "Ylide {{version}}",
+      "label": "アップデート",
+      "check": "アップデートを確認",
+      "install": "Ylide {{version}} をインストール",
+      "openNetwork": "ネットワーク設定を開く",
+      "notChecked": "Ylide は起動後、まだアップデートを確認していません。",
+      "checking": "Ylide がアップデートを確認しています。",
+      "upToDate": "Ylide は最新です。",
+      "available": "Ylide {{version}} を利用できます。",
+      "disabled": "アップデートの確認は「ネットワークとプライバシー」でオフになっています。",
+      "failed": "アップデートを確認できませんでした: {{message}}",
+      "installFailed": "アップデートはインストールされませんでした: {{message}}",
+      "preparing": "アップデートを準備しています。",
+      "downloading": "アップデートをダウンロード中: {{done}} / {{total}}",
+      "downloadingUnknown": "アップデートをダウンロード中: {{done}}",
+      "handedOver": "インストーラーを実行中です。Ylide は終了した後、再び起動します。",
+      "progress": "進行状況",
+      "notes": "このバージョンの新機能",
+      "ready": "アップデートはダウンロード済みで、確認も完了しています。インストールすると Ylide が再起動します。",
+      "installReady": "インストールして再起動"
+    }
+  },
+  "editor": {
+    "title": "エディター",
+    "description": "エディターでのコードの表示。",
+    "textTitle": "テキストとレイアウト",
+    "fontFamily": {
+      "label": "フォント",
+      "hint": "CSS のフォントリストです。最初のフォントがインストールされていない場合は、次のフォントが使われます。"
+    },
+    "fontSize": {
+      "label": "フォントサイズ"
+    },
+    "lineHeight": {
+      "label": "行の高さ",
+      "hint": "行の間隔をフォントサイズの倍数で指定します。"
+    },
+    "tabSize": {
+      "label": "タブ幅",
+      "hint": "タブ文字 1 つが占めるスペースの数。"
+    },
+    "wordWrap": {
+      "label": "長い行を折り返す",
+      "hint": "横にスクロールする代わりに、エディターの端で行を折り返します。"
+    },
+    "minimap": {
+      "label": "ミニマップを表示",
+      "hint": "右端にファイル全体の小さな概観を表示します。"
+    },
+    "preview": "プレビュー"
+  },
+  "chat": {
+    "title": "チャットとプロンプト",
+    "description": "チャットとインライン編集でモデルが受け取る指示。",
+    "chatTitle": "チャット",
+    "systemPrompt": {
+      "label": "チャットのシステムプロンプト",
+      "hint": "すべてのチャット会話の冒頭で、メッセージと添付ファイルより前に送信されます。"
+    },
+    "contextBudget": {
+      "label": "添付用のコンテキスト上限",
+      "hint": "@ で添付するファイル、フォルダー、選択範囲の上限です（現在は {{tokens}} トークン）。これを超える添付は短縮されます。"
+    },
+    "inlineTitle": "インライン編集",
+    "inlineDescription": "コードを選択して Ctrl+K を押したときに使われます。",
+    "inlinePrompt": {
+      "label": "インライン編集のプロンプト",
+      "hint": "選択したコード、前後の行、指示と一緒に送信されます。"
+    },
+    "history": {
+      "label": "チャットを保存",
+      "hint": "各プロジェクトのチャットをこのコンピューターの Ylide のデータフォルダーに保存し、あとで開き直せるようにします。チャットがどこかに送信されることはありません。"
+    },
+    "deleteAll": {
+      "label": "保存されたチャット",
+      "hint": "すべてのプロジェクトの保存されたチャットをこのコンピューターから削除します。",
+      "button": "すべてのチャットを削除",
+      "confirmTitle": "保存されたチャットをすべて削除しますか？",
+      "confirmBody": "すべてのプロジェクトの保存されたチャットがこのコンピューターから削除されます。この操作は元に戻せません。",
+      "confirm": "すべて削除",
+      "done": "保存されたチャットを削除しました"
+    }
+  },
+  "agents": {
+    "title": "エージェント",
+    "description": "エージェントが確認なしで行える操作、コマンドの実行方法、エージェントが使うロールとメッセージ。",
+    "approvalsTitle": "承認",
+    "approvalsDescription": "エージェントによる読み取りは常に承認なしで行われます。これらの設定で、変更に承認が必要になるタイミングを決めます。",
+    "mode": {
+      "label": "承認モード",
+      "ask": {
+        "title": "毎回確認",
+        "body": "すべての編集、削除、コマンドは承認されるまで待機します。"
+      },
+      "autoSafe": {
+        "title": "安全な操作",
+        "body": "編集は自動で実行され、チェックポイントで元に戻せます。削除とコマンドは、許可されたコマンドを除き、常に事前に確認します。"
+      },
+      "autonomous": {
+        "title": "自律",
+        "body": "下の 2 つのスイッチで承認待ちにしている操作を除き、すべて自動で実行します。"
+      }
+    },
+    "onlyAutonomous": "「自律」モードにのみ適用されます。「毎回確認」と「安全な操作」では、削除とコマンドの前に必ず確認します。",
+    "confirmCommands": {
+      "label": "コマンドの実行前に確認",
+      "hint": "下の許可リストにないコマンドをエージェントが実行する前に確認します。",
+      "off": "エージェントは確認なしで任意のコマンドを実行できます。プロジェクト外のデータを破壊するコマンドは引き続きブロックされます。"
+    },
+    "confirmDeletes": {
+      "label": "削除の前に確認",
+      "hint": "エージェントがファイルやフォルダーを削除する前に確認します。",
+      "off": "エージェントは確認なしでファイルを削除できます。削除したファイルはチェックポイントから復元できます。"
+    },
+    "commands": {
+      "title": "許可されたコマンド",
+      "description": "これらのプレフィックスのいずれかで始まるコマンドは、確認なしで実行されます。cargo test を許可すると cargo test --release も許可されます。&&, ||, ;, |, `, $(, > または < で連結やリダイレクトを行うコマンドは、許可されたプレフィックスで始まっていても常に確認します。",
+      "askMode": "「毎回確認」モードでは、許可されたコマンドも承認を待ちます。",
+      "empty": "許可されたコマンドはまだありません。エージェントはすべてのコマンドの前に確認します。",
+      "alsoMatches": "{{example}} も許可",
+      "remove": "{{prefix}} を削除",
+      "newLabel": "新しいコマンドプレフィックス",
+      "placeholder": "npm test",
+      "add": "追加",
+      "problem": {
+        "chaining": "プレフィックスに &&, ||, ;, |, `, $(, > または < は使えません。",
+        "duplicate": "このプレフィックスはすでにリストにあります。",
+        "empty": "コマンドプレフィックスを入力してください。"
+      }
+    },
+    "reviewTitle": "レビュー",
+    "reviewEnabled": {
+      "label": "すべてのタスクをレビュー",
+      "hint": "完了した各タスクの変更をレビュアーが確認し、コーダーに差し戻すことができます。"
+    },
+    "maxReviewRounds": {
+      "label": "タスクあたりのレビュー回数",
+      "hint": "タスクが完了と見なされるまでに、レビュアーが変更を要求できる回数。"
+    },
+    "shellTitle": "コマンド",
+    "shellDescription": "run_command がプロジェクトフォルダーでコマンドを起動する方法。",
+    "shellProgram": {
+      "label": "シェルプログラム",
+      "hint": "例: powershell.exe、cmd.exe、bash、zsh。"
+    },
+    "shellArgs": {
+      "label": "シェルの引数",
+      "hint": "1 行に 1 つの引数。コマンドの前に置かれます。"
+    },
+    "shellTimeout": {
+      "label": "既定の制限時間",
+      "hint": "これより長く実行されるコマンドは停止されます。エージェントはコマンドごとに、より長い制限時間を要求できます。"
+    },
+    "shellOutput": {
+      "label": "出力の上限",
+      "hint": "これより長い出力は、エージェントに渡す前に中間部分が省略されます。"
+    }
+  },
+  "roles": {
+    "title": "ロール",
+    "description": "各エージェントはロールに従って作業します。ロールは、システムプロンプト、使用できるツール、実行できるステップ数を定めます。",
+    "add": "ロールを追加",
+    "builtin": "組み込み",
+    "custom": "カスタム",
+    "noDescription": "説明なし",
+    "toolCount_other": "{{count}} 個のツール",
+    "stepCount_other": "{{count}} ステップ",
+    "name": "名前",
+    "namePlaceholder": "テスト担当",
+    "id": "ID",
+    "idHint": "計画の中や、エージェント同士が質問するときに使われます。小文字の英字、数字、- と _ が使えます。",
+    "idProblem": {
+      "empty": "ID を入力してください。",
+      "format": "小文字の英字で始め、小文字の英字、数字、- と _ のみを使ってください（最大 32 文字）。",
+      "taken": "この ID はすでに別のロールで使われています。"
+    },
+    "descriptionLabel": "説明",
+    "descriptionHint": "オーケストレーターはこれを読んで、どのロールにタスクを割り当てるかを決めます。",
+    "systemPrompt": "システムプロンプト",
+    "systemPromptHint": "このロールが担当する各タスクの開始時に送信されます。",
+    "tools": "許可するツール",
+    "toolsHint": "このロールはチェックしたツールしか呼び出せません。書き込み、削除、コマンドには引き続き上の承認設定が適用されます。",
+    "unknownTools": "許可されていますが、このバージョンでは不明なツール: {{tools}}",
+    "risk": {
+      "read": "プロジェクトを読む",
+      "write": "ファイルを変更",
+      "delete": "ファイルを削除",
+      "execute": "コマンドを実行",
+      "communicate": "連絡と報告"
+    },
+    "temperature": "温度",
+    "temperatureHint": "値を大きくすると、回答のばらつきが大きくなります。空欄にすると、モデルの推奨値を使います。",
+    "modelDefault": "モデルの既定値",
+    "maxSteps": "ステップ上限",
+    "maxStepsHint": "タスクあたりのモデルのターン数の上限。上限に達するとタスクは停止します。",
+    "builtinHint": "組み込みロールは変更や既定値へのリセットはできますが、削除はできません。",
+    "customHint": "カスタムロールには、オーケストレーターがタスクを割り当てることができます。",
+    "reset": "ロールを既定値に戻す",
+    "delete": "ロールを削除",
+    "deleteTitle": "ロール {{name}} を削除しますか？",
+    "deleteBody": "{{id}} にタスクを割り当てている計画では、このロールを使えなくなります。この操作は元に戻せません。",
+    "addTitle": "ロールを追加",
+    "startFrom": "作成元",
+    "startFromHint": "システムプロンプト、ツール、上限をコピーします。これらは後から変更できます。",
+    "startBlank": "読み取りツールのみの空のロール",
+    "startCopy": "{{name}} のコピー",
+    "create": "ロールを作成"
+  },
+  "templates": {
+    "title": "メッセージテンプレート",
+    "description": "実行中に Ylide 自身がエージェントに送るメッセージです。波かっこ内のフィールドは自動で埋められます。フィールドはボタンで挿入してください。",
+    "resetAll": "すべてのテンプレートを既定値に戻す",
+    "unknown": "置き換えられず、そのまま送信されるフィールド: {{names}}",
+    "missing": "未使用: {{names}}",
+    "planner": {
+      "label": "計画のリクエスト",
+      "hint": "リクエスト内容、利用可能なロール、プロジェクトの構成とともにオーケストレーターへ送信されます。"
+    },
+    "coderTask": {
+      "label": "コーダーへのタスク",
+      "hint": "タスクを担当するロールに、チームの進捗とともに送信されます。"
+    },
+    "reviewerTask": {
+      "label": "レビューのリクエスト",
+      "hint": "コーダーの要約と、差分形式の変更内容とともにレビュアーへ送信されます。"
+    },
+    "feedback": {
+      "label": "変更の要求",
+      "hint": "レビュアーが変更を要求したときに、コーダーへ返送されます。"
+    },
+    "question": {
+      "label": "別のエージェントからの質問",
+      "hint": "あるエージェントが別のエージェントに助けを求めたときに送信されます。"
+    },
+    "continue": {
+      "label": "続行",
+      "hint": "モデルがツールを呼び出さずにテキストで回答したときに送信されます。フィールドはありません。"
+    },
+    "repeatedFailure": {
+      "label": "失敗の繰り返し",
+      "hint": "エージェントが失敗するツール呼び出しを繰り返したときに送信されます。フィールドはありません。"
+    }
+  },
+  "network": {
+    "title": "ネットワークとプライバシー",
+    "statementTitle": "テレメトリーなし、アカウントなし。",
+    "statementBody": "Ylide は使用状況データを収集せず、サインインもなく、コードをアップロードすることもありません。インターネットに接続するのは以下の 4 つの目的のみで、それぞれオンになっている間に限ります。プロンプトとファイルは、このコンピューター上のモデル、または「詳細設定」で設定した外部サーバーに送られます。",
+    "allowedTitle": "許可する接続",
+    "allowedDescription": "オフにした項目について、Ylide はそのリクエストを行いません。",
+    "registry": {
+      "label": "モデルリストの更新",
+      "hint": "起動時と手動で更新したときに、下のアドレスから新しいモデルリストを確認します。"
+    },
+    "registryUrl": {
+      "label": "モデルリストのアドレス",
+      "hint": "モデルリストのダウンロード元です。リストには、Ylide がダウンロードするモデルファイルとランタイムプログラムが、そのチェックサムとともに記載されています。公式アドレスのリストには Ylide の署名が必要です。ほかのアドレスのリストは、隣に署名ファイル（models.json.sig）があれば Ylide の署名で検証され、なければそのまま使用されます。"
+    },
+    "models": {
+      "label": "モデルのダウンロード",
+      "hint": "ダウンロードを開始したときに、Hugging Face（huggingface.co）からモデルファイルをダウンロードします。"
+    },
+    "runtimes": {
+      "label": "ランタイムのダウンロード",
+      "hint": "インストール時に、CUDA パックなどの推論ランタイムを GitHub（github.com）からダウンロードします。"
+    },
+    "logTitle": "ネットワークログ",
+    "logDescription": "起動後に Ylide が行ったすべてのリクエストです。新しいリクエストは発生するとすぐにここに表示されます。",
+    "logLoading": "ネットワークログを読み込み中",
+    "logFailed": "ネットワークログを読み込めませんでした: {{message}}",
+    "logEmpty": "リクエストはまだありません。Ylide の起動後、このコンピューターから外に出たものはありません。",
+    "logTime": "時刻",
+    "logPurpose": "目的",
+    "logUrl": "アドレス",
+    "logOutcome": "結果",
+    "updates": {
+      "label": "アップデートの確認",
+      "hint": "起動時に一度、Ylide の新しいバージョンがあるかを ylide.app に問い合わせます。送信されるのはバージョン番号のみです。アップデート本体は、インストールするときにのみダウンロードされます。"
+    }
+  },
+  "advanced": {
+    "title": "詳細設定",
+    "description": "ストレージ、ローカルのモデルサーバー、外部サーバー、Ylide が使うフォルダー。",
+    "storageTitle": "モデルの保存先",
+    "modelsDir": {
+      "label": "モデルフォルダー",
+      "hint": "ダウンロードおよびインポートしたモデルはここに保存されます。",
+      "change": "フォルダーを変更",
+      "useDefault": "既定のフォルダーを使用"
+    },
+    "serverTitle": "モデルサーバー",
+    "serverDescription": "このコンピューターでモデルを実行する llama-server のオプション。",
+    "slots": {
+      "label": "並列リクエスト",
+      "hint": "メインモデルが同時に処理するリクエストの数（例: エージェントとチャット）。スロットはコンテキストを共有します。"
+    },
+    "context": {
+      "label": "コンテキストサイズ",
+      "hint": "空欄にすると、モデルの推奨サイズを使います。",
+      "hintModel": "空欄にすると、{{model}} の推奨サイズ {{tokens}} トークン（最大 {{max}}）を使います。",
+      "placeholder": "推奨"
+    },
+    "runtime": {
+      "label": "ランタイム",
+      "hint": "モデルを実行する、インストール済みの llama.cpp ビルド。",
+      "auto": "自動",
+      "autoCurrent": "自動（現在は {{variant}}）",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}}（未インストール）"
+    },
+    "extraArgs": {
+      "label": "llama-server の追加引数",
+      "hint": "1 行に 1 つの引数。コマンドラインの最後に追加されます。誤った引数を指定すると、モデルが起動しなくなることがあります。",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "起動時にモデルを開始",
+      "hint": "Ylide を開いたときに、選択したモデルを起動します。",
+      "hintModel": "Ylide を開いたときに {{model}} を起動します。"
+    },
+    "appliesOnRestart": "モデルサーバーへの変更は、次回モデルを起動したときに適用されます。",
+    "restart": "モデルを再起動"
+  },
+  "endpoint": {
+    "title": "外部サーバー",
+    "description": "組み込みランタイムの代わりに、Ollama、LM Studio、別の llama-server などの OpenAI 互換サーバーを使います。その場合、プロンプトとコードはそのアドレスに送信されます。",
+    "enabled": {
+      "label": "外部サーバーを使用",
+      "hint": "チャット、インライン編集、エージェントは、ローカルモデルの代わりにこのサーバーを使います。"
+    },
+    "baseUrl": {
+      "label": "アドレス",
+      "hint": "API のベース URL。通常は /v1 で終わります。"
+    },
+    "apiKey": {
+      "label": "API キー",
+      "hint": "任意。このコンピューター上の設定ファイルに保存され、このサーバーにのみ送信されます。",
+      "placeholder": "なし",
+      "show": "API キーを表示",
+      "hide": "API キーを隠す"
+    },
+    "model": {
+      "label": "モデル",
+      "hint": "サーバーが想定するモデル名。空欄にすると、サーバーの既定のモデルを使います。",
+      "placeholder": "サーバーの既定"
+    },
+    "context": {
+      "label": "コンテキストサイズ",
+      "hint": "外部モデルのコンテキストウィンドウ。空欄の場合は {{tokens}} トークンと見なします。"
+    },
+    "connect": "接続",
+    "connectHint": "「接続」を押すと、これらの値を保存して外部サーバーに切り替えます。",
+    "activeHint": "{{model}} に接続しています。",
+    "needUrl": "先にサーバーのアドレスを入力してください。",
+    "connected": "接続済み",
+    "connecting": "接続中",
+    "unreachable": "接続できません"
+  },
+  "about": {
+    "title": "Ylide について",
+    "description": "バージョンと、このコンピューター上で Ylide が使うフォルダー。",
+    "loading": "アプリ情報を読み込み中",
+    "version": "バージョン",
+    "system": "システム",
+    "systemValue": "{{os}}, {{arch}}",
+    "configDir": "設定フォルダー",
+    "dataDir": "データフォルダー",
+    "modelsDir": "モデルフォルダー",
+    "copyPath": "{{name}} のパスをコピー",
+    "logFile": "ログファイル"
+  },
+  "modelsPage": {
+    "title": "モデル",
+    "intro": "このコンピューターで実行中のもの、インストール済みのもの、ダウンロードできるもの。すべてのモデルはローカルで実行されます。"
+  },
+  "active": {
+    "title": "アクティブなモデル",
+    "description": "チャットでの回答、コードの書き換え、エージェントの実行を担うモデル。",
+    "none": "モデルは実行されていません",
+    "noneSelected": "チャットとエージェントには {{model}} {{quant}} が選択されています。使い始めるには起動してください。",
+    "noneEndpoint": "外部サーバー {{url}} がオンになっています。使用するには接続してください。",
+    "noneChoose": "下のインストール済みモデルから選ぶか、カタログからダウンロードしてください。",
+    "startAgain": "再起動",
+    "status": {
+      "starting": "サーバーを起動中",
+      "loading": "モデルをメモリに読み込み中",
+      "ready": "準備完了",
+      "stopped": "停止",
+      "crashed": "予期せず停止"
+    },
+    "exitCode": "終了コード {{code}}: {{message}}",
+    "runtime": "ランタイム",
+    "device": "デバイス",
+    "noDevice": "なし",
+    "context": "コンテキスト",
+    "contextValue": "{{tokens}} トークン",
+    "slots": "並列リクエスト",
+    "toolCalls": "ツール呼び出し",
+    "tools": {
+      "unknown": {
+        "label": "未テスト",
+        "body": "Ylide はモデルの準備ができた直後にツール呼び出しをテストします。それまでは、エージェントの動作が安定しないことがあります。"
+      },
+      "native": {
+        "label": "ネイティブ",
+        "body": "モデルが標準形式でツール呼び出しを返すため、エージェントは確実に動作します。"
+      },
+      "repaired": {
+        "label": "修復済み",
+        "body": "モデルはツール呼び出しをテキストとして書き、Ylide がそれを変換します。エージェントは動作しますが、ときどき呼び出しの再試行が必要になることがあります。"
+      },
+      "failed": {
+        "label": "失敗",
+        "body": "セルフテストで使用可能なツール呼び出しが得られませんでした。このモデルではエージェントが動作しない可能性があります。チャットとインライン編集には影響しません。"
+      }
+    },
+    "commandLine": "コマンドライン",
+    "commandLineHint": "サーバーの起動に使われた正確なコマンド",
+    "copyCommand": "コマンドラインをコピー",
+    "noCommand": "ローカルプロセスはありません。Ylide は外部サーバーと直接通信します。",
+    "log": "サーバーログ",
+    "logHint": "llama-server の出力",
+    "logLoading": "サーバーログを読み込み中",
+    "logFailed": "サーバーログを読み込めませんでした: {{message}}",
+    "logEmpty": "サーバーはまだ何も出力していません。"
+  },
+  "installed": {
+    "title": "インストール済みのモデル",
+    "description": "このコンピューター上のモデルファイルと、それぞれの用途。",
+    "import": "GGUF ファイルをインポート",
+    "imported": "{{name}} をインポートしました。",
+    "importFailed": "ファイルをインポートできませんでした。",
+    "emptyTitle": "モデルはまだありません",
+    "emptyBody": "下のカタログからダウンロードするか、GGUF ファイルをインポートしてください。",
+    "unknownQuant": "GGUF",
+    "active": "実行中",
+    "custom": "インポート済み",
+    "usedFor": {
+      "chat": "チャットとエージェント",
+      "autocomplete": "自動補完",
+      "embedding": "コード検索"
+    },
+    "use": {
+      "chat": "チャットとエージェントに使用",
+      "autocomplete": "自動補完に使用",
+      "embedding": "コード検索に使用"
+    },
+    "start": "起動",
+    "size": "{{size}} GB",
+    "files_other": "{{count}} 個のファイル",
+    "delete": "{{name}} を削除",
+    "deleteTitle": "{{name}} を削除しますか？",
+    "deleteBody": "モデルファイル（{{size}} GB）がこのコンピューターから削除されます。",
+    "forgetBody": "Ylide はこのモデルを一覧から外します。ファイルはそのまま残り、何も削除されません。",
+    "deleteActive": "このモデルは実行中です。先に停止されます。",
+    "deleteAssigned": "チャット、自動補完、コード検索でこのモデルが選択されている場合、その選択は解除されます。",
+    "deleteAgain": "カタログから再びダウンロードできます。"
+  },
+  "downloads": {
+    "title": "ダウンロード",
+    "description": "実行中、一時停止中、失敗したダウンロード。一時停止したダウンロードは、停止した位置から再開します。",
+    "empty": "実行中のダウンロードはありません。",
+    "state": {
+      "downloading": "ダウンロード中",
+      "resuming": "再開中",
+      "verifying": "ファイルを確認中",
+      "paused": "一時停止中",
+      "failed": "失敗"
+    },
+    "amount": "{{done}} / {{total}} GB（{{percent}}%）",
+    "percent": "{{percent}}%",
+    "speed": "{{speed}}/s",
+    "remaining": "残り {{time}}",
+    "file": "ファイル {{index}}/{{count}}",
+    "pause": "{{name}} のダウンロードを一時停止",
+    "resume": "{{name}} のダウンロードを再開",
+    "cancel": "{{name}} のダウンロードをキャンセル",
+    "progressLabel": "{{name}} のダウンロードの進行状況",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "カタログ",
+    "description_other": "Ylide のモデルリストにある {{count}} 個のモデル。ローカルでの使用を確認済みです。",
+    "filter": "表示するモデルの用途",
+    "all": "すべて",
+    "shown_other": "{{count}} 個のモデル",
+    "none": "この用途のモデルはリストにありません。",
+    "model": "モデル",
+    "parameters": "パラメーター数",
+    "paramsValue": "{{value}}B",
+    "activeValue": "アクティブ {{value}}B",
+    "paramsMoe": "合計 {{total}}B、トークンあたりアクティブ {{active}}B（Mixture of Experts）",
+    "paramsDense": "{{total}}B（Dense）",
+    "maxContext": "最大コンテキスト",
+    "toolCalling": "ツール使用",
+    "license": "ライセンス",
+    "commercialYes": "商用利用可",
+    "commercialCheck": "商用利用の前に条項を確認",
+    "readLicense": "ライセンスを読む",
+    "publisher": "公開元",
+    "released": "リリース日",
+    "context": "コンテキスト",
+    "contextValue": "最大 {{max}}、推奨 {{recommended}}",
+    "reasoning": "思考",
+    "reasoningLevel": {
+      "none": "なし",
+      "optional": "任意",
+      "always": "常にオン"
+    },
+    "roles": "適した用途",
+    "source": "配布元",
+    "modelCard": "モデルカード",
+    "strengths": "強み",
+    "benchmarks": "ベンチマーク",
+    "benchmark": "ベンチマーク",
+    "score": "スコア",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "測定者",
+    "selfReported": "公開元",
+    "independent": "第三者",
+    "date": "日付",
+    "sourceLink": "出典",
+    "openSource": "{{name}} の出典を開く",
+    "quantizations": "量子化",
+    "quant": "量子化",
+    "bits": "重みあたりのビット数",
+    "size": "ダウンロード",
+    "fit": "このコンピューターでの動作",
+    "plan": "{{placement}} · 約 {{tps}} tok/s · {{memory}}",
+    "memVram": "VRAM {{value}} GiB",
+    "memRam": "RAM {{value}} GiB",
+    "download": "ダウンロード",
+    "downloadNamed": "{{name}} {{quant}} をダウンロード",
+    "downloadSize": "{{size}} GB をダウンロード",
+    "downloadsOff": "モデルのダウンロードは「ネットワークとプライバシー」でオフになっています。",
+    "downloadsOffNote": "モデルのダウンロードはオフになっています。カタログからダウンロードするには、「ネットワークとプライバシー」でオンにしてください。",
+    "openNetwork": "ネットワーク設定を開く",
+    "noSpace": "ディスクの空き容量が足りません（空き {{free}} GB）。",
+    "noSpaceShort": "ディスク容量不足",
+    "installedBadge": "インストール済み",
+    "downloadingBadge": "ダウンロード中",
+    "mark": {
+      "primary": "推奨",
+      "autocomplete": "自動補完に推奨",
+      "embedding": "コード検索に推奨"
+    },
+    "recTitle": "このコンピューター向けの推奨モデル",
+    "recLoading": "このコンピューターに合うモデルを判定中",
+    "recFailed": "推奨を算出できませんでした: {{message}}",
+    "recNone": "このコンピューターに十分合うモデルはリストにありません。",
+    "recPlan": "{{placement}} · 約 {{tps}} tok/s · コンテキスト {{context}}",
+    "budgetGpu": "{{gpu}}: VRAM {{vram}} GiB、RAM {{ram}} GiB を使用可能",
+    "budgetUnified": "ユニファイドメモリ {{memory}} GiB を使用可能",
+    "budgetCpu": "GPU なし: RAM {{ram}} GiB を使用可能",
+    "showEntry": "詳細を表示",
+    "alternatives": "代替案",
+    "uncensored": {
+      "title": "無検閲版",
+      "note": "無検閲版は、上のリストにあるモデルから、回答を拒否する学習を取り除いたものです。元のモデルが断るリクエストにも回答します。Ylide がこれらを自動で選ぶことはありません。また、コーディングとツール使用の性能は第三者によって測定されていません。",
+      "badge": "無検閲",
+      "badgeHint": "回答を拒否する学習が取り除かれています。Ylide がこのモデルを自動で選ぶことはありません。"
+    },
+    "own": {
+      "title": "リストにありませんか？",
+      "body": "このコンピューター上にある任意の GGUF モデルファイルを使えます。"
+    }
+  },
+  "runtimes": {
+    "title": "ランタイム",
+    "description": "モデルを実行する llama.cpp ビルド。ご自身で選択しない限り、Ylide がハードウェアに最適なものを選びます。",
+    "loading": "インストール済みのランタイムを確認中",
+    "loadFailed": "ランタイムを確認できませんでした: {{message}}",
+    "installed": "インストール済みのランタイム",
+    "available": "ダウンロード可能",
+    "variant": "バリアント",
+    "backend": "バックエンド",
+    "version": "バージョン",
+    "origin": "入手元",
+    "size": "ダウンロード",
+    "action": "操作",
+    "bundled": "同梱",
+    "downloaded": "ダウンロード済み",
+    "selected": "選択中",
+    "inUse": "使用中",
+    "use": "このランタイムを使用",
+    "chooseAuto": "自動で選択",
+    "fixed": "{{variant}} を手動で選択しました。より適したランタイムがあっても、Ylide はこれを使います。",
+    "noneInstalled": "ランタイムがインストールされていません。",
+    "recommended": "推奨",
+    "install": "インストール",
+    "installNamed": "{{variant}} をインストール",
+    "busy": "別のランタイムをインストール中です。",
+    "downloadsOff": "ランタイムのダウンロードは「ネットワークとプライバシー」でオフになっています。",
+    "extracting": "展開中",
+    "percent": "{{percent}}%",
+    "progressLabel": "{{variant}} のインストールの進行状況",
+    "failed": "{{variant}} をインストールできませんでした: {{message}}",
+    "done": "{{variant}} をインストールしました。",
+    "applyHint": "変更したランタイムは、次回モデルを起動したときに使われます。"
+  },
+  "registry": {
+    "title": "モデルリスト",
+    "description": "カタログの元になる、モデル、量子化、チェックサムのリスト。",
+    "version": "バージョン",
+    "updatedAt": "更新日",
+    "origin": "入手元",
+    "originName": {
+      "bundled": "同梱",
+      "cache": "保存済み",
+      "remote": "ダウンロード済み"
+    },
+    "originHint": {
+      "bundled": "このバージョンの Ylide に同梱されていたリスト。",
+      "cache": "以前にダウンロードした新しいリスト。",
+      "remote": "このセッション中にダウンロードしたリスト。"
+    },
+    "models": "モデル",
+    "url": "アドレス",
+    "refresh": "更新を確認",
+    "refreshHint": "確認時にダウンロードするのはモデルリストのみです。",
+    "updated": "バージョン {{version}} に更新しました。",
+    "upToDate": "モデルリストは最新です。",
+    "disabled": "モデルリストの更新は「ネットワークとプライバシー」でオフになっています。",
+    "disabledHint": "モデルリストの更新はオフになっています。",
+    "failed": "更新に失敗しました: {{message}}"
+  }
+}

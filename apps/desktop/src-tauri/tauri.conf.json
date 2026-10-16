@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Ylide",
+  "version": "0.1.4",
+  "identifier": "app.ylide",
+  "build": {
+    "beforeDevCommand": "node ../../node_modules/vite/bin/vite.js",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "node ../../node_modules/typescript/bin/tsc --noEmit -p . && node ../../node_modules/vite/bin/vite.js build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Ylide",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 960,
+        "minHeight": 600,
+        "decorations": false,
+        "center": true,
+        "backgroundColor": "#111726",
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; script-src 'self'; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "Ylide contributors",
+    "copyright": "© 2026 Ylide contributors",
+    "category": "DeveloperTool",
+    "shortDescription": "AI coding IDE that runs only local models",
+    "longDescription": "Ylide is an open-source code editor with chat, inline edits and coding agents powered exclusively by models running on your own computer.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "resources/runtime/": "runtime/",
+      "../../../LICENSE": "LICENSE",
+      "../../../THIRD_PARTY_NOTICES.md": "THIRD_PARTY_NOTICES.md"
+    },
+    "windows": {
+      "allowDowngrades": false,
+      "nsis": {
+        "template": "windows/installer.nsi",
+        "sidebarImage": "windows/sidebar.bmp",
+        "headerImage": "windows/header.bmp",
+        "installerIcon": "icons/icon.ico",
+        "installMode": "currentUser",
+        "languages": ["English", "German"],
+        "displayLanguageSelector": true
+      }
+    }
+  }
+}

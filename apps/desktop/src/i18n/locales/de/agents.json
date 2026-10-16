@@ -1,0 +1,245 @@
+{
+  "title": "Agents",
+  "roles": {
+    "orchestrator": "Orchestrator",
+    "coder": "Coder",
+    "reviewer": "Reviewer",
+    "user": "Du"
+  },
+  "states": {
+    "idle": "Inaktiv",
+    "queued": "In der Warteschlange",
+    "thinking": "Denkt nach",
+    "callingTool": "Nutzt ein Werkzeug",
+    "waitingForApproval": "Wartet auf Freigabe",
+    "waitingForAnswer": "Wartet auf Antwort",
+    "paused": "Pausiert",
+    "done": "Fertig",
+    "failed": "Fehlgeschlagen"
+  },
+  "taskStatus": {
+    "pending": "Offen",
+    "inProgress": "In Arbeit",
+    "inReview": "Im Review",
+    "done": "Erledigt",
+    "failed": "Fehlgeschlagen",
+    "skipped": "Übersprungen"
+  },
+  "risk": {
+    "read": "Lesen",
+    "write": "Schreiben",
+    "delete": "Löschen",
+    "execute": "Ausführen",
+    "communicate": "Kommunikation"
+  },
+  "severity": {
+    "blocker": "Blocker",
+    "major": "Schwer",
+    "minor": "Leicht",
+    "nit": "Kleinigkeit"
+  },
+  "verdict": {
+    "approve": "Abgenommen",
+    "request_changes": "Änderungen nötig"
+  },
+  "messageKind": {
+    "question": "Frage",
+    "answer": "Antwort",
+    "feedback": "Feedback",
+    "intervention": "Deine Nachricht",
+    "note": "Notiz"
+  },
+  "changeKind": {
+    "created": "Neue Datei",
+    "modified": "Geändert",
+    "deleted": "Gelöscht"
+  },
+  "outcome": {
+    "completed": "Lauf abgeschlossen",
+    "cancelled": "Lauf gestoppt",
+    "failed": "Lauf fehlgeschlagen"
+  },
+  "steps": {
+    "planReady": "Plan steht",
+    "reviewing": "Prüft die Änderungen",
+    "stepLimit": "Schrittlimit erreicht",
+    "answering": "Beantwortet eine Frage von {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "Was sollen die Agents tun?",
+    "goalPlaceholder": "Zum Beispiel: Korrigiere die Summe im Warenkorb und ergänze einen Test für leere Warenkörbe",
+    "goalHint": "Beschreibe das Ergebnis, das du willst. Strg+Enter startet den Lauf.",
+    "start": "Agents starten",
+    "readiness": "Voraussetzungen",
+    "modelReady": "{{model}} läuft",
+    "modelLoading": "{{model}} wird geladen",
+    "noModel": "Es läuft kein Modell. Die Agents brauchen ein lokales Modell.",
+    "modelCrashed": "Das Modell wurde unerwartet beendet. Starte es in der Modellansicht neu.",
+    "openModels": "Modelle öffnen",
+    "toolCallsFailed": "Dieses Modell ruft Werkzeuge nicht zuverlässig auf, Agents brechen deshalb womöglich früh ab. Ein stärkeres Modell funktioniert besser.",
+    "project": "Arbeitet in {{name}}",
+    "noProject": "Es ist kein Ordner geöffnet. Die Agents brauchen ein Projekt, in dem sie arbeiten.",
+    "previous": "Letzter Lauf",
+    "showRun": "Details anzeigen"
+  },
+  "mode": {
+    "label": "Freigaben",
+    "ask": "Immer fragen",
+    "autoSafe": "Sichere Schritte",
+    "autonomous": "Autonom",
+    "askHint": "Agents lesen das Projekt selbstständig, aber jede Änderung, jede Löschung und jeder Befehl wartet auf deinen Klick.",
+    "autoSafeHint": "Lesen und rückgängig machbare Änderungen laufen automatisch, Befehle und Löschungen fragen vorher.",
+    "autonomousHint": "Alles läuft automatisch, außer dem, was die beiden Schalter unten noch absichern.",
+    "allowedCommands_one": "{{count}} erlaubter Befehl läuft ohne Rückfrage.",
+    "allowedCommands_other": "{{count}} erlaubte Befehle laufen ohne Rückfrage.",
+    "confirmCommands": "Vor Befehlen fragen",
+    "confirmDeletes": "Vor dem Löschen von Dateien fragen",
+    "unguardedCommands": "Agents führen Befehle ohne Rückfrage aus. Deren Folgen lassen sich nicht rückgängig machen.",
+    "unguardedDeletes": "Agents löschen Dateien ohne Rückfrage. Du kannst sie über die Checkpoints wiederherstellen.",
+    "unguardedBoth": "Agents führen Befehle aus und löschen Dateien ohne Rückfrage. Die Folgen von Befehlen lassen sich nicht rückgängig machen."
+  },
+  "run": {
+    "elapsed": "Laufzeit",
+    "expandGoal": "Ganzes Ziel anzeigen",
+    "collapseGoal": "Weniger anzeigen",
+    "starting": "Startet",
+    "planning": "Plant",
+    "progress": "Aufgabe {{index}} von {{total}}",
+    "wrappingUp": "Schließt ab",
+    "paused": "Pausiert",
+    "stopping": "Wird gestoppt",
+    "pause": "Pausieren",
+    "resume": "Fortsetzen",
+    "stop": "Stoppen",
+    "stopTitle": "Lauf stoppen?",
+    "stopBody": "Die Agents hören sofort auf. Bisherige Änderungen bleiben bestehen, du kannst sie über die Checkpoints rückgängig machen.",
+    "stopConfirm": "Lauf stoppen",
+    "newRun": "Neuer Lauf",
+    "questionWaiting": "{{agent}} wartet auf deine Antwort.",
+    "answer": "Antworten",
+    "tabs": "Details zum Lauf",
+    "tabSummary": "Ergebnis",
+    "tabTasks": "Aufgaben",
+    "tabTasksCount": "Aufgaben {{done}}/{{total}}",
+    "tabActivity": "Verlauf",
+    "tabCheckpoints": "Checkpoints",
+    "tabCheckpointsCount": "Checkpoints {{value}}",
+    "changedFiles": "Geänderte Dateien",
+    "noChanges": "Es wurden keine Dateien geändert."
+  },
+  "lines": {
+    "label": "Weltlinien der Agents",
+    "summaryEmpty": "Der Lauf startet.",
+    "summaryPlanning": "Der Orchestrator plant.",
+    "summaryTask": "Aufgabe {{id}} von {{total}}, {{title}}: {{status}}.",
+    "summaryTasks": "{{done}} von {{total}} Aufgaben erledigt.",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "Agents",
+    "waiting": "Noch ist kein Agent aktiv.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "Erzeugungsgeschwindigkeit",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "In diesem Lauf erzeugte Tokens",
+    "intervene": "Eingreifen",
+    "intervenePlaceholder": "Nachricht an {{agent}}",
+    "interveneSent": "Gesendet. {{agent}} liest sie vor dem nächsten Schritt."
+  },
+  "tasks": {
+    "planning": "Der Orchestrator plant die Aufgaben.",
+    "noPlan": "Es wurde kein Plan erstellt.",
+    "plan": "Plan:",
+    "rounds_one": "{{count}} Review-Runde",
+    "rounds_other": "{{count}} Review-Runden",
+    "showDetails": "Details zu {{id}} anzeigen",
+    "hideDetails": "Details zu {{id}} ausblenden",
+    "files": "Erwartete Dateien",
+    "general": "Allgemein",
+    "openAt": "{{location}} öffnen"
+  },
+  "feed": {
+    "empty": "Bisher ist nichts passiert.",
+    "to": "an",
+    "ok": "Erfolgreich",
+    "failed": "Fehlgeschlagen",
+    "running": "Läuft",
+    "awaitingApproval": "Wartet auf deine Freigabe",
+    "rejected": "Von dir abgelehnt",
+    "rejectedReason": "Von dir abgelehnt: {{reason}}",
+    "plan_one": "Plan mit {{count}} Aufgabe",
+    "plan_other": "Plan mit {{count}} Aufgaben",
+    "approved": "Du hast freigegeben: {{title}}",
+    "approvedAlways": "Du hast {{title}} freigegeben und `{{tool}}` für den Rest des Laufs erlaubt",
+    "rejectedAction": "Du hast abgelehnt: {{title}}",
+    "reason": "Grund: {{reason}}",
+    "openFile": "Datei öffnen",
+    "openPath": "{{path}} öffnen",
+    "showDiff": "Änderungen in {{path}} anzeigen",
+    "hideDiff": "Änderungen in {{path}} ausblenden",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "earlier_one": "{{count}} früheren Eintrag anzeigen",
+    "earlier_other": "{{count}} frühere Einträge anzeigen"
+  },
+  "diff": {
+    "label": "Änderungen in {{path}}",
+    "showAll": "Alle {{total}} Zeilen anzeigen",
+    "empty": "Keine Änderungen vorhanden."
+  },
+  "checkpoints": {
+    "empty": "Checkpoints entstehen, sobald eine Aufgabe beginnt. Mit ihnen machst du Änderungen der Agents rückgängig.",
+    "intro": "Vor jeder Aufgabe sichert Ylide jede Datei, die die Agents anfassen.",
+    "undo": "Ab hier rückgängig machen",
+    "undone": "Rückgängig gemacht",
+    "busyHint": "Pausiere oder stoppe den Lauf, um Änderungen rückgängig zu machen.",
+    "confirmTitle": "Ab hier rückgängig machen?",
+    "confirmBody": "Alle Änderungen der Agents ab „{{label}}“ werden zurückgenommen. Die Dateien bekommen den Stand von vor diesem Schritt.",
+    "confirmWarning": "Folgen von Shell-Befehlen, etwa installierte Pakete oder Dateien außerhalb des Projekts, lassen sich nicht rückgängig machen.",
+    "confirm": "Änderungen zurücknehmen",
+    "restored_one": "{{count}} Datei wiederhergestellt",
+    "restored_other": "{{count}} Dateien wiederhergestellt",
+    "restoredMore": "{{files}} und {{more}} weitere",
+    "nothing": "Es gab nichts wiederherzustellen."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} möchte eine Datei ändern",
+    "titleDelete": "{{agent}} möchte eine Datei löschen",
+    "titleExecute": "{{agent}} möchte einen Befehl ausführen",
+    "titleOther": "{{agent}} bittet um Freigabe",
+    "changes": "Änderungen",
+    "command": "Befehl",
+    "path": "Pfad",
+    "detail": "Details",
+    "undoable": "Du kannst das später über die Checkpoints rückgängig machen.",
+    "notUndoable": "Befehle können Dinge außerhalb der Projektdateien verändern. Ihre Folgen lassen sich nicht rückgängig machen.",
+    "approve": "Freigeben",
+    "approveAlways": "Für diesen Lauf freigeben",
+    "approveAlwaysHint": "Für diesen Lauf freigeben erlaubt den Agents, {{tool}} bis zum Ende des Laufs ohne weitere Rückfrage zu nutzen.",
+    "reject": "Ablehnen",
+    "reasonLabel": "Grund (optional)",
+    "reasonHint": "Der Agent liest ihn und wählt einen anderen Weg.",
+    "reasonPlaceholder": "Zum Beispiel: Führe die Tests stattdessen mit npm run test:unit aus",
+    "queue_one": "{{count}} weitere Anfrage wartet",
+    "queue_other": "{{count}} weitere Anfragen warten"
+  },
+  "question": {
+    "title": "{{agent}} hat eine Frage",
+    "answerLabel": "Deine Antwort",
+    "hint": "Strg+Enter sendet die Antwort.",
+    "later": "Später antworten",
+    "send": "Antwort senden"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "Ein Agent wartet auf deine Freigabe."
+  },
+  "errors": {
+    "start": "Die Agents konnten nicht starten",
+    "approve": "Deine Entscheidung konnte nicht gesendet werden",
+    "answer": "Deine Antwort konnte nicht gesendet werden",
+    "intervene": "Deine Nachricht konnte nicht gesendet werden",
+    "restore": "Die Änderungen konnten nicht zurückgenommen werden",
+    "settings": "Die Freigabe-Einstellung konnte nicht gespeichert werden"
+  }
+}

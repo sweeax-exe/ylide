@@ -1,0 +1,687 @@
+{
+  "saved": "Saved",
+  "saveFailed": "The setting could not be saved.",
+  "page": {
+    "title": "Settings",
+    "intro": "Every option and every prompt Ylide uses, in one place. Changes are saved when you leave a field.",
+    "loading": "Loading settings",
+    "sectionsLabel": "Sections of {{page}}"
+  },
+  "units": {
+    "px": "px",
+    "times": "× font size",
+    "spaces": "spaces",
+    "tokens": "tokens",
+    "rounds": "rounds",
+    "seconds": "seconds",
+    "characters": "characters",
+    "slots": "slots",
+    "steps": "steps"
+  },
+  "validation": {
+    "required": "Enter a value.",
+    "notNumber": "Enter a number.",
+    "notInteger": "Enter a whole number.",
+    "tooSmall": "The smallest allowed value is {{min}}.",
+    "tooLarge": "The largest allowed value is {{max}}.",
+    "url": "Enter a full address starting with http:// or https://."
+  },
+  "prompt": {
+    "isDefault": "Default",
+    "isChanged": "Changed",
+    "placeholders": "Fields",
+    "insertPlaceholder": "Insert a field",
+    "insertNamed": "Insert {{name}} at the cursor",
+    "resetNamed": "Reset {{name}} to default",
+    "size": "{{chars}} characters, about {{tokens}} tokens"
+  },
+  "general": {
+    "title": "General",
+    "description": "Language and appearance of Ylide.",
+    "lookTitle": "Language and theme",
+    "language": {
+      "label": "Language",
+      "hint": "System uses the language of your operating system, currently {{language}}.",
+      "system": "System"
+    },
+    "theme": {
+      "label": "Theme",
+      "hint": "System follows the light or dark mode of your operating system.",
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "updates": {
+      "title": "Version and updates",
+      "version": "Version",
+      "versionValue": "Ylide {{version}}",
+      "label": "Updates",
+      "check": "Check for updates",
+      "install": "Install Ylide {{version}}",
+      "openNetwork": "Open network settings",
+      "notChecked": "Ylide has not checked for updates since it started.",
+      "checking": "Ylide is checking for updates.",
+      "upToDate": "Ylide is up to date.",
+      "available": "Ylide {{version}} is available.",
+      "disabled": "Checking for updates is switched off under Network and privacy.",
+      "failed": "The update check did not work: {{message}}",
+      "installFailed": "The update was not installed: {{message}}",
+      "preparing": "Preparing the update.",
+      "downloading": "Downloading the update: {{done}} of {{total}}",
+      "downloadingUnknown": "Downloading the update: {{done}}",
+      "handedOver": "The installer is running. Ylide closes and then starts again.",
+      "progress": "Progress",
+      "notes": "New in this version",
+      "ready": "The update is downloaded and checked. Installing restarts Ylide.",
+      "installReady": "Install and restart"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "description": "How code looks in the editor.",
+    "textTitle": "Text and layout",
+    "fontFamily": {
+      "label": "Font",
+      "hint": "A CSS font list. If the first font is not installed, the next one is used."
+    },
+    "fontSize": {
+      "label": "Font size"
+    },
+    "lineHeight": {
+      "label": "Line height",
+      "hint": "Space between lines as a multiple of the font size."
+    },
+    "tabSize": {
+      "label": "Tab width",
+      "hint": "How many spaces a tab character takes up."
+    },
+    "wordWrap": {
+      "label": "Wrap long lines",
+      "hint": "Breaks lines at the edge of the editor instead of scrolling sideways."
+    },
+    "minimap": {
+      "label": "Show minimap",
+      "hint": "A small overview of the whole file on the right edge."
+    },
+    "preview": "Preview"
+  },
+  "chat": {
+    "title": "Chat and prompts",
+    "description": "The instructions the model receives in the chat and for inline edits.",
+    "chatTitle": "Chat",
+    "systemPrompt": {
+      "label": "Chat system prompt",
+      "hint": "Sent at the start of every chat conversation, before your messages and attachments."
+    },
+    "contextBudget": {
+      "label": "Context budget for attachments",
+      "hint": "Upper limit for files, folders and selections attached with @, currently {{tokens}} tokens. Larger attachments are shortened."
+    },
+    "inlineTitle": "Inline edit",
+    "inlineDescription": "Used when you select code and press Ctrl+K.",
+    "inlinePrompt": {
+      "label": "Inline edit prompt",
+      "hint": "Sent with the selected code, the surrounding lines and your instruction."
+    },
+    "history": {
+      "label": "Save chats",
+      "hint": "Keeps the chats of each project on this computer, in Ylide's data folder, so you can reopen them. They are never sent anywhere."
+    },
+    "deleteAll": {
+      "label": "Saved chats",
+      "hint": "Deletes the saved chats of all projects from this computer.",
+      "button": "Delete all chats",
+      "confirmTitle": "Delete all saved chats?",
+      "confirmBody": "The saved chats of every project are deleted from this computer. This cannot be undone.",
+      "confirm": "Delete all",
+      "done": "Saved chats deleted"
+    }
+  },
+  "agents": {
+    "title": "Agents",
+    "description": "What agents may do without asking, how they run commands, and the roles and messages they work with.",
+    "approvalsTitle": "Approvals",
+    "approvalsDescription": "Agents always read on their own. These settings decide when they need your approval for changes.",
+    "mode": {
+      "label": "Approval mode",
+      "ask": {
+        "title": "Ask first",
+        "body": "Every edit, deletion and command waits for your approval."
+      },
+      "autoSafe": {
+        "title": "Safe steps",
+        "body": "Edits run automatically and can be undone with checkpoints. Deletions and commands always ask first, except allowed commands."
+      },
+      "autonomous": {
+        "title": "Autonomous",
+        "body": "Everything runs automatically, except what the two switches below keep for your approval."
+      }
+    },
+    "onlyAutonomous": "Only applies in the autonomous mode. Ask first and Safe steps always ask before deletions and commands.",
+    "confirmCommands": {
+      "label": "Confirm commands",
+      "hint": "Ask before an agent runs a command that is not on the allowed list below.",
+      "off": "Agents can run any command without asking. Commands that destroy data outside the project stay blocked."
+    },
+    "confirmDeletes": {
+      "label": "Confirm deletions",
+      "hint": "Ask before an agent deletes a file or folder.",
+      "off": "Agents can delete files without asking. You can restore them from a checkpoint."
+    },
+    "commands": {
+      "title": "Allowed commands",
+      "description": "A command runs without asking when it starts with one of these prefixes: cargo test also allows cargo test --release. A command that chains or redirects with &&, ||, ;, |, `, $(, > or < always asks, even when it starts with an allowed prefix.",
+      "askMode": "In the ask first mode, allowed commands also wait for your approval.",
+      "empty": "No commands are allowed yet. Agents ask before every command.",
+      "alsoMatches": "also allows {{example}}",
+      "remove": "Remove {{prefix}}",
+      "newLabel": "New command prefix",
+      "placeholder": "npm test",
+      "add": "Add",
+      "problem": {
+        "chaining": "A prefix cannot contain &&, ||, ;, |, `, $(, > or <.",
+        "duplicate": "This prefix is already in the list.",
+        "empty": "Enter a command prefix."
+      }
+    },
+    "reviewTitle": "Review",
+    "reviewEnabled": {
+      "label": "Review every task",
+      "hint": "The reviewer checks each finished task's changes and can send it back to the coder."
+    },
+    "maxReviewRounds": {
+      "label": "Review rounds per task",
+      "hint": "How often the reviewer may request changes before the task counts as done."
+    },
+    "shellTitle": "Commands",
+    "shellDescription": "How run_command starts commands in the project folder.",
+    "shellProgram": {
+      "label": "Shell program",
+      "hint": "For example powershell.exe, cmd.exe, bash or zsh."
+    },
+    "shellArgs": {
+      "label": "Shell arguments",
+      "hint": "One argument per line, placed before the command."
+    },
+    "shellTimeout": {
+      "label": "Default time limit",
+      "hint": "A command that runs longer is stopped. Agents can ask for a longer limit per command."
+    },
+    "shellOutput": {
+      "label": "Output limit",
+      "hint": "Longer output is shortened in the middle before the agent sees it."
+    }
+  },
+  "roles": {
+    "title": "Roles",
+    "description": "Each agent works in a role: its system prompt, the tools it may use and how many steps it may take.",
+    "add": "Add role",
+    "builtin": "Built-in",
+    "custom": "Custom",
+    "noDescription": "No description",
+    "toolCount_one": "{{count}} tool",
+    "toolCount_other": "{{count}} tools",
+    "stepCount_one": "{{count}} step",
+    "stepCount_other": "{{count}} steps",
+    "name": "Name",
+    "namePlaceholder": "Test writer",
+    "id": "ID",
+    "idHint": "Used in plans and when agents ask each other. Lowercase letters, digits, - and _.",
+    "idProblem": {
+      "empty": "Enter an ID.",
+      "format": "Start with a lowercase letter; use only lowercase letters, digits, - and _ (up to 32).",
+      "taken": "Another role already uses this ID."
+    },
+    "descriptionLabel": "Description",
+    "descriptionHint": "The orchestrator reads this to decide which role gets a task.",
+    "systemPrompt": "System prompt",
+    "systemPromptHint": "Sent at the start of every task this role works on.",
+    "tools": "Allowed tools",
+    "toolsHint": "The role can only call the tools that are checked. Writes, deletions and commands still follow the approval settings above.",
+    "unknownTools": "Also allowed, but not known to this version: {{tools}}",
+    "risk": {
+      "read": "Read the project",
+      "write": "Change files",
+      "delete": "Delete files",
+      "execute": "Run commands",
+      "communicate": "Talk and report"
+    },
+    "temperature": "Temperature",
+    "temperatureHint": "Higher values give more varied answers. Leave empty to use the value the model recommends.",
+    "modelDefault": "Model default",
+    "maxSteps": "Step limit",
+    "maxStepsHint": "Most model turns per task. The task stops when the limit is reached.",
+    "builtinHint": "Built-in roles can be changed and reset, but not deleted.",
+    "customHint": "Custom roles can be assigned tasks by the orchestrator.",
+    "reset": "Reset role to default",
+    "delete": "Delete role",
+    "deleteTitle": "Delete the role {{name}}?",
+    "deleteBody": "Plans that assign tasks to {{id}} can no longer use it. This cannot be undone.",
+    "addTitle": "Add a role",
+    "startFrom": "Start from",
+    "startFromHint": "Copies the system prompt, tools and limits, which you can change afterwards.",
+    "startBlank": "Empty role with read tools",
+    "startCopy": "Copy of {{name}}",
+    "create": "Create role"
+  },
+  "templates": {
+    "title": "Message templates",
+    "description": "The messages Ylide itself sends to agents during a run. Fields in curly braces are filled in automatically; insert them with the buttons.",
+    "resetAll": "Reset all templates",
+    "unknown": "Not filled in, sent as written: {{names}}",
+    "missing": "Not used: {{names}}",
+    "planner": {
+      "label": "Planning request",
+      "hint": "Sent to the orchestrator with your request, the available roles and the project structure."
+    },
+    "coderTask": {
+      "label": "Task for the coder",
+      "hint": "Sent to the role that works on a task, with the team's progress."
+    },
+    "reviewerTask": {
+      "label": "Review request",
+      "hint": "Sent to the reviewer with the coder's summary and the changes as a diff."
+    },
+    "feedback": {
+      "label": "Requested changes",
+      "hint": "Sent back to the coder when the reviewer requests changes."
+    },
+    "question": {
+      "label": "Question from another agent",
+      "hint": "Sent when one agent asks another for help."
+    },
+    "continue": {
+      "label": "Continue",
+      "hint": "Sent when a model answers with text instead of calling a tool. Has no fields."
+    },
+    "repeatedFailure": {
+      "label": "Repeated failure",
+      "hint": "Sent when an agent repeats the same failing tool call. Has no fields."
+    }
+  },
+  "network": {
+    "title": "Network and privacy",
+    "statementTitle": "No telemetry, no accounts.",
+    "statementBody": "Ylide does not collect usage data, has no sign-in and never uploads your code. It connects to the internet only for the four purposes below, and only while they are switched on. Your prompts and files go to the model on this computer, or to the external server you set up under Advanced.",
+    "allowedTitle": "Allowed connections",
+    "allowedDescription": "Switch off any of these and Ylide will not make that request.",
+    "registry": {
+      "label": "Model list updates",
+      "hint": "Checks for a newer list of models at startup and when you refresh it, from the address below."
+    },
+    "registryUrl": {
+      "label": "Model list address",
+      "hint": "Where the model list is downloaded from. It names the model files and the runtime programs Ylide downloads, with their checksums. The list at the official address must be signed by Ylide. A list at another address is checked against Ylide's signature when a signature file (models.json.sig) lies next to it, and is used as it is without one."
+    },
+    "models": {
+      "label": "Model downloads",
+      "hint": "Downloads model files from Hugging Face (huggingface.co) when you start a download."
+    },
+    "runtimes": {
+      "label": "Runtime downloads",
+      "hint": "Downloads inference runtimes such as the CUDA pack from GitHub (github.com) when you install one."
+    },
+    "logTitle": "Network log",
+    "logDescription": "Every request Ylide has made since it started. New requests appear here as they happen.",
+    "logLoading": "Loading network log",
+    "logFailed": "The network log could not be loaded: {{message}}",
+    "logEmpty": "No requests yet. Nothing has left this computer since Ylide started.",
+    "logTime": "Time",
+    "logPurpose": "Purpose",
+    "logUrl": "Address",
+    "logOutcome": "Outcome",
+    "updates": {
+      "label": "Check for updates",
+      "hint": "Asks ylide.app once at startup whether a newer version of Ylide exists. Only the version number is sent. The update itself is downloaded only when you install it."
+    }
+  },
+  "advanced": {
+    "title": "Advanced",
+    "description": "Storage, the local model server, an external server and the folders Ylide uses.",
+    "storageTitle": "Model storage",
+    "modelsDir": {
+      "label": "Models folder",
+      "hint": "Downloaded and imported models are stored here.",
+      "change": "Change folder",
+      "useDefault": "Use default folder"
+    },
+    "serverTitle": "Model server",
+    "serverDescription": "Options for llama-server, which runs the model on this computer.",
+    "slots": {
+      "label": "Parallel requests",
+      "hint": "How many requests the main model handles at the same time, for example an agent and the chat. Slots share the context."
+    },
+    "context": {
+      "label": "Context size",
+      "hint": "Leave empty to use the size recommended for the model.",
+      "hintModel": "Leave empty to use the recommended size for {{model}}: {{tokens}} tokens (at most {{max}}).",
+      "placeholder": "Recommended"
+    },
+    "runtime": {
+      "label": "Runtime",
+      "hint": "Which installed llama.cpp build runs the model.",
+      "auto": "Automatic",
+      "autoCurrent": "Automatic (currently {{variant}})",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}} (not installed)"
+    },
+    "extraArgs": {
+      "label": "Extra llama-server arguments",
+      "hint": "One argument per line, appended last to the command line. Wrong arguments can keep the model from starting.",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "Start model on launch",
+      "hint": "Starts the chosen model when Ylide opens.",
+      "hintModel": "Starts {{model}} when Ylide opens."
+    },
+    "appliesOnRestart": "Changes to the model server apply the next time the model starts.",
+    "restart": "Restart model"
+  },
+  "endpoint": {
+    "title": "External server",
+    "description": "Use an OpenAI-compatible server such as Ollama, LM Studio or another llama-server instead of the built-in runtime. Your prompts and code are then sent to that address.",
+    "enabled": {
+      "label": "Use the external server",
+      "hint": "Chat, inline edits and agents use this server instead of a local model."
+    },
+    "baseUrl": {
+      "label": "Address",
+      "hint": "The base URL of the API, usually ending in /v1."
+    },
+    "apiKey": {
+      "label": "API key",
+      "hint": "Optional. Stored in the settings file on this computer and sent only to this server.",
+      "placeholder": "None",
+      "show": "Show API key",
+      "hide": "Hide API key"
+    },
+    "model": {
+      "label": "Model",
+      "hint": "The model name the server expects. Leave empty to use the server's default.",
+      "placeholder": "Server default"
+    },
+    "context": {
+      "label": "Context size",
+      "hint": "The context window of the external model. Leave empty to assume {{tokens}} tokens."
+    },
+    "connect": "Connect",
+    "connectHint": "Connect saves these values and switches to the external server.",
+    "activeHint": "Connected to {{model}}.",
+    "needUrl": "Enter the server address first.",
+    "connected": "Connected",
+    "connecting": "Connecting",
+    "unreachable": "Not reachable"
+  },
+  "about": {
+    "title": "About Ylide",
+    "description": "The version and the folders Ylide uses on this computer.",
+    "loading": "Loading app information",
+    "version": "Version",
+    "system": "System",
+    "systemValue": "{{os}}, {{arch}}",
+    "configDir": "Settings folder",
+    "dataDir": "Data folder",
+    "modelsDir": "Models folder",
+    "copyPath": "Copy path of {{name}}",
+    "logFile": "Log file"
+  },
+  "modelsPage": {
+    "title": "Models",
+    "intro": "What runs on this computer, what is installed and what you can download. Every model runs locally."
+  },
+  "active": {
+    "title": "Active model",
+    "description": "The model that answers in the chat, rewrites code and runs agents.",
+    "none": "No model running",
+    "noneSelected": "{{model}} {{quant}} is chosen for chat and agents. Start it to begin.",
+    "noneEndpoint": "The external server {{url}} is switched on. Connect to use it.",
+    "noneChoose": "Choose an installed model below, or download one from the catalog.",
+    "startAgain": "Start again",
+    "status": {
+      "starting": "Starting the server",
+      "loading": "Loading the model into memory",
+      "ready": "Ready",
+      "stopped": "Stopped",
+      "crashed": "Stopped unexpectedly"
+    },
+    "exitCode": "exit code {{code}}: {{message}}",
+    "runtime": "Runtime",
+    "device": "Device",
+    "noDevice": "None",
+    "context": "Context",
+    "contextValue": "{{tokens}} tokens",
+    "slots": "Parallel requests",
+    "toolCalls": "Tool calls",
+    "tools": {
+      "unknown": {
+        "label": "Not tested",
+        "body": "Ylide tests tool calling shortly after the model is ready. Until then agents may work less reliably."
+      },
+      "native": {
+        "label": "Native",
+        "body": "The model returns tool calls in the standard format, so agents work reliably."
+      },
+      "repaired": {
+        "label": "Repaired",
+        "body": "The model writes tool calls as text and Ylide converts them. Agents work, but a call may need a retry now and then."
+      },
+      "failed": {
+        "label": "Failed",
+        "body": "The self-test did not produce a usable tool call. Agents may not work with this model; chat and inline edits are not affected."
+      }
+    },
+    "commandLine": "Command line",
+    "commandLineHint": "Exactly how the server was started",
+    "copyCommand": "Copy command line",
+    "noCommand": "No local process: Ylide talks to the external server directly.",
+    "log": "Server log",
+    "logHint": "Output of llama-server",
+    "logLoading": "Loading server log",
+    "logFailed": "The server log could not be loaded: {{message}}",
+    "logEmpty": "The server has not written anything yet."
+  },
+  "installed": {
+    "title": "Installed models",
+    "description": "Model files on this computer and what each one is used for.",
+    "import": "Import GGUF file",
+    "imported": "{{name}} was imported.",
+    "importFailed": "The file could not be imported.",
+    "emptyTitle": "No models yet",
+    "emptyBody": "Download one from the catalog below or import a GGUF file.",
+    "unknownQuant": "GGUF",
+    "active": "Running",
+    "custom": "Imported",
+    "usedFor": {
+      "chat": "Chat and agents",
+      "autocomplete": "Autocomplete",
+      "embedding": "Code search"
+    },
+    "use": {
+      "chat": "Use for chat and agents",
+      "autocomplete": "Use for autocomplete",
+      "embedding": "Use for code search"
+    },
+    "start": "Start",
+    "size": "{{size}} GB",
+    "files_one": "{{count}} file",
+    "files_other": "{{count}} files",
+    "delete": "Delete {{name}}",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteBody": "The model files ({{size}} GB) are removed from this computer.",
+    "forgetBody": "Ylide forgets this model. The file stays where it is; nothing is deleted.",
+    "deleteActive": "This model is running. It is stopped first.",
+    "deleteAssigned": "Where it is chosen for chat, autocomplete or code search, the choice is cleared.",
+    "deleteAgain": "You can download it again from the catalog."
+  },
+  "downloads": {
+    "title": "Downloads",
+    "description": "Running, paused and failed downloads. Paused downloads continue where they stopped.",
+    "empty": "No downloads running.",
+    "state": {
+      "downloading": "Downloading",
+      "resuming": "Resuming",
+      "verifying": "Checking file",
+      "paused": "Paused",
+      "failed": "Failed"
+    },
+    "amount": "{{done}} of {{total}} GB ({{percent}} %)",
+    "percent": "{{percent}} %",
+    "speed": "{{speed}}/s",
+    "remaining": "{{time}} left",
+    "file": "file {{index}} of {{count}}",
+    "pause": "Pause download of {{name}}",
+    "resume": "Resume download of {{name}}",
+    "cancel": "Cancel download of {{name}}",
+    "progressLabel": "Download progress of {{name}}",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "Catalog",
+    "description_one": "{{count}} model from the Ylide model list, checked for local use.",
+    "description_other": "{{count}} models from the Ylide model list, checked for local use.",
+    "filter": "Show models for",
+    "all": "All",
+    "shown_one": "{{count}} model",
+    "shown_other": "{{count}} models",
+    "none": "No model in the list has this role.",
+    "model": "Model",
+    "parameters": "Parameters",
+    "paramsValue": "{{value}}B",
+    "activeValue": "{{value}}B active",
+    "paramsMoe": "{{total}}B total, {{active}}B active per token (mixture of experts)",
+    "paramsDense": "{{total}}B (dense)",
+    "maxContext": "Max context",
+    "toolCalling": "Tool use",
+    "license": "License",
+    "commercialYes": "Commercial use allowed",
+    "commercialCheck": "Check terms before commercial use",
+    "readLicense": "Read license",
+    "publisher": "Publisher",
+    "released": "Released",
+    "context": "Context",
+    "contextValue": "{{max}} max, {{recommended}} recommended",
+    "reasoning": "Thinking",
+    "reasoningLevel": {
+      "none": "No",
+      "optional": "Optional",
+      "always": "Always on"
+    },
+    "roles": "Suited for",
+    "source": "Source",
+    "modelCard": "Model card",
+    "strengths": "Strengths",
+    "benchmarks": "Benchmarks",
+    "benchmark": "Benchmark",
+    "score": "Score",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "Measured by",
+    "selfReported": "Publisher",
+    "independent": "Independent",
+    "date": "Date",
+    "sourceLink": "Source",
+    "openSource": "Open source of {{name}}",
+    "quantizations": "Quantizations",
+    "quant": "Quantization",
+    "bits": "Bits per weight",
+    "size": "Download",
+    "fit": "On this computer",
+    "plan": "{{placement}} · about {{tps}} tok/s · {{memory}}",
+    "memVram": "{{value}} GiB VRAM",
+    "memRam": "{{value}} GiB RAM",
+    "download": "Download",
+    "downloadNamed": "Download {{name}} {{quant}}",
+    "downloadSize": "Download {{size}} GB",
+    "downloadsOff": "Model downloads are switched off in Network and privacy.",
+    "downloadsOffNote": "Model downloads are switched off. Switch them on in Network and privacy to download from the catalog.",
+    "openNetwork": "Open network settings",
+    "noSpace": "Not enough free disk space ({{free}} GB free).",
+    "noSpaceShort": "Not enough disk space",
+    "installedBadge": "Installed",
+    "downloadingBadge": "Downloading",
+    "mark": {
+      "primary": "Recommended",
+      "autocomplete": "Recommended for autocomplete",
+      "embedding": "Recommended for code search"
+    },
+    "recTitle": "Recommended for this computer",
+    "recLoading": "Matching models to this computer",
+    "recFailed": "The recommendation could not be calculated: {{message}}",
+    "recNone": "No model in the list fits this computer well.",
+    "recPlan": "{{placement}} · about {{tps}} tok/s · {{context}} context",
+    "budgetGpu": "{{gpu}}: {{vram}} GiB VRAM, {{ram}} GiB RAM usable",
+    "budgetUnified": "{{memory}} GiB unified memory usable",
+    "budgetCpu": "No GPU: {{ram}} GiB RAM usable",
+    "showEntry": "Show details",
+    "alternatives": "Alternatives",
+    "uncensored": {
+      "title": "Uncensored variants",
+      "note": "Uncensored variants are versions of models in the list above with the refusal training removed. They also answer requests that the original declines. Ylide never picks them on its own, and how well they code and use tools has not been measured independently.",
+      "badge": "Uncensored",
+      "badgeHint": "Refusal training removed. Ylide never picks this model on its own."
+    },
+    "own": {
+      "title": "Not in the list?",
+      "body": "Use any GGUF model file from this computer."
+    }
+  },
+  "runtimes": {
+    "title": "Runtimes",
+    "description": "The llama.cpp builds that run models. Ylide picks the best one for your hardware unless you choose one.",
+    "loading": "Checking installed runtimes",
+    "loadFailed": "The runtimes could not be checked: {{message}}",
+    "installed": "Installed runtimes",
+    "available": "Available to download",
+    "variant": "Variant",
+    "backend": "Backend",
+    "version": "Version",
+    "origin": "Origin",
+    "size": "Download",
+    "action": "Action",
+    "bundled": "Included",
+    "downloaded": "Downloaded",
+    "selected": "Selected",
+    "inUse": "In use",
+    "use": "Use this runtime",
+    "chooseAuto": "Choose automatically",
+    "fixed": "You chose {{variant}}. Ylide uses it even if a better runtime is available.",
+    "noneInstalled": "No runtime is installed.",
+    "recommended": "Recommended",
+    "install": "Install",
+    "installNamed": "Install {{variant}}",
+    "busy": "Another runtime is being installed.",
+    "downloadsOff": "Runtime downloads are switched off in Network and privacy.",
+    "extracting": "Unpacking",
+    "percent": "{{percent}} %",
+    "progressLabel": "Installation progress of {{variant}}",
+    "failed": "{{variant}} could not be installed: {{message}}",
+    "done": "{{variant}} is installed.",
+    "applyHint": "A different runtime is used the next time the model starts."
+  },
+  "registry": {
+    "title": "Model list",
+    "description": "The list of models, quantizations and checksums the catalog is built from.",
+    "version": "Version",
+    "updatedAt": "Updated",
+    "origin": "Origin",
+    "originName": {
+      "bundled": "Included",
+      "cache": "Saved",
+      "remote": "Downloaded"
+    },
+    "originHint": {
+      "bundled": "The list that came with this version of Ylide.",
+      "cache": "A newer list that was downloaded earlier.",
+      "remote": "Downloaded during this session."
+    },
+    "models": "Models",
+    "url": "Address",
+    "refresh": "Check for update",
+    "refreshHint": "Checking downloads only the model list, nothing else.",
+    "updated": "Updated to version {{version}}.",
+    "upToDate": "The model list is up to date.",
+    "disabled": "Model list updates are switched off in Network and privacy.",
+    "disabledHint": "Model list updates are switched off.",
+    "failed": "The update failed: {{message}}"
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "loading": "Memuat editor",
+  "editorLabel": "Editor untuk {{path}}",
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "Buka folder proyek",
+    "body": "Ylide bekerja pada folder di komputer ini. File, chat, dan proses agen Anda tetap di mesin ini.",
+    "reopen": "Buka lagi {{name}}"
+  },
+  "failed": {
+    "title": "Editor tidak dapat dimulai",
+    "body": "Terjadi kesalahan saat memuat editor kode. Coba lagi, dan mulai ulang Ylide jika masih gagal."
+  },
+  "welcome": {
+    "body": "Buka file dari bilah samping atau langsung lompat ke file.",
+    "shortcuts": {
+      "goToFile": "Pergi ke file",
+      "editWithAi": "Edit dengan AI",
+      "chat": "Chat",
+      "agents": "Agen",
+      "search": "Cari di file"
+    }
+  },
+  "tabs": {
+    "label": "File terbuka",
+    "unsaved": "perubahan belum disimpan",
+    "deleted": "dihapus dari disk",
+    "close": "Tutup {{name}}"
+  },
+  "disk": {
+    "changed": "{{name}} berubah di disk saat Anda sedang mengeditnya.",
+    "deleted": "{{name}} dihapus dari disk. Menyimpan akan membuatnya lagi.",
+    "reload": "Muat ulang dari disk",
+    "keepMine": "Pakai versi saya",
+    "close": "Tutup file",
+    "keep": "Tetap mengedit"
+  },
+  "closeDialog": {
+    "title": "Simpan perubahan pada {{name}}?",
+    "body": "Perubahan Anda hilang jika file ditutup tanpa disimpan.",
+    "save": "Simpan dan tutup",
+    "discard": "Tutup tanpa menyimpan"
+  },
+  "commands": {
+    "addSelectionToChat": "Tambah pilihan ke chat",
+    "openChat": "Buka chat",
+    "save": "Simpan file"
+  },
+  "inline": {
+    "action": "Edit dengan AI",
+    "title": "Edit dengan AI",
+    "placeholder": "Jelaskan perubahannya",
+    "instructionLabel": "Instruksi ({{scope}})",
+    "scopeLine": "Baris {{line}}",
+    "scopeLines": "Baris {{start}}–{{end}}",
+    "scopeInsert": "Sisipkan di baris {{line}}",
+    "cancel": "Batalkan edit",
+    "streaming": "Menulis perubahan",
+    "noModel": "Tidak ada model yang berjalan. Jalankan model untuk mengedit dengan AI.",
+    "openModels": "Buka model",
+    "noChange": "Model tidak menyarankan perubahan. Coba instruksi yang lebih spesifik.",
+    "noResult": "Model tidak mengembalikan hasil. Coba lagi."
+  },
+  "review": {
+    "title": "Tinjau perubahan",
+    "added_other": "{{count}} baris ditambahkan",
+    "removed_other": "{{count}} baris dihapus",
+    "layout": "Tata letak diff",
+    "inline": "Sebaris",
+    "split": "Berdampingan",
+    "accept": "Terima",
+    "acceptHint": "Terapkan perubahan (Enter). Ctrl+Z mengurungkannya.",
+    "reject": "Tolak",
+    "rejectHint": "Buang perubahan (Esc)",
+    "retry": "Coba lagi"
+  },
+  "errors": {
+    "open": "Tidak dapat membuka {{name}}",
+    "save": "Tidak dapat menyimpan {{name}}",
+    "reload": "Tidak dapat memuat ulang {{name}}",
+    "delete": "Tidak dapat menghapus {{name}}",
+    "openFolder": "Tidak dapat membuka folder"
+  },
+  "tree": {
+    "title": "File",
+    "label": "File di {{name}}",
+    "noProject": "Tidak ada folder yang terbuka. Buka folder untuk melihat isinya.",
+    "loading": "Memuat file",
+    "empty": "Folder ini kosong.",
+    "newFile": "File baru",
+    "newFolder": "Folder baru",
+    "newFileName": "Nama file baru",
+    "newFolderName": "Nama folder baru",
+    "collapseAll": "Ciutkan semua folder",
+    "refresh": "Segarkan",
+    "rename": "Ganti nama",
+    "renameLabel": "Nama baru untuk {{name}}",
+    "delete": "Hapus",
+    "deleteKey": "Del",
+    "addToChat": "Tambah ke chat",
+    "copyPath": "Salin jalur",
+    "menuLabel": "Tindakan file",
+    "exists": "File atau folder dengan nama ini sudah ada.",
+    "nameProblem": {
+      "empty": "Masukkan nama.",
+      "invalid": "Nama ini tidak diizinkan. Hindari \\ : * ? \" < > | dan nama folder kosong."
+    },
+    "deleteTitle": "Hapus {{name}}?",
+    "deleteFileBody": "{{path}} dihapus dari disk. Tindakan ini tidak dapat diurungkan di Ylide.",
+    "deleteFolderBody": "{{path}} beserta seluruh isinya dihapus dari disk. Tindakan ini tidak dapat diurungkan di Ylide."
+  },
+  "search": {
+    "title": "Cari",
+    "placeholder": "Cari di file",
+    "matchCase": "Cocokkan huruf besar/kecil",
+    "wholeWord": "Cocokkan seluruh kata",
+    "regex": "Gunakan ekspresi reguler",
+    "globsLabel": "File yang disertakan atau dikecualikan",
+    "globsPlaceholder": "File, mis. *.ts, !test/**",
+    "globsHint": "Pola dipisahkan koma. Tanda ! di depan mengecualikan file yang cocok.",
+    "searching": "Mencari",
+    "summary": "{{results}} di {{files}}",
+    "resultCount_other": "{{value}} hasil",
+    "fileCount_other": "{{value}} file",
+    "noResults": "Tidak ada hasil untuk “{{pattern}}”.",
+    "truncated": "Menampilkan {{max}} hasil pertama. Persempit pencarian untuk melihat sisanya.",
+    "hint": "Temukan teks di setiap file proyek. Gunakan filter file untuk mempersempitnya.",
+    "noProject": "Buka folder untuk mencari di dalamnya.",
+    "matchLabel": "Baris {{line}}: {{text}}",
+    "collapseAll": "Ciutkan semua hasil",
+    "expandAll": "Perluas semua hasil",
+    "clear": "Hapus pencarian"
+  },
+  "quickOpen": {
+    "title": "Pergi ke file",
+    "placeholder": "Ketik nama file, tambahkan :12 untuk baris",
+    "noProject": "Buka folder terlebih dahulu",
+    "loading": "Mencari file",
+    "results": "File",
+    "empty": "Tidak ada file yang cocok dengan “{{query}}”.",
+    "open": "buka",
+    "hintMove": "pindah",
+    "hintOpen": "buka",
+    "hintLine": "ke baris"
+  }
+}

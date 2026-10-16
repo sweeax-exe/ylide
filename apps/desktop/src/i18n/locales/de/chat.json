@@ -1,0 +1,125 @@
+{
+  "title": "Chat",
+  "newChat": "Neuer Chat",
+  "newChatDialog": {
+    "title": "Neuen Chat beginnen?",
+    "body": "Gerade wird noch eine Antwort geschrieben. Ein neuer Chat stoppt sie; diese Unterhaltung bleibt im Verlauf.",
+    "bodyNotSaved": "Gerade wird noch eine Antwort geschrieben. Ein neuer Chat stoppt sie und leert diese Unterhaltung.",
+    "confirm": "Stoppen und neuen Chat beginnen"
+  },
+  "header": {
+    "generating": "Antwort wird geschrieben"
+  },
+  "start": {
+    "title": "Frag etwas zu deinem Projekt",
+    "titleNoProject": "Frag etwas zu deinem Code",
+    "body": "Die Antworten kommen vom Modell auf diesem Rechner. Was du fragst, verlässt ihn nicht.",
+    "bodyExternal": "Die Antworten kommen von dem Server, den du in den Einstellungen eingerichtet hast. Deine Nachrichten und der angehängte Kontext werden an ihn gesendet.",
+    "examples": "Beispiele",
+    "mentionHint": "Mit @ hängst du Dateien, Ordner oder Symbole an. Ihr Inhalt wird mit deiner Nachricht gesendet.",
+    "keys": "<0>Enter</0> sendet, <1>Umschalt</1> + <2>Enter</2> beginnt eine neue Zeile."
+  },
+  "examples": {
+    "overview": "Gib mir einen Überblick über dieses Projekt und sag mir, wo ich am besten mit dem Lesen anfange.",
+    "explain": "Erklär mir, wie @ funktioniert.",
+    "review": "Such im markierten Code nach Fehlern und übersehenen Randfällen.",
+    "tests": "Schreib Unit-Tests für @",
+    "error": "Was bedeutet diese Fehlermeldung, und wie behebe ich den Fehler?\n\n"
+  },
+  "messages": {
+    "label": "Unterhaltung",
+    "you": "Du",
+    "assistant": "Antwort",
+    "waiting": "Warte auf das Modell",
+    "thinking": "Denkt nach",
+    "thoughtFor": "Hat {{duration}} nachgedacht",
+    "thoughts": "Gedanken",
+    "cancelled": "Gestoppt. Diese Antwort ist unvollständig.",
+    "empty": "Das Modell hat eine leere Antwort geschickt. Sende die Frage noch einmal oder formuliere sie um.",
+    "cutOff": "Die Antwort hat die Längengrenze erreicht und ist abgeschnitten.",
+    "copyAnswer": "Antwort kopieren",
+    "promptTokens": "{{value}} Prompt-Tokens",
+    "cachedTokens": "{{value}} aus dem Cache",
+    "timings": "Prompt in {{prompt}} gelesen ({{promptSpeed}} tok/s), Antwort in {{generation}} geschrieben.",
+    "jumpToLatest": "Zur neuesten Nachricht"
+  },
+  "context": {
+    "label": "Angehängter Kontext",
+    "truncated": "Gekürzt, damit es ins Kontextlimit passt.",
+    "error": "Nicht angehängt: {{message}}"
+  },
+  "composer": {
+    "label": "Nachricht",
+    "placeholder": "Frag etwas zu deinem Code",
+    "placeholderMentions": "Frag etwas zu deinem Code, mit @ hängst du Dateien an",
+    "addContext": "Datei, Ordner oder Symbol anhängen",
+    "attachSelection": "Auswahl anhängen",
+    "attachSelectionTitle": "{{label}} aus dem Editor anhängen",
+    "noSelection": "Markiere Code im Editor, um ihn anzuhängen.",
+    "removeMention": "{{label}} entfernen",
+    "attached": "Angehängter Kontext",
+    "contextTotal": "{{tokens}} / {{budget}} Tokens",
+    "contextTotalTitle": "Geschätzte Größe des angehängten Kontexts. Das Limit kannst du in den Einstellungen ändern.",
+    "contextTruncated": "Ein Teil des Kontexts wird gekürzt, damit er ins Limit passt.",
+    "contextUnknown": "Größe unbekannt",
+    "noProject": "Öffne einen Ordner, um Dateien, Ordner und Symbole anzuhängen.",
+    "measuring": "Angehängter Kontext wird gemessen"
+  },
+  "notice": {
+    "noModel": "Kein Modell aktiv. Starte eines, um Nachrichten zu senden.",
+    "loading": "{{model}} wird geladen. Du kannst senden, sobald es bereit ist.",
+    "crashed": "Das Modell wurde unerwartet beendet. Starte es neu, um weiterzumachen.",
+    "openModels": "Modelle öffnen"
+  },
+  "picker": {
+    "label": "Kontext anhängen",
+    "files": "Dateien",
+    "folders": "Ordner",
+    "symbols": "Symbole",
+    "root": "Ganzes Projekt",
+    "empty": "Nichts passt zu „{{query}}“.",
+    "noFiles": "Keine Dateien gefunden.",
+    "searching": "Suche läuft",
+    "symbolsHint": "Tippe mindestens zwei Zeichen, um Symbole zu suchen.",
+    "hint": "<0>↑</0> <1>↓</1> auswählen, <2>Enter</2> anhängen, <3>Esc</3> schließen"
+  },
+  "symbolKind": {
+    "function": "Funktion",
+    "class": "Klasse",
+    "struct": "Struct",
+    "interface": "Interface",
+    "enum": "Enum",
+    "type": "Typ",
+    "constant": "Konstante",
+    "module": "Modul"
+  },
+  "code": {
+    "copy": "Code kopieren",
+    "open": "{{name}} öffnen",
+    "openTitle": "{{path}} im Editor öffnen",
+    "plain": "Text"
+  },
+  "markdown": {
+    "openLink": "{{url}} im Browser öffnen",
+    "image": "Bild: {{alt}}",
+    "imageTitle": "Bilder werden nicht automatisch geladen. {{url}} im Browser öffnen."
+  },
+  "announce": {
+    "started": "Antwort wird geschrieben",
+    "answer": "Antwort: {{text}}",
+    "stopped": "Antwort gestoppt"
+  },
+  "history": {
+    "open": "Chatverlauf",
+    "title": "Frühere Chats",
+    "empty": "In diesem Projekt gibt es noch keine gespeicherten Chats.",
+    "untitled": "Chat ohne Frage",
+    "delete": "Chat löschen",
+    "deleteTitle": "Diesen Chat löschen?",
+    "deleteBody": "„{{title}}“ wird von diesem Rechner gelöscht.",
+    "deleteConfirm": "Löschen",
+    "saveFailed": "Der Chat konnte nicht im Verlauf gespeichert werden",
+    "messages_one": "{{count}} Nachricht",
+    "messages_other": "{{count}} Nachrichten"
+  }
+}

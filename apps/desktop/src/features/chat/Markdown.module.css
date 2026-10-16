@@ -1,0 +1,254 @@
+/* Answer prose: 14 px chat size, modest headings, nothing wider than the panel. */
+.prose {
+  min-width: 0;
+  font-size: var(--text-md);
+  line-height: var(--leading-prose);
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose p {
+  margin: 0 0 var(--space-3);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin: var(--space-5) 0 var(--space-2);
+  line-height: var(--leading-tight);
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+.prose h1 {
+  font-size: var(--text-lg);
+}
+
+.prose h2 {
+  font-size: var(--text-md);
+}
+
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  font-size: var(--text-base);
+}
+
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: var(--text-2);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+}
+
+.prose li {
+  margin: 2px 0;
+}
+
+.prose li > p {
+  margin: 0;
+}
+
+.prose li::marker {
+  color: var(--text-3);
+}
+
+.prose ol > li::marker {
+  font-variant-numeric: tabular-nums;
+}
+
+/* GFM task lists */
+.prose li:has(> input[type='checkbox']) {
+  list-style: none;
+  margin-left: calc(-1 * var(--space-4));
+}
+
+.prose input[type='checkbox'] {
+  margin: 0 var(--space-2) 0 0;
+  vertical-align: -1px;
+  accent-color: var(--accent);
+}
+
+.prose blockquote {
+  margin: 0 0 var(--space-3);
+  padding: 0 0 0 var(--space-3);
+  border-left: 2px solid var(--border-strong);
+  color: var(--text-2);
+}
+
+.prose hr {
+  margin: var(--space-4) 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.prose strong {
+  font-weight: 650;
+}
+
+.prose a {
+  color: var(--accent);
+}
+
+.prose del {
+  color: var(--text-3);
+}
+
+/* ---------- Inline code and path links ---------- */
+.inlineCode {
+  padding: 1px 5px;
+  border-radius: var(--radius-chip);
+  background: var(--bg-hover);
+  font-size: 0.88em;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.pathLink,
+.textLink {
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.pathLink .inlineCode {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: background var(--motion-fast) var(--motion-ease), text-decoration-color var(--motion-fast) var(--motion-ease);
+}
+
+.pathLink:hover .inlineCode {
+  background: var(--accent-muted);
+  text-decoration-color: var(--accent);
+}
+
+.textLink {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.plainLink {
+  color: var(--text-2);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+/* ---------- Code blocks ---------- */
+.code {
+  margin: 0 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-sunken);
+  overflow: hidden;
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 30px;
+  padding: 0 var(--space-1) 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+.codeLanguage {
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.grow {
+  flex: 1;
+}
+
+.codeBody {
+  margin: 0;
+  padding: var(--space-3);
+  overflow-x: auto;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  color: var(--text-1);
+  white-space: pre;
+  tab-size: 4;
+  overflow-wrap: normal;
+}
+
+.codeBody:focus-visible {
+  outline-offset: -2px;
+  border-radius: 0;
+}
+
+/* ---------- Tables ---------- */
+.tableWrap {
+  max-width: 100%;
+  margin: 0 0 var(--space-3);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+
+.tableWrap:focus-visible {
+  outline-offset: 1px;
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: 6px var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableWrap th {
+  background: var(--bg-raised);
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.tableWrap tr:last-child td {
+  border-bottom: none;
+}
+
+.tableWrap td + td,
+.tableWrap th + th {
+  border-left: 1px solid var(--border);
+}

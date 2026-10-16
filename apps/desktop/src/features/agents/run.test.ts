@@ -1,0 +1,162 @@
+import { describe, expect, it } from 'vitest';
+import type { AgentEvent } from '../../bindings/AgentEvent';
+import type { AgentState } from '../../bindings/AgentState';
+import type { Task } from '../../bindings/Task';
+import { appendStream, applyDecision, applyEvent, changedFiles, createRun, currentTask, isGenerating, removeQuestion, STREAM_TAIL, type RunData, type ToolFeedItem } from './run';
+
+const R = 'run-1';
+const status = (agentId: string, state: AgentState, step = '', taskId: string | null = null, tps = 0, total = 0): AgentEvent => ({
+  type: 'status',
+  runId: R,
+  status: { agentId, role: agentId, state, step, taskId, tokensPerSecond: tps, totalTokens: total },
+});
+const task = (id: string, extra: Partial<Task> = {}): Task => ({ id, title: `Task ${id}`, description: '', files: [], assignee: 'coder', status: 'pending', attempts: 0, result: null, review: null, ...extra });
+
+function feed(events: AgentEvent[], start = createRun('goal', 1000)): RunData {
+  return events.reduce((run, e, i) => applyEvent(run, e, 1000 + i * 100), start);
+}
+
+describe('applyEvent', () => {
+  it('adopts the run id of the first event and ignores other runs', () => {
+    const run = feed([{ type: 'runStarted', runId: R, goal: 'Fix it' }]);
+    expect(run.runId).toBe(R);
+    expect(run.goal).toBe('Fix it');
+    const other = applyEvent(run, { type: 'runStarted', runId: 'run-2', goal: 'x' }, 2000);
+    expect(other).toBe(run);
+  });
+
+  it('tracks agent status, keeps the highest token count and the last speed', () => {
+    const run = feed([status('coder', 'thinking', 'thinking', 'T1', 61, 400), status('coder', 'idle', '', 'T1', 0, 0)]);
+    const coder = run.agents.coder;
+    expect(coder.state).toBe('idle');
+    expect(coder.totalTokens).toBe(400);
+    expect(coder.lastTokensPerSecond).toBe(61);
+    expect(coder.since).toBe(1100);
+    expect(run.agentOrder).toEqual(['coder']);
+  });
+
+  it('leaves the run untouched by streamed deltas', () => {
+    const run = feed([status('coder', 'thinking')]);
+    const next = applyEvent(run, { type: 'delta', runId: R, agentId: 'coder', delta: { kind: 'content', text: 'Hello ' } }, 1200);
+    expect(next).toBe(run);
+    expect(next.timeline).toHaveLength(1);
+  });
+
+  it('keeps only the tail of streamed text', () => {
+    expect(appendStream('Hello ', 'world')).toBe('Hello world');
+    const long = appendStream('x'.repeat(STREAM_TAIL), 'end');
+    expect(long).toHaveLength(STREAM_TAIL);
+    expect(long.endsWith('end')).toBe(true);
+  });
+
+  it('pairs a tool result with the agent’s open call, even with different ids', () => {
+    const run = feed([
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'c1', tool: 'read_file', arguments: '{"path":"a.ts"}' },
+      { type: 'toolResult', runId: R, agentId: 'coder', callId: 'r9', ok: true, summary: 'a.ts (1-3 of 3)', change: null },
+    ]);
+    expect(run.feed).toHaveLength(1);
+    const item = run.feed[0] as ToolFeedItem;
+    expect(item.tool).toBe('read_file');
+    expect(item.result?.summary).toBe('a.ts (1-3 of 3)');
+  });
+
+  it('pairs results by call id first, and keeps a rejection from the dialog', () => {
+    const run = feed([
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'call-1', tool: 'read_file', arguments: '{"path":"a.ts"}' },
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'call-2', tool: 'read_file', arguments: '{"path":"b.ts"}' },
+      { type: 'toolResult', runId: R, agentId: 'coder', callId: 'call-1', ok: true, summary: 'a.ts', change: null },
+      { type: 'toolResult', runId: R, agentId: 'coder', callId: 'call-2', ok: true, summary: 'b.ts', change: null },
+    ]);
+    expect(run.feed.map((f) => (f as ToolFeedItem).result?.summary)).toEqual(['a.ts', 'b.ts']);
+
+    const request = { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute' as const, title: 'run `rm x`', detail: 'rm x' };
+    let rejected = feed([
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'call-3', tool: 'run_command', arguments: '{"command":"rm x"}' },
+      { type: 'approvalRequested', runId: R, request },
+    ]);
+    rejected = applyDecision(rejected, request, { decision: 'reject', reason: 'not now' }, 2000);
+    rejected = applyEvent(rejected, { type: 'toolResult', runId: R, agentId: 'coder', callId: 'call-3', ok: false, summary: 'The user rejected this action: not now', change: null }, 2100);
+    expect((rejected.feed[0] as ToolFeedItem).result).toMatchObject({ rejected: true, summary: 'not now' });
+  });
+
+  it('shows a result without a call on its own, and never pairs with turn-ending tools', () => {
+    const run = feed([
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'c1', tool: 'finish', arguments: '{"summary":"done"}' },
+      { type: 'toolResult', runId: R, agentId: 'coder', callId: 'r1', ok: false, summary: 'exit 1', change: null },
+    ]);
+    expect(run.feed).toHaveLength(2);
+    expect((run.feed[0] as ToolFeedItem).result).toBeNull();
+    expect((run.feed[1] as ToolFeedItem).tool).toBeNull();
+  });
+
+  it('collects file changes, plan, tasks, checkpoints and pending requests', () => {
+    const change = { path: 'src/a.ts', kind: 'modified' as const, diff: '', checkpointId: 'cp1' };
+    const run = feed([
+      { type: 'planReady', runId: R, plan: { goal: 'g', summary: 'Do it', tasks: [task('T1'), task('T2')] } },
+      { type: 'taskUpdated', runId: R, task: task('T1', { status: 'inProgress' }) },
+      { type: 'checkpointCreated', runId: R, checkpoint: { id: 'cp2', runId: R, seq: 2, label: 'T2', createdAtUnixMs: 5, files: [] } },
+      { type: 'checkpointCreated', runId: R, checkpoint: { id: 'cp1', runId: R, seq: 1, label: 'T1', createdAtUnixMs: 4, files: [] } },
+      { type: 'toolResult', runId: R, agentId: 'coder', callId: 'r', ok: true, summary: 'Edited', change },
+      { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 'run `npm test`', detail: 'npm test' } },
+      { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 'run `npm test`', detail: 'npm test' } },
+      { type: 'questionForUser', runId: R, questionId: 'q1', agentId: 'coder', question: 'Tabs or spaces?' },
+    ]);
+    expect(run.taskOrder).toEqual(['T1', 'T2']);
+    expect(run.tasks.T1.status).toBe('inProgress');
+    expect(currentTask(run)?.id).toBe('T1');
+    expect(run.checkpoints.map((c) => c.id)).toEqual(['cp1', 'cp2']);
+    expect(run.changes).toEqual([change]);
+    expect(run.approvals).toHaveLength(1);
+    expect(run.questions.map((q) => q.id)).toEqual(['q1']);
+    expect(removeQuestion(run, 'q1').questions).toEqual([]);
+    expect(run.feed[0]).toMatchObject({ kind: 'plan', taskCount: 2, summary: 'Do it' });
+  });
+
+  it('finishes the run, clears open requests and ignores later events', () => {
+    let run = feed([
+      status('coder', 'thinking'),
+      { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 't', detail: 'd' } },
+    ]);
+    expect(isGenerating(run)).toBe(true);
+    run = applyEvent(run, { type: 'runFinished', runId: R, outcome: 'cancelled', summary: 'Stopped.' }, 9000);
+    expect(run.outcome).toBe('cancelled');
+    expect(run.finishedAt).toBe(9000);
+    expect(run.approvals).toEqual([]);
+    expect(isGenerating(run)).toBe(false);
+    expect(applyEvent(run, status('coder', 'idle'), 9100)).toBe(run);
+  });
+});
+
+describe('applyDecision', () => {
+  const request = { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute' as const, title: 'run `npm test`', detail: 'npm test' };
+  const base = () =>
+    feed([
+      { type: 'toolCall', runId: R, agentId: 'coder', callId: 'c1', tool: 'run_command', arguments: '{"command":"npm test"}' },
+      { type: 'approvalRequested', runId: R, request },
+    ]);
+
+  it('removes the request and records the decision', () => {
+    const run = applyDecision(base(), request, { decision: 'approve' }, 5000);
+    expect(run.approvals).toEqual([]);
+    expect(run.feed[run.feed.length - 1]).toMatchObject({ kind: 'decision', decision: 'approve', tool: 'run_command' });
+    expect((run.feed[0] as ToolFeedItem).result).toBeNull();
+  });
+
+  it('marks the open call as rejected, with the reason', () => {
+    const run = applyDecision(base(), request, { decision: 'reject', reason: '  use npm run test:unit ' }, 5000);
+    const call = run.feed[0] as ToolFeedItem;
+    expect(call.result).toMatchObject({ ok: false, rejected: true, summary: 'use npm run test:unit' });
+    expect(run.feed[1]).toMatchObject({ kind: 'decision', reason: 'use npm run test:unit' });
+  });
+});
+
+describe('changedFiles', () => {
+  const c = (path: string, kind: 'created' | 'modified' | 'deleted') => ({ path, kind, diff: '', checkpointId: '' });
+  it('reports the net effect per file', () => {
+    expect(changedFiles([c('a', 'modified'), c('a', 'modified'), c('b', 'created'), c('b', 'modified'), c('t', 'created'), c('t', 'deleted'), c('d', 'modified'), c('d', 'deleted')])).toEqual([
+      { path: 'a', kind: 'modified' },
+      { path: 'b', kind: 'created' },
+      { path: 'd', kind: 'deleted' },
+    ]);
+  });
+});

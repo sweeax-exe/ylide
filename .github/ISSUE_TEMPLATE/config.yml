@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and help
+    url: https://discord.gg/GRzTvRGHpr
+    about: Ask in #help on the Ylide Discord, or open a private ticket in #tickets.
+  - name: Report a security problem
+    url: https://github.com/sweeax-exe/ylide/security/advisories/new
+    about: Please report vulnerabilities privately, see SECURITY.md.

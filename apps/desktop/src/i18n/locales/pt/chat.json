@@ -1,0 +1,126 @@
+{
+  "title": "Chat",
+  "newChat": "Novo chat",
+  "newChatDialog": {
+    "title": "Começar um novo chat?",
+    "body": "Uma resposta ainda está sendo escrita. Um novo chat a interrompe; esta conversa fica no histórico.",
+    "bodyNotSaved": "Uma resposta ainda está sendo escrita. Um novo chat a interrompe e limpa esta conversa.",
+    "confirm": "Parar e começar novo chat"
+  },
+  "header": {
+    "generating": "Escrevendo uma resposta"
+  },
+  "start": {
+    "title": "Pergunte sobre o seu projeto",
+    "titleNoProject": "Pergunte sobre o seu código",
+    "body": "As respostas vêm do modelo neste computador. O que você pergunta nunca sai dele.",
+    "bodyExternal": "As respostas vêm do servidor definido nas configurações. Suas mensagens e o contexto anexado são enviados a ele.",
+    "examples": "Exemplos",
+    "mentionHint": "Digite @ para anexar arquivos, pastas ou símbolos. O conteúdo deles é enviado com a sua mensagem.",
+    "keys": "<0>Enter</0> envia, <1>Shift</1> + <2>Enter</2> começa uma nova linha."
+  },
+  "examples": {
+    "overview": "Dê uma visão geral deste projeto e diga por onde devo começar a ler.",
+    "explain": "Explique como @ funciona.",
+    "review": "Procure bugs e casos-limite não tratados no código selecionado.",
+    "tests": "Escreva testes unitários para @",
+    "error": "O que significa esta mensagem de erro e como resolvo isso?\n\n"
+  },
+  "messages": {
+    "label": "Conversa",
+    "you": "Você",
+    "assistant": "Resposta",
+    "waiting": "Aguardando o modelo",
+    "thinking": "Pensando",
+    "thoughtFor": "Pensou por {{duration}}",
+    "thoughts": "Raciocínio",
+    "cancelled": "Interrompida. Esta resposta está incompleta.",
+    "empty": "O modelo devolveu uma resposta vazia. Envie a pergunta de novo ou reformule-a.",
+    "cutOff": "A resposta atingiu o limite de tamanho e foi cortada.",
+    "copyAnswer": "Copiar resposta",
+    "promptTokens": "{{value}} tokens de prompt",
+    "cachedTokens": "{{value}} em cache",
+    "timings": "Prompt lido em {{prompt}} ({{promptSpeed}} tok/s), resposta escrita em {{generation}}.",
+    "jumpToLatest": "Ir para a mais recente"
+  },
+  "context": {
+    "label": "Contexto anexado",
+    "truncated": "Encurtado para caber no limite de contexto.",
+    "error": "Não anexado: {{message}}"
+  },
+  "composer": {
+    "label": "Mensagem",
+    "placeholder": "Pergunte sobre o seu código",
+    "placeholderMentions": "Pergunte sobre o seu código, digite @ para anexar arquivos",
+    "addContext": "Anexar arquivo, pasta ou símbolo",
+    "attachSelection": "Anexar seleção",
+    "attachSelectionTitle": "Anexar {{label}} do editor",
+    "noSelection": "Selecione código no editor para anexá-lo.",
+    "removeMention": "Remover {{label}}",
+    "attached": "Contexto anexado",
+    "contextTotal": "{{tokens}} / {{budget}} tokens",
+    "contextTotalTitle": "Tamanho estimado do contexto anexado. Você pode mudar o limite nas configurações.",
+    "contextTruncated": "Parte do contexto foi encurtada para caber no limite.",
+    "contextUnknown": "Tamanho desconhecido",
+    "noProject": "Abra uma pasta para anexar arquivos, pastas e símbolos.",
+    "measuring": "Medindo o contexto anexado"
+  },
+  "notice": {
+    "noModel": "Nenhum modelo está em execução. Inicie um para enviar mensagens.",
+    "loading": "{{model}} está sendo carregado. Você poderá enviar quando ele estiver pronto.",
+    "crashed": "O modelo parou inesperadamente. Reinicie-o para continuar.",
+    "openModels": "Abrir modelos"
+  },
+  "picker": {
+    "label": "Anexar contexto",
+    "files": "Arquivos",
+    "folders": "Pastas",
+    "symbols": "Símbolos",
+    "root": "Projeto inteiro",
+    "empty": "Nada corresponde a “{{query}}”.",
+    "noFiles": "Nenhum arquivo encontrado.",
+    "searching": "Buscando",
+    "symbolsHint": "Digite dois ou mais caracteres para buscar símbolos.",
+    "hint": "<0>↑</0> <1>↓</1> para escolher, <2>Enter</2> para anexar, <3>Esc</3> para fechar"
+  },
+  "symbolKind": {
+    "function": "função",
+    "class": "classe",
+    "struct": "struct",
+    "interface": "interface",
+    "enum": "enum",
+    "type": "tipo",
+    "constant": "constante",
+    "module": "módulo"
+  },
+  "code": {
+    "copy": "Copiar código",
+    "open": "Abrir {{name}}",
+    "openTitle": "Abrir {{path}} no editor",
+    "plain": "Texto"
+  },
+  "markdown": {
+    "openLink": "Abrir {{url}} no navegador",
+    "image": "Imagem: {{alt}}",
+    "imageTitle": "Imagens não são carregadas automaticamente. Abra {{url}} no navegador."
+  },
+  "announce": {
+    "started": "Escrevendo uma resposta",
+    "answer": "Resposta: {{text}}",
+    "stopped": "Resposta interrompida"
+  },
+  "history": {
+    "open": "Histórico de chats",
+    "title": "Chats anteriores",
+    "empty": "Ainda não há chats salvos neste projeto.",
+    "untitled": "Chat sem pergunta",
+    "delete": "Excluir chat",
+    "deleteTitle": "Excluir este chat?",
+    "deleteBody": "“{{title}}” será excluído deste computador.",
+    "deleteConfirm": "Excluir",
+    "saveFailed": "Não foi possível salvar o chat no histórico",
+    "messages_one": "{{count}} mensagem",
+    "messages_many": "{{count}} de mensagens",
+    "messages_other": "{{count}} mensagens"
+  }
+}

@@ -1,0 +1,11 @@
+.issues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.unknown {
+  color: var(--warning);
+}

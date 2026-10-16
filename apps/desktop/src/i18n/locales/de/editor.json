@@ -1,0 +1,154 @@
+{
+  "loading": "Editor wird geladen",
+  "editorLabel": "Editor für {{path}}",
+  "keys": {
+    "ctrl": "Strg",
+    "shift": "Umschalt",
+    "enter": "Enter"
+  },
+  "noProject": {
+    "title": "Projektordner öffnen",
+    "body": "Ylide arbeitet mit einem Ordner auf diesem Rechner. Deine Dateien, Chats und Agent-Läufe bleiben auf diesem Gerät.",
+    "reopen": "{{name}} wieder öffnen"
+  },
+  "failed": {
+    "title": "Der Editor konnte nicht starten",
+    "body": "Beim Laden des Code-Editors ist etwas schiefgegangen. Versuch es noch einmal und starte Ylide neu, wenn es weiter fehlschlägt."
+  },
+  "welcome": {
+    "body": "Öffne eine Datei in der Seitenleiste oder spring direkt zu einer.",
+    "shortcuts": {
+      "goToFile": "Zu Datei springen",
+      "editWithAi": "Mit KI bearbeiten",
+      "chat": "Chat",
+      "agents": "Agents",
+      "search": "In Dateien suchen"
+    }
+  },
+  "tabs": {
+    "label": "Geöffnete Dateien",
+    "unsaved": "ungespeicherte Änderungen",
+    "deleted": "auf der Festplatte gelöscht",
+    "close": "{{name}} schließen"
+  },
+  "disk": {
+    "changed": "{{name}} wurde auf der Festplatte geändert, während du die Datei bearbeitet hast.",
+    "deleted": "{{name}} wurde auf der Festplatte gelöscht. Beim Speichern wird die Datei neu angelegt.",
+    "reload": "Von der Festplatte laden",
+    "keepMine": "Meine Version behalten",
+    "close": "Datei schließen",
+    "keep": "Weiter bearbeiten"
+  },
+  "closeDialog": {
+    "title": "Änderungen an {{name}} speichern?",
+    "body": "Deine Änderungen gehen verloren, wenn du die Datei ohne Speichern schließt.",
+    "save": "Speichern und schließen",
+    "discard": "Ohne Speichern schließen"
+  },
+  "commands": {
+    "addSelectionToChat": "Auswahl zum Chat hinzufügen",
+    "openChat": "Chat öffnen",
+    "save": "Datei speichern"
+  },
+  "inline": {
+    "action": "Mit KI bearbeiten",
+    "title": "Mit KI bearbeiten",
+    "placeholder": "Beschreibe die Änderung",
+    "instructionLabel": "Anweisung ({{scope}})",
+    "scopeLine": "Zeile {{line}}",
+    "scopeLines": "Zeilen {{start}}–{{end}}",
+    "scopeInsert": "Einfügen in Zeile {{line}}",
+    "cancel": "Bearbeitung abbrechen",
+    "streaming": "Änderung wird geschrieben",
+    "noModel": "Es läuft kein Modell. Starte eins, um mit KI zu bearbeiten.",
+    "openModels": "Modelle öffnen",
+    "noChange": "Das Modell hat keine Änderung vorgeschlagen. Versuch eine genauere Anweisung.",
+    "noResult": "Das Modell hat kein Ergebnis geliefert. Versuch es noch einmal."
+  },
+  "review": {
+    "title": "Änderung prüfen",
+    "added_one": "{{count}} Zeile hinzugefügt",
+    "added_other": "{{count}} Zeilen hinzugefügt",
+    "removed_one": "{{count}} Zeile entfernt",
+    "removed_other": "{{count}} Zeilen entfernt",
+    "layout": "Diff-Ansicht",
+    "inline": "Inline",
+    "split": "Nebeneinander",
+    "accept": "Übernehmen",
+    "acceptHint": "Änderung übernehmen (Enter). Strg+Z macht sie rückgängig.",
+    "reject": "Verwerfen",
+    "rejectHint": "Änderung verwerfen (Esc)",
+    "retry": "Erneut versuchen"
+  },
+  "errors": {
+    "open": "{{name}} konnte nicht geöffnet werden",
+    "save": "{{name}} konnte nicht gespeichert werden",
+    "reload": "{{name}} konnte nicht neu geladen werden",
+    "delete": "{{name}} konnte nicht gelöscht werden",
+    "openFolder": "Der Ordner konnte nicht geöffnet werden"
+  },
+  "tree": {
+    "title": "Dateien",
+    "label": "Dateien in {{name}}",
+    "noProject": "Es ist kein Ordner geöffnet. Öffne einen, um seine Dateien zu sehen.",
+    "loading": "Dateien werden geladen",
+    "empty": "Dieser Ordner ist leer.",
+    "newFile": "Neue Datei",
+    "newFolder": "Neuer Ordner",
+    "newFileName": "Name der neuen Datei",
+    "newFolderName": "Name des neuen Ordners",
+    "collapseAll": "Alle Ordner einklappen",
+    "refresh": "Aktualisieren",
+    "rename": "Umbenennen",
+    "renameLabel": "Neuer Name für {{name}}",
+    "delete": "Löschen",
+    "deleteKey": "Entf",
+    "addToChat": "Zum Chat hinzufügen",
+    "copyPath": "Pfad kopieren",
+    "menuLabel": "Dateiaktionen",
+    "exists": "Eine Datei oder ein Ordner mit diesem Namen existiert bereits.",
+    "nameProblem": {
+      "empty": "Gib einen Namen ein.",
+      "invalid": "Dieser Name ist nicht erlaubt. Vermeide \\ : * ? \" < > | und leere Ordnernamen."
+    },
+    "deleteTitle": "{{name}} löschen?",
+    "deleteFileBody": "{{path}} wird von der Festplatte entfernt. Das lässt sich in Ylide nicht rückgängig machen.",
+    "deleteFolderBody": "{{path}} und alles darin wird von der Festplatte entfernt. Das lässt sich in Ylide nicht rückgängig machen."
+  },
+  "search": {
+    "title": "Suche",
+    "placeholder": "In Dateien suchen",
+    "matchCase": "Groß- und Kleinschreibung beachten",
+    "wholeWord": "Nur ganze Wörter",
+    "regex": "Regulären Ausdruck verwenden",
+    "globsLabel": "Dateien ein- oder ausschließen",
+    "globsPlaceholder": "Dateien, z. B. *.ts, !test/**",
+    "globsHint": "Muster durch Kommas trennen. Ein führendes ! schließt passende Dateien aus.",
+    "searching": "Suche läuft",
+    "summary": "{{results}} in {{files}}",
+    "resultCount_one": "{{value}} Treffer",
+    "resultCount_other": "{{value}} Treffer",
+    "fileCount_one": "{{value}} Datei",
+    "fileCount_other": "{{value}} Dateien",
+    "noResults": "Keine Treffer für „{{pattern}}“.",
+    "truncated": "Es werden die ersten {{max}} Treffer angezeigt. Grenze die Suche ein, um den Rest zu sehen.",
+    "hint": "Finde Text in allen Dateien des Projekts. Mit dem Dateifilter grenzt du die Suche ein.",
+    "noProject": "Öffne einen Ordner, um darin zu suchen.",
+    "matchLabel": "Zeile {{line}}: {{text}}",
+    "collapseAll": "Alle Ergebnisse einklappen",
+    "expandAll": "Alle Ergebnisse ausklappen",
+    "clear": "Suche leeren"
+  },
+  "quickOpen": {
+    "title": "Zu Datei springen",
+    "placeholder": "Dateiname eingeben, :12 für eine Zeile anhängen",
+    "noProject": "Öffne zuerst einen Ordner",
+    "loading": "Dateien werden gesucht",
+    "results": "Dateien",
+    "empty": "Keine Datei passt zu „{{query}}“.",
+    "open": "geöffnet",
+    "hintMove": "bewegen",
+    "hintOpen": "öffnen",
+    "hintLine": "zu Zeile springen"
+  }
+}

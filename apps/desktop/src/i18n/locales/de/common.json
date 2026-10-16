@@ -1,0 +1,179 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "Programmieren mit KI, die deinen Rechner nie verlässt."
+  },
+  "actions": {
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "save": "Speichern",
+    "retry": "Erneut versuchen",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "openFolder": "Ordner öffnen",
+    "reset": "Auf Standard zurücksetzen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "stop": "Stoppen",
+    "send": "Senden",
+    "apply": "Übernehmen",
+    "browse": "Durchsuchen"
+  },
+  "window": {
+    "minimize": "Minimieren",
+    "maximize": "Maximieren",
+    "restore": "Wiederherstellen",
+    "close": "Fenster schließen"
+  },
+  "rail": {
+    "explorer": "Dateien",
+    "search": "Suche",
+    "chat": "Chat",
+    "agents": "Agents",
+    "models": "Modelle",
+    "settings": "Einstellungen"
+  },
+  "titlebar": {
+    "noProject": "Kein Ordner geöffnet",
+    "quickOpen": "Zu Datei springen",
+    "modelMenu": "Modell und Laufzeit"
+  },
+  "keys": {
+    "ctrl": "Strg",
+    "shift": "Umschalt",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "Ungespeicherte Änderungen verwerfen?",
+    "body_one": "Eine Datei hat ungespeicherte Änderungen. Beim Öffnen von {{name}} wird sie geschlossen und die Änderungen gehen verloren.",
+    "body_other": "{{count}} Dateien haben ungespeicherte Änderungen. Beim Öffnen von {{name}} werden sie geschlossen und die Änderungen gehen verloren.",
+    "confirm": "Verwerfen und öffnen"
+  },
+  "server": {
+    "none": "Kein Modell aktiv",
+    "starting": "Starte {{model}}",
+    "loading": "Lade {{model}}",
+    "ready": "{{model}}",
+    "stopped": "Modell gestoppt",
+    "crashed": "Modell unerwartet beendet",
+    "external": "Externer Server",
+    "start": "Modell starten",
+    "stop": "Modell stoppen"
+  },
+  "status": {
+    "context": "{{tokens}} Kontext",
+    "speed": "{{value}} tok/s",
+    "offline": "Offline: nichts verlässt diesen Rechner",
+    "networkActivity": "Letzte Netzwerkanfrage: {{purpose}}",
+    "runtime": "Laufzeit: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} Tokens",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}} %"
+  },
+  "netPurpose": {
+    "registry": "Aktualisierung der Modellliste",
+    "modelDownload": "Modell-Download",
+    "runtimeDownload": "Laufzeit-Download",
+    "updateCheck": "Suche nach Updates",
+    "updateDownload": "Update-Download"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen: {{message}}",
+    "no_model": "Es läuft kein Modell. Starte eines im Modellmenü.",
+    "no_project": "Öffne zuerst einen Ordner.",
+    "network_disabled": "Dieser Netzwerkzugriff ist in den Einstellungen ausgeschaltet.",
+    "disk_full": "Nicht genug freier Speicherplatz ({{message}}).",
+    "model_not_installed": "Dieses Modell ist noch nicht heruntergeladen.",
+    "no_model_selected": "Wähle zuerst ein Modell.",
+    "no_runtime": "Es ist keine Inferenz-Laufzeit installiert.",
+    "server": "Der Modellserver meldet ein Problem: {{message}}",
+    "model": "Das Modell hat einen Fehler gemeldet: {{message}}",
+    "download": "Der Download ist fehlgeschlagen: {{message}}",
+    "workspace": "Dateifehler: {{message}}",
+    "endpoint_unreachable": "Der externe Server ist nicht erreichbar: {{message}}",
+    "not_found": "Die Datei wurde nicht gefunden.",
+    "not_gguf": "Das ist keine GGUF-Modelldatei.",
+    "busy": "Bitte warten, eine andere Installation läuft noch.",
+    "update_none": "Es ist kein Update zum Installieren bekannt. Suche zuerst nach Updates.",
+    "update_busy": "Das Update wird bereits installiert.",
+    "update_signature": "Das Update wurde abgelehnt, weil seine Signatur nicht passt. Es wurde nichts installiert.",
+    "update_format": "Das Update hat ein Format, das Ylide nicht installieren kann: {{message}}",
+    "update_too_large": "Das Update ist ungewöhnlich groß und wurde nicht geladen.",
+    "update_launch": "Der Installer konnte nicht gestartet werden: {{message}}",
+    "update_unsupported": "Auf diesem System installierst du Updates von Hand."
+  },
+  "reasons": {
+    "fitsInVram": "Passt komplett in deinen Grafikspeicher ({{vramGb}} GB belegt).",
+    "moeOffload": "Mixture of Experts: Der immer aktive Teil und {{vramGb}} GB bleiben auf der GPU, {{cpuExpertLayers}} Experten-Layer ({{ramGb}} GB) liegen im Arbeitsspeicher. Pro Token rechnen nur wenige Experten, deshalb bleibt es schnell.",
+    "partialOffload": "{{gpuLayers}} Layer laufen auf der GPU ({{vramGb}} GB), der Rest im Arbeitsspeicher ({{ramGb}} GB). Das funktioniert, ist aber langsamer.",
+    "unifiedMemory": "Läuft im gemeinsamen Speicher ({{ramGb}} GB) auf der Apple-GPU.",
+    "cpuOnly": "Läuft auf dem Prozessor ({{ramGb}} GB Arbeitsspeicher). Es wurde keine passende GPU gefunden.",
+    "speedEstimate": "Etwa {{tps}} Tokens pro Sekunde (geschätzt).",
+    "topQualityForBudget": "Das stärkste Coding-Modell, das auf diesem Rechner gut läuft.",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "vom Anbieter angegeben",
+    "benchmarkIndependent": "unabhängig gemessen",
+    "toolCalling": "Zuverlässige Tool-Nutzung für den Agent-Modus ({{level}}).",
+    "longContext": "Langer Kontext von {{tokens}} Tokens: genug für große Dateien und lange Agent-Sitzungen.",
+    "reasoningModel": "Kann vor der Antwort nachdenken; für schnelle Änderungen schaltet Ylide das ab.",
+    "permissiveLicense": "{{license}}: frei nutzbar, auch kommerziell.",
+    "restrictedLicense": "{{license}}: Prüfe die Lizenzbedingungen vor kommerzieller Nutzung.",
+    "slowWarning": "Auf diesem Rechner wird sich das langsam anfühlen.",
+    "quantizedKvCache": "Nutzt einen komprimierten Kontext-Cache ({{type}}), damit es passt.",
+    "sharesGpuWithMain": "Läuft auf der GPU neben dem Hauptmodell.",
+    "runsOnCpu": "Läuft auf dem Prozessor und lässt die GPU dem Hauptmodell.",
+    "autocompleteMovesToCpu": "Nutzt den Grafikspeicher, der sonst für die Autovervollständigung reserviert ist.",
+    "noGpu": "Es wurde keine passende Grafikkarte gefunden. Modelle laufen auf dem Prozessor, das ist langsamer.",
+    "lowDiskSpace": "Nur {{freeGb}} GB Speicherplatz sind frei.",
+    "nothingFits": "Keines der bekannten Modelle passt auf diesen Rechner. Du kannst trotzdem eine eigene GGUF-Datei oder einen externen Server nutzen."
+  },
+  "alternatives": {
+    "faster": "Schneller",
+    "stronger": "Stärker",
+    "lighter": "Weniger Speicher"
+  },
+  "toolCallingLevel": {
+    "none": "keine",
+    "basic": "einfach",
+    "good": "gut",
+    "excellent": "sehr gut"
+  },
+  "modelRoles": {
+    "chat": "Chat",
+    "agent": "Agent",
+    "fim": "Autovervollständigung",
+    "embedding": "Codesuche"
+  },
+  "placement": {
+    "gpu": "Auf der GPU",
+    "moeOffload": "GPU und RAM (Experten im RAM)",
+    "partialOffload": "Aufgeteilt auf GPU und RAM",
+    "unified": "Gemeinsamer Speicher",
+    "cpu": "Auf dem Prozessor"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} ist verfügbar",
+    "availableBody": "Das Installieren dauert etwa eine Minute, danach startet Ylide neu.",
+    "install": "Installieren",
+    "confirmTitle": "Ylide {{version}} installieren?",
+    "confirmBody": "Das Update ist geladen und geprüft. Ylide beendet jetzt das Modell, installiert das Update und startet danach neu.",
+    "confirmDirty_one": "Eine Datei hat ungespeicherte Änderungen. Speichere sie vorher, sonst gehen sie verloren.",
+    "confirmDirty_other": "{{count}} Dateien haben ungespeicherte Änderungen. Speichere sie vorher, sonst gehen sie verloren.",
+    "confirmAgent": "Der laufende Agent wird dabei abgebrochen.",
+    "confirm": "Installieren und neu starten",
+    "failedTitle": "Das Update wurde nicht installiert"
+  }
+}

@@ -1,0 +1,84 @@
+.list {
+  margin: 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 40px;
+  padding: var(--space-2) var(--space-5);
+}
+
+.item + .item {
+  border-top: 1px solid var(--border);
+}
+
+.item dt {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.item dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--text-1);
+}
+
+.originLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.url {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.foot {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+.muted {
+  color: var(--text-2);
+}
+
+.good {
+  color: var(--success);
+}
+
+.warn {
+  color: var(--warning);
+}
+
+.bad {
+  color: var(--danger);
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+@container (max-width: 640px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+}

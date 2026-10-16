@@ -1,0 +1,28 @@
+[package]
+name = "hardware"
+description = "Cross-platform hardware detection (GPU, VRAM, RAM, CPU, disk, acceleration backends)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+serde = { workspace = true }
+sysinfo = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+libloading = { workspace = true }
+ts-rs = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+  "Win32_Foundation",
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
+  "Win32_Graphics_Direct3D",
+  "Win32_Graphics_Direct3D12",
+] }
+
+[dev-dependencies]
+serde_json = { workspace = true }

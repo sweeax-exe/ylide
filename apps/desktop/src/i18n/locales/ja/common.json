@@ -1,0 +1,177 @@
+{
+  "app": {
+    "name": "Ylide",
+    "tagline": "手元のコンピューターから出ない AI でコーディング。"
+  },
+  "actions": {
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "save": "保存",
+    "retry": "再試行",
+    "delete": "削除",
+    "confirm": "確定",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "openFolder": "フォルダーを開く",
+    "reset": "既定値に戻す",
+    "back": "戻る",
+    "continue": "続行",
+    "stop": "停止",
+    "send": "送信",
+    "apply": "適用",
+    "browse": "参照"
+  },
+  "window": {
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "restore": "元のサイズに戻す",
+    "close": "ウィンドウを閉じる"
+  },
+  "rail": {
+    "explorer": "ファイル",
+    "search": "検索",
+    "chat": "チャット",
+    "agents": "エージェント",
+    "models": "モデル",
+    "settings": "設定"
+  },
+  "titlebar": {
+    "noProject": "フォルダーが開かれていません",
+    "quickOpen": "ファイルへ移動",
+    "modelMenu": "モデルとランタイム"
+  },
+  "keys": {
+    "ctrl": "Ctrl",
+    "shift": "Shift",
+    "enter": "Enter"
+  },
+  "switchProject": {
+    "title": "未保存の変更を破棄しますか？",
+    "body_other": "{{count}} 個のファイルに未保存の変更があります。{{name}} を開くとこれらのファイルは閉じられ、変更は失われます。",
+    "confirm": "破棄して開く"
+  },
+  "server": {
+    "none": "モデルは実行されていません",
+    "starting": "{{model}} を起動中",
+    "loading": "{{model}} を読み込み中",
+    "ready": "{{model}}",
+    "stopped": "モデルは停止しました",
+    "crashed": "モデルが予期せず停止しました",
+    "external": "外部サーバー",
+    "start": "モデルを起動",
+    "stop": "モデルを停止"
+  },
+  "status": {
+    "context": "コンテキスト {{tokens}}",
+    "speed": "{{value}} tok/s",
+    "offline": "オフライン: このコンピューターから何も送信されません",
+    "networkActivity": "最後のネットワークリクエスト: {{purpose}}",
+    "runtime": "ランタイム: {{name}}"
+  },
+  "units": {
+    "gb": "{{value}} GB",
+    "mb": "{{value}} MB",
+    "tokens": "{{value}} トークン",
+    "tokPerSec": "{{value}} tok/s",
+    "percent": "{{value}}%"
+  },
+  "netPurpose": {
+    "registry": "モデルリストの更新",
+    "modelDownload": "モデルのダウンロード",
+    "runtimeDownload": "ランタイムのダウンロード",
+    "updateCheck": "アップデートの確認",
+    "updateDownload": "アップデートのダウンロード"
+  },
+  "errors": {
+    "generic": "問題が発生しました: {{message}}",
+    "no_model": "モデルが実行されていません。モデルメニューから起動してください。",
+    "no_project": "先にフォルダーを開いてください。",
+    "network_disabled": "このネットワーク接続は設定でオフになっています。",
+    "disk_full": "ディスクの空き容量が足りません（{{message}}）。",
+    "model_not_installed": "このモデルはまだダウンロードされていません。",
+    "no_model_selected": "先にモデルを選択してください。",
+    "no_runtime": "推論ランタイムがインストールされていません。",
+    "server": "モデルサーバーが問題を報告しました: {{message}}",
+    "model": "モデルがエラーを返しました: {{message}}",
+    "download": "ダウンロードに失敗しました: {{message}}",
+    "workspace": "ファイルエラー: {{message}}",
+    "endpoint_unreachable": "外部サーバーに接続できません: {{message}}",
+    "not_found": "ファイルが見つかりません。",
+    "not_gguf": "GGUF モデルファイルではありません。",
+    "busy": "別のインストールを実行中です。しばらくお待ちください。",
+    "update_none": "インストールするアップデートがありません。先にアップデートを確認してください。",
+    "update_busy": "アップデートはすでにインストール中です。",
+    "update_signature": "署名が一致しないため、アップデートを拒否しました。何もインストールされていません。",
+    "update_format": "Ylide がインストールできない形式のアップデートです: {{message}}",
+    "update_too_large": "アップデートのサイズが異常に大きいため、ダウンロードしませんでした。",
+    "update_launch": "インストーラーを起動できませんでした: {{message}}",
+    "update_unsupported": "このシステムでは、アップデートを手動でインストールしてください。"
+  },
+  "reasons": {
+    "fitsInVram": "グラフィックメモリに完全に収まります（{{vramGb}} GB 使用）。",
+    "moeOffload": "Mixture of Experts: 常に動作する部分を含む {{vramGb}} GB は GPU 上に、{{cpuExpertLayers}} 個のエキスパートレイヤー（{{ramGb}} GB）はシステム RAM に置きます。トークンごとに動くエキスパートは少数なので、速度は保たれます。",
+    "partialOffload": "{{gpuLayers}} 個のレイヤーを GPU（{{vramGb}} GB）で、残りをシステム RAM（{{ramGb}} GB）で実行します。動作はしますが、速度は落ちます。",
+    "unifiedMemory": "Apple GPU 上のユニファイドメモリ（{{ramGb}} GB）で実行します。",
+    "cpuOnly": "プロセッサー上で実行します（RAM {{ramGb}} GB）。適した GPU が見つかりませんでした。",
+    "speedEstimate": "毎秒約 {{tps}} トークン（推定）。",
+    "topQualityForBudget": "このマシンで快適に動くコーディングモデルの中で最も高性能です。",
+    "benchmark": "{{name}}: {{score}} {{unit}}",
+    "benchmarkSelfReported": "公開元による報告値",
+    "benchmarkIndependent": "第三者による測定値",
+    "toolCalling": "エージェントモードでツールを確実に使えます（{{level}}）。",
+    "longContext": "{{tokens}} トークンの長いコンテキスト: 大きなファイルや長いエージェントセッションにも十分です。",
+    "reasoningModel": "回答の前に思考できます。素早い編集では Ylide がこれをオフにします。",
+    "permissiveLicense": "{{license}}: 商用利用も含めて自由に使えます。",
+    "restrictedLicense": "{{license}}: 商用利用の前にライセンス条項を確認してください。",
+    "slowWarning": "このマシンでは動作が遅く感じられます。",
+    "quantizedKvCache": "メモリに収めるため、圧縮したコンテキストキャッシュ（{{type}}）を使います。",
+    "sharesGpuWithMain": "メインモデルと同じ GPU 上で実行します。",
+    "runsOnCpu": "プロセッサー上で実行し、GPU はメインモデルに譲ります。",
+    "autocompleteMovesToCpu": "本来は自動補完用に確保される GPU メモリを使います。",
+    "noGpu": "適したグラフィックカードが見つかりませんでした。モデルはプロセッサー上で実行され、速度は落ちます。",
+    "lowDiskSpace": "ディスクの空き容量が {{freeGb}} GB しかありません。",
+    "nothingFits": "既知のモデルはどれもこのマシンに合いません。手持ちの GGUF ファイルや外部サーバーは引き続き使えます。"
+  },
+  "alternatives": {
+    "faster": "より高速",
+    "stronger": "より高性能",
+    "lighter": "省メモリ"
+  },
+  "toolCallingLevel": {
+    "none": "なし",
+    "basic": "基本",
+    "good": "良好",
+    "excellent": "優秀"
+  },
+  "modelRoles": {
+    "chat": "チャット",
+    "agent": "エージェント",
+    "fim": "自動補完",
+    "embedding": "コード検索"
+  },
+  "placement": {
+    "gpu": "GPU 上",
+    "moeOffload": "GPU と RAM（エキスパートは RAM）",
+    "partialOffload": "GPU と RAM に分割",
+    "unified": "ユニファイドメモリ",
+    "cpu": "プロセッサー上"
+  },
+  "backend": {
+    "cuda": "CUDA",
+    "vulkan": "Vulkan",
+    "metal": "Metal",
+    "rocm": "ROCm",
+    "cpu": "CPU"
+  },
+  "update": {
+    "availableTitle": "Ylide {{version}} を利用できます",
+    "availableBody": "インストールには 1 分ほどかかり、その後 Ylide が再起動します。",
+    "install": "インストール",
+    "confirmTitle": "Ylide {{version}} をインストールしますか？",
+    "confirmBody": "アップデートはダウンロード済みで、確認も完了しています。Ylide はこれからモデルを停止してアップデートをインストールし、その後再起動します。",
+    "confirmDirty_other": "{{count}} 個のファイルに未保存の変更があります。先に保存しないと変更は失われます。",
+    "confirmAgent": "実行中のエージェントは停止されます。",
+    "confirm": "インストールして再起動",
+    "failedTitle": "アップデートはインストールされませんでした"
+  }
+}

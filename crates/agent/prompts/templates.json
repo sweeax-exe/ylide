@@ -1,0 +1,9 @@
+{
+  "planner": "Request from the user:\n{goal}\n\nAvailable roles:\n{roles}\n\nProject structure (top levels):\n{outline}\n\nEnvironment: {environment}",
+  "coderTask": "Team progress:\n{overview}\n\nYour task {task_id}: {task_title}\n{task_description}\n\nFiles mentioned by the planner: {task_files}\n\nEnvironment: {environment}",
+  "reviewerTask": "Task {task_id}: {task_title}\n{task_description}\n\nCoder's summary:\n{summary}\n\nChanges (unified diff):\n{diff}\n\nEnvironment: {environment}",
+  "feedback": "The reviewer requested changes (round {round} of {max_rounds}):\n{review}\n\nAddress every point, then call finish again with an updated summary.",
+  "question": "Team progress:\n{overview}\n\n{from} asks you: {question}\n\nAnswer briefly and concretely in plain text. Do not call tools.",
+  "continue": "Continue with the task using the tools. Call finish when the task is done.",
+  "repeatedFailure": "You have made the same failing call several times. Stop repeating it: re-read the file or try a different approach."
+}

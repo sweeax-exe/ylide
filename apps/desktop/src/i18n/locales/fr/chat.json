@@ -1,0 +1,126 @@
+{
+  "title": "Chat",
+  "newChat": "Nouveau chat",
+  "newChatDialog": {
+    "title": "Commencer un nouveau chat ?",
+    "body": "Une réponse est encore en cours d’écriture. Un nouveau chat l’interrompt ; cette conversation reste dans l’historique.",
+    "bodyNotSaved": "Une réponse est encore en cours d’écriture. Un nouveau chat l’interrompt et efface cette conversation.",
+    "confirm": "Arrêter et ouvrir un nouveau chat"
+  },
+  "header": {
+    "generating": "Rédaction d’une réponse"
+  },
+  "start": {
+    "title": "Posez une question sur votre projet",
+    "titleNoProject": "Posez une question sur votre code",
+    "body": "Les réponses viennent du modèle sur cet ordinateur. Vos questions ne le quittent jamais.",
+    "bodyExternal": "Les réponses viennent du serveur que vous avez configuré dans les paramètres. Vos messages et le contexte joint lui sont envoyés.",
+    "examples": "Exemples",
+    "mentionHint": "Tapez @ pour joindre des fichiers, des dossiers ou des symboles. Leur contenu est envoyé avec votre message.",
+    "keys": "<0>Entrée</0> envoie, <1>Maj</1> + <2>Entrée</2> crée une nouvelle ligne."
+  },
+  "examples": {
+    "overview": "Donnez-moi une vue d’ensemble de ce projet et dites-moi par où commencer la lecture.",
+    "explain": "Expliquez le fonctionnement de @.",
+    "review": "Cherchez des bugs et des cas limites oubliés dans le code sélectionné.",
+    "tests": "Écrivez des tests unitaires pour @",
+    "error": "Que signifie ce message d’erreur, et comment le corriger ?\n\n"
+  },
+  "messages": {
+    "label": "Conversation",
+    "you": "Vous",
+    "assistant": "Réponse",
+    "waiting": "En attente du modèle",
+    "thinking": "Réflexion",
+    "thoughtFor": "A réfléchi pendant {{duration}}",
+    "thoughts": "Réflexions",
+    "cancelled": "Interrompue. Cette réponse est incomplète.",
+    "empty": "Le modèle a renvoyé une réponse vide. Renvoyez la question ou reformulez-la.",
+    "cutOff": "La réponse a atteint la limite de longueur et est tronquée.",
+    "copyAnswer": "Copier la réponse",
+    "promptTokens": "{{value}} tokens de prompt",
+    "cachedTokens": "{{value}} en cache",
+    "timings": "Prompt lu en {{prompt}} ({{promptSpeed}} tok/s), réponse écrite en {{generation}}.",
+    "jumpToLatest": "Aller au plus récent"
+  },
+  "context": {
+    "label": "Contexte joint",
+    "truncated": "Raccourci pour respecter la limite de contexte.",
+    "error": "Non joint : {{message}}"
+  },
+  "composer": {
+    "label": "Message",
+    "placeholder": "Posez une question sur votre code",
+    "placeholderMentions": "Posez une question sur votre code, tapez @ pour joindre des fichiers",
+    "addContext": "Joindre un fichier, un dossier ou un symbole",
+    "attachSelection": "Joindre la sélection",
+    "attachSelectionTitle": "Joindre {{label}} depuis l’éditeur",
+    "noSelection": "Sélectionnez du code dans l’éditeur pour le joindre.",
+    "removeMention": "Retirer {{label}}",
+    "attached": "Contexte joint",
+    "contextTotal": "{{tokens}} / {{budget}} tokens",
+    "contextTotalTitle": "Taille estimée du contexte joint. Vous pouvez modifier la limite dans les paramètres.",
+    "contextTruncated": "Une partie du contexte est raccourcie pour respecter la limite.",
+    "contextUnknown": "Taille inconnue",
+    "noProject": "Ouvrez un dossier pour joindre des fichiers, des dossiers et des symboles.",
+    "measuring": "Mesure du contexte joint"
+  },
+  "notice": {
+    "noModel": "Aucun modèle n’est lancé. Lancez-en un pour envoyer des messages.",
+    "loading": "{{model}} est en cours de chargement. Vous pourrez envoyer un message dès qu’il sera prêt.",
+    "crashed": "Le modèle s’est arrêté de manière inattendue. Relancez-le pour continuer.",
+    "openModels": "Ouvrir les modèles"
+  },
+  "picker": {
+    "label": "Joindre du contexte",
+    "files": "Fichiers",
+    "folders": "Dossiers",
+    "symbols": "Symboles",
+    "root": "Tout le projet",
+    "empty": "Rien ne correspond à « {{query}} ».",
+    "noFiles": "Aucun fichier trouvé.",
+    "searching": "Recherche en cours",
+    "symbolsHint": "Tapez au moins deux caractères pour chercher des symboles.",
+    "hint": "<0>↑</0> <1>↓</1> pour choisir, <2>Entrée</2> pour joindre, <3>Échap</3> pour fermer"
+  },
+  "symbolKind": {
+    "function": "fonction",
+    "class": "classe",
+    "struct": "struct",
+    "interface": "interface",
+    "enum": "enum",
+    "type": "type",
+    "constant": "constante",
+    "module": "module"
+  },
+  "code": {
+    "copy": "Copier le code",
+    "open": "Ouvrir {{name}}",
+    "openTitle": "Ouvrir {{path}} dans l’éditeur",
+    "plain": "Texte"
+  },
+  "markdown": {
+    "openLink": "Ouvrir {{url}} dans votre navigateur",
+    "image": "Image : {{alt}}",
+    "imageTitle": "Les images ne sont pas chargées automatiquement. Ouvrez {{url}} dans votre navigateur."
+  },
+  "announce": {
+    "started": "Rédaction d’une réponse",
+    "answer": "Réponse : {{text}}",
+    "stopped": "Réponse arrêtée"
+  },
+  "history": {
+    "open": "Historique des chats",
+    "title": "Chats précédents",
+    "empty": "Ce projet n’a pas encore de chats enregistrés.",
+    "untitled": "Chat sans question",
+    "delete": "Supprimer le chat",
+    "deleteTitle": "Supprimer ce chat ?",
+    "deleteBody": "« {{title}} » sera supprimé de cet ordinateur.",
+    "deleteConfirm": "Supprimer",
+    "saveFailed": "Le chat n’a pas pu être enregistré dans l’historique",
+    "messages_one": "{{count}} message",
+    "messages_many": "{{count}} de messages",
+    "messages_other": "{{count}} messages"
+  }
+}

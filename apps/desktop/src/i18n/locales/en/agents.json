@@ -1,0 +1,245 @@
+{
+  "title": "Agents",
+  "roles": {
+    "orchestrator": "Orchestrator",
+    "coder": "Coder",
+    "reviewer": "Reviewer",
+    "user": "You"
+  },
+  "states": {
+    "idle": "Idle",
+    "queued": "Queued",
+    "thinking": "Thinking",
+    "callingTool": "Calling a tool",
+    "waitingForApproval": "Waiting for approval",
+    "waitingForAnswer": "Waiting for an answer",
+    "paused": "Paused",
+    "done": "Done",
+    "failed": "Failed"
+  },
+  "taskStatus": {
+    "pending": "Open",
+    "inProgress": "In progress",
+    "inReview": "In review",
+    "done": "Done",
+    "failed": "Failed",
+    "skipped": "Skipped"
+  },
+  "risk": {
+    "read": "Read",
+    "write": "Write",
+    "delete": "Delete",
+    "execute": "Execute",
+    "communicate": "Communicate"
+  },
+  "severity": {
+    "blocker": "Blocker",
+    "major": "Major",
+    "minor": "Minor",
+    "nit": "Nit"
+  },
+  "verdict": {
+    "approve": "Approved",
+    "request_changes": "Changes requested"
+  },
+  "messageKind": {
+    "question": "Question",
+    "answer": "Answer",
+    "feedback": "Feedback",
+    "intervention": "Your message",
+    "note": "Note"
+  },
+  "changeKind": {
+    "created": "New file",
+    "modified": "Changed",
+    "deleted": "Deleted"
+  },
+  "outcome": {
+    "completed": "Run completed",
+    "cancelled": "Run stopped",
+    "failed": "Run failed"
+  },
+  "steps": {
+    "planReady": "Plan ready",
+    "reviewing": "Reviewing the changes",
+    "stepLimit": "Step limit reached",
+    "answering": "Answering {{agent}}"
+  },
+  "idle": {
+    "goalLabel": "What should the agents do?",
+    "goalPlaceholder": "For example: fix the cart total and add a test for empty carts",
+    "goalHint": "Describe the result you want. Ctrl+Enter starts the run.",
+    "start": "Start agents",
+    "readiness": "Requirements",
+    "modelReady": "{{model}} is running",
+    "modelLoading": "{{model}} is loading",
+    "noModel": "No model is running. The agents need a local model.",
+    "modelCrashed": "The model stopped unexpectedly. Start it again in the models view.",
+    "openModels": "Open models",
+    "toolCallsFailed": "This model does not call tools reliably, so agents may stop early. A stronger model works better.",
+    "project": "Works in {{name}}",
+    "noProject": "No folder is open. The agents need a project to work in.",
+    "previous": "Previous run",
+    "showRun": "Show details"
+  },
+  "mode": {
+    "label": "Approvals",
+    "ask": "Ask first",
+    "autoSafe": "Safe steps",
+    "autonomous": "Autonomous",
+    "askHint": "Agents read the project on their own, but every change, deletion and command waits for your click.",
+    "autoSafeHint": "Reads and undoable edits run automatically, while commands and deletions ask first.",
+    "autonomousHint": "Everything runs automatically, except what the two switches below still guard.",
+    "allowedCommands_one": "{{count}} allowed command runs without asking.",
+    "allowedCommands_other": "{{count}} allowed commands run without asking.",
+    "confirmCommands": "Ask before running commands",
+    "confirmDeletes": "Ask before deleting files",
+    "unguardedCommands": "Agents run commands without asking. Their effects cannot be undone.",
+    "unguardedDeletes": "Agents delete files without asking. You can restore them from the checkpoints.",
+    "unguardedBoth": "Agents run commands and delete files without asking. Effects of commands cannot be undone."
+  },
+  "run": {
+    "elapsed": "Elapsed time",
+    "expandGoal": "Show full goal",
+    "collapseGoal": "Show less",
+    "starting": "Starting",
+    "planning": "Planning",
+    "progress": "Task {{index}} of {{total}}",
+    "wrappingUp": "Finishing",
+    "paused": "Paused",
+    "stopping": "Stopping",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "stopTitle": "Stop the run?",
+    "stopBody": "The agents stop right away. Changes made so far stay in place, and you can undo them from the checkpoints.",
+    "stopConfirm": "Stop run",
+    "newRun": "New run",
+    "questionWaiting": "{{agent}} is waiting for your answer.",
+    "answer": "Answer",
+    "tabs": "Run details",
+    "tabSummary": "Summary",
+    "tabTasks": "Tasks",
+    "tabTasksCount": "Tasks {{done}}/{{total}}",
+    "tabActivity": "Activity",
+    "tabCheckpoints": "Checkpoints",
+    "tabCheckpointsCount": "Checkpoints {{value}}",
+    "changedFiles": "Changed files",
+    "noChanges": "No files were changed."
+  },
+  "lines": {
+    "label": "Agent world lines",
+    "summaryEmpty": "The run is starting.",
+    "summaryPlanning": "The orchestrator is planning.",
+    "summaryTask": "Task {{id}} of {{total}}, {{title}}: {{status}}.",
+    "summaryTasks": "{{done}} of {{total}} tasks done.",
+    "summaryAgent": "{{agent}}: {{state}}"
+  },
+  "agents": {
+    "heading": "Agents",
+    "waiting": "No agent is active yet.",
+    "speed": "{{value}} tok/s",
+    "speedTitle": "Generation speed",
+    "tokens": "{{value}} tok",
+    "tokensTitle": "Tokens generated in this run",
+    "intervene": "Intervene",
+    "intervenePlaceholder": "Message to {{agent}}",
+    "interveneSent": "Sent. {{agent}} reads it before the next step."
+  },
+  "tasks": {
+    "planning": "The orchestrator is planning the tasks.",
+    "noPlan": "No plan was made.",
+    "plan": "Plan:",
+    "rounds_one": "{{count}} review round",
+    "rounds_other": "{{count}} review rounds",
+    "showDetails": "Show details of {{id}}",
+    "hideDetails": "Hide details of {{id}}",
+    "files": "Expected files",
+    "general": "General",
+    "openAt": "Open {{location}}"
+  },
+  "feed": {
+    "empty": "Nothing has happened yet.",
+    "to": "to",
+    "ok": "Succeeded",
+    "failed": "Failed",
+    "running": "Running",
+    "awaitingApproval": "Waiting for your approval",
+    "rejected": "Rejected by you",
+    "rejectedReason": "Rejected by you: {{reason}}",
+    "plan_one": "Plan with {{count}} task",
+    "plan_other": "Plan with {{count}} tasks",
+    "approved": "You approved: {{title}}",
+    "approvedAlways": "You approved {{title}} and allowed `{{tool}}` for the rest of this run",
+    "rejectedAction": "You rejected: {{title}}",
+    "reason": "Reason: {{reason}}",
+    "openFile": "Open file",
+    "openPath": "Open {{path}}",
+    "showDiff": "Show changes in {{path}}",
+    "hideDiff": "Hide changes in {{path}}",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "earlier_one": "Show {{count}} earlier entry",
+    "earlier_other": "Show {{count}} earlier entries"
+  },
+  "diff": {
+    "label": "Changes in {{path}}",
+    "showAll": "Show all {{total}} lines",
+    "empty": "No changes to show."
+  },
+  "checkpoints": {
+    "empty": "Checkpoints appear when a task starts. They let you undo what the agents changed.",
+    "intro": "Before each task, Ylide keeps a copy of every file the agents touch.",
+    "undo": "Undo from here",
+    "undone": "Undone",
+    "busyHint": "Pause or stop the run to undo changes.",
+    "confirmTitle": "Undo from here?",
+    "confirmBody": "All changes the agents made from “{{label}}” on are reverted. The files return to how they were before this step.",
+    "confirmWarning": "Effects of shell commands, such as installed packages or files created outside the project, cannot be undone.",
+    "confirm": "Undo changes",
+    "restored_one": "Restored {{count}} file",
+    "restored_other": "Restored {{count}} files",
+    "restoredMore": "{{files}} and {{more}} more",
+    "nothing": "There was nothing to restore."
+  },
+  "approval": {
+    "titleWrite": "{{agent}} wants to change a file",
+    "titleDelete": "{{agent}} wants to delete a file",
+    "titleExecute": "{{agent}} wants to run a command",
+    "titleOther": "{{agent}} asks for permission",
+    "changes": "Changes",
+    "command": "Command",
+    "path": "Path",
+    "detail": "Details",
+    "undoable": "You can undo this later from the checkpoints.",
+    "notUndoable": "Commands can change things outside the project files. Their effects cannot be undone.",
+    "approve": "Approve",
+    "approveAlways": "Approve for this run",
+    "approveAlwaysHint": "Approve for this run lets the agents use {{tool}} without asking again until the run ends.",
+    "reject": "Reject",
+    "reasonLabel": "Reason (optional)",
+    "reasonHint": "The agent reads it and chooses another approach.",
+    "reasonPlaceholder": "For example: run the tests with npm run test:unit instead",
+    "queue_one": "{{count}} more request waiting",
+    "queue_other": "{{count}} more requests waiting"
+  },
+  "question": {
+    "title": "{{agent}} has a question",
+    "answerLabel": "Your answer",
+    "hint": "Ctrl+Enter sends the answer.",
+    "later": "Answer later",
+    "send": "Send answer"
+  },
+  "live": {
+    "task": "{{id}} {{title}}: {{status}}",
+    "approval": "An agent is waiting for your approval."
+  },
+  "errors": {
+    "start": "The agents could not start",
+    "approve": "Your decision could not be sent",
+    "answer": "Your answer could not be sent",
+    "intervene": "Your message could not be sent",
+    "restore": "The changes could not be undone",
+    "settings": "The approval setting could not be saved"
+  }
+}

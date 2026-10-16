@@ -1,0 +1,692 @@
+{
+  "saved": "Enregistré",
+  "saveFailed": "Le réglage n’a pas pu être enregistré.",
+  "page": {
+    "title": "Paramètres",
+    "intro": "Toutes les options et tous les prompts qu’Ylide utilise, au même endroit. Les modifications sont enregistrées quand vous quittez un champ.",
+    "loading": "Chargement des paramètres",
+    "sectionsLabel": "Sections de {{page}}"
+  },
+  "units": {
+    "px": "px",
+    "times": "× taille de police",
+    "spaces": "espaces",
+    "tokens": "tokens",
+    "rounds": "tours",
+    "seconds": "secondes",
+    "characters": "caractères",
+    "slots": "slots",
+    "steps": "étapes"
+  },
+  "validation": {
+    "required": "Saisissez une valeur.",
+    "notNumber": "Saisissez un nombre.",
+    "notInteger": "Saisissez un nombre entier.",
+    "tooSmall": "La plus petite valeur autorisée est {{min}}.",
+    "tooLarge": "La plus grande valeur autorisée est {{max}}.",
+    "url": "Saisissez une adresse complète commençant par http:// ou https://."
+  },
+  "prompt": {
+    "isDefault": "Par défaut",
+    "isChanged": "Modifié",
+    "placeholders": "Champs",
+    "insertPlaceholder": "Insérer un champ",
+    "insertNamed": "Insérer {{name}} au curseur",
+    "resetNamed": "Réinitialiser {{name}}",
+    "size": "{{chars}} caractères, environ {{tokens}} tokens"
+  },
+  "general": {
+    "title": "Général",
+    "description": "Langue et apparence d’Ylide.",
+    "lookTitle": "Langue et thème",
+    "language": {
+      "label": "Langue",
+      "hint": "Système utilise la langue de votre système d’exploitation, actuellement {{language}}.",
+      "system": "Système"
+    },
+    "theme": {
+      "label": "Thème",
+      "hint": "Système suit le mode clair ou sombre de votre système d’exploitation.",
+      "dark": "Sombre",
+      "light": "Clair",
+      "system": "Système"
+    },
+    "updates": {
+      "title": "Version et mises à jour",
+      "version": "Version",
+      "versionValue": "Ylide {{version}}",
+      "label": "Mises à jour",
+      "check": "Rechercher des mises à jour",
+      "install": "Installer Ylide {{version}}",
+      "openNetwork": "Ouvrir les paramètres réseau",
+      "notChecked": "Ylide n’a pas recherché de mises à jour depuis son démarrage.",
+      "checking": "Ylide recherche des mises à jour.",
+      "upToDate": "Ylide est à jour.",
+      "available": "Ylide {{version}} est disponible.",
+      "disabled": "La recherche de mises à jour est désactivée dans Réseau et confidentialité.",
+      "failed": "La recherche de mises à jour a échoué : {{message}}",
+      "installFailed": "La mise à jour n’a pas été installée : {{message}}",
+      "preparing": "Préparation de la mise à jour.",
+      "downloading": "Téléchargement de la mise à jour : {{done}} sur {{total}}",
+      "downloadingUnknown": "Téléchargement de la mise à jour : {{done}}",
+      "handedOver": "Le programme d’installation est en cours d’exécution. Ylide se ferme puis redémarre.",
+      "progress": "Progression",
+      "notes": "Nouveautés de cette version",
+      "ready": "La mise à jour est téléchargée et vérifiée. L’installation redémarre Ylide.",
+      "installReady": "Installer et redémarrer"
+    }
+  },
+  "editor": {
+    "title": "Éditeur",
+    "description": "L’apparence du code dans l’éditeur.",
+    "textTitle": "Texte et mise en page",
+    "fontFamily": {
+      "label": "Police",
+      "hint": "Une liste de polices CSS. Si la première police n’est pas installée, la suivante est utilisée."
+    },
+    "fontSize": {
+      "label": "Taille de police"
+    },
+    "lineHeight": {
+      "label": "Hauteur de ligne",
+      "hint": "Espace entre les lignes, en multiple de la taille de police."
+    },
+    "tabSize": {
+      "label": "Largeur de tabulation",
+      "hint": "Nombre d’espaces qu’occupe un caractère de tabulation."
+    },
+    "wordWrap": {
+      "label": "Retour à la ligne automatique",
+      "hint": "Coupe les lignes au bord de l’éditeur au lieu de faire défiler horizontalement."
+    },
+    "minimap": {
+      "label": "Afficher la minimap",
+      "hint": "Un petit aperçu du fichier entier sur le bord droit."
+    },
+    "preview": "Aperçu"
+  },
+  "chat": {
+    "title": "Chat et prompts",
+    "description": "Les instructions que le modèle reçoit dans le chat et pour les éditions sur place.",
+    "chatTitle": "Chat",
+    "systemPrompt": {
+      "label": "Prompt système du chat",
+      "hint": "Envoyé au début de chaque conversation, avant vos messages et vos pièces jointes."
+    },
+    "contextBudget": {
+      "label": "Budget de contexte pour les pièces jointes",
+      "hint": "Limite supérieure pour les fichiers, dossiers et sélections joints avec @, actuellement {{tokens}} tokens. Les pièces jointes plus grandes sont raccourcies."
+    },
+    "inlineTitle": "Édition sur place",
+    "inlineDescription": "Utilisée quand vous sélectionnez du code et appuyez sur Ctrl+K.",
+    "inlinePrompt": {
+      "label": "Prompt d’édition sur place",
+      "hint": "Envoyé avec le code sélectionné, les lignes environnantes et votre instruction."
+    },
+    "history": {
+      "label": "Enregistrer les chats",
+      "hint": "Conserve les chats de chaque projet sur cet ordinateur, dans le dossier des données d’Ylide, pour que vous puissiez les rouvrir. Ils ne sont jamais envoyés nulle part."
+    },
+    "deleteAll": {
+      "label": "Chats enregistrés",
+      "hint": "Supprime de cet ordinateur les chats enregistrés de tous les projets.",
+      "button": "Supprimer tous les chats",
+      "confirmTitle": "Supprimer tous les chats enregistrés ?",
+      "confirmBody": "Les chats enregistrés de tous les projets seront supprimés de cet ordinateur. Cette action est irréversible.",
+      "confirm": "Tout supprimer",
+      "done": "Chats enregistrés supprimés"
+    }
+  },
+  "agents": {
+    "title": "Agents",
+    "description": "Ce que les agents peuvent faire sans demander, comment ils exécutent les commandes, et les rôles et messages avec lesquels ils travaillent.",
+    "approvalsTitle": "Autorisations",
+    "approvalsDescription": "Les agents lisent toujours sans demander. Ces réglages déterminent quand ils ont besoin de votre autorisation pour des modifications.",
+    "mode": {
+      "label": "Mode d’autorisation",
+      "ask": {
+        "title": "Demander d’abord",
+        "body": "Chaque modification, suppression et commande attend votre autorisation."
+      },
+      "autoSafe": {
+        "title": "Étapes sûres",
+        "body": "Les modifications s’exécutent automatiquement et peuvent être annulées avec les points de contrôle. Les suppressions et les commandes demandent toujours votre accord, sauf les commandes autorisées."
+      },
+      "autonomous": {
+        "title": "Autonome",
+        "body": "Tout s’exécute automatiquement, sauf ce que les deux interrupteurs ci-dessous réservent à votre autorisation."
+      }
+    },
+    "onlyAutonomous": "S’applique uniquement en mode autonome. Les modes « Demander d’abord » et « Étapes sûres » demandent toujours avant les suppressions et les commandes.",
+    "confirmCommands": {
+      "label": "Confirmer les commandes",
+      "hint": "Demander avant qu’un agent exécute une commande absente de la liste des commandes autorisées ci-dessous.",
+      "off": "Les agents peuvent exécuter n’importe quelle commande sans demander. Les commandes qui détruisent des données en dehors du projet restent bloquées."
+    },
+    "confirmDeletes": {
+      "label": "Confirmer les suppressions",
+      "hint": "Demander avant qu’un agent supprime un fichier ou un dossier.",
+      "off": "Les agents peuvent supprimer des fichiers sans demander. Vous pouvez les restaurer depuis un point de contrôle."
+    },
+    "commands": {
+      "title": "Commandes autorisées",
+      "description": "Une commande s’exécute sans demander quand elle commence par l’un de ces préfixes : cargo test autorise aussi cargo test --release. Une commande qui enchaîne ou redirige avec &&, ||, ;, |, `, $(, > ou < demande toujours, même si elle commence par un préfixe autorisé.",
+      "askMode": "En mode « Demander d’abord », les commandes autorisées attendent aussi votre autorisation.",
+      "empty": "Aucune commande n’est encore autorisée. Les agents demandent avant chaque commande.",
+      "alsoMatches": "autorise aussi {{example}}",
+      "remove": "Retirer {{prefix}}",
+      "newLabel": "Nouveau préfixe de commande",
+      "placeholder": "npm test",
+      "add": "Ajouter",
+      "problem": {
+        "chaining": "Un préfixe ne peut pas contenir &&, ||, ;, |, `, $(, > ou <.",
+        "duplicate": "Ce préfixe est déjà dans la liste.",
+        "empty": "Saisissez un préfixe de commande."
+      }
+    },
+    "reviewTitle": "Relecture",
+    "reviewEnabled": {
+      "label": "Relire chaque tâche",
+      "hint": "Le relecteur vérifie les modifications de chaque tâche terminée et peut la renvoyer au codeur."
+    },
+    "maxReviewRounds": {
+      "label": "Tours de relecture par tâche",
+      "hint": "Combien de fois le relecteur peut demander des modifications avant que la tâche soit considérée comme terminée."
+    },
+    "shellTitle": "Commandes",
+    "shellDescription": "Comment run_command lance les commandes dans le dossier du projet.",
+    "shellProgram": {
+      "label": "Programme shell",
+      "hint": "Par exemple powershell.exe, cmd.exe, bash ou zsh."
+    },
+    "shellArgs": {
+      "label": "Arguments du shell",
+      "hint": "Un argument par ligne ; ils sont placés avant la commande."
+    },
+    "shellTimeout": {
+      "label": "Limite de temps par défaut",
+      "hint": "Une commande qui dure plus longtemps est arrêtée. Les agents peuvent demander une limite plus longue par commande."
+    },
+    "shellOutput": {
+      "label": "Limite de sortie",
+      "hint": "Une sortie plus longue est raccourcie au milieu avant que l’agent la voie."
+    }
+  },
+  "roles": {
+    "title": "Rôles",
+    "description": "Chaque agent travaille dans un rôle : son prompt système, les outils qu’il peut utiliser et le nombre d’étapes qu’il peut effectuer.",
+    "add": "Ajouter un rôle",
+    "builtin": "Intégré",
+    "custom": "Personnalisé",
+    "noDescription": "Aucune description",
+    "toolCount_one": "{{count}} outil",
+    "toolCount_many": "{{count}} d’outils",
+    "toolCount_other": "{{count}} outils",
+    "stepCount_one": "{{count}} étape",
+    "stepCount_many": "{{count}} d’étapes",
+    "stepCount_other": "{{count}} étapes",
+    "name": "Nom",
+    "namePlaceholder": "Rédacteur de tests",
+    "id": "ID",
+    "idHint": "Utilisé dans les plans et quand les agents se consultent. Lettres minuscules, chiffres, - et _.",
+    "idProblem": {
+      "empty": "Saisissez un ID.",
+      "format": "Commencez par une lettre minuscule ; utilisez uniquement des lettres minuscules, des chiffres, - et _ (32 au maximum).",
+      "taken": "Un autre rôle utilise déjà cet ID."
+    },
+    "descriptionLabel": "Description",
+    "descriptionHint": "L’orchestrateur lit ceci pour décider quel rôle reçoit une tâche.",
+    "systemPrompt": "Prompt système",
+    "systemPromptHint": "Envoyé au début de chaque tâche traitée par ce rôle.",
+    "tools": "Outils autorisés",
+    "toolsHint": "Le rôle ne peut appeler que les outils cochés. Les écritures, suppressions et commandes suivent toujours les réglages d’autorisation ci-dessus.",
+    "unknownTools": "Également autorisés, mais inconnus de cette version : {{tools}}",
+    "risk": {
+      "read": "Lire le projet",
+      "write": "Modifier des fichiers",
+      "delete": "Supprimer des fichiers",
+      "execute": "Exécuter des commandes",
+      "communicate": "Échanger et rendre compte"
+    },
+    "temperature": "Température",
+    "temperatureHint": "Des valeurs plus élevées donnent des réponses plus variées. Laissez vide pour utiliser la valeur recommandée par le modèle.",
+    "modelDefault": "Valeur du modèle",
+    "maxSteps": "Limite d’étapes",
+    "maxStepsHint": "Nombre maximal de tours du modèle par tâche. La tâche s’arrête quand la limite est atteinte.",
+    "builtinHint": "Les rôles intégrés peuvent être modifiés et réinitialisés, mais pas supprimés.",
+    "customHint": "L’orchestrateur peut attribuer des tâches aux rôles personnalisés.",
+    "reset": "Réinitialiser le rôle",
+    "delete": "Supprimer le rôle",
+    "deleteTitle": "Supprimer le rôle {{name}} ?",
+    "deleteBody": "Les plans qui attribuent des tâches à {{id}} ne pourront plus l’utiliser. Cette action ne peut pas être annulée.",
+    "addTitle": "Ajouter un rôle",
+    "startFrom": "Partir de",
+    "startFromHint": "Copie le prompt système, les outils et les limites, que vous pourrez modifier ensuite.",
+    "startBlank": "Rôle vide avec outils de lecture",
+    "startCopy": "Copie de {{name}}",
+    "create": "Créer le rôle"
+  },
+  "templates": {
+    "title": "Gabarits de messages",
+    "description": "Les messages qu’Ylide envoie lui-même aux agents pendant une exécution. Les champs entre accolades sont remplis automatiquement ; insérez-les avec les boutons.",
+    "resetAll": "Réinitialiser tous les gabarits",
+    "unknown": "Non remplis, envoyés tels quels : {{names}}",
+    "missing": "Non utilisés : {{names}}",
+    "planner": {
+      "label": "Demande de planification",
+      "hint": "Envoyé à l’orchestrateur avec votre demande, les rôles disponibles et la structure du projet."
+    },
+    "coderTask": {
+      "label": "Tâche pour le codeur",
+      "hint": "Envoyé au rôle qui travaille sur une tâche, avec l’avancement de l’équipe."
+    },
+    "reviewerTask": {
+      "label": "Demande de relecture",
+      "hint": "Envoyé au relecteur avec le résumé du codeur et les modifications sous forme de diff."
+    },
+    "feedback": {
+      "label": "Modifications demandées",
+      "hint": "Renvoyé au codeur quand le relecteur demande des modifications."
+    },
+    "question": {
+      "label": "Question d’un autre agent",
+      "hint": "Envoyé quand un agent demande de l’aide à un autre."
+    },
+    "continue": {
+      "label": "Continuer",
+      "hint": "Envoyé quand un modèle répond par du texte au lieu d’appeler un outil. N’a aucun champ."
+    },
+    "repeatedFailure": {
+      "label": "Échec répété",
+      "hint": "Envoyé quand un agent répète le même appel d’outil qui échoue. N’a aucun champ."
+    }
+  },
+  "network": {
+    "title": "Réseau et confidentialité",
+    "statementTitle": "Pas de télémétrie, pas de compte.",
+    "statementBody": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il se connecte à Internet uniquement pour les quatre usages ci-dessous, et seulement tant qu’ils sont activés. Vos prompts et vos fichiers vont au modèle sur cet ordinateur, ou au serveur externe que vous avez configuré dans Avancé.",
+    "allowedTitle": "Connexions autorisées",
+    "allowedDescription": "Si vous désactivez l’une d’elles, Ylide n’effectue plus cette requête.",
+    "registry": {
+      "label": "Mises à jour de la liste des modèles",
+      "hint": "Recherche une liste des modèles plus récente au démarrage et quand vous l’actualisez, depuis l’adresse ci-dessous."
+    },
+    "registryUrl": {
+      "label": "Adresse de la liste des modèles",
+      "hint": "L’adresse depuis laquelle la liste des modèles est téléchargée. Elle indique les fichiers de modèles et les programmes de runtime qu’Ylide télécharge, avec leurs sommes de contrôle. La liste à l’adresse officielle doit être signée par Ylide. Une liste à une autre adresse est vérifiée avec la signature d’Ylide quand un fichier de signature (models.json.sig) se trouve à côté, et utilisée telle quelle sinon."
+    },
+    "models": {
+      "label": "Téléchargements de modèles",
+      "hint": "Télécharge les fichiers de modèles depuis Hugging Face (huggingface.co) quand vous lancez un téléchargement."
+    },
+    "runtimes": {
+      "label": "Téléchargements de runtimes",
+      "hint": "Télécharge des runtimes d’inférence comme le pack CUDA depuis GitHub (github.com) quand vous en installez un."
+    },
+    "logTitle": "Journal réseau",
+    "logDescription": "Toutes les requêtes effectuées par Ylide depuis son démarrage. Les nouvelles requêtes apparaissent ici en temps réel.",
+    "logLoading": "Chargement du journal réseau",
+    "logFailed": "Le journal réseau n’a pas pu être chargé : {{message}}",
+    "logEmpty": "Aucune requête pour l’instant. Rien n’a quitté cet ordinateur depuis le démarrage d’Ylide.",
+    "logTime": "Heure",
+    "logPurpose": "Usage",
+    "logUrl": "Adresse",
+    "logOutcome": "Résultat",
+    "updates": {
+      "label": "Recherche de mises à jour",
+      "hint": "Demande une fois à ylide.app, au démarrage, si une version plus récente d’Ylide existe. Seul le numéro de version est envoyé. La mise à jour elle-même n’est téléchargée que lorsque vous l’installez."
+    }
+  },
+  "advanced": {
+    "title": "Avancé",
+    "description": "Le stockage, le serveur de modèle local, un serveur externe et les dossiers qu’Ylide utilise.",
+    "storageTitle": "Stockage des modèles",
+    "modelsDir": {
+      "label": "Dossier des modèles",
+      "hint": "Les modèles téléchargés et importés sont stockés ici.",
+      "change": "Changer de dossier",
+      "useDefault": "Utiliser le dossier par défaut"
+    },
+    "serverTitle": "Serveur de modèle",
+    "serverDescription": "Options de llama-server, qui exécute le modèle sur cet ordinateur.",
+    "slots": {
+      "label": "Requêtes parallèles",
+      "hint": "Nombre de requêtes que le modèle principal traite en même temps, par exemple un agent et le chat. Les slots se partagent le contexte."
+    },
+    "context": {
+      "label": "Taille du contexte",
+      "hint": "Laissez vide pour utiliser la taille recommandée pour le modèle.",
+      "hintModel": "Laissez vide pour utiliser la taille recommandée pour {{model}} : {{tokens}} tokens (au maximum {{max}}).",
+      "placeholder": "Recommandée"
+    },
+    "runtime": {
+      "label": "Runtime",
+      "hint": "Le build de llama.cpp installé qui exécute le modèle.",
+      "auto": "Automatique",
+      "autoCurrent": "Automatique (actuellement {{variant}})",
+      "option": "{{variant}} · {{backend}} · {{version}}",
+      "missing": "{{variant}} (non installé)"
+    },
+    "extraArgs": {
+      "label": "Arguments supplémentaires de llama-server",
+      "hint": "Un argument par ligne ; ils sont ajoutés à la fin de la ligne de commande. Des arguments incorrects peuvent empêcher le modèle de démarrer.",
+      "placeholder": "--threads\n8"
+    },
+    "autostart": {
+      "label": "Lancer le modèle au démarrage",
+      "hint": "Lance le modèle choisi à l’ouverture d’Ylide.",
+      "hintModel": "Lance {{model}} à l’ouverture d’Ylide."
+    },
+    "appliesOnRestart": "Les modifications du serveur de modèle s’appliquent au prochain démarrage du modèle.",
+    "restart": "Redémarrer le modèle"
+  },
+  "endpoint": {
+    "title": "Serveur externe",
+    "description": "Utilisez un serveur compatible OpenAI comme Ollama, LM Studio ou un autre llama-server au lieu du runtime intégré. Vos prompts et votre code sont alors envoyés à cette adresse.",
+    "enabled": {
+      "label": "Utiliser le serveur externe",
+      "hint": "Le chat, les éditions sur place et les agents utilisent ce serveur au lieu d’un modèle local."
+    },
+    "baseUrl": {
+      "label": "Adresse",
+      "hint": "L’URL de base de l’API, qui se termine généralement par /v1."
+    },
+    "apiKey": {
+      "label": "Clé API",
+      "hint": "Facultative. Stockée dans le fichier de paramètres sur cet ordinateur et envoyée uniquement à ce serveur.",
+      "placeholder": "Aucune",
+      "show": "Afficher la clé API",
+      "hide": "Masquer la clé API"
+    },
+    "model": {
+      "label": "Modèle",
+      "hint": "Le nom de modèle attendu par le serveur. Laissez vide pour utiliser celui par défaut du serveur.",
+      "placeholder": "Par défaut du serveur"
+    },
+    "context": {
+      "label": "Taille du contexte",
+      "hint": "La fenêtre de contexte du modèle externe. Laissez vide pour utiliser la valeur par défaut de {{tokens}} tokens."
+    },
+    "connect": "Connecter",
+    "connectHint": "« Connecter » enregistre ces valeurs et bascule vers le serveur externe.",
+    "activeHint": "Connecté à {{model}}.",
+    "needUrl": "Saisissez d’abord l’adresse du serveur.",
+    "connected": "Connecté",
+    "connecting": "Connexion en cours",
+    "unreachable": "Injoignable"
+  },
+  "about": {
+    "title": "À propos d’Ylide",
+    "description": "La version et les dossiers qu’Ylide utilise sur cet ordinateur.",
+    "loading": "Chargement des informations de l’application",
+    "version": "Version",
+    "system": "Système",
+    "systemValue": "{{os}}, {{arch}}",
+    "configDir": "Dossier des paramètres",
+    "dataDir": "Dossier des données",
+    "modelsDir": "Dossier des modèles",
+    "copyPath": "Copier le chemin de {{name}}",
+    "logFile": "Fichier journal"
+  },
+  "modelsPage": {
+    "title": "Modèles",
+    "intro": "Ce qui s’exécute sur cet ordinateur, ce qui est installé et ce que vous pouvez télécharger. Chaque modèle s’exécute localement."
+  },
+  "active": {
+    "title": "Modèle actif",
+    "description": "Le modèle qui répond dans le chat, réécrit le code et fait fonctionner les agents.",
+    "none": "Aucun modèle lancé",
+    "noneSelected": "{{model}} {{quant}} est choisi pour le chat et les agents. Lancez-le pour commencer.",
+    "noneEndpoint": "Le serveur externe {{url}} est activé. Connectez-le pour l’utiliser.",
+    "noneChoose": "Choisissez un modèle installé ci-dessous, ou téléchargez-en un depuis le catalogue.",
+    "startAgain": "Relancer",
+    "status": {
+      "starting": "Démarrage du serveur",
+      "loading": "Chargement du modèle en mémoire",
+      "ready": "Prêt",
+      "stopped": "Arrêté",
+      "crashed": "Arrêté de manière inattendue"
+    },
+    "exitCode": "code de sortie {{code}} : {{message}}",
+    "runtime": "Runtime",
+    "device": "Périphérique",
+    "noDevice": "Aucun",
+    "context": "Contexte",
+    "contextValue": "{{tokens}} tokens",
+    "slots": "Requêtes parallèles",
+    "toolCalls": "Appels d’outils",
+    "tools": {
+      "unknown": {
+        "label": "Non testé",
+        "body": "Ylide teste l’appel d’outils peu après que le modèle est prêt. D’ici là, les agents peuvent être moins fiables."
+      },
+      "native": {
+        "label": "Natif",
+        "body": "Le modèle renvoie les appels d’outils au format standard, les agents fonctionnent donc de façon fiable."
+      },
+      "repaired": {
+        "label": "Réparé",
+        "body": "Le modèle écrit les appels d’outils sous forme de texte et Ylide les convertit. Les agents fonctionnent, mais un appel doit parfois être relancé."
+      },
+      "failed": {
+        "label": "Échec",
+        "body": "L’autotest n’a produit aucun appel d’outil utilisable. Les agents risquent de ne pas fonctionner avec ce modèle ; le chat et l’édition sur place ne sont pas concernés."
+      }
+    },
+    "commandLine": "Ligne de commande",
+    "commandLineHint": "La commande exacte qui a lancé le serveur",
+    "copyCommand": "Copier la ligne de commande",
+    "noCommand": "Aucun processus local : Ylide communique directement avec le serveur externe.",
+    "log": "Journal du serveur",
+    "logHint": "Sortie de llama-server",
+    "logLoading": "Chargement du journal du serveur",
+    "logFailed": "Le journal du serveur n’a pas pu être chargé : {{message}}",
+    "logEmpty": "Le serveur n’a encore rien écrit."
+  },
+  "installed": {
+    "title": "Modèles installés",
+    "description": "Les fichiers de modèles sur cet ordinateur et l’usage de chacun.",
+    "import": "Importer un fichier GGUF",
+    "imported": "{{name}} a été importé.",
+    "importFailed": "Le fichier n’a pas pu être importé.",
+    "emptyTitle": "Aucun modèle pour l’instant",
+    "emptyBody": "Téléchargez-en un depuis le catalogue ci-dessous ou importez un fichier GGUF.",
+    "unknownQuant": "GGUF",
+    "active": "Lancé",
+    "custom": "Importé",
+    "usedFor": {
+      "chat": "Chat et agents",
+      "autocomplete": "Autocomplétion",
+      "embedding": "Recherche de code"
+    },
+    "use": {
+      "chat": "Utiliser pour le chat et les agents",
+      "autocomplete": "Utiliser pour l’autocomplétion",
+      "embedding": "Utiliser pour la recherche de code"
+    },
+    "start": "Lancer",
+    "size": "{{size}} GB",
+    "files_one": "{{count}} fichier",
+    "files_many": "{{count}} de fichiers",
+    "files_other": "{{count}} fichiers",
+    "delete": "Supprimer {{name}}",
+    "deleteTitle": "Supprimer {{name}} ?",
+    "deleteBody": "Les fichiers du modèle ({{size}} GB) seront supprimés de cet ordinateur.",
+    "forgetBody": "Ylide oublie ce modèle. Le fichier reste là où il est ; rien n’est supprimé.",
+    "deleteActive": "Ce modèle est en cours d’exécution. Il sera d’abord arrêté.",
+    "deleteAssigned": "S’il est choisi pour le chat, l’autocomplétion ou la recherche de code, ce choix sera effacé.",
+    "deleteAgain": "Vous pourrez le télécharger à nouveau depuis le catalogue."
+  },
+  "downloads": {
+    "title": "Téléchargements",
+    "description": "Téléchargements en cours, en pause et échoués. Les téléchargements en pause reprennent là où ils se sont arrêtés.",
+    "empty": "Aucun téléchargement en cours.",
+    "state": {
+      "downloading": "Téléchargement",
+      "resuming": "Reprise",
+      "verifying": "Vérification du fichier",
+      "paused": "En pause",
+      "failed": "Échec"
+    },
+    "amount": "{{done}} sur {{total}} GB ({{percent}} %)",
+    "percent": "{{percent}} %",
+    "speed": "{{speed}}/s",
+    "remaining": "Temps restant : {{time}}",
+    "file": "fichier {{index}} sur {{count}}",
+    "pause": "Mettre en pause le téléchargement de {{name}}",
+    "resume": "Reprendre le téléchargement de {{name}}",
+    "cancel": "Annuler le téléchargement de {{name}}",
+    "progressLabel": "Progression du téléchargement de {{name}}",
+    "failed": "{{message}}"
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "description_one": "{{count}} modèle issu de la liste d’Ylide, vérifié pour un usage local.",
+    "description_many": "{{count}} de modèles issus de la liste d’Ylide, vérifiés pour un usage local.",
+    "description_other": "{{count}} modèles issus de la liste d’Ylide, vérifiés pour un usage local.",
+    "filter": "Afficher les modèles pour",
+    "all": "Tous",
+    "shown_one": "{{count}} modèle",
+    "shown_many": "{{count}} de modèles",
+    "shown_other": "{{count}} modèles",
+    "none": "Aucun modèle de la liste n’a ce rôle.",
+    "model": "Modèle",
+    "parameters": "Paramètres",
+    "paramsValue": "{{value}}B",
+    "activeValue": "{{value}}B actifs",
+    "paramsMoe": "{{total}}B au total, {{active}}B actifs par token (mélange d’experts)",
+    "paramsDense": "{{total}}B (dense)",
+    "maxContext": "Contexte max.",
+    "toolCalling": "Utilisation des outils",
+    "license": "Licence",
+    "commercialYes": "Usage commercial autorisé",
+    "commercialCheck": "Vérifiez les conditions avant un usage commercial",
+    "readLicense": "Lire la licence",
+    "publisher": "Éditeur",
+    "released": "Date de sortie",
+    "context": "Contexte",
+    "contextValue": "{{max}} max., {{recommended}} recommandé",
+    "reasoning": "Réflexion",
+    "reasoningLevel": {
+      "none": "Non",
+      "optional": "Facultative",
+      "always": "Toujours active"
+    },
+    "roles": "Adapté à",
+    "source": "Source",
+    "modelCard": "Fiche du modèle",
+    "strengths": "Points forts",
+    "benchmarks": "Benchmarks",
+    "benchmark": "Benchmark",
+    "score": "Score",
+    "scoreValue": "{{score}} {{unit}}",
+    "measuredBy": "Mesuré par",
+    "selfReported": "Éditeur",
+    "independent": "Indépendant",
+    "date": "Date",
+    "sourceLink": "Source",
+    "openSource": "Ouvrir la source de {{name}}",
+    "quantizations": "Quantifications",
+    "quant": "Quantification",
+    "bits": "Bits par poids",
+    "size": "Téléchargement",
+    "fit": "Sur cet ordinateur",
+    "plan": "{{placement}} · environ {{tps}} tok/s · {{memory}}",
+    "memVram": "{{value}} GiB de VRAM",
+    "memRam": "{{value}} GiB de RAM",
+    "download": "Télécharger",
+    "downloadNamed": "Télécharger {{name}} {{quant}}",
+    "downloadSize": "Télécharger {{size}} GB",
+    "downloadsOff": "Les téléchargements de modèles sont désactivés dans Réseau et confidentialité.",
+    "downloadsOffNote": "Les téléchargements de modèles sont désactivés. Activez-les dans Réseau et confidentialité pour télécharger depuis le catalogue.",
+    "openNetwork": "Ouvrir les paramètres réseau",
+    "noSpace": "Espace disque insuffisant ({{free}} GB libres).",
+    "noSpaceShort": "Espace disque insuffisant",
+    "installedBadge": "Installé",
+    "downloadingBadge": "Téléchargement",
+    "mark": {
+      "primary": "Recommandé",
+      "autocomplete": "Recommandé pour l’autocomplétion",
+      "embedding": "Recommandé pour la recherche de code"
+    },
+    "recTitle": "Recommandé pour cet ordinateur",
+    "recLoading": "Sélection des modèles adaptés à cet ordinateur",
+    "recFailed": "La recommandation n’a pas pu être calculée : {{message}}",
+    "recNone": "Aucun modèle de la liste ne convient bien à cet ordinateur.",
+    "recPlan": "{{placement}} · environ {{tps}} tok/s · contexte {{context}}",
+    "budgetGpu": "{{gpu}} : {{vram}} GiB de VRAM, {{ram}} GiB de RAM utilisables",
+    "budgetUnified": "{{memory}} GiB de mémoire unifiée utilisables",
+    "budgetCpu": "Pas de GPU : {{ram}} GiB de RAM utilisables",
+    "showEntry": "Afficher les détails",
+    "alternatives": "Alternatives",
+    "uncensored": {
+      "title": "Variantes non censurées",
+      "note": "Les variantes non censurées sont des versions de modèles de la liste ci-dessus dont l’entraînement au refus a été supprimé. Elles répondent aussi aux demandes que l’original refuse. Ylide ne les choisit jamais de lui-même, et leurs capacités en code et en utilisation des outils n’ont pas été mesurées de façon indépendante.",
+      "badge": "Non censuré",
+      "badgeHint": "Entraînement au refus supprimé. Ylide ne choisit jamais ce modèle de lui-même."
+    },
+    "own": {
+      "title": "Pas dans la liste ?",
+      "body": "Utilisez n’importe quel fichier de modèle GGUF présent sur cet ordinateur."
+    }
+  },
+  "runtimes": {
+    "title": "Runtimes",
+    "description": "Les builds de llama.cpp qui exécutent les modèles. Ylide choisit le meilleur pour votre matériel, sauf si vous en choisissez un.",
+    "loading": "Vérification des runtimes installés",
+    "loadFailed": "Les runtimes n’ont pas pu être vérifiés : {{message}}",
+    "installed": "Runtimes installés",
+    "available": "Disponibles au téléchargement",
+    "variant": "Variante",
+    "backend": "Backend",
+    "version": "Version",
+    "origin": "Origine",
+    "size": "Téléchargement",
+    "action": "Action",
+    "bundled": "Inclus",
+    "downloaded": "Téléchargé",
+    "selected": "Sélectionné",
+    "inUse": "Utilisé",
+    "use": "Utiliser ce runtime",
+    "chooseAuto": "Choisir automatiquement",
+    "fixed": "Vous avez choisi {{variant}}. Ylide l’utilise même si un meilleur runtime est disponible.",
+    "noneInstalled": "Aucun runtime n’est installé.",
+    "recommended": "Recommandé",
+    "install": "Installer",
+    "installNamed": "Installer {{variant}}",
+    "busy": "Un autre runtime est en cours d’installation.",
+    "downloadsOff": "Les téléchargements de runtimes sont désactivés dans Réseau et confidentialité.",
+    "extracting": "Décompression",
+    "percent": "{{percent}} %",
+    "progressLabel": "Progression de l’installation de {{variant}}",
+    "failed": "{{variant}} n’a pas pu être installé : {{message}}",
+    "done": "{{variant}} est installé.",
+    "applyHint": "Le nouveau runtime sera utilisé au prochain démarrage du modèle."
+  },
+  "registry": {
+    "title": "Liste des modèles",
+    "description": "La liste des modèles, des quantifications et des sommes de contrôle à partir de laquelle le catalogue est construit.",
+    "version": "Version",
+    "updatedAt": "Dernière mise à jour",
+    "origin": "Origine",
+    "originName": {
+      "bundled": "Incluse",
+      "cache": "Enregistrée",
+      "remote": "Téléchargée"
+    },
+    "originHint": {
+      "bundled": "La liste fournie avec cette version d’Ylide.",
+      "cache": "Une liste plus récente téléchargée précédemment.",
+      "remote": "Téléchargée pendant cette session."
+    },
+    "models": "Modèles",
+    "url": "Adresse",
+    "refresh": "Rechercher une mise à jour",
+    "refreshHint": "La vérification télécharge uniquement la liste des modèles, rien d’autre.",
+    "updated": "Liste mise à jour vers la version {{version}}.",
+    "upToDate": "La liste des modèles est à jour.",
+    "disabled": "Les mises à jour de la liste des modèles sont désactivées dans Réseau et confidentialité.",
+    "disabledHint": "Les mises à jour de la liste des modèles sont désactivées.",
+    "failed": "La mise à jour a échoué : {{message}}"
+  }
+}
