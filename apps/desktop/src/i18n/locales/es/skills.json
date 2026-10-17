@@ -1,0 +1,116 @@
+{
+  "page": {
+    "title": "Habilidades",
+    "intro": "Las habilidades enseñan nuevas tareas a tus modelos: una carpeta con instrucciones (SKILL.md) y archivos de referencia opcionales, en el formato abierto Agent Skills. Funcionan con cualquier modelo, en el chat y para los agentes. Activa o desactiva cada una por separado."
+  },
+  "trust": "Las habilidades son instrucciones escritas por terceros. Lee una habilidad antes de activarla: Ylide te la muestra la primera vez. Las habilidades nunca ejecutan nada por sí mismas; un comando de una habilidad solo se ejecuta a través de los agentes y su modo de aprobación.",
+  "loading": "Cargando las habilidades",
+  "loadFailed": "No se pudieron cargar las habilidades: {{message}}",
+  "installed": {
+    "title": "Instaladas",
+    "description": "Se guardan en la carpeta de datos de Ylide y están disponibles en todos los proyectos. Las habilidades nuevas empiezan desactivadas.",
+    "emptyTitle": "Todavía no hay habilidades",
+    "emptyBody": "Añade habilidades desde un repositorio de GitHub, por ejemplo https://github.com/morluto/rea, o desde una carpeta de este equipo."
+  },
+  "project": {
+    "title": "Del proyecto",
+    "description": "Habilidades de la carpeta .agents/skills del proyecto abierto. Ylide las lee ahí y nunca las modifica; activar una solo afecta a este proyecto.",
+    "empty": "Este proyecto no tiene habilidades en <0>.agents/skills</0>."
+  },
+  "usage": {
+    "title": "Cómo usan los modelos las habilidades",
+    "description": "Los modelos locales tienen contextos pequeños, así que las habilidades se cargan paso a paso.",
+    "agents": "<0>Los agentes</0> ven el nombre y la descripción de cada habilidad activada. Cuando una tarea encaja, leen la habilidad con la herramienta <1>skill_read</1>, también sus archivos de referencia, por partes.",
+    "chat": "<0>El chat</0> ve la misma lista. Para darle al chat las instrucciones de una habilidad, menciónala en tu mensaje, p. ej. <1>@reverse-engineer-anything</1>; a partir de ahí queda adjunta durante el resto de la conversación.",
+    "scripts": "<0>Los scripts</0> de una habilidad nunca se ejecutan por sí solos. Un agente solo puede ejecutar uno como un comando normal, bajo tu modo de aprobación.",
+    "mcp": "<0>Herramientas de una habilidad:</0> algunas habilidades, como las de REA, esperan su propio servidor MCP y sus propios programas. Ylide solo le da al modelo sus instrucciones; los servidores MCP aún no son compatibles."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "del proyecto",
+    "on": "Activada",
+    "broken": "No se puede usar",
+    "commit": "@ {{commit}}",
+    "files_one": "{{count}} archivo",
+    "files_many": "{{count}} archivos",
+    "files_other": "{{count}} archivos",
+    "openOnGithub": "GitHub",
+    "view": "Ver contenido",
+    "checkUpdate": "Buscar actualizaciones",
+    "remove": "Quitar {{name}}",
+    "switch": "Usar {{name}}"
+  },
+  "content": {
+    "title": "Habilidad {{name}}",
+    "note": "Este es el texto que reciben los modelos. Lo escribió un tercero.",
+    "confirmNote": "Lee la habilidad antes de activarla. La escribió un tercero; a partir de ahora, los modelos ven su nombre y su descripción, y leen o reciben sus instrucciones cuando una tarea encaja.",
+    "loading": "Cargando la habilidad",
+    "failed": "No se pudo leer la habilidad: {{message}}",
+    "files_one": "Además de SKILL.md, {{count}} archivo:",
+    "files_many": "Además de SKILL.md, {{count}} archivos:",
+    "files_other": "Además de SKILL.md, {{count}} archivos:",
+    "textLabel": "SKILL.md de {{name}}",
+    "enable": "Activar"
+  },
+  "update": {
+    "upToDate": "{{name}} está actualizada.",
+    "checkFailed": "No se pudieron buscar actualizaciones de {{name}}",
+    "title": "Actualizar {{name}}",
+    "introGithub": "Hay una versión más reciente en {{source}} (commit {{commit}}).",
+    "introFolder": "La carpeta {{source}} ha cambiado.",
+    "version": "Versión {{from}} → {{to}}.",
+    "summary": "{{added}} añadidos, {{changed}} modificados, {{removed}} eliminados.",
+    "kind": {
+      "added": "añadido",
+      "changed": "modificado",
+      "removed": "eliminado"
+    },
+    "note": "La habilidad sigue activada o desactivada, como estaba.",
+    "install": "Actualizar",
+    "done": "{{name}} se ha actualizado.",
+    "failed": "No se pudo actualizar {{name}}"
+  },
+  "remove": {
+    "title": "¿Quitar {{name}}?",
+    "body": "Los archivos de la habilidad se eliminan de la carpeta de datos de Ylide. Puedes volver a añadirla más tarde.",
+    "confirm": "Quitar"
+  },
+  "add": {
+    "fromGithub": "Añadir desde GitHub",
+    "fromFolder": "Añadir desde una carpeta",
+    "title": "Añadir habilidades desde GitHub",
+    "intro": "Pega la dirección de un repositorio o de una carpeta dentro de él. Ylide lista cada SKILL.md que contiene; tú eliges cuáles instalar.",
+    "permission": "Las descargas de habilidades están desactivadas. Para listar y descargar habilidades, Ylide consulta a GitHub (api.github.com y raw.githubusercontent.com). No se envía nada sobre ti. Puedes volver a desactivarlo en Configuración › Red y privacidad.",
+    "addressLabel": "Dirección del repositorio",
+    "addressHint": "Por ejemplo https://github.com/morluto/rea o https://github.com/owner/repo/tree/main/skills",
+    "search": "Listar habilidades",
+    "searching": "Consultando a GitHub",
+    "found_one": "{{count}} habilidad en {{repo}} en el commit",
+    "found_many": "{{count}} habilidades en {{repo}} en el commit",
+    "found_other": "{{count}} habilidades en {{repo}} en el commit",
+    "chooseAll": "Elegir todas",
+    "chooseNone": "No elegir ninguna",
+    "listLabel": "Habilidades del repositorio",
+    "alreadyInstalled": "Instalada",
+    "notInstallable": "No se puede instalar",
+    "viewContent": "Ver SKILL.md",
+    "startOff": "Las habilidades nuevas empiezan desactivadas. Las activas en la página Habilidades, después de haber visto su contenido.",
+    "install_one": "Instalar {{count}} habilidad",
+    "install_many": "Instalar {{count}} habilidades",
+    "install_other": "Instalar {{count}} habilidades",
+    "installNone": "Instalar",
+    "installed_one": "{{count}} habilidad añadida",
+    "installed_many": "{{count}} habilidades añadidas",
+    "installed_other": "{{count}} habilidades añadidas",
+    "installedBody_one": "Todavía está desactivada. Actívala cuando la hayas leído.",
+    "installedBody_many": "Todavía están desactivadas. Activa cada una cuando la hayas leído.",
+    "installedBody_other": "Todavía están desactivadas. Activa cada una cuando la hayas leído.",
+    "installFailed": "No se pudieron instalar las habilidades",
+    "folderFailed": "No se pudieron añadir las habilidades de esta carpeta"
+  },
+  "permission": {
+    "title": "¿Permitir descargas de habilidades?",
+    "body": "Entonces Ylide consulta a GitHub (api.github.com y raw.githubusercontent.com) cuando listas, instalas o actualizas habilidades. No se envía nada sobre ti. Puedes volver a desactivarlo en Configuración › Red y privacidad.",
+    "allow": "Permitir descargas de habilidades"
+  }
+}

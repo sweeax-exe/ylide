@@ -48,6 +48,9 @@ pub struct NetworkSettings {
     pub allow_runtime_downloads: bool,
     /// Ask ylide.app for a newer version at startup (and when the user checks).
     pub allow_update_checks: bool,
+    /// Let the Skills page list and download skills from GitHub. Off until the
+    /// user switches it on (the Skills page asks on first use).
+    pub allow_skill_downloads: bool,
     pub registry_url: String,
 }
 
@@ -58,6 +61,7 @@ impl Default for NetworkSettings {
             allow_model_downloads: true,
             allow_runtime_downloads: true,
             allow_update_checks: true,
+            allow_skill_downloads: false,
             registry_url: DEFAULT_REGISTRY_URL.into(),
         }
     }
@@ -322,6 +326,7 @@ mod tests {
         let s: Settings = serde_json::from_str(r#"{"network":{"allowModelDownloads":false}}"#).unwrap();
         assert!(!s.network.allow_model_downloads);
         assert!(s.network.allow_update_checks);
+        assert!(!s.network.allow_skill_downloads, "skill downloads wait for the user's go");
     }
 
     #[test]

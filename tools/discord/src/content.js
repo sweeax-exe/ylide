@@ -122,8 +122,10 @@ export function contributing(ctx) {
         ),
         separator(),
         text(
-          (links.github ? `The code and the contribution guide are on GitHub.` : 'The repository goes public on GitHub soon.') +
-            ` Until then, talk to us in ${ch(ctx, 'dev')}, or help translate the app in ${ch(ctx, 'translations')}.`,
+          (links.github
+            ? `The code and the contribution guide are on GitHub. Talk to us in ${ch(ctx, 'dev')}`
+            : `The repository goes public on GitHub soon. Until then, talk to us in ${ch(ctx, 'dev')}`) +
+            `, or help translate the app in ${ch(ctx, 'translations')}.`,
         ),
         links.github ? row(button({ label: 'Source code', url: links.github })) : null,
         text('-# Contributors get the Contributor role.'),

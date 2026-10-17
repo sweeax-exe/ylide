@@ -10,7 +10,7 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
 name = "agent"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "async-trait",
  "getrandom 0.4.3",
@@ -21,6 +21,7 @@ dependencies = [
  "serde_json",
  "sha2 0.11.1",
  "similar",
+ "skills",
  "thiserror 2.0.21",
  "tokio",
  "tokio-util",
@@ -1014,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "downloader"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "futures-util",
  "hex",
@@ -1816,7 +1817,7 @@ dependencies = [
 
 [[package]]
 name = "hardware"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "libloading 0.9.0",
  "serde",
@@ -2183,8 +2184,9 @@ dependencies = [
 
 [[package]]
 name = "inference"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
+ "base64 0.22.1",
  "futures-util",
  "getrandom 0.4.3",
  "hardware",
@@ -3739,7 +3741,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "registry"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "hardware",
  "jsonschema",
@@ -4309,6 +4311,18 @@ name = "siphasher"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33f4fe9184a62d842c9ef383018f3306d8ba224fd9d836f56d7288308847c256"
+
+[[package]]
+name = "skills"
+version = "0.1.6"
+dependencies = [
+ "serde",
+ "serde_json",
+ "similar",
+ "tempfile",
+ "thiserror 2.0.21",
+ "ts-rs",
+]
 
 [[package]]
 name = "slab"
@@ -6192,7 +6206,7 @@ checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
 
 [[package]]
 name = "workspace"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "dunce",
  "grep-matcher",
@@ -6289,7 +6303,7 @@ dependencies = [
 
 [[package]]
 name = "ylide-desktop"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "agent",
  "async-trait",
@@ -6297,6 +6311,7 @@ dependencies = [
  "dirs",
  "downloader",
  "flate2",
+ "futures-util",
  "getrandom 0.4.3",
  "hardware",
  "hex",
@@ -6310,6 +6325,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.11.1",
+ "skills",
  "tar",
  "tauri",
  "tauri-build",

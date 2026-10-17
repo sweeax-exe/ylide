@@ -11,6 +11,7 @@ use crate::network::NetworkLogEntry;
 use crate::registry_service::{self, RefreshOutcome};
 use crate::runtime::{RuntimeStatus, ServerInfo};
 use crate::settings::{ModelSelection, Settings};
+use crate::skill_service;
 use crate::state::AppState;
 use crate::updates::{self, UpdateOutcome, UpdateProgress};
 use crate::watcher::ProjectWatcher;
@@ -20,6 +21,8 @@ use registry::estimate::{ComputeBudget, KvCacheType, Plan};
 use registry::store::RegistryOrigin;
 use registry::{Recommendation, Registry};
 use serde::Serialize;
+use skills::github::RepoListing;
+use skills::{SkillContent, SkillInfo, SkillUpdate};
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Emitter, State};
 use ts_rs::TS;
@@ -199,6 +202,30 @@ pub fn model_import(state: State<'_, AppState>, path: String) -> Cmd<InstalledMo
     state.models.import_custom(std::path::Path::new(&path), &state.registry())
 }
 
+/// Switches image input on for a registry model: downloads its vision
+/// projector (checksum verified); every installed variant loads it from the
+/// next start on.
+#[tauri::command]
+pub fn model_projector_download(app: AppHandle, state: State<'_, AppState>, model_id: String) -> Cmd<DownloadJob> {
+    let settings = state.settings();
+    state.net.check(&settings.network, crate::network::NetPurpose::ModelDownload)?;
+    let registry = state.registry();
+    state.models.start_projector_download(&app, state.net.clone(), &registry, &model_id)
+}
+
+/// Sets the projector of an installed model: a file the user picked (`path`),
+/// or none, which switches image input off and deletes a downloaded projector.
+#[tauri::command]
+pub fn model_projector_set(state: State<'_, AppState>, model_id: String, path: Option<String>) -> Cmd<Vec<InstalledModel>> {
+    match path {
+        Some(path) => {
+            state.models.use_projector_file(&model_id, std::path::Path::new(path.trim()))?;
+        }
+        None => state.models.disable_projector(&model_id)?,
+    }
+    Ok(state.models.installed())
+}
+
 // ---------------------------------------------------------------- runtime & server
 
 #[tauri::command]
@@ -214,11 +241,31 @@ pub fn runtime_install(app: AppHandle, state: State<'_, AppState>, variant: Stri
     state.runtime.start_install(&app, state.net.clone(), &state.registry(), &variant)
 }
 
-/// Memory plan for a registry model on this machine (largest context that fits).
+/// An image file the user picked for the chat or an agent request, as a data
+/// URL. The web view has no file access of its own; it scales the image down.
+#[tauri::command]
+pub async fn image_load(path: String) -> Cmd<String> {
+    use inference::image::{MAX_IMAGE_BYTES, data_url, image_info};
+    blocking(move || {
+        let path = std::path::PathBuf::from(path.trim());
+        let size = std::fs::metadata(&path).map_err(|_| AppError::new("not_found", path.display()))?.len();
+        if size > MAX_IMAGE_BYTES as u64 {
+            return Err(AppError::new("bad_image", format!("{}: larger than {} MB", path.display(), MAX_IMAGE_BYTES >> 20)));
+        }
+        let bytes = std::fs::read(&path)?;
+        let info = image_info(&bytes).map_err(|e| AppError::new("bad_image", format!("{}: {e}", path.display())))?;
+        Ok(data_url(info.format, &bytes))
+    })
+    .await
+}
+
+/// Memory plan for a registry model on this machine (largest context that
+/// fits), with its vision projector when image input is on.
 fn plan_for(state: &AppState, model_id: &str, quant: &str) -> Option<Plan> {
     let reg = state.registry();
     let model = reg.models.iter().find(|m| m.id == model_id)?;
     let variant = model.variants.iter().find(|v| v.quant == quant)?;
+    let projector = state.models.find(model_id, quant).and_then(|m| m.projector).map_or(0, |p| p.size_bytes);
     let hw = state.hardware();
     let budget = ComputeBudget::from_profile(&hw, &reg.gpu_hints);
     let settings = state.settings();
@@ -227,7 +274,7 @@ fn plan_for(state: &AppState, model_id: &str, quant: &str) -> Option<Plan> {
     contexts.dedup();
     for context in contexts {
         for kv in [KvCacheType::F16, KvCacheType::Q8_0] {
-            if let Some(p) = registry::estimate::plan(model, variant, context, kv, &budget) {
+            if let Some(p) = registry::estimate::plan_with_projector(model, variant, projector, context, kv, &budget) {
                 return Some(p);
             }
         }
@@ -489,8 +536,8 @@ pub async fn inline_edit(state: State<'_, AppState>, request: InlineEditRequest,
 // ---------------------------------------------------------------- agents
 
 #[tauri::command]
-pub async fn agent_start(state: State<'_, AppState>, goal: String, previous_run: Option<String>, on_event: Channel<AgentEvent>) -> Cmd<String> {
-    agents::start(&state, goal, previous_run, on_event).await
+pub async fn agent_start(state: State<'_, AppState>, goal: String, images: Option<Vec<String>>, previous_run: Option<String>, on_event: Channel<AgentEvent>) -> Cmd<String> {
+    agents::start(&state, goal, images.unwrap_or_default(), previous_run, on_event).await
 }
 
 /// The open project's last agent run, kept across restarts; none without a project.
@@ -525,6 +572,76 @@ pub fn agent_control(state: State<'_, AppState>, run_id: String, action: String)
 pub fn agent_intervene(state: State<'_, AppState>, run_id: String, agent_id: String, text: String) -> Cmd<()> {
     state.agents.get(&run_id)?.ctx.control.intervene(&agent_id, &text);
     Ok(())
+}
+
+// ---------------------------------------------------------------- skills
+
+// Installed skills work with every model; the open project's own skills
+// (.agents/skills) are listed too and switched per project.
+
+#[tauri::command]
+pub async fn skills_list(state: State<'_, AppState>) -> Cmd<Vec<SkillInfo>> {
+    let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
+    blocking(move || Ok(skill_service::list(&store, ws.as_ref()))).await
+}
+
+/// Switches a skill on or off (`id` from `SkillInfo`); returns the new list.
+#[tauri::command]
+pub async fn skills_set_enabled(state: State<'_, AppState>, id: String, enabled: bool) -> Cmd<Vec<SkillInfo>> {
+    let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
+    blocking(move || {
+        skill_service::set_enabled(&store, ws.as_ref(), &id, enabled)?;
+        Ok(skill_service::list(&store, ws.as_ref()))
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn skills_remove(state: State<'_, AppState>, name: String) -> Cmd<Vec<SkillInfo>> {
+    let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
+    blocking(move || {
+        store.remove(&name)?;
+        Ok(skill_service::list(&store, ws.as_ref()))
+    })
+    .await
+}
+
+/// SKILL.md in full and the skill's files.
+#[tauri::command]
+pub async fn skills_content(state: State<'_, AppState>, id: String) -> Cmd<SkillContent> {
+    let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
+    blocking(move || skill_service::content(&store, ws.as_ref(), &id)).await
+}
+
+/// Lists the skills in a GitHub repository (needs the skill-download permission).
+#[tauri::command]
+pub async fn skills_browse(state: State<'_, AppState>, address: String) -> Cmd<RepoListing> {
+    skill_service::browse(&state, &address).await
+}
+
+/// Installs the chosen folders of the repository listed by `skills_browse`, switched off.
+#[tauri::command]
+pub async fn skills_install_github(state: State<'_, AppState>, repo: String, git_ref: Option<String>, commit: String, paths: Vec<String>) -> Cmd<Vec<SkillInfo>> {
+    skill_service::install_github(&state, &repo, git_ref, &commit, &paths).await
+}
+
+/// Installs the skills of a folder on this computer (copied), switched off.
+#[tauri::command]
+pub async fn skills_install_folder(state: State<'_, AppState>, path: String) -> Cmd<Vec<SkillInfo>> {
+    let store = state.skills.clone();
+    blocking(move || skill_service::install_folder(&store, std::path::Path::new(path.trim()))).await
+}
+
+/// What a newer version of an installed skill would change.
+#[tauri::command]
+pub async fn skills_check_update(state: State<'_, AppState>, name: String) -> Cmd<SkillUpdate> {
+    skill_service::check_update(&state, &name).await
+}
+
+/// Installs the version `skills_check_update` showed.
+#[tauri::command]
+pub async fn skills_update(state: State<'_, AppState>, name: String, commit: String) -> Cmd<SkillInfo> {
+    skill_service::update(&state, &name, &commit).await
 }
 
 #[tauri::command]

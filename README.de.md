@@ -45,9 +45,10 @@ keine Telemetrie, und dein Code verlässt deinen Rechner nie.
 ## Warum Ylide
 
 - **Privat von Grund auf.** Modelle, Prompts, Chats und Code bleiben auf
-  deiner Festplatte. Ylide geht nur für vier Dinge ins Netz, jedes abschaltbar
-  und protokolliert: die Modellliste, die Update-Prüfung und die Modell- und
-  Laufzeit-Downloads, die du selbst startest.
+  deiner Festplatte. Ylide geht nur für fünf Dinge ins Netz, jedes abschaltbar
+  und protokolliert: die Modellliste, die Update-Prüfung, die Modell- und
+  Laufzeit-Downloads, die du selbst startest, und Skill-Downloads von GitHub,
+  die aus bleiben, bis du sie erlaubst.
 - **Das richtige Modell für deinen Rechner.** Ein Hardware-Scan misst
   Grafikspeicher, Arbeitsspeicher, CPU und Festplatte und empfiehlt das
   stärkste Coding-Modell, das flüssig läuft, mit passender Quantisierung und
@@ -116,7 +117,7 @@ Fragen? Im deutschen Kanal oder in `#help` auf dem
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/how-it-works-dark.png">
-    <img alt="Editor, Chat und Agents sprechen mit einem llama-server auf 127.0.0.1, der GGUF-Modelldateien von deiner Festplatte ausführt. Nur vier abschaltbare Türen führen nach draußen: die signierte Modellliste und die Update-Prüfung von ylide.app, Modell-Downloads von Hugging Face und Laufzeit-Downloads von den llama.cpp-Releases, beide per SHA-256 geprüft." src="docs/images/how-it-works-light.png" width="100%">
+    <img alt="Editor, Chat und Agents sprechen mit einem llama-server auf 127.0.0.1, der GGUF-Modelldateien von deiner Festplatte ausführt. Nur fünf abschaltbare Türen führen nach draußen: die signierte Modellliste und die Update-Prüfung von ylide.app, Modell-Downloads von Hugging Face und Laufzeit-Downloads von den llama.cpp-Releases, beide per SHA-256 geprüft, und Skill-Downloads von GitHub, aus, bis du sie erlaubst, und auf einen Commit festgelegt." src="docs/images/how-it-works-light.png" width="100%">
   </picture>
 </p>
 
@@ -147,7 +148,7 @@ auf deine Freigabe.
 ## Datenschutz
 
 Ylide hat kein Konto, keine Telemetrie und kein Cloud-Backend. Es geht nur
-für vier Zwecke ins Netz, jeder abschaltbar unter *Einstellungen → Netzwerk
+für fünf Zwecke ins Netz, jeder abschaltbar unter *Einstellungen → Netzwerk
 und Datenschutz* und im Netzwerkprotokoll vermerkt:
 
 | Tür | Wohin | Was sie schützt |
@@ -156,6 +157,7 @@ und Datenschutz* und im Netzwerkprotokoll vermerkt:
 | Update-Prüfung | `ylide.app` | sendet nur `Ylide/<Version>`; Installer sind signiert |
 | Modell-Downloads | `huggingface.co` | SHA-256 aus der signierten Modellliste |
 | Laufzeit-Downloads | `github.com/ggml-org/llama.cpp` | SHA-256 aus der signierten Modellliste |
+| Skill-Downloads | `api.github.com`, `raw.githubusercontent.com` | aus, bis du es erlaubst; Dateien auf einen Commit festgelegt; neue Skills sind erst aus und werden dir vorher gezeigt |
 
 ylide.app führt kein Zugriffsprotokoll. Deine Projekte, Prompts und Chats
 werden nirgendwohin hochgeladen. Wie Releases und Modellliste signiert sind

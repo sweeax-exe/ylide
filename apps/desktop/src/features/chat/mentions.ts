@@ -5,6 +5,7 @@
 import type { Mention } from '../../bindings/Mention';
 import type { Symbol as CodeSymbol } from '../../bindings/Symbol';
 import type { SymbolKind } from '../../bindings/SymbolKind';
+import { matchSkills, type SkillMention } from '../skills/logic';
 
 export function basename(path: string): string {
   const trimmed = path.replace(/\/+$/, '');
@@ -132,15 +133,16 @@ export function parentFolders(paths: string[]): string[] {
   return out;
 }
 
-export type PickerSection = 'files' | 'folders' | 'symbols';
+export type PickerSection = 'files' | 'folders' | 'symbols' | 'skills';
 
 export interface PickerItem {
   key: string;
   section: PickerSection;
-  mention: Mention;
-  /** Main line: file name, folder name or symbol name. */
+  /** Attached as a chip. Skills have none: the core finds "@name" in the message. */
+  mention?: Mention;
+  /** Main line: file name, folder name, symbol name or "@skill". */
   title: string;
-  /** Secondary text: the folder it is in, or the line of a symbol. */
+  /** Secondary text: the folder it is in, the line of a symbol, or what a skill does. */
   detail: string;
   /** Text that replaces "@query" in the message. */
   insert: string;
@@ -149,7 +151,7 @@ export interface PickerItem {
   root?: boolean;
 }
 
-export const PICKER_LIMITS: Record<PickerSection, number> = { files: 8, folders: 5, symbols: 8 };
+export const PICKER_LIMITS: Record<PickerSection, number> = { files: 8, folders: 5, symbols: 8, skills: 5 };
 
 function folderRank(query: string, dir: string): number {
   const q = query.toLowerCase();
@@ -161,8 +163,8 @@ function folderRank(query: string, dir: string): number {
   return 3;
 }
 
-/** Builds the picker entries for `query` from file and symbol search results. */
-export function pickerItems(query: string, files: string[], symbols: CodeSymbol[], projectName: string): PickerItem[] {
+/** Builds the picker entries for `query` from file and symbol search results and the enabled skills. */
+export function pickerItems(query: string, files: string[], symbols: CodeSymbol[], projectName: string, skills: SkillMention[] = []): PickerItem[] {
   const fileItems: PickerItem[] = files.slice(0, PICKER_LIMITS.files).map((path) => ({
     key: `file:${path}`,
     section: 'files',
@@ -196,7 +198,16 @@ export function pickerItems(query: string, files: string[], symbols: CodeSymbol[
     symbolKind: sym.kind,
   }));
 
-  return [...fileItems, ...folderItems, ...symbolItems];
+  // The chat attaches a skill written as "@name", so the text keeps the "@".
+  const skillItems: PickerItem[] = matchSkills(query, skills, PICKER_LIMITS.skills).map((skill) => ({
+    key: `skill:${skill.name}`,
+    section: 'skills',
+    title: `@${skill.name}`,
+    detail: skill.description,
+    insert: `@${skill.name}`,
+  }));
+
+  return [...fileItems, ...folderItems, ...symbolItems, ...skillItems];
 }
 
 /** Symbol search reads many files, so it starts at this query length. */

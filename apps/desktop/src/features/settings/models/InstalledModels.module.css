@@ -83,3 +83,25 @@
 .warn {
   color: var(--warning);
 }
+
+/* Image input: the switch, or the user's own projector file. */
+.vision {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.visionFile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.visionStatus {
+  color: var(--text-3);
+}

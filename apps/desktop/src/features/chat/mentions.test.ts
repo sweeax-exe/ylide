@@ -67,4 +67,13 @@ describe('picker', () => {
     ]);
     expect(items.filter((i) => i.section === 'folders').map((i) => i.detail)).toEqual(['src/', '']);
   });
+  it('offers enabled skills last, inserted as "@name" without a chip', () => {
+    const skills = [{ name: 'reverse-engineer-anything', description: 'Reverse engineer binaries.' }, { name: 'pdf-forms', description: 'Fill PDF forms.' }];
+    const items = pickerItems('rev', ['src/review.ts'], [], 'shop', skills);
+    expect(items.map((i) => `${i.section}:${i.title}`)).toEqual(['files:review.ts', 'skills:@reverse-engineer-anything']);
+    const skill = items[items.length - 1];
+    expect(skill).toMatchObject({ insert: '@reverse-engineer-anything', detail: 'Reverse engineer binaries.' });
+    expect(skill.mention).toBeUndefined();
+    expect(applyTrigger('Use @rev', { start: 4, query: 'rev' }, 8, skill.insert)).toEqual({ text: 'Use @reverse-engineer-anything ', caret: 31 });
+  });
 });

@@ -33,7 +33,11 @@ import type { RuntimeStatus } from '../bindings/RuntimeStatus';
 import type { SearchQuery } from '../bindings/SearchQuery';
 import type { SearchResults } from '../bindings/SearchResults';
 import type { ServerInfo } from '../bindings/ServerInfo';
+import type { RepoListing } from '../bindings/RepoListing';
 import type { Settings } from '../bindings/Settings';
+import type { SkillContent } from '../bindings/SkillContent';
+import type { SkillInfo } from '../bindings/SkillInfo';
+import type { SkillUpdate } from '../bindings/SkillUpdate';
 import type { StoredChat } from '../bindings/StoredChat';
 import type { Symbol } from '../bindings/Symbol';
 import type { TextFile } from '../bindings/TextFile';
@@ -108,6 +112,14 @@ export const api = {
     cancel: (jobId: string) => call<void>('model_cancel', { jobId }),
     remove: (modelId: string, quant: string) => call<void>('model_delete', { modelId, quant }),
     import: (path: string) => call<InstalledModel>('model_import', { path }),
+    /** Switches image input on: downloads the vision projector of a registry model. */
+    downloadProjector: (modelId: string) => call<DownloadJob>('model_projector_download', { modelId }),
+    /** A projector file the user picked, or null: image input off (a downloaded projector is deleted). */
+    setProjector: (modelId: string, path: string | null) => call<InstalledModel[]>('model_projector_set', { modelId, path }),
+  },
+  images: {
+    /** An image file the user picked, as a data URL (to be scaled down, see lib/images.ts). */
+    load: (path: string) => call<string>('image_load', { path }),
   },
   runtime: {
     status: () => call<RuntimeStatus>('runtime_status'),
@@ -158,10 +170,29 @@ export const api = {
     edit: (request: InlineEditRequest, onEvent: (e: InlineEvent) => void) =>
       call<void>('inline_edit', { request, onEvent: channel(onEvent) }),
   },
+  /** Skills: installed ones work with every model; the open project's own are switched per project. */
+  skills: {
+    list: () => call<SkillInfo[]>('skills_list'),
+    /** Switches a skill on or off (`id` from SkillInfo); returns the new list. */
+    setEnabled: (id: string, enabled: boolean) => call<SkillInfo[]>('skills_set_enabled', { id, enabled }),
+    remove: (name: string) => call<SkillInfo[]>('skills_remove', { name }),
+    /** SKILL.md in full and the skill's files. */
+    content: (id: string) => call<SkillContent>('skills_content', { id }),
+    /** Lists the skills of a GitHub repository (needs the skill-download permission). */
+    browse: (address: string) => call<RepoListing>('skills_browse', { address }),
+    /** Installs folders of the listed repository at its commit, switched off. */
+    installGithub: (repo: string, gitRef: string | null, commit: string, paths: string[]) => call<SkillInfo[]>('skills_install_github', { repo, gitRef, commit, paths }),
+    /** Copies the skills of a folder on this computer, switched off. */
+    installFolder: (path: string) => call<SkillInfo[]>('skills_install_folder', { path }),
+    /** What a newer version would change. */
+    checkUpdate: (name: string) => call<SkillUpdate>('skills_check_update', { name }),
+    /** Installs the version checkUpdate showed (its commit; empty for folders). */
+    update: (name: string, commit: string) => call<SkillInfo>('skills_update', { name, commit }),
+  },
   agents: {
-    /** With `previousRun`, the new run continues that finished run. */
-    start: (goal: string, onEvent: (e: AgentEvent) => void, previousRun: string | null = null) =>
-      call<string>('agent_start', { goal, previousRun, onEvent: channel(onEvent) }),
+    /** With `previousRun`, the new run continues that finished run; `images` (data URLs) go with the request. */
+    start: (goal: string, onEvent: (e: AgentEvent) => void, previousRun: string | null = null, images: string[] = []) =>
+      call<string>('agent_start', { goal, images, previousRun, onEvent: channel(onEvent) }),
     approve: (runId: string, requestId: string, response: ApprovalResponse) =>
       call<boolean>('agent_approve', { runId, requestId, response }),
     answer: (runId: string, questionId: string, answer: string) => call<boolean>('agent_answer', { runId, questionId, answer }),
@@ -202,6 +233,22 @@ export async function pickFolder(): Promise<string | null> {
 /** Opens the native file picker for GGUF models. */
 export async function pickGguf(): Promise<string | null> {
   if (!isTauri) return 'D:/models/my-finetune-Q4_K_M.gguf';
+  const { open } = await import('@tauri-apps/plugin-dialog');
+  const result = await open({ multiple: false, filters: [{ name: 'GGUF', extensions: ['gguf'] }] });
+  return typeof result === 'string' ? result : null;
+}
+
+/** Opens the native file picker for images (chat and agent requests). */
+export async function pickImages(): Promise<string[]> {
+  if (!isTauri) return ['D:/projects/demo/docs/screenshot.png'];
+  const { open } = await import('@tauri-apps/plugin-dialog');
+  const result = await open({ multiple: true, filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif'] }] });
+  return Array.isArray(result) ? result : typeof result === 'string' ? [result] : [];
+}
+
+/** Opens the native file picker for a vision projector (mmproj GGUF) of an imported model. */
+export async function pickProjector(): Promise<string | null> {
+  if (!isTauri) return 'D:/models/mmproj-my-finetune-F16.gguf';
   const { open } = await import('@tauri-apps/plugin-dialog');
   const result = await open({ multiple: false, filters: [{ name: 'GGUF', extensions: ['gguf'] }] });
   return typeof result === 'string' ? result : null;

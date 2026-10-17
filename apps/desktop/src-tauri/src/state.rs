@@ -8,10 +8,12 @@ use crate::network::NetworkGate;
 use crate::paths::AppPaths;
 use crate::runtime::RuntimeManager;
 use crate::settings::Settings;
+use crate::skill_service::CachedTree;
 use crate::watcher::ProjectWatcher;
 use hardware::HardwareProfile;
 use registry::store::{RegistryOrigin, RegistryStore};
 use registry::Registry;
+use skills::SkillStore;
 use crate::updates::{PendingUpdate, ReadyUpdate, UpdateOutcome};
 use std::collections::HashMap;
 use std::sync::atomic::AtomicBool;
@@ -40,6 +42,10 @@ pub struct AppState {
     pub chats: ChatStore,
     /// The last agent run of each project, for "Continue" after a restart.
     pub last_runs: LastRuns,
+    /// Installed skills and their on/off state (also of each project's own skills).
+    pub skills: Arc<SkillStore>,
+    /// The skill folders of the repository listed last, so installing needs no second listing.
+    pub skill_tree: Mutex<Option<CachedTree>>,
     /// The newer version found by the last update check.
     pub pending_update: Mutex<Option<PendingUpdate>>,
     /// The downloaded and verified installer, waiting for the user's go.
@@ -83,6 +89,8 @@ impl AppState {
             agents: AgentRuns::default(),
             chats: ChatStore::new(paths.data.join("chats")),
             last_runs: LastRuns::new(paths.data.join("agent-runs")),
+            skills: Arc::new(SkillStore::new(paths.skills.clone())),
+            skill_tree: Mutex::new(None),
             pending_update: Mutex::new(None),
             ready_update: Mutex::new(None),
             update_installing: AtomicBool::new(false),

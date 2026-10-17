@@ -17,6 +17,12 @@ pub trait ChatModel: Send + Sync {
 
     /// Context window available to one request (tokens).
     fn context_tokens(&self) -> u32;
+
+    /// The model sees images (its vision projector is loaded): messages may
+    /// carry them, and agents get the `image_view` tool.
+    fn vision(&self) -> bool {
+        false
+    }
 }
 
 /// A model served by llama-server (or any OpenAI-compatible endpoint), sharing
@@ -63,6 +69,7 @@ pub struct ScriptedModel {
     responses: Mutex<std::collections::VecDeque<ChatResult>>,
     pub requests: Mutex<Vec<ChatRequest>>,
     context: u32,
+    vision: bool,
 }
 
 impl ScriptedModel {
@@ -71,7 +78,14 @@ impl ScriptedModel {
             responses: Mutex::new(responses.into()),
             requests: Mutex::new(Vec::new()),
             context: 32_768,
+            vision: false,
         }
+    }
+
+    /// A model that sees images.
+    pub fn with_vision(mut self) -> Self {
+        self.vision = true;
+        self
     }
 
     pub fn remaining(&self) -> usize {
@@ -105,6 +119,10 @@ impl ChatModel for ScriptedModel {
 
     fn context_tokens(&self) -> u32 {
         self.context
+    }
+
+    fn vision(&self) -> bool {
+        self.vision
     }
 }
 
@@ -149,6 +167,7 @@ pub mod script {
                     })
                     .collect(),
                 tool_call_id: None,
+                images: Vec::new(),
             },
             finish_reason: FinishReason::ToolCalls,
             usage: Some(Usage {

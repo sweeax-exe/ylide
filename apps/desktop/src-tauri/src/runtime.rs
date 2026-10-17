@@ -108,6 +108,21 @@ pub enum ToolCallSupport {
     Failed,
 }
 
+/// Whether the running model can see images.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum VisionState {
+    /// Image input is switched off for this model (or it has none).
+    Off,
+    /// The vision projector is loaded.
+    On,
+    /// Image input is on, but the projector file is gone: started without it.
+    Missing,
+    /// The server did not start with the projector: started without it.
+    Failed,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
@@ -122,6 +137,7 @@ pub struct ServerInfo {
     pub slots: u32,
     pub status: ServerStatus,
     pub tool_calls: ToolCallSupport,
+    pub vision: VisionState,
     /// The exact command line (without the API key), for transparency.
     pub command: Vec<String>,
 }
@@ -134,6 +150,8 @@ pub struct ChatHandle {
     pub model: Option<Model>,
     pub context: u32,
     pub pin_slot: bool,
+    /// The vision projector is loaded: requests may carry images.
+    pub vision: bool,
 }
 
 struct Running {
@@ -475,6 +493,7 @@ impl RuntimeManager {
             slots: settings.models.slots.max(1),
             status: status.clone(),
             tool_calls: ToolCallSupport::Unknown,
+            vision: VisionState::Off,
             command: vec![],
         };
         let handle = ChatHandle {
@@ -483,6 +502,7 @@ impl RuntimeManager {
             model: None,
             context,
             pin_slot: false,
+            vision: false,
         };
         *self.chat.lock().await = Some(Running {
             server: None,
@@ -532,6 +552,16 @@ impl RuntimeManager {
         let fit_fallback = refit_possible(&flags, runtime.backend, plan.as_ref(), extra);
         let mut refitted = false;
         let mut oom_retries = 0;
+        // Image input: the projector if its file is there, else a start without it.
+        let (mut projector, mut vision) = match &installed.projector {
+            Some(p) if Path::new(&p.path).is_file() => (Some(p.clone()), VisionState::On),
+            Some(p) => {
+                tracing::warn!("the vision projector {} is missing; starting without image input", p.path);
+                let _ = app.emit("runtime://log", PROJECTOR_MISSING_NOTE);
+                (None, VisionState::Missing)
+            }
+            None => (None, VisionState::Off),
+        };
 
         loop {
             let launch = LaunchOptions {
@@ -545,6 +575,7 @@ impl RuntimeManager {
                 device: device.clone(),
                 extra,
                 runtime_backend: runtime.backend,
+                projector: projector.as_ref().map(|p| p.path.as_str()),
             };
             let args = chat_args(&launch, &flags);
             let mut info = ServerInfo {
@@ -557,6 +588,7 @@ impl RuntimeManager {
                 slots,
                 status: ServerStatus::Starting,
                 tool_calls: ToolCallSupport::Unknown,
+                vision,
                 command: std::iter::once(binary.display().to_string()).chain(args.iter().cloned()).collect(),
             };
             self.set_info(app, Some(info.clone()));
@@ -591,6 +623,11 @@ impl RuntimeManager {
                         // The new server's log starts after the restart; keep the reason visible.
                         server.logs().push(REFIT_NOTE.to_string());
                     }
+                    match vision {
+                        VisionState::Missing => server.logs().push(PROJECTOR_MISSING_NOTE.to_string()),
+                        VisionState::Failed => server.logs().push(PROJECTOR_FAILED_NOTE.to_string()),
+                        VisionState::On | VisionState::Off => {}
+                    }
                     info.status = ServerStatus::Ready;
                     let handle = ChatHandle {
                         client: server.client(),
@@ -598,6 +635,7 @@ impl RuntimeManager {
                         model: model.clone(),
                         context,
                         pin_slot: true,
+                        vision: vision == VisionState::On,
                     };
                     watch_status(app.clone(), server.watch_status(), info.clone());
                     *self.chat.lock().await = Some(Running {
@@ -607,6 +645,13 @@ impl RuntimeManager {
                     self.set_info(app, Some(info.clone()));
                     self.spawn_tool_self_test(app.clone(), handle, info.clone());
                     return Ok(info);
+                }
+                Err(ServerError::Exited { log_tail, .. }) if projector.is_some() && projector_failed(&log_tail) => {
+                    // The model itself may be fine: start it without image input.
+                    tracing::warn!("llama-server did not start with the vision projector; starting without image input");
+                    let _ = app.emit("runtime://log", PROJECTOR_FAILED_NOTE);
+                    projector = None;
+                    vision = VisionState::Failed;
                 }
                 Err(ServerError::Exited { log_tail, .. }) if oom_retries < 2 && looks_like_oom(&log_tail) && context > 8_192 => {
                     tracing::warn!("llama-server ran out of memory at {context} tokens; retrying with half the context");
@@ -698,6 +743,18 @@ fn looks_like_oom(log: &str) -> bool {
         .any(|p| l.contains(p))
 }
 
+/// Server log lines when a model with image input on starts without its projector.
+const PROJECTOR_MISSING_NOTE: &str =
+    "[ylide] the vision projector of this model is missing; started without image input (switch image input off and on again on the Models page to download it again)";
+const PROJECTOR_FAILED_NOTE: &str = "[ylide] llama-server could not load the vision projector; started without image input";
+
+/// llama-server stopped because the projector (`--mmproj`) could not be loaded.
+fn projector_failed(log: &str) -> bool {
+    ["failed to load multimodal model", "Failed to load CLIP model", "mismatch between text model", "mtmd_init_from_file"]
+        .iter()
+        .any(|p| log.contains(p))
+}
+
 /// Server log line explaining the restart after a failed `--fit`.
 const REFIT_NOTE: &str =
     "[ylide] llama.cpp could not fit the model into free GPU memory (\"failed to fit params\") and put every layer on the GPU; restarting once with the estimated split";
@@ -761,6 +818,8 @@ pub struct LaunchOptions<'a> {
     pub device: Option<String>,
     pub extra: &'a [String],
     pub runtime_backend: Backend,
+    /// Vision projector file (`--mmproj`) for image input.
+    pub projector: Option<&'a str>,
 }
 
 /// Free GPU memory `--fit` leaves for the desktop and other programs.
@@ -842,6 +901,16 @@ pub fn chat_args(o: &LaunchOptions<'_>, flags: &HashSet<String>) -> Vec<String> 
         push(&["-ctk", "q8_0", "-ctv", "q8_0"]);
     }
     push(&["-t", &o.threads.to_string()]);
+    // With `--fit`, llama-server adds the projector's worst-case memory to the
+    // fit target itself; the estimated split counts it in the plan.
+    if let Some(projector) = o.projector
+        && has("--mmproj")
+    {
+        push(&["--mmproj", projector]);
+        if flags.contains("--image-max-tokens") {
+            push(&["--image-max-tokens", &registry::estimate::IMAGE_MAX_TOKENS.to_string()]);
+        }
+    }
     if flags.contains("--cache-ram") {
         let mib = if o.ram_total >= 48 << 30 { "8192" } else if o.ram_total >= 24 << 30 { "4096" } else { "1024" };
         push(&["--cache-ram", mib]);
@@ -1037,6 +1106,7 @@ mod tests {
             weights_bytes: 0,
             kv_bytes: 0,
             overhead_bytes: 0,
+            projector_bytes: 0,
             vram_bytes: 0,
             ram_bytes: 0,
             est_tokens_per_sec: 0.0,
@@ -1069,6 +1139,7 @@ mod tests {
             device: Some("CUDA0".into()),
             extra: &[],
             runtime_backend: Backend::Cuda,
+            projector: None,
         };
         let all = flags(&["-m", "--alias", "-c", "-np", "-kvu", "-fa", "-ngl", "--fit", "--fit-target", "-b", "-ub", "-dev", "-t", "--cache-ram", "--metrics", "--no-webui", "--offline", "--jinja", "--reasoning-format"]);
         let args = chat_args(&o, &all).join(" ");
@@ -1102,6 +1173,7 @@ mod tests {
             device: Some("CUDA0".into()),
             extra,
             runtime_backend: Backend::Cuda,
+            projector: None,
         }
     }
 
@@ -1255,6 +1327,7 @@ mod tests {
             device: Some("Vulkan0".into()),
             extra: &["--seed".into(), "1".into()],
             runtime_backend: Backend::Cpu,
+            projector: None,
         };
         let args = chat_args(&o, &HashSet::new());
         let joined = args.join(" ");
@@ -1330,5 +1403,33 @@ mod tests {
         assert_eq!(backend_of("rocm-10.0"), Backend::Rocm);
         assert_eq!(backend_of("cpu"), Backend::Cpu);
         assert!(looks_like_oom("ggml_backend_cuda_buffer_type_alloc_buffer: allocating 1234 MiB on device 0: cudaMalloc failed: out of memory"));
+    }
+
+    #[test]
+    fn image_input_loads_the_projector() {
+        let p = plan(Placement::MoeOffload { cpu_expert_layers: 22 }, KvCacheType::F16, 32_768);
+        let mut o = cuda_options(Some(&p), &[]);
+        let known = flags(&["-m", "--alias", "-c", "-np", "-kvu", "-fa", "-ngl", "--fit", "--fit-target", "-t", "--mmproj", "--image-max-tokens"]);
+        assert!(!chat_args(&o, &known).iter().any(|a| a == "--mmproj"), "off by default");
+        o.projector = Some(r"C:\models\unsloth__Qwen3.6-35B-A3B-GGUF\mmproj-F16.gguf");
+        let args = chat_args(&o, &known).join(" ");
+        assert!(args.contains(r"--mmproj C:\models\unsloth__Qwen3.6-35B-A3B-GGUF\mmproj-F16.gguf --image-max-tokens 2048"), "{args}");
+        // llama-server adds the projector to the fit target itself.
+        assert!(args.contains("--fit on --fit-target 1024"), "{args}");
+        // A build that lists no --image-max-tokens still gets the projector; one without --mmproj does not.
+        let args = chat_args(&o, &flags(&["-m", "-c", "-np", "-t", "--mmproj"])).join(" ");
+        assert!(args.contains("--mmproj ") && !args.contains("--image-max-tokens"), "{args}");
+        assert!(!chat_args(&o, &flags(&["-m", "-c", "-np", "-t"])).iter().any(|a| a == "--mmproj"));
+        // Unchecked (empty --help): long-standing flags are passed.
+        assert!(chat_args(&o, &HashSet::new()).iter().any(|a| a == "--mmproj"));
+    }
+
+    #[test]
+    fn a_projector_that_does_not_load_is_recognized() {
+        assert!(projector_failed("srv    load_model: failed to load multimodal model, 'C:\\m\\mmproj-F16.gguf'"));
+        assert!(projector_failed("clip_init: Failed to load CLIP model from C:\\m\\mmproj.gguf"));
+        assert!(projector_failed("mismatch between text model (n_embd = 2048) and mmproj (n_embd = 4096)\nhint: you may be using wrong mmproj"));
+        assert!(!projector_failed("srv    load_model: failed to load model, 'C:\\m\\model.gguf'"));
+        assert!(!projector_failed("cudaMalloc failed: out of memory"));
     }
 }

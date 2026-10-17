@@ -33,7 +33,8 @@
     "chat": "チャット",
     "agents": "エージェント",
     "models": "モデル",
-    "settings": "設定"
+    "settings": "設定",
+    "skills": "スキル"
   },
   "titlebar": {
     "noProject": "フォルダーが開かれていません",
@@ -80,7 +81,8 @@
     "modelDownload": "モデルのダウンロード",
     "runtimeDownload": "ランタイムのダウンロード",
     "updateCheck": "アップデートの確認",
-    "updateDownload": "アップデートのダウンロード"
+    "updateDownload": "アップデートのダウンロード",
+    "skillDownload": "スキルのダウンロード"
   },
   "errors": {
     "generic": "問題が発生しました: {{message}}",
@@ -105,7 +107,42 @@
     "update_format": "Ylide がインストールできない形式のアップデートです: {{message}}",
     "update_too_large": "アップデートのサイズが異常に大きいため、ダウンロードしませんでした。",
     "update_launch": "インストーラーを起動できませんでした: {{message}}",
-    "update_unsupported": "このシステムでは、アップデートを手動でインストールしてください。"
+    "update_unsupported": "このシステムでは、アップデートを手動でインストールしてください。",
+    "skill_invalid": "有効なスキルではありません: {{message}}",
+    "skill_too_large": "スキルが大きすぎます: {{message}}",
+    "skill_exists": "同じ名前のスキルがすでにインストールされています（{{message}}）。再インストールするには、先に削除してください。",
+    "skill_not_found": "このスキルはもう存在しません。",
+    "skill_renamed": "新しいバージョンは名前が異なります（{{message}}）。スキルを削除してから、新しいスキルを追加してください。",
+    "skill_address": "GitHub リポジトリのアドレスではありません: {{message}}",
+    "skill_none_found": "ここにはスキルが見つかりません: {{message}}",
+    "skill_repo_not_found": "このリポジトリは GitHub に存在しないか、非公開です。",
+    "skill_rate_limited": "アカウントなしで送れる GitHub へのリクエストの上限に達しました。1 時間後にもう一度お試しください。",
+    "skill_gone": "スキルがリポジトリにもうありません: {{message}}",
+    "no_vision": "実行中のモデルは画像を見られません。モデルページで、画像を理解できるモデルの「画像を理解」をオンにしてください。",
+    "bad_image": "画像を使用できません: {{message}}",
+    "not_projector": "これは画像モジュール（mmproj GGUF ファイル）ではありません。",
+    "no_projector": "このモデルは画像入力に対応していません。"
+  },
+  "images": {
+    "attach": "画像を添付",
+    "attached": "添付した画像: {{n}}",
+    "label": "画像 {{n}}: {{name}}、{{size}} ピクセル",
+    "labelShort": "画像 {{n}}",
+    "pasted": "貼り付け",
+    "remove": "{{label}} を削除",
+    "notSent": "画像は送信されません",
+    "noModel": "画像を添付するには、画像を理解できるモデルを起動してください。",
+    "switchOn": "{{model}} は画像を理解できます。モデルページで「画像を理解」をオンにして、再起動してください。",
+    "cannotSee": "{{model}} は画像を見られません。",
+    "visionModels": "画像を理解できるモデル: {{models}}。",
+    "missing": "{{model}} の画像モジュールが見つかりません。モデルページで「画像を理解」をオフにしてから再びオンにしてください。",
+    "failed": "画像モジュールを読み込めなかったため、{{model}} は画像なしで動作しています。詳細はサーバーログにあります。",
+    "problem": {
+      "unsupported": "添付できるのは PNG、JPEG、WebP、GIF の画像だけです。",
+      "tooLarge": "画像が 20 MB を超えています。",
+      "damaged": "画像を読み取れませんでした。",
+      "tooMany": "1 つのメッセージに添付できる画像は {{max}} 枚までです。残りは添付されませんでした。"
+    }
   },
   "reasons": {
     "fitsInVram": "グラフィックメモリに完全に収まります（{{vramGb}} GB 使用）。",

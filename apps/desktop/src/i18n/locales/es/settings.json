@@ -313,7 +313,7 @@
   "network": {
     "title": "Red y privacidad",
     "statementTitle": "Sin telemetría, sin cuentas.",
-    "statementBody": "Ylide no recopila datos de uso, no requiere iniciar sesión y nunca sube tu código. Solo se conecta a internet para los cuatro fines de abajo, y solo mientras estén activados. Tus prompts y archivos van al modelo de este equipo o al servidor externo que configures en Avanzado.",
+    "statementBody": "Ylide no recopila datos de uso, no requiere iniciar sesión y nunca sube tu código. Solo se conecta a internet para los cinco fines de abajo, y solo mientras estén activados. Tus prompts y archivos van al modelo de este equipo o al servidor externo que configures en Avanzado.",
     "allowedTitle": "Conexiones permitidas",
     "allowedDescription": "Si desactivas cualquiera de ellas, Ylide no hará esa solicitud.",
     "registry": {
@@ -344,6 +344,10 @@
     "updates": {
       "label": "Buscar actualizaciones",
       "hint": "Pregunta a ylide.app una vez al iniciar si existe una versión más reciente de Ylide. Solo se envía el número de versión. La actualización en sí solo se descarga cuando la instalas."
+    },
+    "skills": {
+      "label": "Descargas de habilidades",
+      "hint": "Lista y descarga habilidades desde GitHub (api.github.com, raw.githubusercontent.com) cuando las añades, instalas o actualizas en la página Habilidades. Desactivado hasta que lo permitas."
     }
   },
   "advanced": {
@@ -464,6 +468,13 @@
     "contextValue": "{{tokens}} tokens",
     "slots": "Solicitudes paralelas",
     "toolCalls": "Llamadas a herramientas",
+    "vision": "Imágenes",
+    "visionState": {
+      "off": "Desactivadas",
+      "on": "Se entienden",
+      "missing": "Falta el módulo de imagen",
+      "failed": "No se cargó"
+    },
     "tools": {
       "unknown": {
         "label": "Sin probar",
@@ -524,7 +535,19 @@
     "forgetBody": "Ylide olvida este modelo. El archivo se queda donde está; no se elimina nada.",
     "deleteActive": "Este modelo está en ejecución. Primero se detiene.",
     "deleteAssigned": "Si está elegido para chat, autocompletado o búsqueda de código, esa elección se borra.",
-    "deleteAgain": "Puedes volver a descargarlo desde el catálogo."
+    "deleteAgain": "Puedes volver a descargarlo desde el catálogo.",
+    "vision": {
+      "label": "Entender imágenes (+{{size}} GB)",
+      "downloading": "Descargando el módulo de imagen: {{percent}} %",
+      "downloadFailed": "No se pudo descargar el módulo de imagen. Actívalo de nuevo para reintentarlo.",
+      "missing": "Falta el módulo de imagen; el modelo funciona sin imágenes.",
+      "failed": "El módulo de imagen no se cargó; el modelo funciona sin imágenes.",
+      "pending": "Se aplica la próxima vez que se inicie el modelo.",
+      "restart": "Reiniciar ahora",
+      "own": "Módulo de imagen: {{file}}",
+      "removeOwn": "Quitar el módulo de imagen",
+      "pick": "Elegir módulo de imagen (mmproj) …"
+    }
   },
   "downloads": {
     "title": "Descargas",
@@ -547,7 +570,8 @@
     "retry": "Reintentar la descarga de {{name}}",
     "cancel": "Cancelar la descarga de {{name}}",
     "progressLabel": "Progreso de la descarga de {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · módulo de imagen"
   },
   "catalog": {
     "title": "Catálogo",
@@ -582,6 +606,9 @@
       "optional": "Opcional",
       "always": "Siempre activo"
     },
+    "vision": "Imágenes",
+    "visionYes": "Entiende imágenes (+{{size}} GB, opcional)",
+    "visionNo": "Solo texto",
     "roles": "Adecuado para",
     "source": "Fuente",
     "modelCard": "Ficha del modelo",

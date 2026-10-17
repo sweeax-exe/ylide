@@ -12,9 +12,9 @@ export const TEMPLATE_KEYS: readonly TemplateKey[] = ['planner', 'coderTask', 'r
  * added to the core later are recognised too.
  */
 export const TEMPLATE_PLACEHOLDERS: Readonly<Record<TemplateKey, readonly string[]>> = {
-  planner: ['project_notes', 'previous', 'goal', 'roles', 'outline', 'environment'],
-  coderTask: ['project_notes', 'overview', 'task_id', 'task_title', 'task_description', 'task_files', 'environment'],
-  reviewerTask: ['project_notes', 'task_id', 'task_title', 'task_description', 'summary', 'diff', 'environment'],
+  planner: ['project_notes', 'skills', 'previous', 'goal', 'roles', 'outline', 'environment'],
+  coderTask: ['project_notes', 'skills', 'overview', 'task_id', 'task_title', 'task_description', 'task_files', 'environment'],
+  reviewerTask: ['project_notes', 'skills', 'task_id', 'task_title', 'task_description', 'summary', 'diff', 'environment'],
   feedback: ['round', 'max_rounds', 'review'],
   question: ['overview', 'from', 'question'],
   continue: [],

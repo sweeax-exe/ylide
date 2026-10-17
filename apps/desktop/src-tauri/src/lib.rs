@@ -17,6 +17,7 @@ mod registry_service;
 mod runtime;
 mod settings;
 mod signing;
+mod skill_service;
 mod state;
 mod updates;
 mod watcher;
@@ -89,6 +90,9 @@ pub fn run() {
             commands::model_cancel,
             commands::model_delete,
             commands::model_import,
+            commands::model_projector_download,
+            commands::model_projector_set,
+            commands::image_load,
             commands::runtime_status,
             commands::runtime_install,
             commands::server_start,
@@ -123,6 +127,15 @@ pub fn run() {
             commands::agent_control,
             commands::agent_intervene,
             commands::agent_last_run,
+            commands::skills_list,
+            commands::skills_set_enabled,
+            commands::skills_remove,
+            commands::skills_content,
+            commands::skills_browse,
+            commands::skills_install_github,
+            commands::skills_install_folder,
+            commands::skills_check_update,
+            commands::skills_update,
             commands::checkpoints_list,
             commands::checkpoint_restore,
         ])

@@ -94,6 +94,16 @@ export function NetworkSection({ settings }: { settings: Settings }) {
                 })
               }
             />
+            <SwitchRow
+              label={t('network.skills.label')}
+              hint={t('network.skills.hint')}
+              checked={net.allowSkillDownloads}
+              onChange={(v) =>
+                void save((d) => {
+                  d.network.allowSkillDownloads = v;
+                })
+              }
+            />
           </>
         )}
       </Group>

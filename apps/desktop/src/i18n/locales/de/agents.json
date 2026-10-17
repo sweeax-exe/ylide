@@ -70,6 +70,7 @@
     "goalLabel": "Was sollen die Agents tun?",
     "goalPlaceholder": "Zum Beispiel: Korrigiere die Summe im Warenkorb und ergänze einen Test für leere Warenkörbe",
     "goalHint": "Beschreibe das Ergebnis, das du willst. Strg+Enter startet den Lauf.",
+    "imagesHint": "Die Bilder gehen an den Agent, der plant, und an die Agents, die die Aufgaben erledigen.",
     "start": "Agents starten",
     "readiness": "Voraussetzungen",
     "modelReady": "{{model}} läuft",

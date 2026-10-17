@@ -81,7 +81,8 @@
     "noFiles": "未找到文件。",
     "searching": "正在搜索",
     "symbolsHint": "输入至少两个字符以搜索符号。",
-    "hint": "<0>↑</0> <1>↓</1> 选择，<2>Enter</2> 附加，<3>Esc</3> 关闭"
+    "hint": "<0>↑</0> <1>↓</1> 选择，<2>Enter</2> 附加，<3>Esc</3> 关闭",
+    "skills": "技能"
   },
   "symbolKind": {
     "function": "函数",

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Symbol as CodeSymbol } from '../../bindings/Symbol';
 import { errorText } from '../../lib/errors';
 import { api } from '../../lib/ipc';
+import { mentionable } from '../skills/logic';
+import { useSkills } from '../skills/store';
 import { pickerItems, SYMBOL_MIN_QUERY, type PickerItem } from './mentions';
 
 interface Results {
@@ -20,13 +22,21 @@ export interface MentionSearch {
 const DEBOUNCE_MS = 90;
 
 /**
- * Searches files and symbols for the mention picker. `query` null means the
- * picker is closed. Earlier results stay visible while new ones load, so the
- * list does not flicker while typing.
+ * Searches files and symbols for the mention picker and offers the enabled
+ * skills. `query` null means the picker is closed. Earlier results stay
+ * visible while new ones load, so the list does not flicker while typing.
  */
 export function useMentionSearch(query: string | null, projectName: string): MentionSearch {
   const [results, setResults] = useState<Results | null>(null);
   const [error, setError] = useState<{ query: string; text: string } | null>(null);
+  const skillList = useSkills((st) => st.skills);
+  const skills = useMemo(() => mentionable(skillList ?? []), [skillList]);
+
+  // Fresh each time the picker opens: skills may have been switched meanwhile.
+  const open = query !== null;
+  useEffect(() => {
+    if (open) void useSkills.getState().load();
+  }, [open]);
 
   useEffect(() => {
     if (query === null) return;
@@ -51,7 +61,7 @@ export function useMentionSearch(query: string | null, projectName: string): Men
     };
   }, [query]);
 
-  const items = useMemo(() => (results && query !== null ? pickerItems(results.query, results.files, results.symbols, projectName) : []), [results, query, projectName]);
+  const items = useMemo(() => (results && query !== null ? pickerItems(results.query, results.files, results.symbols, projectName, skills) : []), [results, query, projectName, skills]);
 
   return {
     items: query === null ? [] : items,

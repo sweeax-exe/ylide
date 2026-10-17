@@ -31,8 +31,9 @@
   },
   "chat": {
     "title": "Tanyai proyek Anda.",
-    "body": "Lampirkan file, folder, atau simbol dengan @. Jawaban mengalir kata demi kata dari model di kartu grafis Anda, dan apa yang Anda tanyakan tetap di sini.",
+    "body": "Lampirkan file, folder, atau simbol dengan @. Model yang memahami gambar juga melihat tangkapan layar dan foto yang Anda tempel atau seret, di chat maupun di agen. Jawaban mengalir kata demi kata dari model di kartu grafis Anda, dan apa yang Anda tanyakan tetap di sini.",
     "question": "Apa fungsi applyDiscount di <code>@cart.js</code>?",
+    "image": "Gambar 1: tangkapan layar keranjang belanja",
     "answer": "Fungsi ini memotong harga setiap item sebesar persentase tertentu dan membulatkannya ke sen utuh. Nilai di bawah 0 atau di atas 100 ditolak dengan <code>TypeError</code>.",
     "stats": "75 token per detik, di komputer ini",
     "you": "Anda",
@@ -60,6 +61,18 @@
     "step5": "Peninjau menyetujui tugas. Anda melihat setiap perubahan sebelum menjadi permanen.",
     "task": "Tugas"
   },
+  "skills": {
+    "title": "Ajari model Anda cara Anda bekerja.",
+    "body": "Skill adalah instruksi dalam format terbuka Agent Skills: sebuah SKILL.md dan file referensi opsional. Tambahkan dari repositori GitHub atau folder, dan setiap model bisa memakainya, di chat maupun di agen. Skill baru awalnya mati, dan Ylide menampilkan setiap skill kepada Anda sebelum Anda mengaktifkannya.",
+    "listLabel": "Skill yang terpasang",
+    "writeTests": "Menulis tes sesuai gaya proyek ini.",
+    "releaseNotes": "Menyusun draf catatan rilis dari log git.",
+    "apiReview": "Memeriksa apakah endpoint yang berubah merusak kompatibilitas.",
+    "fromProject": "dari proyek",
+    "new": "baru",
+    "on": "Aktif",
+    "off": "Mati"
+  },
   "hardware": {
     "title": "Pas dengan perangkat keras Anda.",
     "body": "Saat pertama kali dijalankan, Ylide mengukur kartu grafis, memori, dan prosesor Anda, lalu menyarankan model terkuat yang berjalan lancar di perangkat tersebut. Setelah itu Ylide mengunduh model, memeriksa filenya, dan menjalankannya."
@@ -85,8 +98,8 @@
     "note": "Tangkapan layar antarmuka bahasa Inggris, diambil di komputer pengembang."
   },
   "privacy": {
-    "title": "Empat pintu ke dunia luar. Semuanya di tangan Anda.",
-    "body": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide hanya terhubung ke internet untuk empat keperluan ini. Masing-masing bisa dimatikan, dan setiap permintaan tercatat di log jaringan.",
+    "title": "Lima pintu ke dunia luar. Semuanya di tangan Anda.",
+    "body": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide hanya terhubung ke internet untuk lima keperluan ini. Masing-masing bisa dimatikan, unduhan skill tetap mati sampai Anda mengizinkannya, dan setiap permintaan tercatat di log jaringan.",
     "listLabel": "Satu-satunya koneksi yang dibuat Ylide",
     "registry": "Perbarui daftar model",
     "registryHost": "ylide.app",
@@ -96,6 +109,8 @@
     "runtimesHost": "github.com",
     "updates": "Periksa pembaruan",
     "updatesHost": "ylide.app",
+    "skills": "Unduh skill",
+    "skillsHost": "github.com",
     "on": "aktif"
   },
   "open": {

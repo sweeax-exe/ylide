@@ -1,10 +1,10 @@
-import { Braces, FileText, Folder, ScanText, X } from 'lucide-react';
+import { Braces, FileText, Folder, GraduationCap, ScanText, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ContextKind } from '../../bindings/ContextKind';
 import { formatNumber } from '../../lib/format';
 import s from './ContextChip.module.css';
 
-const ICONS: Record<ContextKind, typeof FileText> = { file: FileText, folder: Folder, symbol: Braces, selection: ScanText };
+const ICONS: Record<ContextKind, typeof FileText> = { file: FileText, folder: Folder, symbol: Braces, selection: ScanText, skill: GraduationCap };
 
 export interface ChipData {
   kind: ContextKind;

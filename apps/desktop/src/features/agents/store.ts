@@ -9,6 +9,7 @@ import type { Checkpoint } from '../../bindings/Checkpoint';
 import type { LastRun } from '../../bindings/LastRun';
 import i18n from '../../i18n';
 import { reportError } from '../../lib/errors';
+import type { DraftImage } from '../../lib/images';
 import { api } from '../../lib/ipc';
 import { useApp } from '../../state/app';
 import { useLayout } from '../../state/layout';
@@ -21,6 +22,8 @@ interface AgentRunState {
   phase: Phase;
   /** Goal typed in the idle view, kept while the panel is closed. */
   draft: string;
+  /** Images for the goal (screenshots, mockups), already scaled down. */
+  draftImages: DraftImage[];
   /** Next step typed under a finished run, kept while the panel is closed. */
   followUp: string;
   /** The next-step field takes the focus when it appears. */
@@ -43,6 +46,7 @@ interface AgentRunState {
   deferred: ReadonlySet<string>;
 
   setDraft(draft: string): void;
+  setDraftImages(images: DraftImage[]): void;
   setFollowUp(text: string): void;
   start(goal: string): Promise<void>;
   /** Starts a run that continues the finished one; its agents are told what it did. */
@@ -154,9 +158,10 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     }
   };
 
-  /** Starts a run; with `from`, one that continues that finished run. */
+  /** Starts a run; with `from`, one that continues that finished run. A new run takes the draft's images. */
   const launch = async (goal: string, from: RunData | null) => {
     const text = goal.trim();
+    const images = from ? [] : get().draftImages.map((i) => i.url);
     const { phase, run: previous } = get();
     if (!text || phase === 'starting' || phase === 'running') return;
     const continues = from && continuationOf(from);
@@ -164,7 +169,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     const gen = ++generation;
     resetStreams();
     const project = useApp.getState().workspace?.root ?? null;
-    set({ phase: 'starting', run: createRun(text, Date.now(), { project, continues }), paused: false, stopping: false, controlBusy: false, restored: new Set(), streams: {}, deferred: new Set() });
+    set({ phase: 'starting', run: createRun(text, Date.now(), { project, continues, images }), paused: false, stopping: false, controlBusy: false, restored: new Set(), streams: {}, deferred: new Set() });
     try {
       const runId = await api.agents.start(
         text,
@@ -172,11 +177,12 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
           if (gen === generation) receive(event);
         },
         continues?.runId ?? null,
+        images,
       );
       if (gen !== generation) return;
       const { run } = get();
       if (run && run.runId === null) set({ run: { ...run, runId } });
-      set((s) => ({ ...(continues ? { followUp: '' } : { draft: '' }), phase: s.phase === 'starting' ? 'running' : s.phase }));
+      set((s) => ({ ...(continues ? { followUp: '' } : { draft: '', draftImages: [] }), phase: s.phase === 'starting' ? 'running' : s.phase }));
     } catch (e) {
       if (gen !== generation) return;
       generation++;
@@ -189,6 +195,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
   return {
     phase: 'idle',
     draft: '',
+    draftImages: [],
     followUp: '',
     focusFollowUp: false,
     run: null,
@@ -201,6 +208,10 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
 
     setDraft(draft) {
       set({ draft });
+    },
+
+    setDraftImages(draftImages) {
+      set({ draftImages });
     },
 
     setFollowUp(followUp) {

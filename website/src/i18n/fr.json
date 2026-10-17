@@ -31,8 +31,9 @@
   },
   "chat": {
     "title": "Interrogez votre projet.",
-    "body": "Joignez des fichiers, des dossiers ou des symboles avec @. La réponse s’affiche mot par mot, générée par le modèle sur votre carte graphique, et vos questions restent ici.",
+    "body": "Joignez des fichiers, des dossiers ou des symboles avec @. Les modèles qui comprennent les images voient aussi les captures d’écran et les photos que vous collez ou glissez, dans le chat comme dans les agents. La réponse s’affiche mot par mot, générée par le modèle sur votre carte graphique, et vos questions restent ici.",
     "question": "Que fait applyDiscount dans <code>@cart.js</code> ?",
+    "image": "Image 1 : capture d’écran du panier",
     "answer": "Elle retire un pourcentage du prix de chaque article et arrondit au centime près. Les valeurs inférieures à 0 ou supérieures à 100 sont rejetées avec une <code>TypeError</code>.",
     "stats": "75 tokens par seconde, sur cet ordinateur",
     "you": "Vous",
@@ -60,6 +61,18 @@
     "step5": "Le relecteur valide la tâche. Vous voyez chaque modification avant qu’elle ne soit définitive.",
     "task": "Tâche"
   },
+  "skills": {
+    "title": "Apprenez à vos modèles votre façon de travailler.",
+    "body": "Les compétences sont des instructions au format ouvert Agent Skills : un fichier SKILL.md et des fichiers de référence facultatifs. Ajoutez-les depuis un dépôt GitHub ou un dossier, et tous les modèles peuvent s’en servir, dans le chat comme dans les agents. Les nouvelles compétences sont d’abord désactivées, et Ylide vous montre chacune avant que vous l’activiez.",
+    "listLabel": "Compétences installées",
+    "writeTests": "Écrit des tests dans le style de ce projet.",
+    "releaseNotes": "Rédige des notes de version à partir du journal git.",
+    "apiReview": "Vérifie que les endpoints modifiés ne cassent pas la compatibilité.",
+    "fromProject": "du projet",
+    "new": "nouvelle",
+    "on": "Activée",
+    "off": "Désactivée"
+  },
   "hardware": {
     "title": "Taillé pour votre matériel.",
     "body": "Au premier lancement, Ylide mesure votre carte graphique, votre mémoire et votre processeur, puis propose le modèle le plus puissant qui y tourne de façon fluide. Il télécharge ensuite le modèle, vérifie le fichier et le démarre."
@@ -85,8 +98,8 @@
     "note": "Captures d’écran de l’interface en anglais, réalisées sur l’ordinateur du développeur."
   },
   "privacy": {
-    "title": "Quatre portes vers l’extérieur. Toutes entre vos mains.",
-    "body": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il ne se connecte à Internet que pour ces quatre usages. Chacun peut être désactivé, et chaque requête apparaît dans le journal réseau.",
+    "title": "Cinq portes vers l’extérieur. Toutes entre vos mains.",
+    "body": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il ne se connecte à Internet que pour ces cinq usages. Chacun peut être désactivé, le téléchargement de compétences reste désactivé tant que vous ne l’autorisez pas, et chaque requête apparaît dans le journal réseau.",
     "listLabel": "Les seules connexions établies par Ylide",
     "registry": "Actualiser la liste des modèles",
     "registryHost": "ylide.app",
@@ -96,6 +109,8 @@
     "runtimesHost": "github.com",
     "updates": "Rechercher des mises à jour",
     "updatesHost": "ylide.app",
+    "skills": "Télécharger des compétences",
+    "skillsHost": "github.com",
     "on": "activé"
   },
   "open": {

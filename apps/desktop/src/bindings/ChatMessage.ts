@@ -2,6 +2,10 @@
 import type { MessageRole } from "./MessageRole";
 import type { ToolCall } from "./ToolCall";
 
+/**
+ * A message as sent to the server. With images, the content goes out as an
+ * array of `image_url` and `text` parts (its `Serialize` is written by hand).
+ */
 export type ChatMessage = { role: MessageRole, content?: string | null, 
 /**
  * Thinking text of reasoning models (`reasoning_content` in llama-server).

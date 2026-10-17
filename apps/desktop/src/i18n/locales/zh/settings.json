@@ -309,7 +309,7 @@
   "network": {
     "title": "网络和隐私",
     "statementTitle": "没有遥测，没有账号。",
-    "statementBody": "Ylide 不收集使用数据，无需登录，也从不上传你的代码。它只为下面四种用途连接互联网，而且只在相应开关开启时才会连接。你的提示词和文件会发送给这台电脑上的模型，或发送给你在“高级”中设置的外部服务器。",
+    "statementBody": "Ylide 不收集使用数据，无需登录，也从不上传你的代码。它只为下面五种用途连接互联网，而且只在相应开关开启时才会连接。你的提示词和文件会发送给这台电脑上的模型，或发送给你在“高级”中设置的外部服务器。",
     "allowedTitle": "允许的连接",
     "allowedDescription": "关闭其中任意一项，Ylide 就不会发出相应的请求。",
     "registry": {
@@ -340,6 +340,10 @@
     "updates": {
       "label": "检查更新",
       "hint": "启动时向 ylide.app 查询一次是否有新版本的 Ylide。只发送版本号。只有在你安装更新时才会下载更新本身。"
+    },
+    "skills": {
+      "label": "技能下载",
+      "hint": "当你在“技能”页面添加、安装或更新技能时，从 GitHub（api.github.com、raw.githubusercontent.com）列出并下载技能。在你允许之前保持关闭。"
     }
   },
   "advanced": {
@@ -460,6 +464,13 @@
     "contextValue": "{{tokens}} token",
     "slots": "并行请求",
     "toolCalls": "工具调用",
+    "vision": "图片",
+    "visionState": {
+      "off": "关闭",
+      "on": "可理解",
+      "missing": "缺少图片模块",
+      "failed": "未加载"
+    },
     "tools": {
       "unknown": {
         "label": "未测试",
@@ -518,7 +529,19 @@
     "forgetBody": "Ylide 会从列表中移除此模型。文件保留在原处，不会删除任何内容。",
     "deleteActive": "此模型正在运行，会先将其停止。",
     "deleteAssigned": "如果它已被选用于聊天、自动补全或代码搜索，该选择会被清除。",
-    "deleteAgain": "你可以从模型目录重新下载它。"
+    "deleteAgain": "你可以从模型目录重新下载它。",
+    "vision": {
+      "label": "理解图片（+{{size}} GB）",
+      "downloading": "正在下载图片模块：{{percent}} %",
+      "downloadFailed": "图片模块下载失败。重新开启即可重试。",
+      "missing": "图片模块缺失；模型在没有图片输入的情况下运行。",
+      "failed": "图片模块未能加载；模型在没有图片输入的情况下运行。",
+      "pending": "下次启动模型时生效。",
+      "restart": "立即重启",
+      "own": "图片模块：{{file}}",
+      "removeOwn": "移除图片模块",
+      "pick": "选择图片模块（mmproj）…"
+    }
   },
   "downloads": {
     "title": "下载",
@@ -541,7 +564,8 @@
     "retry": "重试下载 {{name}}",
     "cancel": "取消下载 {{name}}",
     "progressLabel": "{{name}} 的下载进度",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · 图片模块"
   },
   "catalog": {
     "title": "模型目录",
@@ -572,6 +596,9 @@
       "optional": "可选",
       "always": "始终开启"
     },
+    "vision": "图片",
+    "visionYes": "理解图片（+{{size}} GB，可选）",
+    "visionNo": "仅文本",
     "roles": "适用于",
     "source": "来源",
     "modelCard": "模型卡",

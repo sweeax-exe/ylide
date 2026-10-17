@@ -70,6 +70,7 @@
     "goalLabel": "Que doivent faire les agents ?",
     "goalPlaceholder": "Par exemple : corriger le total du panier et ajouter un test pour les paniers vides",
     "goalHint": "Décrivez le résultat attendu. Ctrl+Entrée lance l’exécution.",
+    "imagesHint": "Les images vont à l’agent qui planifie et aux agents qui réalisent les tâches.",
     "start": "Lancer les agents",
     "readiness": "Prérequis",
     "modelReady": "{{model}} est lancé",

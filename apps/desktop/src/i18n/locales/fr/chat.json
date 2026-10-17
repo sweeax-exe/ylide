@@ -81,7 +81,8 @@
     "noFiles": "Aucun fichier trouvé.",
     "searching": "Recherche en cours",
     "symbolsHint": "Tapez au moins deux caractères pour chercher des symboles.",
-    "hint": "<0>↑</0> <1>↓</1> pour choisir, <2>Entrée</2> pour joindre, <3>Échap</3> pour fermer"
+    "hint": "<0>↑</0> <1>↓</1> pour choisir, <2>Entrée</2> pour joindre, <3>Échap</3> pour fermer",
+    "skills": "Compétences"
   },
   "symbolKind": {
     "function": "fonction",

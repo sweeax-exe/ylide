@@ -7,4 +7,9 @@ export type InstalledModel = { modelId: string, quant: string, name: string, fil
  * Ylide. An imported file that matches a registry variant keeps that
  * model's id, so its recommended settings apply.
  */
-custom: boolean, };
+custom: boolean, 
+/**
+ * Vision projector loaded with the model (`--mmproj`): image input is
+ * on. Downloaded from the registry (with its hash) or picked by the user.
+ */
+projector: InstalledFile | null, };

@@ -12,6 +12,9 @@
 //   question  the agent asks the user a question during the run
 //   changes   the reviewer requests changes once
 //   lastrun   the project has a failed agent run from an earlier session, with open tasks
+//   skills    starts with installed skills, one of them broken (see ./mockSkills.ts)
+//   novision  the installed model starts with image input off (no projector)
+//   ratelimit GitHub refuses skill listings: its request limit is used up
 
 import registryJson from '../../../../registry/models.json';
 import orchestratorPrompt from '../../../../crates/agent/prompts/orchestrator.md?raw';
@@ -40,6 +43,7 @@ import type { RuntimeStatus } from '../bindings/RuntimeStatus';
 import type { ServerInfo } from '../bindings/ServerInfo';
 import type { Settings } from '../bindings/Settings';
 import type { Task } from '../bindings/Task';
+import { mentionedSkillItems, skillsCommand } from './mockSkills';
 
 const registry = registryJson as unknown as Registry;
 const failures = new Set((new URLSearchParams(location.search).get('mock') ?? '').split(',').filter(Boolean));
@@ -87,6 +91,7 @@ let settings: Settings = {
     allowModelDownloads: true,
     allowRuntimeDownloads: true,
     allowUpdateChecks: true,
+    allowSkillDownloads: false,
     registryUrl: 'https://ylide.app/registry/v2/models.json',
   },
   models: { dir: null, chat: null, autocomplete: null, embedding: null, context: null, runtimeVariant: null, slots: 2, extraArgs: [], autostart: true },
@@ -130,6 +135,7 @@ const plan = (placement: Placement, context: number, vram: number, ram: number, 
   weightsBytes: weights,
   kvBytes: context * 20480,
   overheadBytes: 0.9 * GiB,
+  projectorBytes: 0,
   vramBytes: vram * GiB,
   ramBytes: ram * GiB,
   estTokensPerSec: tps,
@@ -241,8 +247,25 @@ const recommendation: Recommendation = {
   fits: estimateFits(),
 };
 
+/** The projector file of a registry model, as the core records it once downloaded. */
+const projectorFile = (modelId: string) => {
+  const p = registry.models.find((m) => m.id === modelId)?.projector;
+  return p ? { path: `D:/models/${modelId}/${p.path}`, sizeBytes: p.sizeBytes, sha256: p.sha256 } : null;
+};
+
+// The demo model sees images, so the attach flow can be tried in the browser.
 let installed: InstalledModel[] = settings.onboardingDone
-  ? [{ modelId: 'qwen3.6-35b-a3b', quant: 'UD-IQ4_XS', name: 'Qwen3.6 35B-A3B', files: [{ path: 'D:/models/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf', sizeBytes: fileSize('qwen3.6-35b-a3b', 'UD-IQ4_XS'), sha256: null }], installedAtUnixMs: Date.now(), custom: false }]
+  ? [
+      {
+        modelId: 'qwen3.6-35b-a3b',
+        quant: 'UD-IQ4_XS',
+        name: 'Qwen3.6 35B-A3B',
+        files: [{ path: 'D:/models/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf', sizeBytes: fileSize('qwen3.6-35b-a3b', 'UD-IQ4_XS'), sha256: null }],
+        installedAtUnixMs: Date.now(),
+        custom: false,
+        projector: failures.has('novision') ? null : projectorFile('qwen3.6-35b-a3b'),
+      },
+    ]
   : [];
 if (settings.onboardingDone) settings.models.chat = { modelId: 'qwen3.6-35b-a3b', quant: 'UD-IQ4_XS' };
 
@@ -344,6 +367,32 @@ export function total(items: Item[]): number {
 The existing test in \`test/cart.test.ts\` (3 × 100 = 300) will pass after this change.`;
 
 const chatReasoning = 'The user asks why the cart total is wrong. total() reduces over items and adds item.price, but Item has a quantity field that is never used. The test expects 3 × 100 = 300, so the fix is to multiply by quantity.';
+
+const chatImageReasoning = 'A screenshot of the shop: a cart with two rows and a total line. Two teas at 4,50 € each, but the total says 4,50 €.';
+
+const chatImageAnswer = (count: number) => `${count > 1 ? `I looked at all ${count} images. ` : ''}The screenshot shows the cart page of demo-shop: two teas at **4,50 €** each, but the total line says **4,50 €** instead of 9,00 €.
+
+That is the bug in \`total()\` in \`src/cart.ts\`: it adds \`item.price\` once per item and ignores \`item.quantity\`. Multiply by the quantity and the page shows 9,00 €.`;
+
+/** A small fake screenshot (what `image_load` returns for the picked demo file). */
+function demoScreenshot(): string {
+  const canvas = document.createElement('canvas');
+  canvas.width = 960;
+  canvas.height = 600;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+  ctx.fillStyle = '#f4f2ee';
+  ctx.fillRect(0, 0, 960, 600);
+  ctx.fillStyle = '#1d1b19';
+  ctx.font = '600 34px sans-serif';
+  ctx.fillText('demo-shop · Cart', 48, 80);
+  ctx.font = '24px sans-serif';
+  ['Green tea × 2      4,50 €', 'Total               4,50 €'].forEach((line, i) => ctx.fillText(line, 48, 170 + i * 70));
+  ctx.strokeStyle = '#c2410c';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(36, 200, 520, 60);
+  return canvas.toDataURL('image/png');
+}
 
 // ------------------------------------------------------------------ agent simulation
 
@@ -679,6 +728,9 @@ function reportPause(paused: boolean) {
 export async function mockInvoke<T>(command: string, args: Record<string, any>): Promise<T> {
   await sleep(command.startsWith('fs_') ? 20 : 60);
   const r = (v: unknown) => v as T;
+  if (command.startsWith('skills_')) {
+    return r(await skillsCommand(command, args, { failures, downloadsAllowed: settings.network.allowSkillDownloads, projectOpen: settings.onboardingDone, log: logNet }));
+  }
   switch (command) {
     case 'app_info':
       return r({ version: '0.1.0', os: 'windows', arch: 'x86_64', configDir: 'C:/Users/me/AppData/Roaming/app.ylide', dataDir: 'C:/Users/me/AppData/Local/app.ylide', modelsDir: 'C:/Users/me/AppData/Local/app.ylide/models', logFile: 'C:/Users/me/AppData/Local/app.ylide/logs/ylide.log' });
@@ -737,7 +789,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       }
       if (failures.has('offline')) throw { code: 'network_disabled', message: 'model downloads are switched off' };
       if (failures.has('diskfull')) throw { code: 'disk_full', message: `${(total / 1e9).toFixed(1)} GB needed, 0.8 GB free` };
-      const job: DownloadJob & { timer?: number } = existing ?? { jobId: id, modelId: args.modelId, quant: args.quant, name: `${model.name} ${args.quant}`, state: { state: 'running' }, progress: null, totalBytes: total };
+      const job: DownloadJob & { timer?: number } = existing ?? { jobId: id, modelId: args.modelId, quant: args.quant, name: `${model.name} ${args.quant}`, projector: false, state: { state: 'running' }, progress: null, totalBytes: total };
       job.state = { state: 'running' };
       jobs.set(id, job);
       logNet('modelDownload', `https://huggingface.co/${model.source.hfRepo}/resolve/${model.source.revision}/${model.variants.find((v) => v.quant === args.quant)!.files[0].path}`, 'requested');
@@ -757,8 +809,10 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
         if (done >= total) {
           window.clearInterval(job.timer);
           job.state = { state: 'completed' };
+          // Like the core: image input is per model, a new variant loads the projector too.
+          const projector = installed.find((m) => m.modelId === args.modelId && m.projector)?.projector ?? null;
           installed = installed.filter((m) => !(m.modelId === args.modelId && m.quant === args.quant));
-          installed.push({ modelId: args.modelId, quant: args.quant, name: model.name, files: [{ path: `D:/models/${args.quant}.gguf`, sizeBytes: total, sha256: null }], installedAtUnixMs: Date.now(), custom: false });
+          installed.push({ modelId: args.modelId, quant: args.quant, name: model.name, files: [{ path: `D:/models/${args.quant}.gguf`, sizeBytes: total, sha256: null }], installedAtUnixMs: Date.now(), custom: false, projector });
         }
         const { timer: _t, ...snapshot } = job;
         emit('models://job', snapshot);
@@ -795,10 +849,47 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       if (failures.has('notgguf')) throw { code: 'not_gguf', message: args.path };
       // Like the core for a file that matches no registry variant.
       const stem = String(args.path).split(/[\\/]/).pop()!.replace(/\.gguf$/i, '');
-      const model: InstalledModel = { modelId: `custom:${stem}`, quant: 'custom', name: stem, files: [{ path: args.path, sizeBytes: 4_920_734_016, sha256: null }], installedAtUnixMs: Date.now(), custom: true };
+      const model: InstalledModel = { modelId: `custom:${stem}`, quant: 'custom', name: stem, files: [{ path: args.path, sizeBytes: 4_920_734_016, sha256: null }], installedAtUnixMs: Date.now(), custom: true, projector: null };
       installed = [...installed.filter((m) => !(m.modelId === model.modelId && m.quant === model.quant)), model];
       return r(model);
     }
+    case 'model_projector_download': {
+      // Like a variant download, a little faster; when done, every variant of the model loads it.
+      const id = `${args.modelId}@mmproj`;
+      const model = registry.models.find((m) => m.id === args.modelId);
+      const file = projectorFile(args.modelId);
+      if (!model?.projector || !file) throw { code: 'no_projector', message: args.modelId };
+      if (failures.has('offline')) throw { code: 'network_disabled', message: 'model downloads are switched off' };
+      const total = file.sizeBytes;
+      const job: DownloadJob & { timer?: number } = jobs.get(id) ?? { jobId: id, modelId: args.modelId, quant: 'mmproj', name: `${model.name} mmproj`, projector: true, state: { state: 'running' }, progress: null, totalBytes: total };
+      job.state = { state: 'running' };
+      jobs.set(id, job);
+      logNet('modelDownload', `https://huggingface.co/${model.source.hfRepo}/resolve/${model.source.revision}/${model.projector.path}`, 'requested');
+      let done = job.progress?.downloadedBytes ?? 0;
+      const speed = total / 6;
+      job.timer = window.setInterval(() => {
+        done = Math.min(total, done + speed * 0.12);
+        job.progress = { jobId: id, phase: done >= total ? 'done' : 'downloading', fileIndex: 0, fileCount: 1, downloadedBytes: done, totalBytes: total, bytesPerSecond: speed };
+        if (done >= total) {
+          window.clearInterval(job.timer);
+          job.state = { state: 'completed' };
+          installed = installed.map((m) => (m.modelId === args.modelId ? { ...m, projector: file } : m));
+        }
+        const { timer: _t, ...snapshot } = job;
+        emit('models://job', snapshot);
+      }, 120);
+      const { timer: _t, ...snapshot } = job;
+      return r(snapshot);
+    }
+    case 'model_projector_set': {
+      await sleep(200);
+      const projector = args.path ? { path: String(args.path), sizeBytes: 899_283_680, sha256: null } : null;
+      installed = installed.map((m) => (m.modelId === args.modelId ? { ...m, projector } : m));
+      return r([...installed]);
+    }
+    case 'image_load':
+      await sleep(150);
+      return r(demoScreenshot());
     case 'runtime_status':
       return r(runtime());
     case 'runtime_install': {
@@ -818,7 +909,9 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
     case 'server_start': {
       const sel = args.selection ?? settings.models.chat;
       const model = registry.models.find((m) => m.id === sel?.modelId);
-      const base: ServerInfo = { modelId: sel?.modelId ?? 'x', quant: sel?.quant ?? '', modelName: model?.name ?? 'Model', runtime: runtime().selected ?? 'vulkan', device: cudaInstalled ? 'CUDA0' : 'Vulkan0', context: 131072, slots: 2, status: { state: 'starting' }, toolCalls: 'unknown', command: ['llama-server.exe', '-m', 'model.gguf', '-c', '131072', '-np', '2', '-kvu', '-fa', 'on', '--fit', 'on'] };
+      const projector = installed.find((m) => m.modelId === sel?.modelId && m.quant === sel?.quant)?.projector ?? null;
+      const command = ['llama-server.exe', '-m', 'model.gguf', '-c', '131072', '-np', '2', '-kvu', '-fa', 'on', '--fit', 'on', ...(projector ? ['--mmproj', projector.path, '--image-max-tokens', '2048'] : [])];
+      const base: ServerInfo = { modelId: sel?.modelId ?? 'x', quant: sel?.quant ?? '', modelName: model?.name ?? 'Model', runtime: runtime().selected ?? 'vulkan', device: cudaInstalled ? 'CUDA0' : 'Vulkan0', context: 131072, slots: 2, status: { state: 'starting' }, toolCalls: 'unknown', vision: projector ? 'on' : 'off', command };
       server = base;
       emit('runtime://server', server);
       await sleep(700);
@@ -925,17 +1018,21 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       const req = args.request;
       const send = args.onEvent as (e: ChatEvent) => void;
       if (!server) throw { code: 'no_model', message: 'start a model first' };
-      send({ type: 'context', items: contextItems(req.mentions) });
+      const messages = req.messages as Array<{ role: string; content: string; images?: string[] }>;
+      const images = messages[messages.length - 1]?.images ?? [];
+      if (images.length && server.vision !== 'on') throw { code: 'no_vision', message: 'the model that is running cannot see images' };
+      const userTexts = messages.filter((m) => m.role === 'user').map((m) => m.content);
+      send({ type: 'context', items: [...contextItems(req.mentions), ...mentionedSkillItems(userTexts)] });
       await sleep(250);
       const isCancelled = () => cancelledRequests.has(req.id);
       let reasoning = '';
       let content = '';
-      let ok = await streamText(chatReasoning, (text) => {
+      let ok = await streamText(images.length ? chatImageReasoning : chatReasoning, (text) => {
         reasoning += text;
         send({ type: 'delta', delta: { kind: 'reasoning', text } });
       }, isCancelled, 10);
       if (ok) {
-        ok = await streamText(chatAnswer, (text) => {
+        ok = await streamText(images.length ? chatImageAnswer(images.length) : chatAnswer, (text) => {
           content += text;
           send({ type: 'delta', delta: { kind: 'content', text } });
         }, isCancelled);
@@ -978,6 +1075,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
     }
     case 'agent_start': {
       if (!server) throw { code: 'no_model', message: 'start a model first' };
+      if ((args.images ?? []).length && server.vision !== 'on') throw { code: 'no_vision', message: 'the model that is running cannot see images' };
       const wanted = args.previousRun ? String(args.previousRun) : null;
       // In memory, or the stored last run after a restart.
       const previous = wanted ? (runRecords.get(wanted) ?? (lastRun?.runId === wanted ? lastRun : undefined)) : null;

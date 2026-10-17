@@ -2,4 +2,8 @@
 import type { Reasoning } from "./Reasoning";
 import type { ToolCalling } from "./ToolCalling";
 
-export type Capabilities = { toolCalling: ToolCalling, reasoning: Reasoning, vision: boolean, };
+export type Capabilities = { toolCalling: ToolCalling, reasoning: Reasoning, 
+/**
+ * Understands images with its [`Model::projector`].
+ */
+vision: boolean, };

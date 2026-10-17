@@ -70,6 +70,7 @@
     "goalLabel": "智能体要做什么？",
     "goalPlaceholder": "例如：修复购物车总价，并为空购物车添加测试",
     "goalHint": "描述你想要的结果。按 Ctrl+Enter 开始运行。",
+    "imagesHint": "图片会发给制定计划的智能体，以及执行任务的智能体。",
     "start": "启动智能体",
     "readiness": "前提条件",
     "modelReady": "{{model}} 正在运行",

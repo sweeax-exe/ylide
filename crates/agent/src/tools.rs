@@ -22,6 +22,13 @@ pub const READ_FILE_MAX_LINES: usize = 600;
 const LIST_MAX_ENTRIES: usize = 400;
 const SEARCH_MAX_MATCHES: u32 = 100;
 
+/// Looks at an image file of the project. Every role that uses tools gets
+/// it while the model sees images (its vision projector is loaded).
+pub const IMAGE_VIEW: &str = "image_view";
+
+/// What `image_view` answers when the running model cannot see.
+pub const NO_VISION: &str = "the model that is running cannot see images. Ask the user to describe the image, or to switch on image input on the Models page for a model that can see.";
+
 #[derive(Debug, Clone)]
 pub struct ToolSpec {
     pub name: &'static str,
@@ -35,6 +42,10 @@ impl ToolSpec {
         ToolDefinition::function(self.name, self.description, self.parameters.clone())
     }
 }
+
+/// Reads enabled skills. No role lists it: every role that uses tools gets
+/// it while skills are on (the Skills page is where they are switched).
+pub const SKILL_READ: &str = "skill_read";
 
 /// All tools known to the app. Roles pick a subset by name.
 pub fn all_tools() -> Vec<ToolSpec> {
@@ -67,6 +78,18 @@ pub fn all_tools() -> Vec<ToolSpec> {
             }),
         },
         ToolSpec {
+            name: IMAGE_VIEW,
+            risk: ToolRisk::Read,
+            description: "Look at an image file of the project (PNG, JPEG, WebP, or the first frame of a GIF), e.g. a screenshot, mockup or diagram. You see the image with the result.",
+            parameters: json!({
+                "type": "object",
+                "properties": {
+                    "path": { "type": "string", "description": "Image file relative to the project root." }
+                },
+                "required": ["path"]
+            }),
+        },
+        ToolSpec {
             name: "search",
             risk: ToolRisk::Read,
             description: "Search the project for text (or a regex). Returns path:line: matches.",
@@ -88,6 +111,20 @@ pub fn all_tools() -> Vec<ToolSpec> {
                 "type": "object",
                 "properties": { "query": { "type": "string" } },
                 "required": ["query"]
+            }),
+        },
+        ToolSpec {
+            name: SKILL_READ,
+            risk: ToolRisk::Read,
+            description: "Read an enabled skill: its instructions (SKILL.md) or one of its files, e.g. references/guide.md. Long files come in parts; use start_line to continue.",
+            parameters: json!({
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string", "description": "The skill's name from the list of enabled skills." },
+                    "file": { "type": "string", "description": "A file of the skill; leave out for SKILL.md." },
+                    "start_line": { "type": "integer", "minimum": 1 }
+                },
+                "required": ["name"]
             }),
         },
         ToolSpec {
@@ -235,6 +272,8 @@ const ALIASES: &[(&str, &[&str])] = &[
     ("timeout_seconds", &["timeout", "timeout_s"]),
     ("start_line", &["offset", "line_start"]),
     ("end_line", &["line_end"]),
+    ("name", &["skill", "skill_name"]),
+    ("file", &["path", "file_path", "filePath", "reference"]),
 ];
 
 /// Repairs common argument mistakes before validation: renamed keys and
@@ -338,6 +377,10 @@ pub struct ToolEnv<'a> {
     pub cancel: &'a CancellationToken,
     /// Files read during this run; existing files must be read before `write_file` replaces them.
     pub read_files: &'a std::sync::Mutex<std::collections::HashSet<String>>,
+    /// The skills `skill_read` may read.
+    pub skills: &'a [skills::EnabledSkill],
+    /// Characters `skill_read` returns at once (see `skills::prompt::read_budget`).
+    pub skill_chars: usize,
 }
 
 fn canonical_rel(env: &ToolEnv<'_>, path: &str) -> String {
@@ -352,6 +395,8 @@ pub struct ToolOutcome {
     /// One-line summary for the UI.
     pub summary: String,
     pub change: Option<FileChange>,
+    /// Images returned to the model with the text (data URLs, `image_view`).
+    pub images: Vec<String>,
 }
 
 impl ToolOutcome {
@@ -361,6 +406,7 @@ impl ToolOutcome {
             ok: true,
             summary,
             change: None,
+            images: Vec::new(),
         }
     }
     fn err(message: impl ToString) -> Self {
@@ -370,6 +416,7 @@ impl ToolOutcome {
             ok: false,
             summary: m,
             change: None,
+            images: Vec::new(),
         }
     }
 }
@@ -382,10 +429,11 @@ fn arg_str<'a>(args: &'a Value, key: &str) -> Option<&'a str> {
 pub fn describe_call(name: &str, args: &Value) -> String {
     let path = arg_str(args, "path").unwrap_or_default();
     match name {
-        "read_file" | "write_file" | "edit_file" | "delete_file" | "list_dir" => format!("{name} {path}").trim().to_string(),
+        "read_file" | "write_file" | "edit_file" | "delete_file" | "list_dir" | IMAGE_VIEW => format!("{name} {path}").trim().to_string(),
         "search" | "find_files" => format!("{name} \"{}\"", arg_str(args, "query").unwrap_or_default()),
         "run_command" => format!("run `{}`", arg_str(args, "command").unwrap_or_default()),
         "ask" => format!("ask {}", arg_str(args, "to").unwrap_or_default()),
+        SKILL_READ => format!("{SKILL_READ} {} {}", arg_str(args, "name").unwrap_or_default(), arg_str(args, "file").unwrap_or_default()).trim().to_string(),
         other => other.to_string(),
     }
 }
@@ -396,6 +444,7 @@ pub async fn execute(name: &str, args: &Value, env: &ToolEnv<'_>) -> ToolOutcome
     match name {
         "list_dir" => list_dir(args, env),
         "read_file" => read_file(args, env),
+        IMAGE_VIEW => image_view(args, env),
         "search" => search(args, env),
         "find_files" => {
             let q = arg_str(args, "query").unwrap_or_default();
@@ -407,7 +456,27 @@ pub async fn execute(name: &str, args: &Value, env: &ToolEnv<'_>) -> ToolOutcome
         "edit_file" => edit_file(args, env),
         "delete_file" => delete_file(args, env),
         "run_command" => run_command(args, env).await,
+        SKILL_READ => skill_read(args, env),
         other => ToolOutcome::err(format!("unknown tool '{other}'")),
+    }
+}
+
+fn skill_read(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
+    let name = match require(args, "name") {
+        Ok(n) => n,
+        Err(e) => return e,
+    };
+    let file = arg_str(args, "file");
+    if let Some(f) = file.filter(|f| workspace::is_secret_path(f)) {
+        return ToolOutcome::err(format!("'{f}' looks like a credentials file; agents are not allowed to read it"));
+    }
+    let start = args.get("start_line").and_then(Value::as_u64).unwrap_or(1) as usize;
+    match skills::prompt::read(env.skills, name, file, start, env.skill_chars) {
+        Ok(text) => {
+            let summary = format!("skill {name}: {}", file.filter(|f| !f.trim().is_empty()).unwrap_or("SKILL.md"));
+            ToolOutcome::ok(text, summary)
+        }
+        Err(e) => ToolOutcome::err(e),
     }
 }
 
@@ -440,6 +509,8 @@ fn read_file(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
     }
     let file = match env.ws.read_text(path) {
         Ok(f) => f,
+        // Seen with a real model: it reads a screenshot as text first.
+        Err(e) if is_image_path(path) => return ToolOutcome::err(format!("{e}: it is an image. A model that sees images can look at it with {IMAGE_VIEW}")),
         Err(e) => return ToolOutcome::err(e),
     };
     env.read_files.lock().unwrap_or_else(|e| e.into_inner()).insert(canonical_rel(env, path));
@@ -460,6 +531,51 @@ fn read_file(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
         out.push_str(&format!("\n[{} more lines; call read_file with start_line={} to continue]", total - end, end + 1));
     }
     ToolOutcome::ok(out, format!("{} ({}-{} of {total})", file.path, start, end))
+}
+
+/// Image files `image_view` shows, by their extension.
+fn is_image_path(path: &str) -> bool {
+    let lower = path.to_ascii_lowercase();
+    [".png", ".jpg", ".jpeg", ".webp", ".gif"].iter().any(|ext| lower.ends_with(ext))
+}
+
+/// The image goes to the model as it is; llama.cpp decodes and scales it.
+fn image_view(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
+    use inference::image::{MAX_IMAGE_BYTES, data_url, image_info};
+    let path = match require(args, "path") {
+        Ok(p) => p,
+        Err(e) => return e,
+    };
+    if workspace::is_secret_path(path) {
+        return ToolOutcome::err(format!("'{path}' looks like a credentials file; agents are not allowed to read it"));
+    }
+    let abs = match env.ws.resolve(path) {
+        Ok(a) => a,
+        Err(e) => return ToolOutcome::err(e),
+    };
+    let rel = env.ws.relative(&abs).unwrap_or_else(|| path.to_string());
+    match std::fs::metadata(&abs) {
+        Ok(m) if m.is_dir() => return ToolOutcome::err(format!("'{rel}' is a folder")),
+        Ok(m) if m.len() > MAX_IMAGE_BYTES as u64 => return ToolOutcome::err(format!("'{rel}' is larger than {} MB", MAX_IMAGE_BYTES >> 20)),
+        Ok(_) => {}
+        Err(_) => return ToolOutcome::err(format!("'{rel}' does not exist")),
+    }
+    let bytes = match std::fs::read(&abs) {
+        Ok(b) => b,
+        Err(e) => return ToolOutcome::err(format!("could not read '{rel}': {e}")),
+    };
+    let info = match image_info(&bytes) {
+        Ok(i) => i,
+        Err(e) => return ToolOutcome::err(format!("'{rel}': {e}")),
+    };
+    let size = format!("{}x{} {}", info.width, info.height, info.format.name());
+    ToolOutcome {
+        output: format!("Image {rel} ({size}, {} KB):", bytes.len().div_ceil(1024)),
+        ok: true,
+        summary: format!("{rel} ({size})"),
+        change: None,
+        images: vec![data_url(info.format, &bytes)],
+    }
 }
 
 fn search(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
@@ -558,6 +674,7 @@ fn write_file(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
         ok: true,
         summary: format!("{verb} {path} (+{added} -{removed})"),
         change: Some(change),
+        images: Vec::new(),
     }
 }
 
@@ -594,6 +711,7 @@ fn edit_file(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
         ok: true,
         summary: format!("Edited {path} (+{added} -{removed})"),
         change: Some(change),
+        images: Vec::new(),
     }
 }
 
@@ -631,6 +749,7 @@ fn delete_file(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
         ok: true,
         summary: format!("Deleted {path}"),
         change: Some(record_change(env, path, Some(before.as_deref().unwrap_or_default()), None)),
+        images: Vec::new(),
     }
 }
 
@@ -784,6 +903,7 @@ async fn run_command(args: &Value, env: &ToolEnv<'_>) -> ToolOutcome {
         summary: format!("`{}` exited with {} after {secs:.1}s", crate::protocol::first_line(&command, 60), code.unwrap_or(-1)),
         output,
         change: None,
+        images: Vec::new(),
     }
 }
 
@@ -825,8 +945,39 @@ mod tests {
             shell: &shell,
             cancel: &cancel,
             read_files,
+            skills: &[],
+            skill_chars: 12_000,
         };
         execute(name, &args, &env).await
+    }
+
+    #[tokio::test]
+    async fn skills_are_read_through_their_tool() {
+        let (ws, proj, cp) = setup("skills");
+        let dir = proj.parent().unwrap().join("skills/pdf");
+        std::fs::create_dir_all(dir.join("references")).unwrap();
+        std::fs::write(dir.join("SKILL.md"), "---\nname: pdf\ndescription: Fill forms.\n---\n# PDF\nRead references/forms.md first.\n").unwrap();
+        std::fs::write(dir.join("references/forms.md"), "Use qpdf.\n").unwrap();
+        let skills = vec![skills::EnabledSkill { name: "pdf".into(), description: "Fill forms.".into(), dir }];
+        let checkpoint = cp.begin("run", "test").unwrap();
+        let (shell, cancel, read) = (ShellConfig::default(), CancellationToken::new(), std::sync::Mutex::default());
+        let env = ToolEnv { ws: &ws, checkpoints: &cp, run_id: "run", checkpoint_id: &checkpoint.id, shell: &shell, cancel: &cancel, read_files: &read, skills: &skills, skill_chars: 12_000 };
+
+        let r = execute(SKILL_READ, &json!({"name": "pdf"}), &env).await;
+        assert!(r.ok && r.output.contains("# PDF\nRead references/forms.md first.") && r.output.contains("references/forms.md"), "{}", r.output);
+        assert_eq!(r.summary, "skill pdf: SKILL.md");
+        let mut args = json!({"skill": "pdf", "path": "references/forms.md"});
+        normalize_arguments(&tool_spec(SKILL_READ).unwrap(), &mut args);
+        assert_eq!(args, json!({"name": "pdf", "file": "references/forms.md"}));
+        let r = execute(SKILL_READ, &args, &env).await;
+        assert!(r.ok && r.output.ends_with("Use qpdf."), "{}", r.output);
+        assert_eq!(describe_call(SKILL_READ, &args), "skill_read pdf references/forms.md");
+        let r = execute(SKILL_READ, &json!({"name": "pdf", "file": "../../p/src/main.rs"}), &env).await;
+        assert!(!r.ok && r.output.starts_with("Error: "), "{}", r.output);
+        let r = execute(SKILL_READ, &json!({"name": "pdf", "file": "references/.env"}), &env).await;
+        assert!(!r.ok && r.output.contains("credentials"), "{}", r.output);
+        let r = execute(SKILL_READ, &json!({"file": "x"}), &env).await;
+        assert_eq!(r.output, "Error: missing required argument 'name'");
     }
 
     #[tokio::test]
@@ -881,6 +1032,37 @@ mod tests {
         assert!(r.output.contains("src/main.rs:2:"));
         let r = run("read_file", json!({"path": "../../etc/passwd"}), &ws, &cp).await;
         assert!(!r.ok);
+    }
+
+    #[tokio::test]
+    async fn images_are_shown_to_the_model() {
+        let (ws, proj, cp) = setup("image");
+        // A PNG header is enough for the format and the size; llama.cpp reads the rest.
+        let mut png = b"\x89PNG\r\n\x1a\n\0\0\0\x0dIHDR".to_vec();
+        png.extend(1280u32.to_be_bytes());
+        png.extend(720u32.to_be_bytes());
+        png.extend([8, 6, 0, 0, 0]);
+        std::fs::create_dir_all(proj.join("docs")).unwrap();
+        std::fs::write(proj.join("docs/screen.png"), &png).unwrap();
+        let r = run(IMAGE_VIEW, json!({"path": "docs/screen.png"}), &ws, &cp).await;
+        assert!(r.ok, "{}", r.output);
+        assert_eq!(r.output, "Image docs/screen.png (1280x720 PNG, 1 KB):");
+        assert_eq!(r.summary, "docs/screen.png (1280x720 PNG)");
+        assert_eq!(r.images, vec![inference::image::data_url(inference::image::ImageFormat::Png, &png)]);
+        assert_eq!(describe_call(IMAGE_VIEW, &json!({"path": "docs/screen.png"})), "image_view docs/screen.png");
+
+        // Not an image, not there, outside the project, a folder.
+        let r = run(IMAGE_VIEW, json!({"path": "src/main.rs"}), &ws, &cp).await;
+        assert!(!r.ok && r.output.contains("not a PNG, JPEG, GIF or WebP image") && r.images.is_empty(), "{}", r.output);
+        assert!(run(IMAGE_VIEW, json!({"path": "docs/missing.png"}), &ws, &cp).await.output.contains("does not exist"));
+        assert!(!run(IMAGE_VIEW, json!({"path": "../outside.png"}), &ws, &cp).await.ok);
+        assert!(run(IMAGE_VIEW, json!({"path": "docs"}), &ws, &cp).await.output.contains("is a folder"));
+        let mut args = json!({"file_path": "docs/screen.png"});
+        normalize_arguments(&tool_spec(IMAGE_VIEW).unwrap(), &mut args);
+        assert_eq!(args, json!({"path": "docs/screen.png"}));
+        // read_file on an image points to image_view.
+        let r = run("read_file", json!({"path": "docs/screen.png"}), &ws, &cp).await;
+        assert!(!r.ok && r.output.ends_with("it is an image. A model that sees images can look at it with image_view"), "{}", r.output);
     }
 
     #[tokio::test]

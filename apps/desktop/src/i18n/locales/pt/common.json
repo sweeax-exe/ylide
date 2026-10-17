@@ -33,7 +33,8 @@
     "chat": "Chat",
     "agents": "Agentes",
     "models": "Modelos",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "skills": "Habilidades"
   },
   "titlebar": {
     "noProject": "Nenhuma pasta aberta",
@@ -82,7 +83,8 @@
     "modelDownload": "download de modelo",
     "runtimeDownload": "download de runtime",
     "updateCheck": "verificação de atualizações",
-    "updateDownload": "download de atualização"
+    "updateDownload": "download de atualização",
+    "skillDownload": "download de habilidades"
   },
   "errors": {
     "generic": "Algo deu errado: {{message}}",
@@ -107,7 +109,42 @@
     "update_format": "A atualização tem um formato que o Ylide não consegue instalar: {{message}}",
     "update_too_large": "A atualização é excepcionalmente grande e não foi baixada.",
     "update_launch": "Não foi possível iniciar o instalador: {{message}}",
-    "update_unsupported": "Neste sistema, instale as atualizações manualmente."
+    "update_unsupported": "Neste sistema, instale as atualizações manualmente.",
+    "skill_invalid": "Esta não é uma habilidade válida: {{message}}",
+    "skill_too_large": "A habilidade é grande demais: {{message}}",
+    "skill_exists": "Já existe uma habilidade instalada com este nome ({{message}}). Remova-a primeiro para instalá-la de novo.",
+    "skill_not_found": "Esta habilidade não existe mais.",
+    "skill_renamed": "A nova versão tem outro nome ({{message}}). Remova a habilidade e adicione a nova.",
+    "skill_address": "Este não é o endereço de um repositório do GitHub: {{message}}",
+    "skill_none_found": "Nenhuma habilidade encontrada aqui: {{message}}",
+    "skill_repo_not_found": "O GitHub não conhece este repositório, ou ele é privado.",
+    "skill_rate_limited": "O limite do GitHub para solicitações sem conta foi atingido. Tente de novo em uma hora.",
+    "skill_gone": "A habilidade não está mais no repositório dela: {{message}}",
+    "no_vision": "O modelo em execução não consegue ver imagens. Na página Modelos, ative “Entender imagens” para um modelo que consiga.",
+    "bad_image": "Não é possível usar a imagem: {{message}}",
+    "not_projector": "Isto não é um módulo de imagem (arquivo GGUF mmproj).",
+    "no_projector": "Este modelo não aceita imagens."
+  },
+  "images": {
+    "attach": "Anexar imagens",
+    "attached": "Imagens anexadas: {{n}}",
+    "label": "Imagem {{n}}: {{name}}, {{size}} pixels",
+    "labelShort": "Imagem {{n}}",
+    "pasted": "colada",
+    "remove": "Remover {{label}}",
+    "notSent": "As imagens não são enviadas",
+    "noModel": "Inicie um modelo que entenda imagens para anexá-las.",
+    "switchOn": "{{model}} pode entender imagens: ative “Entender imagens” na página Modelos e inicie-o de novo.",
+    "cannotSee": "{{model}} não consegue ver imagens.",
+    "visionModels": "Modelos que conseguem: {{models}}.",
+    "missing": "O módulo de imagem de {{model}} está faltando. Desative e ative de novo “Entender imagens” na página Modelos.",
+    "failed": "{{model}} está rodando sem imagens porque o módulo de imagem não carregou. O log do servidor tem os detalhes.",
+    "problem": {
+      "unsupported": "Só é possível anexar imagens PNG, JPEG, WebP e GIF.",
+      "tooLarge": "A imagem tem mais de 20 MB.",
+      "damaged": "Não foi possível ler a imagem.",
+      "tooMany": "No máximo {{max}} imagens por mensagem; as demais não foram anexadas."
+    }
   },
   "reasons": {
     "fitsInVram": "Cabe totalmente na memória de vídeo ({{vramGb}} GB em uso).",

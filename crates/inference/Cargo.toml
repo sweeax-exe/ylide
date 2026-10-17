@@ -8,6 +8,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+base64 = { workspace = true }
 futures-util = { workspace = true }
 getrandom = { workspace = true }
 hardware = { path = "../hardware" }

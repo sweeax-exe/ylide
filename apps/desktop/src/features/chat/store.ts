@@ -10,6 +10,7 @@ import type { ChatSummary } from '../../bindings/ChatSummary';
 import type { Mention } from '../../bindings/Mention';
 import i18n from '../../i18n';
 import { reportError } from '../../lib/errors';
+import type { DraftImage } from '../../lib/images';
 import { api, IpcError } from '../../lib/ipc';
 import { useApp } from '../../state/app';
 import { useEditorBridge } from '../../state/editorBridge';
@@ -24,6 +25,8 @@ interface ChatState {
   activeRequestId: string | null;
   draft: string;
   draftMentions: Mention[];
+  /** Images for the next question, already scaled down. */
+  draftImages: DraftImage[];
   /** Id of the conversation on screen in the saved history; null until its first question. */
   chatId: string | null;
   /** Project the conversation on screen belongs to (null: none was open). */
@@ -36,7 +39,8 @@ interface ChatState {
   setDraft(text: string): void;
   addMentions(mentions: Mention[]): void;
   removeMention(key: string): void;
-  /** Sends the draft. Returns false if there was nothing to send or a request is running. */
+  setDraftImages(images: DraftImage[]): void;
+  /** Sends the draft (text, images or both). Returns false if there was nothing to send or a request is running. */
   send(): boolean;
   stop(): void;
   retry(answerId: string): void;
@@ -159,7 +163,7 @@ export const useChat = create<ChatState>((set, get) => {
     const turns = [...history, question, assistantTurn(newId(), requestId)];
     set((s) => (s.chatId ? { turns, activeRequestId: requestId } : { turns, activeRequestId: requestId, chatId: newId(), chatRoot: openRoot(), createdAt: Date.now() }));
     persist();
-    const request = { id: requestId, messages: requestMessages(history, question.content), mentions: question.mentions };
+    const request = { id: requestId, messages: requestMessages(history, question.content, question.images), mentions: question.mentions };
     api.chat
       .send(request, (event) => enqueue(requestId, event))
       .then(() => {
@@ -187,6 +191,7 @@ export const useChat = create<ChatState>((set, get) => {
     activeRequestId: null,
     draft: '',
     draftMentions: [],
+    draftImages: [],
     chatId: null,
     chatRoot: null,
     createdAt: 0,
@@ -196,15 +201,16 @@ export const useChat = create<ChatState>((set, get) => {
     setDraft: (draft) => set({ draft }),
     addMentions: (mentions) => set((s) => ({ draftMentions: mergeMentions(s.draftMentions, mentions) })),
     removeMention: (key) => set((s) => ({ draftMentions: s.draftMentions.filter((m) => mentionKey(m) !== key) })),
+    setDraftImages: (draftImages) => set({ draftImages }),
 
     send() {
-      const { draft, draftMentions, activeRequestId, turns } = get();
+      const { draft, draftMentions, draftImages, activeRequestId, turns } = get();
       const content = draft.trim();
       // While the last project reopens at startup, a question would be filed
       // under "no project" and then stopped when the project arrives.
-      if (!content || activeRequestId || useApp.getState().reopening) return false;
-      set({ draft: '', draftMentions: [] });
-      run(turns, userTurn(newId(), content, draftMentions));
+      if ((!content && !draftImages.length) || activeRequestId || useApp.getState().reopening) return false;
+      set({ draft: '', draftMentions: [], draftImages: [] });
+      run(turns, userTurn(newId(), content, draftMentions, draftImages.map((i) => i.url)));
       return true;
     },
 

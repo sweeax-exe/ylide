@@ -437,7 +437,7 @@ fn fix_up_manifest(models_dir: &Path, moved: &[(&Path, &Path)]) -> io::Result<us
     };
     let mut list: Vec<InstalledModel> = serde_json::from_str(&text).map_err(io::Error::other)?;
     let mut count = 0;
-    for file in list.iter_mut().flat_map(|m| m.files.iter_mut()) {
+    for file in list.iter_mut().flat_map(|m| m.files.iter_mut().chain(m.projector.as_mut())) {
         if let Some(path) = relocate_any(&file.path, moved) {
             file.path = path;
             count += 1;
@@ -540,6 +540,7 @@ mod tests {
                 .collect(),
             installed_at_unix_ms: 0,
             custom: false,
+            projector: None,
         }];
         write(&models_dir.join("installed.json"), &serde_json::to_string_pretty(&list).unwrap());
     }

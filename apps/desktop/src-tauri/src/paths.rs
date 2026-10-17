@@ -2,7 +2,7 @@
 //!
 //! * config (`settings.json`): roaming config dir
 //! * cache (registry copy): cache dir
-//! * models, runtimes, checkpoints, run files: local data dir (large, never roams)
+//! * models, runtimes, checkpoints, skills, run files: local data dir (large, never roams)
 //!
 //! The folders are named after the app identifier (`app.ylide`). Before Tauri
 //! starts, `migration` moves the folders of the old identifier there.
@@ -19,6 +19,8 @@ pub struct AppPaths {
     pub default_models: PathBuf,
     pub runtimes: PathBuf,
     pub checkpoints: PathBuf,
+    /// Installed skills (model-independent, so every model can use them).
+    pub skills: PathBuf,
     /// Key and pid files of running servers.
     pub run: PathBuf,
     pub logs: PathBuf,
@@ -44,6 +46,7 @@ impl AppPaths {
             default_models: data.join("models"),
             runtimes: data.join("runtimes"),
             checkpoints: data.join("checkpoints"),
+            skills: data.join("skills"),
             run: data.join("run"),
             logs: data.join("logs"),
             config,

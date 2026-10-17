@@ -3,6 +3,7 @@ import { useId, useMemo, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ApprovalMode } from '../../bindings/ApprovalMode';
 import type { PermissionSettings } from '../../bindings/PermissionSettings';
+import { AttachImagesButton, ImageStrip, useImageInput, useVision } from '../../components/ImageInput';
 import { Badge, Button, Field, Segmented, Spinner, Switch, TextArea } from '../../components/ui';
 import { reportError } from '../../lib/errors';
 import { pickFolder } from '../../lib/ipc';
@@ -20,14 +21,20 @@ export function IdleView() {
   const { t } = useTranslation('agents');
   const draft = useAgentRun((st) => st.draft);
   const setDraft = useAgentRun((st) => st.setDraft);
+  const images = useAgentRun((st) => st.draftImages);
+  const setDraftImages = useAgentRun((st) => st.setDraftImages);
   const start = useAgentRun((st) => st.start);
   const previous = useAgentRun((st) => (st.run?.outcome ? st.run : null));
   const server = useApp((st) => st.server);
   const workspace = useApp((st) => st.workspace);
   const permissions = useApp((st) => st.settings?.agent.permissions);
+  const vision = useVision();
+  const imageInput = useImageInput(() => useAgentRun.getState().draftImages, setDraftImages, vision);
 
   const modelReady = server?.status.state === 'ready';
-  const canStart = modelReady && !!workspace && draft.trim().length > 0;
+  // The goal is text; images only go with it to a model that sees.
+  const imagesBlocked = images.length > 0 && !vision.canSee;
+  const canStart = modelReady && !!workspace && draft.trim().length > 0 && !imagesBlocked;
 
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
@@ -39,18 +46,31 @@ export function IdleView() {
       <form className={s.form} onSubmit={submit}>
         <Field label={t('idle.goalLabel')} hint={t('idle.goalHint')}>
           {(id) => (
-            <TextArea
-              id={id}
-              className={s.goal}
-              rows={5}
-              value={draft}
-              placeholder={t('idle.goalPlaceholder')}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit();
-              }}
-              spellCheck
-            />
+            <div
+              className={`${s.goalBox} ${imageInput.dragging ? s.dropping : ''}`}
+              onDragOver={imageInput.onDragOver}
+              onDragLeave={imageInput.onDragLeave}
+              onDrop={imageInput.onDrop}
+            >
+              <TextArea
+                id={id}
+                className={s.goal}
+                rows={5}
+                value={draft}
+                placeholder={t('idle.goalPlaceholder')}
+                onChange={(e) => setDraft(e.target.value)}
+                onPaste={imageInput.onPaste}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) submit();
+                }}
+                spellCheck
+              />
+              <div className={s.goalImages}>
+                <ImageStrip images={images} onRemove={imageInput.remove} />
+                <AttachImagesButton vision={vision} onPick={imageInput.pick} busy={imageInput.busy} />
+                <span className={s.goalImagesHint}>{imagesBlocked ? vision.hint : images.length ? t('idle.imagesHint') : null}</span>
+              </div>
+            </div>
           )}
         </Field>
         {permissions && <ModeControl permissions={permissions} />}

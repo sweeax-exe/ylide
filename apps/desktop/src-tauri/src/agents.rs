@@ -77,6 +77,8 @@ impl ApprovalBroker for UiBroker {
 pub(crate) struct AgentModel {
     pub(crate) inner: ScheduledModel,
     pub(crate) model: Option<Model>,
+    /// Its vision projector is loaded.
+    pub(crate) vision: bool,
 }
 
 #[async_trait]
@@ -93,6 +95,10 @@ impl ChatModel for AgentModel {
 
     fn context_tokens(&self) -> u32 {
         self.inner.context_tokens
+    }
+
+    fn vision(&self) -> bool {
+        self.vision
     }
 }
 
@@ -144,6 +150,7 @@ fn team_for(state: &AppState, handle: &ChatHandle) -> Team {
                 pin_slot: handle.pin_slot,
             },
             model: handle.model.clone(),
+            vision: handle.vision,
         })
     };
     let mut models: HashMap<String, Arc<dyn ChatModel>> = HashMap::new();
@@ -167,12 +174,15 @@ pub fn checkpoint_store(state: &AppState) -> AppResult<CheckpointStore> {
 
 /// Starts a run in the background and returns its id. Events stream over
 /// `channel`. With `previous_run`, the new run continues that finished run.
-pub async fn start(state: &AppState, goal: String, previous_run: Option<String>, channel: Channel<AgentEvent>) -> AppResult<String> {
+/// `images` (data URLs) go with the request to the orchestrator and to the
+/// agents working on its tasks; the model must see.
+pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous_run: Option<String>, channel: Channel<AgentEvent>) -> AppResult<String> {
     let handle = state
         .runtime
         .chat_handle()
         .await
         .ok_or_else(|| AppError::new("no_model", "start a model first"))?;
+    crate::chat::check_images(&images, handle.vision)?;
     let ws = state.workspace()?;
     let previous = match previous_run {
         Some(id) => Some(find_previous(state, ws.root(), &id)?),
@@ -196,16 +206,22 @@ pub async fn start(state: &AppState, goal: String, previous_run: Option<String>,
     });
     let project = ws.root().to_path_buf();
     *broker.events.lock().unwrap() = Some(emit.clone());
-    let ctx = Arc::new(RunContext::new(
-        run_id.clone(),
-        ws,
-        Arc::new(checkpoint_store(state)?),
-        settings.agent.permissions.clone(),
-        settings.agent.shell.clone(),
-        settings.agent.templates.clone(),
-        broker.clone(),
-        emit,
-    ));
+    // The skills that are on when the run starts; they work with any model.
+    let skills = crate::skill_service::enabled(&state.skills, Some(&ws));
+    let ctx = Arc::new(
+        RunContext::new(
+            run_id.clone(),
+            ws,
+            Arc::new(checkpoint_store(state)?),
+            settings.agent.permissions.clone(),
+            settings.agent.shell.clone(),
+            settings.agent.templates.clone(),
+            broker.clone(),
+            emit,
+        )
+        .with_skills(skills)
+        .with_goal_images(images),
+    );
     let entry = Arc::new(RunEntry {
         ctx: ctx.clone(),
         broker,

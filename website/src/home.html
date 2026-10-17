@@ -35,6 +35,7 @@
       <div class="panel chat">
         <div class="msg msg-user">
           <span class="who">{{t.chat.you}}</span>
+          <svg class="thumb" viewBox="0 0 52 52" role="img" aria-label="{{t.chat.image}}"><rect class="thumb-ink" x="8" y="6" width="14" height="3" rx="1.5"/><rect class="thumb-line" x="8" y="13" width="5" height="5" rx="1"/><rect class="thumb-dim" x="16" y="14" width="17" height="3" rx="1.5"/><rect class="thumb-dim" x="37" y="14" width="7" height="3" rx="1.5"/><rect class="thumb-line" x="8" y="21" width="5" height="5" rx="1"/><rect class="thumb-dim" x="16" y="22" width="13" height="3" rx="1.5"/><rect class="thumb-dim" x="37" y="22" width="7" height="3" rx="1.5"/><rect class="thumb-line" x="8" y="29" width="5" height="5" rx="1"/><rect class="thumb-dim" x="16" y="30" width="15" height="3" rx="1.5"/><rect class="thumb-dim" x="37" y="30" width="7" height="3" rx="1.5"/><rect class="thumb-line" x="8" y="38" width="36" height="1"/><rect class="thumb-ink" x="8" y="42" width="12" height="3" rx="1.5"/><rect class="thumb-accent" x="33" y="42" width="11" height="3" rx="1.5"/></svg>
           <p>{{t.chat.question}}</p>
         </div>
         <div class="msg msg-model">
@@ -91,6 +92,22 @@
   </div>
 </section>
 
+<section class="feature" id="skills">
+  <div class="wrap feature-grid">
+    <div class="feature-text">
+      <h2 data-cross>{{t.skills.title}}</h2>
+      <p>{{t.skills.body}}</p>
+    </div>
+    <div class="feature-visual">
+      <ul class="panel skills" aria-label="{{t.skills.listLabel}}">
+        <li><span class="skill"><code>write-tests</code><span class="skill-desc">{{t.skills.writeTests}}</span><span class="skill-source">{{t.skills.fromProject}}</span></span><span class="switch" role="img" aria-label="{{t.skills.on}}"></span></li>
+        <li><span class="skill"><code>release-notes</code><span class="skill-desc">{{t.skills.releaseNotes}}</span><span class="skill-source"><span dir="ltr">GitHub @ 3f2a91c</span></span></span><span class="switch" role="img" aria-label="{{t.skills.on}}"></span></li>
+        <li><span class="skill"><code>api-review</code><span class="skill-desc">{{t.skills.apiReview}}</span><span class="skill-source"><span dir="ltr">GitHub @ 8c41d07</span><span class="tag">{{t.skills.new}}</span></span></span><span class="switch off" role="img" aria-label="{{t.skills.off}}"></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <section class="setup" data-setup>
   <div class="setup-pin">
     <div class="wrap feature-grid">
@@ -131,6 +148,7 @@
         <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.models}}</span><span class="host">{{t.privacy.modelsHost}}</span></li>
         <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.runtimes}}</span><span class="host">{{t.privacy.runtimesHost}}</span></li>
         <li data-gate><span class="switch" aria-hidden="true"></span><span class="gate-name">{{t.privacy.updates}}</span><span class="host">{{t.privacy.updatesHost}}</span></li>
+        <li data-gate="off"><span class="switch off" aria-hidden="true"></span><span class="gate-name">{{t.privacy.skills}}</span><span class="host">{{t.privacy.skillsHost}}</span></li>
       </ul>
     </div>
   </div>

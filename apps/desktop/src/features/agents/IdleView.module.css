@@ -19,6 +19,34 @@
   font-size: var(--text-md);
 }
 
+/* The goal field with its images; images can be dropped anywhere on it. */
+.goalBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-control);
+}
+
+.dropping {
+  outline: 1px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.goalImages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.goalImagesHint {
+  flex: 1;
+  min-width: 160px;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  color: var(--text-3);
+}
+
 .label {
   font-size: var(--text-sm);
   font-weight: 600;

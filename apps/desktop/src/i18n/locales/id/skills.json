@@ -1,0 +1,104 @@
+{
+  "page": {
+    "title": "Skill",
+    "intro": "Skill mengajarkan tugas baru kepada model Anda: sebuah folder berisi instruksi (SKILL.md) dan file referensi opsional, dalam format terbuka Agent Skills. Skill berfungsi dengan setiap model, di chat dan untuk agen. Aktifkan atau matikan masing-masing skill."
+  },
+  "trust": "Skill adalah instruksi yang ditulis oleh pihak ketiga. Baca skill sebelum mengaktifkannya: Ylide menampilkannya kepada Anda pertama kali. Skill tidak pernah menjalankan apa pun sendiri; perintah dari skill hanya berjalan melalui agen dan mode persetujuan mereka.",
+  "loading": "Memuat skill",
+  "loadFailed": "Skill tidak dapat dimuat: {{message}}",
+  "installed": {
+    "title": "Terinstal",
+    "description": "Disimpan di folder data Ylide dan tersedia di setiap proyek. Skill baru awalnya dalam keadaan mati.",
+    "emptyTitle": "Belum ada skill",
+    "emptyBody": "Tambahkan skill dari repositori GitHub, misalnya https://github.com/morluto/rea, atau dari folder di komputer ini."
+  },
+  "project": {
+    "title": "Dari proyek",
+    "description": "Skill di folder .agents/skills pada proyek yang terbuka. Ylide membacanya di sana dan tidak pernah mengubahnya; mengaktifkan skill hanya berlaku untuk proyek ini.",
+    "empty": "Proyek ini tidak memiliki skill di <0>.agents/skills</0>."
+  },
+  "usage": {
+    "title": "Cara model menggunakan skill",
+    "description": "Model lokal memiliki konteks yang kecil, jadi skill dimuat secara bertahap.",
+    "agents": "<0>Agen</0> melihat nama dan deskripsi setiap skill yang aktif. Jika suatu tugas cocok, agen membaca skill tersebut dengan alat <1>skill_read</1>, termasuk file referensinya, sebagian demi sebagian.",
+    "chat": "<0>Chat</0> melihat daftar yang sama. Untuk memberikan instruksi suatu skill ke chat, sebutkan skill tersebut di pesan Anda, misalnya <1>@reverse-engineer-anything</1>; skill itu lalu tetap terlampir selama sisa percakapan.",
+    "scripts": "<0>Skrip</0> dalam skill tidak pernah berjalan sendiri. Agen hanya dapat menjalankannya sebagai perintah biasa, sesuai mode persetujuan Anda.",
+    "mcp": "<0>Alat dari skill:</0> beberapa skill, seperti milik REA, memerlukan server MCP dan program sendiri. Ylide hanya memberikan instruksinya kepada model; server MCP belum didukung."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "dari proyek",
+    "on": "Aktif",
+    "broken": "Tidak dapat digunakan",
+    "commit": "@ {{commit}}",
+    "files_other": "{{count}} file",
+    "openOnGithub": "GitHub",
+    "view": "Lihat isi",
+    "checkUpdate": "Periksa pembaruan",
+    "remove": "Hapus {{name}}",
+    "switch": "Gunakan {{name}}"
+  },
+  "content": {
+    "title": "Skill {{name}}",
+    "note": "Ini adalah teks yang diterima model. Teks ini ditulis oleh pihak ketiga.",
+    "confirmNote": "Baca skill ini sebelum mengaktifkannya. Skill ini ditulis oleh pihak ketiga; mulai sekarang model melihat nama dan deskripsinya, serta membaca atau menerima instruksinya jika suatu tugas cocok.",
+    "loading": "Memuat skill",
+    "failed": "Skill tidak dapat dibaca: {{message}}",
+    "files_other": "Selain SKILL.md, {{count}} file:",
+    "textLabel": "SKILL.md dari {{name}}",
+    "enable": "Aktifkan"
+  },
+  "update": {
+    "upToDate": "{{name}} sudah versi terbaru.",
+    "checkFailed": "Tidak dapat memeriksa pembaruan untuk {{name}}",
+    "title": "Perbarui {{name}}",
+    "introGithub": "Versi yang lebih baru tersedia di {{source}} (commit {{commit}}).",
+    "introFolder": "Folder {{source}} telah berubah.",
+    "version": "Versi {{from}} → {{to}}.",
+    "summary": "{{added}} ditambahkan, {{changed}} diubah, {{removed}} dihapus.",
+    "kind": {
+      "added": "ditambahkan",
+      "changed": "diubah",
+      "removed": "dihapus"
+    },
+    "note": "Status aktif atau mati skill tetap seperti sebelumnya.",
+    "install": "Perbarui",
+    "done": "{{name}} telah diperbarui.",
+    "failed": "Tidak dapat memperbarui {{name}}"
+  },
+  "remove": {
+    "title": "Hapus {{name}}?",
+    "body": "File skill dihapus dari folder data Ylide. Anda dapat menambahkannya lagi nanti.",
+    "confirm": "Hapus"
+  },
+  "add": {
+    "fromGithub": "Tambahkan dari GitHub",
+    "fromFolder": "Tambahkan dari folder",
+    "title": "Tambahkan skill dari GitHub",
+    "intro": "Tempelkan alamat repositori atau folder di dalamnya. Ylide menampilkan daftar setiap SKILL.md di sana; Anda memilih mana yang akan diinstal.",
+    "permission": "Unduhan skill dimatikan. Untuk menampilkan daftar dan mengunduh skill, Ylide menghubungi GitHub (api.github.com dan raw.githubusercontent.com). Tidak ada data tentang Anda yang dikirim. Anda dapat mematikannya lagi di Pengaturan › Jaringan dan privasi.",
+    "addressLabel": "Alamat repositori",
+    "addressHint": "Misalnya https://github.com/morluto/rea atau https://github.com/owner/repo/tree/main/skills",
+    "search": "Tampilkan daftar skill",
+    "searching": "Menghubungi GitHub",
+    "found_other": "{{count}} skill di {{repo}} pada commit",
+    "chooseAll": "Pilih semua",
+    "chooseNone": "Kosongkan pilihan",
+    "listLabel": "Skill di repositori",
+    "alreadyInstalled": "Terinstal",
+    "notInstallable": "Tidak dapat diinstal",
+    "viewContent": "Lihat SKILL.md",
+    "startOff": "Skill baru awalnya dalam keadaan mati. Anda mengaktifkannya di halaman Skill setelah melihat isinya.",
+    "install_other": "Instal {{count}} skill",
+    "installNone": "Instal",
+    "installed_other": "{{count}} skill ditambahkan",
+    "installedBody_other": "Skill yang ditambahkan masih mati. Aktifkan setelah Anda membacanya.",
+    "installFailed": "Skill tidak dapat diinstal",
+    "folderFailed": "Skill di folder ini tidak dapat ditambahkan"
+  },
+  "permission": {
+    "title": "Izinkan unduhan skill?",
+    "body": "Ylide lalu menghubungi GitHub (api.github.com dan raw.githubusercontent.com) untuk skill saat Anda menampilkan daftar, menginstal, atau memperbaruinya. Tidak ada data tentang Anda yang dikirim. Anda dapat mematikannya lagi di Pengaturan › Jaringan dan privasi.",
+    "allow": "Izinkan unduhan skill"
+  }
+}

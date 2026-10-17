@@ -4,7 +4,8 @@
 // for your computer. They braid down the page, and every crossing sits on a
 // heading marked `data-cross`. In the agents section a third line joins, and
 // the task passes between the three as you scroll. Two faint walls around the
-// lines are "your computer"; in the privacy section they open four gates.
+// lines are "your computer"; in the privacy section they open a gate for each
+// network door.
 //
 // Everything is drawn from the scroll position on one fixed canvas, so it
 // moves only when you scroll. The one animation of its own is the Y drawing
@@ -104,7 +105,7 @@
 
     const gates = [...document.querySelectorAll('[data-gate]')].map((el) => {
       const r = docRect(el);
-      return { y: r.top + r.height / 2, left: r.left, right: r.right };
+      return { y: r.top + r.height / 2, left: r.left, right: r.right, off: el.dataset.gate === 'off' };
     });
 
     const steps = [...document.querySelectorAll('[data-step]')];
@@ -265,7 +266,7 @@
     }
   }
 
-  /** The walls of "your computer" around the lines, with the four gates. */
+  /** The walls of "your computer" around the lines, with a gate for each door. */
   function drawWalls(samples) {
     const { stem, endPt } = L;
     const left = [];
@@ -297,7 +298,7 @@
         g.stroke();
       }
     }
-    // Gates: a short dashed path from the opening to its switch.
+    // Gates: a short dashed path from the opening to its switch, faint while the door is off.
     g.setLineDash([3, 4]);
     for (const gt of L.gates) {
       const y = gt.y - scrollY;
@@ -308,7 +309,7 @@
       const x0 = rtl ? s.cx - half : s.cx + half;
       const x1 = rtl ? gt.right + 10 : gt.left - 10;
       if (rtl ? x1 >= x0 : x1 <= x0) continue;
-      g.strokeStyle = rgba(STRAND_COLORS[0], 0.55);
+      g.strokeStyle = gt.off ? rgba(WALL, 0.3) : rgba(STRAND_COLORS[0], 0.55);
       g.beginPath();
       g.moveTo(x0, y);
       g.lineTo(x1, y);

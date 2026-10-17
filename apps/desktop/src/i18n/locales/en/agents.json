@@ -70,6 +70,7 @@
     "goalLabel": "What should the agents do?",
     "goalPlaceholder": "For example: fix the cart total and add a test for empty carts",
     "goalHint": "Describe the result you want. Ctrl+Enter starts the run.",
+    "imagesHint": "The images go to the agent that plans and to the agents that work on the tasks.",
     "start": "Start agents",
     "readiness": "Requirements",
     "modelReady": "{{model}} is running",

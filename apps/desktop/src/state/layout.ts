@@ -5,7 +5,7 @@ import { readStored } from '../lib/storage';
 
 export type SidebarView = 'explorer' | 'search';
 export type RightView = 'chat' | 'agents';
-export type MainView = 'editor' | 'models' | 'settings';
+export type MainView = 'editor' | 'models' | 'skills' | 'settings';
 
 interface LayoutState {
   sidebar: SidebarView | null;

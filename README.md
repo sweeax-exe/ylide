@@ -44,9 +44,10 @@ No cloud, no account, no telemetry, and your code never leaves your machine.
 ## Why Ylide
 
 - **Private by design.** Models, prompts, chats and code stay on your disk.
-  Ylide goes online for exactly four things, each switchable and logged:
-  the model list, the update check, and the model and runtime downloads you
-  start yourself.
+  Ylide goes online for exactly five things, each switchable and logged:
+  the model list, the update check, the model and runtime downloads you
+  start yourself, and skill downloads from GitHub, which stay off until you
+  allow them.
 - **The right model for your machine.** A hardware scan measures graphics
   memory, RAM, CPU and disk, then recommends the strongest coding model that
   runs smoothly, with a quantization and context length that fit, and tells
@@ -111,7 +112,7 @@ Questions? Ask in `#help` on the [Ylide Discord](https://discord.gg/GRzTvRGHpr).
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/how-it-works-dark.png">
-    <img alt="Editor, chat and agents talk to a llama-server on 127.0.0.1, which runs GGUF model files from your disk. Only four switchable doors lead outside: the signed model list and update check from ylide.app, model downloads from Hugging Face and runtime downloads from the llama.cpp releases, both checked against SHA-256." src="docs/images/how-it-works-light.png" width="100%">
+    <img alt="Editor, chat and agents talk to a llama-server on 127.0.0.1, which runs GGUF model files from your disk. Only five switchable doors lead outside: the signed model list and update check from ylide.app, model downloads from Hugging Face and runtime downloads from the llama.cpp releases, both checked against SHA-256, and skill downloads from GitHub, off until you allow them and pinned to a commit." src="docs/images/how-it-works-light.png" width="100%">
   </picture>
 </p>
 
@@ -140,7 +141,7 @@ deletions wait for your approval.
 ## Privacy
 
 Ylide has no account, no telemetry and no cloud backend. It goes online for
-four purposes only, each one switchable in *Settings → Network and privacy*
+five purposes only, each one switchable in *Settings → Network and privacy*
 and recorded in the network log:
 
 | Door | Where | What protects it |
@@ -149,6 +150,7 @@ and recorded in the network log:
 | Update check | `ylide.app` | sends only `Ylide/<version>`; installers are signed |
 | Model downloads | `huggingface.co` | SHA-256 from the signed model list |
 | Runtime downloads | `github.com/ggml-org/llama.cpp` | SHA-256 from the signed model list |
+| Skill downloads | `api.github.com`, `raw.githubusercontent.com` | off until you allow it; files pinned to a commit; new skills start switched off and are shown to you first |
 
 ylide.app keeps no access log. Your projects, prompts and chats are never
 uploaded anywhere. How releases and the model list are signed, and how to

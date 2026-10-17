@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { useLayout } from '../../../state/layout';
 
-export type View = 'settings' | 'models';
+export type View = 'settings' | 'models' | 'skills';
 
 interface NavState {
   target: { view: View; section: string } | null;

@@ -1,0 +1,116 @@
+{
+  "page": {
+    "title": "Compétences",
+    "intro": "Les compétences apprennent de nouvelles tâches à vos modèles : un dossier avec des instructions (SKILL.md) et des fichiers de référence facultatifs, au format ouvert Agent Skills. Elles fonctionnent avec tous les modèles, dans le chat et pour les agents. Activez ou désactivez chacune d’elles."
+  },
+  "trust": "Les compétences sont des instructions écrites par des tiers. Lisez une compétence avant de l’activer : Ylide vous la montre la première fois. Les compétences n’exécutent jamais rien elles-mêmes ; une commande issue d’une compétence ne s’exécute que par les agents et selon leur mode d’autorisation.",
+  "loading": "Chargement des compétences",
+  "loadFailed": "Les compétences n’ont pas pu être chargées : {{message}}",
+  "installed": {
+    "title": "Installées",
+    "description": "Conservées dans le dossier des données d’Ylide et disponibles dans tous les projets. Les nouvelles compétences sont d’abord désactivées.",
+    "emptyTitle": "Aucune compétence pour l’instant",
+    "emptyBody": "Ajoutez des compétences depuis un dépôt GitHub, par exemple https://github.com/morluto/rea, ou depuis un dossier de cet ordinateur."
+  },
+  "project": {
+    "title": "Du projet",
+    "description": "Les compétences du dossier .agents/skills du projet ouvert. Ylide les lit à cet endroit et ne les modifie jamais ; en activer une ne vaut que pour ce projet.",
+    "empty": "Ce projet n’a aucune compétence dans <0>.agents/skills</0>."
+  },
+  "usage": {
+    "title": "Comment les modèles utilisent les compétences",
+    "description": "Les modèles locaux ont de petits contextes, c’est pourquoi les compétences sont chargées étape par étape.",
+    "agents": "<0>Les agents</0> voient le nom et la description de chaque compétence activée. Quand une tâche s’y prête, ils lisent la compétence avec l’outil <1>skill_read</1>, ainsi que ses fichiers de référence, par parties.",
+    "chat": "<0>Le chat</0> voit la même liste. Pour donner au chat les instructions d’une compétence, mentionnez-la dans votre message, par ex. <1>@reverse-engineer-anything</1> ; elle reste alors jointe pour le reste de la conversation.",
+    "scripts": "<0>Les scripts</0> d’une compétence ne s’exécutent jamais d’eux-mêmes. Un agent ne peut en exécuter un que comme une commande normale, selon votre mode d’autorisation.",
+    "mcp": "<0>Outils d’une compétence :</0> certaines compétences, comme celles de REA, attendent leur propre serveur MCP et leurs propres programmes. Ylide ne donne au modèle que leurs instructions ; les serveurs MCP ne sont pas encore pris en charge."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "du projet",
+    "on": "Activée",
+    "broken": "Inutilisable",
+    "commit": "@ {{commit}}",
+    "files_one": "{{count}} fichier",
+    "files_many": "{{count}} de fichiers",
+    "files_other": "{{count}} fichiers",
+    "openOnGithub": "GitHub",
+    "view": "Voir le contenu",
+    "checkUpdate": "Rechercher des mises à jour",
+    "remove": "Retirer {{name}}",
+    "switch": "Utiliser {{name}}"
+  },
+  "content": {
+    "title": "Compétence {{name}}",
+    "note": "Voici le texte que reçoivent les modèles. Il a été écrit par un tiers.",
+    "confirmNote": "Lisez la compétence avant de l’activer. Elle a été écrite par un tiers ; à partir de maintenant, les modèles voient son nom et sa description, et lisent ou reçoivent ses instructions quand une tâche s’y prête.",
+    "loading": "Chargement de la compétence",
+    "failed": "La compétence n’a pas pu être lue : {{message}}",
+    "files_one": "En plus de SKILL.md, {{count}} fichier :",
+    "files_many": "En plus de SKILL.md, {{count}} de fichiers :",
+    "files_other": "En plus de SKILL.md, {{count}} fichiers :",
+    "textLabel": "SKILL.md de {{name}}",
+    "enable": "Activer"
+  },
+  "update": {
+    "upToDate": "La compétence {{name}} est à jour.",
+    "checkFailed": "Impossible de rechercher des mises à jour pour {{name}}",
+    "title": "Mettre à jour {{name}}",
+    "introGithub": "Une version plus récente est disponible dans {{source}} (commit {{commit}}).",
+    "introFolder": "Le dossier {{source}} a changé.",
+    "version": "Version {{from}} → {{to}}.",
+    "summary": "Ajoutés : {{added}}, modifiés : {{changed}}, supprimés : {{removed}}.",
+    "kind": {
+      "added": "ajouté",
+      "changed": "modifié",
+      "removed": "supprimé"
+    },
+    "note": "La compétence reste activée ou désactivée, comme avant.",
+    "install": "Mettre à jour",
+    "done": "La compétence {{name}} a été mise à jour.",
+    "failed": "Impossible de mettre à jour {{name}}"
+  },
+  "remove": {
+    "title": "Retirer {{name}} ?",
+    "body": "Les fichiers de la compétence sont supprimés du dossier des données d’Ylide. Vous pourrez l’ajouter à nouveau plus tard.",
+    "confirm": "Retirer"
+  },
+  "add": {
+    "fromGithub": "Ajouter depuis GitHub",
+    "fromFolder": "Ajouter depuis un dossier",
+    "title": "Ajouter des compétences depuis GitHub",
+    "intro": "Collez l’adresse d’un dépôt ou d’un dossier de ce dépôt. Ylide liste chaque SKILL.md qu’il contient ; vous choisissez ce que vous installez.",
+    "permission": "Les téléchargements de compétences sont désactivés. Pour lister et télécharger des compétences, Ylide interroge GitHub (api.github.com et raw.githubusercontent.com). Aucune information vous concernant n’est envoyée. Vous pouvez les désactiver à nouveau dans Paramètres › Réseau et confidentialité.",
+    "addressLabel": "Adresse du dépôt",
+    "addressHint": "Par exemple https://github.com/morluto/rea ou https://github.com/owner/repo/tree/main/skills",
+    "search": "Lister les compétences",
+    "searching": "Interrogation de GitHub",
+    "found_one": "{{count}} compétence dans {{repo}} au commit",
+    "found_many": "{{count}} de compétences dans {{repo}} au commit",
+    "found_other": "{{count}} compétences dans {{repo}} au commit",
+    "chooseAll": "Tout choisir",
+    "chooseNone": "Ne rien choisir",
+    "listLabel": "Compétences du dépôt",
+    "alreadyInstalled": "Installée",
+    "notInstallable": "Impossible à installer",
+    "viewContent": "Voir SKILL.md",
+    "startOff": "Les nouvelles compétences sont d’abord désactivées. Vous les activez sur la page Compétences, après avoir vu leur contenu.",
+    "install_one": "Installer {{count}} compétence",
+    "install_many": "Installer {{count}} de compétences",
+    "install_other": "Installer {{count}} compétences",
+    "installNone": "Installer",
+    "installed_one": "{{count}} compétence ajoutée",
+    "installed_many": "{{count}} de compétences ajoutées",
+    "installed_other": "{{count}} compétences ajoutées",
+    "installedBody_one": "Elle est encore désactivée. Activez-la quand vous l’aurez lue.",
+    "installedBody_many": "Elles sont encore désactivées. Activez chacune d’elles quand vous l’aurez lue.",
+    "installedBody_other": "Elles sont encore désactivées. Activez chacune d’elles quand vous l’aurez lue.",
+    "installFailed": "Les compétences n’ont pas pu être installées",
+    "folderFailed": "Les compétences de ce dossier n’ont pas pu être ajoutées"
+  },
+  "permission": {
+    "title": "Autoriser les téléchargements de compétences ?",
+    "body": "Ylide interroge alors GitHub (api.github.com et raw.githubusercontent.com) quand vous listez, installez ou mettez à jour des compétences. Aucune information vous concernant n’est envoyée. Vous pouvez les désactiver à nouveau dans Paramètres › Réseau et confidentialité.",
+    "allow": "Autoriser les téléchargements de compétences"
+  }
+}

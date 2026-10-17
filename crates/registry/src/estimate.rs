@@ -7,6 +7,7 @@
 //! * KV cache = attention layers x tokens x kv_heads x (head_dim_k + head_dim_v) x bytes/element
 //!   (sliding-window layers only keep `window` tokens)
 //! * compute buffers ~ 300 MiB + 1.5 % of the weights + 2 MiB per 1k context
+//! * vision projector (when image input is on) = its file + 512 MiB for encoding one image
 //! * decode speed ~ efficiency x bandwidth / bytes read per token (memory-bound)
 
 use crate::schema::{Architecture, ArchitectureKind, Model, Variant};
@@ -74,6 +75,17 @@ pub fn recurrent_state_bytes(arch: &Architecture) -> u64 {
 /// llama.cpp compute/scratch buffers (heuristic, errs on the high side).
 pub fn compute_overhead_bytes(weights: u64, tokens: u64) -> u64 {
     300 * MIB + weights / 66 + tokens / 1024 * 2 * MIB
+}
+
+/// Images the runtime lets the projector turn into at most this many tokens
+/// (llama-server `--image-max-tokens`), which also bounds its compute buffer.
+pub const IMAGE_MAX_TOKENS: u32 = 2048;
+
+/// Memory of a loaded vision projector (`--mmproj`): its weights plus the
+/// buffer llama.cpp reserves to encode an image of [`IMAGE_MAX_TOKENS`].
+/// It sits where the model computes: on the GPU, or in RAM without one.
+pub fn projector_bytes(file_bytes: u64) -> u64 {
+    if file_bytes == 0 { 0 } else { file_bytes + 512 * MIB }
 }
 
 /// Where the weights live.
@@ -221,6 +233,9 @@ pub struct Plan {
     pub kv_bytes: u64,
     #[ts(type = "number")]
     pub overhead_bytes: u64,
+    /// Vision projector with its buffer (0 while image input is off).
+    #[ts(type = "number")]
+    pub projector_bytes: u64,
     /// Total that must fit on the GPU.
     #[ts(type = "number")]
     pub vram_bytes: u64,
@@ -238,10 +253,27 @@ const HYBRID_SYNC_SECONDS: f64 = 0.002;
 
 /// Finds the fastest placement for `variant` at `context` tokens, if any fits.
 pub fn plan(model: &Model, variant: &Variant, context: u32, kv: KvCacheType, budget: &ComputeBudget) -> Option<Plan> {
+    plan_with_projector(model, variant, 0, context, kv, budget)
+}
+
+/// Like [`plan`], with a vision projector of `projector_file_bytes` loaded
+/// next to the model (0 for none). It stays with the computation: on the GPU,
+/// in unified memory, or in RAM when everything runs on the CPU.
+pub fn plan_with_projector(
+    model: &Model,
+    variant: &Variant,
+    projector_file_bytes: u64,
+    context: u32,
+    kv: KvCacheType,
+    budget: &ComputeBudget,
+) -> Option<Plan> {
     let arch = &model.architecture;
     let weights = variant.size_bytes();
     let kv_bytes = kv_cache_bytes(arch, context as u64, kv);
+    // The projector is one more fixed block next to the KV cache and the buffers.
+    let projector = projector_bytes(projector_file_bytes);
     let overhead = compute_overhead_bytes(weights, context as u64);
+    let fixed = kv_bytes + overhead + projector;
     let active_ratio = (arch.params_active_b / arch.params_total_b.max(0.001)).clamp(0.0, 1.0);
     let active_bytes = weights as f64 * active_ratio;
 
@@ -252,6 +284,7 @@ pub fn plan(model: &Model, variant: &Variant, context: u32, kv: KvCacheType, bud
         weights_bytes: weights,
         kv_bytes,
         overhead_bytes: overhead,
+        projector_bytes: projector,
         vram_bytes: vram,
         ram_bytes: ram,
         est_tokens_per_sec: tps,
@@ -259,7 +292,7 @@ pub fn plan(model: &Model, variant: &Variant, context: u32, kv: KvCacheType, bud
 
     // 1. Unified memory (Apple Silicon): everything in the Metal working set.
     if budget.unified {
-        let need = weights + kv_bytes + overhead;
+        let need = weights + fixed;
         if need <= budget.unified_bytes && need <= budget.ram_bytes + budget.unified_bytes / 4 {
             let tps = tokens_per_sec(active_bytes, 0.0, budget);
             return Some(make(Placement::Unified, 0, need, tps));
@@ -268,13 +301,13 @@ pub fn plan(model: &Model, variant: &Variant, context: u32, kv: KvCacheType, bud
 
     if budget.vram_bytes > 0 {
         // 2. Everything on the GPU.
-        let need = weights + kv_bytes + overhead;
+        let need = weights + fixed;
         if need <= budget.vram_bytes {
             let tps = tokens_per_sec(active_bytes, 0.0, budget);
             return Some(make(Placement::Gpu, need, 0, tps));
         }
 
-        let gpu_fixed = kv_bytes + overhead;
+        let gpu_fixed = fixed;
         if gpu_fixed < budget.vram_bytes {
             let free_for_weights = budget.vram_bytes - gpu_fixed;
 
@@ -324,7 +357,7 @@ pub fn plan(model: &Model, variant: &Variant, context: u32, kv: KvCacheType, bud
     }
 
     // 5. CPU only.
-    let need = weights + kv_bytes + overhead;
+    let need = weights + fixed;
     if need <= budget.ram_bytes {
         let tps = tokens_per_sec(0.0, active_bytes, budget);
         return Some(make(Placement::Cpu, 0, need, tps));
@@ -497,6 +530,43 @@ mod tests {
         assert_eq!(v, serde_json::json!({"kind": "moeOffload", "cpuExpertLayers": 3}));
         let v = serde_json::to_value(Placement::PartialOffload { gpu_layers: 7 }).unwrap();
         assert_eq!(v, serde_json::json!({"kind": "partialOffload", "gpuLayers": 7}));
+    }
+
+    #[test]
+    fn a_projector_takes_its_memory_where_the_model_computes() {
+        let reg = crate::bundled();
+        let model = reg.models.iter().find(|m| m.id == "qwen3.6-35b-a3b").unwrap();
+        let variant = model.variants.iter().find(|v| v.quant == "UD-IQ4_XS").unwrap();
+        let projector = model.projector.as_ref().unwrap().size_bytes;
+        assert_eq!(projector_bytes(0), 0);
+        assert_eq!(projector_bytes(projector), projector + 512 * MIB);
+
+        // 16 GB GPU: the MoE model is split; the projector moves more experts to RAM.
+        let budget = ComputeBudget::from_profile(&hw(16, 64, true), &[]);
+        let without = plan(model, variant, 65_536, KvCacheType::F16, &budget).unwrap();
+        let with = plan_with_projector(model, variant, projector, 65_536, KvCacheType::F16, &budget).unwrap();
+        assert_eq!(without.projector_bytes, 0);
+        assert_eq!(with.projector_bytes, projector_bytes(projector));
+        let layers = |p: &Plan| match p.placement {
+            Placement::MoeOffload { cpu_expert_layers } => cpu_expert_layers,
+            other => panic!("{other:?}"),
+        };
+        assert!(layers(&with) > layers(&without), "{} vs {}", layers(&with), layers(&without));
+        assert!(with.vram_bytes <= budget.vram_bytes && with.ram_bytes > without.ram_bytes);
+
+        // Room to spare: everything stays on the GPU, the projector included.
+        let big = ComputeBudget::from_profile(&hw(48, 64, true), &[]);
+        let without = plan(model, variant, 32_768, KvCacheType::F16, &big).unwrap();
+        let with = plan_with_projector(model, variant, projector, 32_768, KvCacheType::F16, &big).unwrap();
+        assert_eq!((with.placement, without.placement), (Placement::Gpu, Placement::Gpu));
+        assert_eq!(with.vram_bytes, without.vram_bytes + projector_bytes(projector));
+
+        // No GPU: it needs RAM instead.
+        let cpu = ComputeBudget::from_profile(&hw(0, 64, false), &[]);
+        let without = plan(model, variant, 32_768, KvCacheType::F16, &cpu).unwrap();
+        let with = plan_with_projector(model, variant, projector, 32_768, KvCacheType::F16, &cpu).unwrap();
+        assert_eq!(with.placement, Placement::Cpu);
+        assert_eq!((with.ram_bytes, with.vram_bytes), (without.ram_bytes + projector_bytes(projector), 0));
     }
 
     #[test]

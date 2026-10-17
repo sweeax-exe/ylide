@@ -33,7 +33,8 @@
     "chat": "Chat",
     "agents": "Agen",
     "models": "Model",
-    "settings": "Pengaturan"
+    "settings": "Pengaturan",
+    "skills": "Skill"
   },
   "titlebar": {
     "noProject": "Tidak ada folder terbuka",
@@ -80,7 +81,8 @@
     "modelDownload": "unduhan model",
     "runtimeDownload": "unduhan runtime",
     "updateCheck": "pemeriksaan pembaruan",
-    "updateDownload": "unduhan pembaruan"
+    "updateDownload": "unduhan pembaruan",
+    "skillDownload": "unduhan skill"
   },
   "errors": {
     "generic": "Terjadi kesalahan: {{message}}",
@@ -105,7 +107,42 @@
     "update_format": "Pembaruan memiliki format yang tidak dapat diinstal Ylide: {{message}}",
     "update_too_large": "Ukuran pembaruan jauh lebih besar dari biasanya, jadi tidak diunduh.",
     "update_launch": "Penginstal tidak dapat dimulai: {{message}}",
-    "update_unsupported": "Di sistem ini, instal pembaruan secara manual."
+    "update_unsupported": "Di sistem ini, instal pembaruan secara manual.",
+    "skill_invalid": "Ini bukan skill yang valid: {{message}}",
+    "skill_too_large": "Skill terlalu besar: {{message}}",
+    "skill_exists": "Skill dengan nama ini sudah terinstal ({{message}}). Hapus dulu untuk menginstalnya lagi.",
+    "skill_not_found": "Skill ini sudah tidak ada.",
+    "skill_renamed": "Versi baru memiliki nama lain ({{message}}). Hapus skill tersebut lalu tambahkan yang baru.",
+    "skill_address": "Itu bukan alamat repositori GitHub: {{message}}",
+    "skill_none_found": "Tidak ada skill yang ditemukan di sini: {{message}}",
+    "skill_repo_not_found": "GitHub tidak mengenal repositori ini, atau repositori ini privat.",
+    "skill_rate_limited": "Batas GitHub untuk permintaan tanpa akun sudah habis. Coba lagi dalam satu jam.",
+    "skill_gone": "Skill sudah tidak ada di repositorinya: {{message}}",
+    "no_vision": "Model yang berjalan tidak dapat melihat gambar. Di halaman Model, aktifkan \"Pahami gambar\" untuk model yang bisa.",
+    "bad_image": "Gambar tidak dapat digunakan: {{message}}",
+    "not_projector": "Ini bukan modul gambar (file GGUF mmproj).",
+    "no_projector": "Model ini tidak menerima gambar."
+  },
+  "images": {
+    "attach": "Lampirkan gambar",
+    "attached": "Gambar terlampir: {{n}}",
+    "label": "Gambar {{n}}: {{name}}, {{size}} piksel",
+    "labelShort": "Gambar {{n}}",
+    "pasted": "ditempel",
+    "remove": "Hapus {{label}}",
+    "notSent": "Gambar tidak dikirim",
+    "noModel": "Jalankan model yang memahami gambar untuk melampirkan gambar.",
+    "switchOn": "{{model}} dapat memahami gambar: aktifkan \"Pahami gambar\" untuk model itu di halaman Model, lalu jalankan ulang.",
+    "cannotSee": "{{model}} tidak dapat melihat gambar.",
+    "visionModels": "Model yang bisa: {{models}}.",
+    "missing": "Modul gambar {{model}} tidak ada. Matikan lalu aktifkan lagi \"Pahami gambar\" di halaman Model.",
+    "failed": "{{model}} berjalan tanpa input gambar karena modul gambarnya gagal dimuat. Detailnya ada di log server.",
+    "problem": {
+      "unsupported": "Hanya gambar PNG, JPEG, WebP, dan GIF yang dapat dilampirkan.",
+      "tooLarge": "Gambar lebih besar dari 20 MB.",
+      "damaged": "Gambar tidak dapat dibaca.",
+      "tooMany": "Paling banyak {{max}} gambar per pesan; sisanya tidak dilampirkan."
+    }
   },
   "reasons": {
     "fitsInVram": "Muat sepenuhnya di memori grafis Anda ({{vramGb}} GB terpakai).",

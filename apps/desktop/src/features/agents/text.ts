@@ -42,7 +42,8 @@ export function splitCode(text: string): TextPart[] {
   return parts;
 }
 
-const ARG_KEYS = ['path', 'command', 'query', 'pattern', 'to', 'question', 'summary', 'title'];
+// `name` names the skill of skill_read.
+const ARG_KEYS = ['path', 'command', 'query', 'pattern', 'to', 'question', 'summary', 'title', 'name'];
 
 /** The one argument worth showing next to a tool name, e.g. the path of read_file. */
 export function summarizeArgs(args: string | null, max = 80): string {

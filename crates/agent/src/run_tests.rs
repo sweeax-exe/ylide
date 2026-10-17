@@ -249,6 +249,56 @@ async fn text_tool_calls_and_text_plans_are_understood() {
 }
 
 #[tokio::test]
+async fn agents_that_see_get_the_request_images_and_image_view() {
+    let h = harness("vision");
+    let mut png = b"\x89PNG\r\n\x1a\n\0\0\0\x0dIHDR".to_vec();
+    png.extend(640u32.to_be_bytes());
+    png.extend(480u32.to_be_bytes());
+    std::fs::write(h.dir.join("mockup.png"), &png).unwrap();
+    let screenshot = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAwS2OUAAAAABJRU5ErkJggg==".to_string();
+    let seeing = |responses| Arc::new(ScriptedModel::new(responses).with_vision());
+    let orchestrator = seeing(vec![
+        call("image_view", json!({"path": "mockup.png"})),
+        plan_call(json!([{ "title": "Match the mockup", "description": "Make add add." }])),
+    ]);
+    let coder = seeing(vec![call("finish", json!({"summary": "nothing to change"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone())]);
+    let events = h.events.clone();
+    let ctx = Arc::new(
+        RunContext::new("run-1", h.ws.clone(), h.store.clone(), PermissionSettings::default(), ShellConfig::default(), PromptTemplates::default(), Arc::new(AutoApprove(String::new())), Arc::new(move |e| events.lock().unwrap().push(e)))
+            .with_goal_images(vec![screenshot.clone()]),
+    );
+    let report = run(ctx, &t, "Make it look like the screenshot").await;
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+
+    let planning = orchestrator.requests.lock().unwrap().clone();
+    assert_eq!(planning[0].messages[1].images, vec![screenshot.clone()], "the request's images go with the first message");
+    assert!(planning[0].tools.iter().any(|t| t.function.name == "image_view"));
+    let shown = planning[1].messages.last().unwrap();
+    assert_eq!((shown.role, shown.content.as_deref()), (MessageRole::Tool, Some("Image mockup.png (640x480 PNG, 1 KB):")));
+    assert_eq!(shown.images, vec![inference::image::data_url(inference::image::ImageFormat::Png, &png)]);
+    assert!(planning[1].messages[2..].iter().all(|m| m.role == MessageRole::Tool || m.images.is_empty()), "sent once");
+    let coding = coder.requests.lock().unwrap().clone();
+    assert_eq!(coding[0].messages[1].images, vec![screenshot.clone()]);
+
+    // A model that cannot see gets neither the images nor the tool.
+    let h = harness("blind");
+    std::fs::write(h.dir.join("mockup.png"), &png).unwrap();
+    let orchestrator = scripted(vec![
+        call("image_view", json!({"path": "mockup.png"})),
+        plan_call(json!([{ "title": "Fix", "description": "Make add add." }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    run(ctx, &t, "Make it look like the screenshot").await;
+    let planning = orchestrator.requests.lock().unwrap().clone();
+    assert!(planning[0].messages[1].images.is_empty() && !planning[0].tools.iter().any(|t| t.function.name == "image_view"));
+    let answer = planning[1].messages.last().unwrap();
+    assert!(answer.content.as_deref().unwrap().contains("not available to you"), "{answer:?}");
+}
+
+#[tokio::test]
 async fn agents_can_ask_each_other_and_the_user() {
     let h = harness("ask");
     let orchestrator = scripted(vec![
@@ -534,4 +584,66 @@ async fn writing_the_notes_asks_first_in_ask_mode() {
     assert!(!h.dir.join("AGENTS.md").exists(), "rejected, so not written");
     let events = h.events.lock().unwrap();
     assert!(events.iter().any(|e| matches!(e, AgentEvent::ApprovalRequested { request, .. } if request.tool == "write_file" && request.title.contains("AGENTS.md"))));
+}
+
+#[tokio::test]
+async fn enabled_skills_are_listed_for_every_role_and_read_on_demand() {
+    let h = harness("skills");
+    let skill_dir = h.dir.parent().unwrap().join("skills").join("fix-math");
+    std::fs::create_dir_all(&skill_dir).unwrap();
+    std::fs::write(skill_dir.join("SKILL.md"), "---\nname: fix-math\ndescription: How this team fixes arithmetic bugs.\n---\n# Fix math\nAlways add a doc comment.\n").unwrap();
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "Fix add", "description": "Make add() add." }]))]);
+    let coder = scripted(vec![
+        call("skill_read", json!({"name": "fix-math"})),
+        call("read_file", json!({"path": "src/lib.rs"})),
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("finish", json!({"summary": "add() adds."})),
+    ]);
+    let reviewer = scripted(vec![call("submit_review", json!({"verdict": "approve", "summary": "ok"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone()), ("reviewer", reviewer.clone())]);
+    let events = h.events.clone();
+    let skill = skills::EnabledSkill { name: "fix-math".into(), description: "How this team fixes arithmetic bugs.".into(), dir: skill_dir };
+    let ctx = Arc::new(
+        RunContext::new(
+            "run-1",
+            h.ws.clone(),
+            h.store.clone(),
+            PermissionSettings::default(),
+            ShellConfig::default(),
+            PromptTemplates::default(),
+            Arc::new(AutoApprove(String::new())),
+            Arc::new(move |e| events.lock().unwrap().push(e)),
+        )
+        .with_skills(vec![skill]),
+    );
+
+    let report = run(ctx, &t, "Fix add").await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    for (role, model) in [("orchestrator", &orchestrator), ("coder", &coder), ("reviewer", &reviewer)] {
+        let requests = model.requests.lock().unwrap();
+        let first = requests[0].messages[1].content.clone().unwrap();
+        assert!(first.starts_with("Skills the user enabled") && first.contains("- fix-math: How this team fixes arithmetic bugs.\n"), "{role}: {first}");
+        assert!(requests[0].tools.iter().any(|t| t.function.name == "skill_read"), "{role} can read skills");
+    }
+    let coder_requests = coder.requests.lock().unwrap();
+    let answer = coder_requests[1].messages.iter().find(|m| m.role == MessageRole::Tool).and_then(|m| m.content.clone()).unwrap();
+    assert!(answer.starts_with("Skill fix-math, SKILL.md (lines 1-2 of 2):\n# Fix math\nAlways add a doc comment."), "{answer}");
+    drop(coder_requests);
+    let events = h.events.lock().unwrap();
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::ToolResult { ok: true, summary, .. } if summary == "skill fix-math: SKILL.md")));
+}
+
+#[tokio::test]
+async fn without_skills_there_is_no_skill_tool_and_no_list() {
+    let h = harness("no-skills");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }]))]);
+    let coder = scripted(vec![call("skill_read", json!({"name": "x"})), call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone())]);
+    run(context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new()))), &t, "x").await;
+    let requests = coder.requests.lock().unwrap();
+    assert!(requests[0].tools.iter().all(|t| t.function.name != "skill_read"));
+    assert!(!requests[0].messages[1].content.as_deref().unwrap().contains("Skills the user enabled"));
+    let refused = requests[1].messages.iter().find(|m| m.role == MessageRole::Tool).and_then(|m| m.content.clone()).unwrap();
+    assert!(refused.starts_with("Error: tool 'skill_read' is not available to you."), "{refused}");
 }

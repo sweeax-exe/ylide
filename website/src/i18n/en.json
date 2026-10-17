@@ -31,8 +31,9 @@
   },
   "chat": {
     "title": "Ask your project.",
-    "body": "Attach files, folders or symbols with @. The answer streams word by word from the model on your graphics card, and what you ask stays here.",
+    "body": "Attach files, folders or symbols with @. Models that understand images also see the screenshots and photos you paste or drop, in the chat and in the agents. The answer streams word by word from the model on your graphics card, and what you ask stays here.",
     "question": "What does applyDiscount in <code>@cart.js</code> do?",
+    "image": "Image 1: screenshot of the cart",
     "answer": "It takes a percentage off every item and rounds to whole cents. Values below 0 or above 100 are rejected with a <code>TypeError</code>.",
     "stats": "75 tokens per second, on this computer",
     "you": "You",
@@ -60,6 +61,18 @@
     "step5": "The reviewer approves the task. You see every change before it stays.",
     "task": "Task"
   },
+  "skills": {
+    "title": "Teach your models how you work.",
+    "body": "Skills are instructions in the open Agent Skills format: a SKILL.md and optional reference files. Add them from a GitHub repository or a folder, and every model can use them, in the chat and in the agents. New skills start switched off, and Ylide shows you each one before you switch it on.",
+    "listLabel": "Installed skills",
+    "writeTests": "Writes tests in the style of this project.",
+    "releaseNotes": "Drafts release notes from the git log.",
+    "apiReview": "Checks changed endpoints for breaking changes.",
+    "fromProject": "from the project",
+    "new": "new",
+    "on": "On",
+    "off": "Off"
+  },
   "hardware": {
     "title": "Made to fit your hardware.",
     "body": "On first start, Ylide measures your graphics card, memory and processor and suggests the strongest model that runs smoothly on them. Then it downloads the model, checks the file and starts it."
@@ -85,8 +98,8 @@
     "note": "Screenshots of the English interface, taken on the developer's computer."
   },
   "privacy": {
-    "title": "Four doors to the outside. All of them yours.",
-    "body": "Ylide collects no usage data, has no sign-in and never uploads your code. It goes online for these four purposes only. Each one can be switched off, and every request appears in the network log.",
+    "title": "Five doors to the outside. All of them yours.",
+    "body": "Ylide collects no usage data, has no sign-in and never uploads your code. It goes online for these five purposes only. Each one can be switched off, skill downloads stay off until you allow them, and every request appears in the network log.",
     "listLabel": "The only connections Ylide makes",
     "registry": "Update the model list",
     "registryHost": "ylide.app",
@@ -96,6 +109,8 @@
     "runtimesHost": "github.com",
     "updates": "Check for updates",
     "updatesHost": "ylide.app",
+    "skills": "Download skills",
+    "skillsHost": "github.com",
     "on": "on"
   },
   "open": {
@@ -116,7 +131,7 @@
     "websiteTitle": "This website",
     "website": "The website runs on a server of Hetzner Online GmbH in Germany. To deliver the pages, the server processes your IP address and the details your browser sends along. It does not store them: there is no access log. Fonts, images and scripts all come from ylide.app.",
     "appTitle": "The Ylide app",
-    "app": "Ylide connects to the internet for four purposes only, each one switchable in the settings: updating the model list (ylide.app), downloading models (huggingface.co), downloading runtimes (github.com) and checking for updates (ylide.app). When it updates the model list or checks for updates, our server learns your IP address and the version number of Ylide. Neither is stored. Downloads from github.com and huggingface.co are covered by their privacy policies.",
+    "app": "Ylide connects to the internet for five purposes only, each one switchable in the settings: updating the model list (ylide.app), downloading models (huggingface.co), downloading runtimes (github.com), checking for updates (ylide.app) and downloading skills (api.github.com and raw.githubusercontent.com), which stays off until you allow it. When it updates the model list or checks for updates, our server learns your IP address and the version number of Ylide. Neither is stored. Downloads from GitHub and huggingface.co are covered by their privacy policies.",
     "rightsTitle": "Your rights",
     "rights": "You have the right to access, correct, delete and restrict the processing of your data, and the right to lodge a complaint with a data protection authority. Since we store no personal data, there is usually nothing to report. Feel free to write to us anyway.",
     "contactTitle": "Controller",

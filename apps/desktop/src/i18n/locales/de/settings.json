@@ -311,7 +311,7 @@
   "network": {
     "title": "Netzwerk und Datenschutz",
     "statementTitle": "Keine Telemetrie, keine Konten.",
-    "statementBody": "Ylide sammelt keine Nutzungsdaten, hat keine Anmeldung und lädt deinen Code nie hoch. Mit dem Internet verbindet es sich nur für die vier Zwecke unten, und nur solange sie eingeschaltet sind. Deine Prompts und Dateien gehen an das Modell auf diesem Rechner oder an den externen Server, den du unter Erweitert einrichtest.",
+    "statementBody": "Ylide sammelt keine Nutzungsdaten, hat keine Anmeldung und lädt deinen Code nie hoch. Mit dem Internet verbindet es sich nur für die fünf Zwecke unten, und nur solange sie eingeschaltet sind. Deine Prompts und Dateien gehen an das Modell auf diesem Rechner oder an den externen Server, den du unter Erweitert einrichtest.",
     "allowedTitle": "Erlaubte Verbindungen",
     "allowedDescription": "Schaltest du eine davon aus, stellt Ylide diese Anfrage nicht.",
     "registry": {
@@ -342,6 +342,10 @@
     "updates": {
       "label": "Nach Updates suchen",
       "hint": "Fragt beim Start einmal bei ylide.app nach, ob es eine neue Version von Ylide gibt. Dabei wird nur die Versionsnummer gesendet. Das Update selbst wird erst geladen, wenn du es installierst."
+    },
+    "skills": {
+      "label": "Skill-Downloads",
+      "hint": "Listet Skills von GitHub auf und lädt sie herunter (api.github.com, raw.githubusercontent.com), wenn du sie auf der Skills-Seite hinzufügst, installierst oder aktualisierst. Aus, bis du es erlaubst."
     }
   },
   "advanced": {
@@ -462,6 +466,13 @@
     "contextValue": "{{tokens}} Tokens",
     "slots": "Parallele Anfragen",
     "toolCalls": "Tool-Aufrufe",
+    "vision": "Bilder",
+    "visionState": {
+      "off": "Aus",
+      "on": "Werden verstanden",
+      "missing": "Bildmodul fehlt",
+      "failed": "Nicht geladen"
+    },
     "tools": {
       "unknown": {
         "label": "Nicht getestet",
@@ -521,7 +532,19 @@
     "forgetBody": "Ylide vergisst dieses Modell. Die Datei bleibt, wo sie ist; gelöscht wird nichts.",
     "deleteActive": "Dieses Modell läuft gerade. Es wird zuerst gestoppt.",
     "deleteAssigned": "Wo es für Chat, Autovervollständigung oder Codesuche gewählt ist, wird die Auswahl aufgehoben.",
-    "deleteAgain": "Du kannst es jederzeit wieder aus dem Katalog herunterladen."
+    "deleteAgain": "Du kannst es jederzeit wieder aus dem Katalog herunterladen.",
+    "vision": {
+      "label": "Bilder verstehen (+{{size}} GB)",
+      "downloading": "Bildmodul wird geladen: {{percent}} %",
+      "downloadFailed": "Das Bildmodul konnte nicht geladen werden. Schalte es erneut ein, um es noch einmal zu versuchen.",
+      "missing": "Das Bildmodul fehlt; das Modell läuft ohne Bildverständnis.",
+      "failed": "Das Bildmodul ließ sich nicht laden; das Modell läuft ohne Bildverständnis.",
+      "pending": "Gilt ab dem nächsten Start des Modells.",
+      "restart": "Jetzt neu starten",
+      "own": "Bildmodul: {{file}}",
+      "removeOwn": "Bildmodul entfernen",
+      "pick": "Bildmodul (mmproj) wählen …"
+    }
   },
   "downloads": {
     "title": "Downloads",
@@ -544,7 +567,8 @@
     "retry": "Download von {{name}} erneut versuchen",
     "cancel": "Download von {{name}} abbrechen",
     "progressLabel": "Download-Fortschritt von {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · Bildmodul"
   },
   "catalog": {
     "title": "Katalog",
@@ -577,6 +601,9 @@
       "optional": "Optional",
       "always": "Immer an"
     },
+    "vision": "Bilder",
+    "visionYes": "Versteht Bilder (+{{size}} GB, optional)",
+    "visionNo": "Nur Text",
     "roles": "Geeignet für",
     "source": "Quelle",
     "modelCard": "Modellkarte",

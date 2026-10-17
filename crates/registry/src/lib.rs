@@ -59,6 +59,17 @@ fn is_sha256(s: &str) -> bool {
     s.len() == 64 && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
 }
 
+/// A downloadable file: known size, hash, and a path that stays inside the repository folder.
+fn check_file(model: &str, part: &str, f: &ModelFile) -> Result<(), RegistryError> {
+    if f.size_bytes == 0 || !is_sha256(&f.sha256) {
+        return Err(RegistryError::Invalid(format!("{model}/{part}: file '{}' needs size and lower-case sha256", f.path)));
+    }
+    if f.path.contains("..") || f.path.starts_with('/') {
+        return Err(RegistryError::Invalid(format!("{model}/{part}: unsafe path '{}'", f.path)));
+    }
+    Ok(())
+}
+
 /// Semantic checks that JSON Schema cannot express (uniqueness, consistency).
 pub fn validate(registry: &Registry) -> Result<(), RegistryError> {
     let fail = |msg: String| Err(RegistryError::Invalid(msg));
@@ -99,13 +110,15 @@ pub fn validate(registry: &Registry) -> Result<(), RegistryError> {
                 return fail(format!("{}/{}: no files", m.id, v.quant));
             }
             for f in &v.files {
-                if f.size_bytes == 0 || !is_sha256(&f.sha256) {
-                    return fail(format!("{}/{}: file '{}' needs size and lower-case sha256", m.id, v.quant, f.path));
-                }
-                if f.path.contains("..") || f.path.starts_with('/') {
-                    return fail(format!("{}/{}: unsafe path '{}'", m.id, v.quant, f.path));
-                }
+                check_file(&m.id, &v.quant, f)?;
             }
+        }
+        // An app that sees `vision` offers image input, which needs the projector.
+        match (&m.projector, m.capabilities.vision) {
+            (Some(p), true) => check_file(&m.id, "projector", p)?,
+            (None, false) => {}
+            (Some(_), false) => return fail(format!("{}: a projector needs capabilities.vision", m.id)),
+            (None, true) => return fail(format!("{}: capabilities.vision needs a projector", m.id)),
         }
     }
     for rt in &registry.runtimes {
@@ -178,6 +191,57 @@ mod tests {
         assert!(validate(&r).is_ok());
         r.schema_version = 1;
         assert!(validate(&r).is_err(), "an app that predates the flag would recommend it");
+    }
+
+    #[test]
+    fn vision_and_projector_come_together() {
+        let r = bundled();
+        let seeing: Vec<&Model> = r.models.iter().filter(|m| m.capabilities.vision).collect();
+        assert!(seeing.iter().any(|m| m.id == "qwen3.6-35b-a3b"), "the default model can see images");
+        for m in &seeing {
+            let p = m.projector.as_ref().unwrap();
+            assert!(p.path.contains("mmproj") && p.size_bytes > 100 << 20, "{}: {}", m.id, p.path);
+        }
+        assert!(r.models.iter().filter(|m| m.has_role(Role::Fim) || m.has_role(Role::Embedding)).all(|m| m.projector.is_none()));
+
+        let id = seeing[0].id.clone();
+        let with = |change: &dyn Fn(&mut Model)| {
+            let mut r = bundled();
+            change(r.models.iter_mut().find(|m| m.id == id).unwrap());
+            validate(&r)
+        };
+        assert!(with(&|_| {}).is_ok());
+        assert!(with(&|m| m.projector = None).is_err(), "vision without a projector");
+        assert!(with(&|m| m.capabilities.vision = false).is_err(), "a projector without vision");
+        assert!(with(&|m| m.projector.as_mut().unwrap().sha256.clear()).is_err());
+        assert!(with(&|m| m.projector.as_mut().unwrap().path = "../mmproj.gguf".into()).is_err());
+        assert!(with(&|m| {
+            m.projector = None;
+            m.capabilities.vision = false;
+        })
+        .is_ok());
+    }
+
+    /// Ylide 0.1.4 and 0.1.5 read the same v2 list without knowing `projector`:
+    /// serde skips unknown fields (no type here denies them), so a list with
+    /// fields from a later version still parses.
+    #[test]
+    fn unknown_fields_are_ignored() {
+        let mut json: serde_json::Value = serde_json::from_str(BUNDLED_JSON).unwrap();
+        json["futureTopLevel"] = serde_json::json!(true);
+        for m in json["models"].as_array_mut().unwrap() {
+            m["futureField"] = serde_json::json!({"any": "thing"});
+            m["capabilities"]["futureCapability"] = serde_json::json!(1);
+            m["variants"][0]["futureVariantField"] = serde_json::json!([]);
+        }
+        let parsed = parse(&json.to_string()).unwrap();
+        assert_eq!(parsed, bundled());
+        // The list as 0.1.5 sees it: without the projector and with `vision` (which 0.1.5 never reads).
+        for m in json["models"].as_array_mut().unwrap() {
+            m.as_object_mut().unwrap().remove("projector");
+            m["capabilities"]["vision"] = serde_json::json!(false);
+        }
+        assert!(parse(&json.to_string()).unwrap().models.iter().all(|m| m.projector.is_none()));
     }
 
     #[test]

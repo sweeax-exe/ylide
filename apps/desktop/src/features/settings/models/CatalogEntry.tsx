@@ -146,6 +146,10 @@ function Facts({ model }: { model: Model }) {
         <dd>{t(`catalog.reasoningLevel.${model.capabilities.reasoning}`)}</dd>
       </div>
       <div>
+        <dt>{t('catalog.vision')}</dt>
+        <dd>{model.projector ? t('catalog.visionYes', { size: formatGB(model.projector.sizeBytes) }) : t('catalog.visionNo')}</dd>
+      </div>
+      <div>
         <dt>{t('catalog.roles')}</dt>
         <dd>{model.roles.map((r) => t(`common:modelRoles.${r}`)).join(', ')}</dd>
       </div>

@@ -309,7 +309,7 @@
   "network": {
     "title": "Jaringan dan privasi",
     "statementTitle": "Tanpa telemetri, tanpa akun.",
-    "statementBody": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide terhubung ke internet hanya untuk empat tujuan di bawah, dan hanya selama tujuan tersebut diaktifkan. Prompt dan file Anda dikirim ke model di komputer ini, atau ke server eksternal yang Anda siapkan di Lanjutan.",
+    "statementBody": "Ylide tidak mengumpulkan data penggunaan, tidak memerlukan login, dan tidak pernah mengunggah kode Anda. Ylide terhubung ke internet hanya untuk lima tujuan di bawah, dan hanya selama tujuan tersebut diaktifkan. Prompt dan file Anda dikirim ke model di komputer ini, atau ke server eksternal yang Anda siapkan di Lanjutan.",
     "allowedTitle": "Koneksi yang diizinkan",
     "allowedDescription": "Jika salah satunya dimatikan, Ylide tidak akan melakukan permintaan tersebut.",
     "registry": {
@@ -340,6 +340,10 @@
     "updates": {
       "label": "Periksa pembaruan",
       "hint": "Menanyakan ke ylide.app sekali saat Ylide dimulai apakah ada versi Ylide yang lebih baru. Hanya nomor versi yang dikirim. Pembaruannya sendiri baru diunduh saat Anda menginstalnya."
+    },
+    "skills": {
+      "label": "Unduhan skill",
+      "hint": "Menampilkan daftar dan mengunduh skill dari GitHub (api.github.com, raw.githubusercontent.com) saat Anda menambahkan, menginstal, atau memperbaruinya di halaman Skill. Mati sampai Anda mengizinkannya."
     }
   },
   "advanced": {
@@ -460,6 +464,13 @@
     "contextValue": "{{tokens}} token",
     "slots": "Permintaan paralel",
     "toolCalls": "Panggilan alat",
+    "vision": "Gambar",
+    "visionState": {
+      "off": "Mati",
+      "on": "Dipahami",
+      "missing": "Modul gambar tidak ada",
+      "failed": "Gagal dimuat"
+    },
     "tools": {
       "unknown": {
         "label": "Belum diuji",
@@ -518,7 +529,19 @@
     "forgetBody": "Ylide melupakan model ini. File tetap di tempatnya; tidak ada yang dihapus.",
     "deleteActive": "Model ini sedang berjalan. Model akan dihentikan terlebih dahulu.",
     "deleteAssigned": "Jika model ini dipilih untuk chat, pelengkapan otomatis, atau pencarian kode, pilihan tersebut dihapus.",
-    "deleteAgain": "Anda dapat mengunduhnya lagi dari katalog."
+    "deleteAgain": "Anda dapat mengunduhnya lagi dari katalog.",
+    "vision": {
+      "label": "Pahami gambar (+{{size}} GB)",
+      "downloading": "Mengunduh modul gambar: {{percent}} %",
+      "downloadFailed": "Modul gambar tidak dapat diunduh. Aktifkan lagi untuk mencoba ulang.",
+      "missing": "Modul gambar tidak ada; model berjalan tanpa input gambar.",
+      "failed": "Modul gambar gagal dimuat; model berjalan tanpa input gambar.",
+      "pending": "Berlaku saat model dijalankan berikutnya.",
+      "restart": "Jalankan ulang sekarang",
+      "own": "Modul gambar: {{file}}",
+      "removeOwn": "Hapus modul gambar",
+      "pick": "Pilih modul gambar (mmproj) …"
+    }
   },
   "downloads": {
     "title": "Unduhan",
@@ -541,7 +564,8 @@
     "retry": "Ulangi unduhan {{name}}",
     "cancel": "Batalkan unduhan {{name}}",
     "progressLabel": "Kemajuan unduhan {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · modul gambar"
   },
   "catalog": {
     "title": "Katalog",
@@ -572,6 +596,9 @@
       "optional": "Opsional",
       "always": "Selalu aktif"
     },
+    "vision": "Gambar",
+    "visionYes": "Memahami gambar (+{{size}} GB, opsional)",
+    "visionNo": "Hanya teks",
     "roles": "Cocok untuk",
     "source": "Sumber",
     "modelCard": "Kartu model",

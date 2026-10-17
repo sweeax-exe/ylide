@@ -1,4 +1,4 @@
-import { Braces, FileText, Folder, FolderRoot } from 'lucide-react';
+import { Braces, FileText, Folder, FolderRoot, GraduationCap } from 'lucide-react';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Spinner } from '../../components/ui';
@@ -7,7 +7,8 @@ import { SYMBOL_MIN_QUERY, type PickerItem, type PickerSection } from './mention
 import s from './MentionPicker.module.css';
 import type { MentionSearch } from './useMentionSearch';
 
-const SECTIONS: PickerSection[] = ['files', 'folders', 'symbols'];
+// The same order as the items, so the arrow keys move down the list.
+const SECTIONS: PickerSection[] = ['files', 'folders', 'symbols', 'skills'];
 
 export const optionId = (listId: string, index: number) => `${listId}-option-${index}`;
 
@@ -26,6 +27,7 @@ function ItemIcon({ item }: { item: PickerItem }) {
   if (item.root) return <FolderRoot size={14} />;
   if (item.section === 'folders') return <Folder size={14} />;
   if (item.section === 'symbols') return <Braces size={14} />;
+  if (item.section === 'skills') return <GraduationCap size={14} />;
   return <FileText size={14} />;
 }
 

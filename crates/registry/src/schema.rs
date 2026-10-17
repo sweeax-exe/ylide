@@ -138,6 +138,11 @@ pub struct Model {
     pub request_defaults: Option<RequestDefaults>,
     pub source: Source,
     pub variants: Vec<Variant>,
+    /// Vision projector (llama.cpp `--mmproj`) from the same repository, for
+    /// image input. Present exactly when `capabilities.vision` is set. Apps
+    /// before 0.1.6 ignore it (unknown fields are skipped).
+    #[serde(default)]
+    pub projector: Option<ModelFile>,
     #[serde(default)]
     pub fim: Option<FimFormat>,
     #[serde(default)]
@@ -258,6 +263,7 @@ pub enum Reasoning {
 pub struct Capabilities {
     pub tool_calling: ToolCalling,
     pub reasoning: Reasoning,
+    /// Understands images with its [`Model::projector`].
     #[serde(default)]
     pub vision: bool,
 }

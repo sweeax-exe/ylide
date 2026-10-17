@@ -2,4 +2,12 @@
 import type { JobState } from "./JobState";
 import type { Progress } from "./Progress";
 
-export type DownloadJob = { jobId: string, modelId: string, quant: string, name: string, state: JobState, progress: Progress | null, totalBytes: number, };
+export type DownloadJob = { jobId: string, modelId: string, 
+/**
+ * The variant, or [`PROJECTOR_JOB`] for a vision projector.
+ */
+quant: string, name: string, 
+/**
+ * Downloads the vision projector of `model_id`, not a variant.
+ */
+projector: boolean, state: JobState, progress: Progress | null, totalBytes: number, };

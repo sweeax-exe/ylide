@@ -188,6 +188,7 @@ describe('downloads', () => {
     modelId: jobId,
     quant: 'Q4',
     name: jobId,
+    projector: false,
     state,
     totalBytes: 1000,
     progress: downloaded ? { jobId, phase: 'downloading', fileIndex: 0, fileCount: 1, downloadedBytes: downloaded, totalBytes: 1000, bytesPerSecond: bps } : null,

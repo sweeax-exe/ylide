@@ -1,0 +1,104 @@
+{
+  "page": {
+    "title": "スキル",
+    "intro": "スキルは、モデルに新しいタスクを教えます。スキルは指示（SKILL.md）と任意の参照ファイルを含むフォルダーで、オープンな Agent Skills 形式に従います。どのモデルでも、チャットでもエージェントでも使えます。スキルごとにオン・オフを切り替えられます。"
+  },
+  "trust": "スキルは第三者が書いた指示です。オンにする前にスキルを読んでください。初回は Ylide が内容を表示します。スキル自体が何かを実行することはありません。スキルに含まれるコマンドは、エージェントを通じて、その承認モードに従ってのみ実行されます。",
+  "loading": "スキルを読み込み中",
+  "loadFailed": "スキルを読み込めませんでした: {{message}}",
+  "installed": {
+    "title": "インストール済み",
+    "description": "Ylide のデータフォルダーに保存され、すべてのプロジェクトで使えます。新しいスキルは最初オフになっています。",
+    "emptyTitle": "スキルはまだありません",
+    "emptyBody": "GitHub リポジトリ（例: https://github.com/morluto/rea）や、このコンピューター上のフォルダーからスキルを追加できます。"
+  },
+  "project": {
+    "title": "プロジェクトから",
+    "description": "開いているプロジェクトの .agents/skills フォルダーにあるスキルです。Ylide はその場所から読み込むだけで、変更することはありません。オンにしても、このプロジェクトにのみ適用されます。",
+    "empty": "このプロジェクトの <0>.agents/skills</0> にはスキルがありません。"
+  },
+  "usage": {
+    "title": "モデルがスキルを使う仕組み",
+    "description": "ローカルモデルはコンテキストが小さいため、スキルは段階的に読み込まれます。",
+    "agents": "<0>エージェント</0>には、オンになっているすべてのスキルの名前と説明が見えます。タスクに合うスキルがあると、<1>skill_read</1> ツールでそのスキルを参照ファイルも含めて少しずつ読み込みます。",
+    "chat": "<0>チャット</0>にも同じ一覧が見えます。チャットにスキルの指示を渡すには、メッセージで <1>@reverse-engineer-anything</1> のようにスキルに言及します。そのスキルは会話の終わりまで添付されたままになります。",
+    "scripts": "スキル内の<0>スクリプト</0>が勝手に実行されることはありません。エージェントは、承認モードに従って通常のコマンドとしてのみ実行できます。",
+    "mcp": "<0>スキルのツール:</0> REA のスキルのように、専用の MCP サーバーやプログラムを前提とするスキルもあります。Ylide がモデルに渡すのは指示だけです。MCP サーバーにはまだ対応していません。"
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "プロジェクトから",
+    "on": "オン",
+    "broken": "使用不可",
+    "commit": "@ {{commit}}",
+    "files_other": "{{count}} 個のファイル",
+    "openOnGithub": "GitHub",
+    "view": "内容を表示",
+    "checkUpdate": "アップデートを確認",
+    "remove": "{{name}} を削除",
+    "switch": "{{name}} を使用"
+  },
+  "content": {
+    "title": "スキル {{name}}",
+    "note": "これはモデルが受け取るテキストです。第三者が書いたものです。",
+    "confirmNote": "オンにする前にスキルを読んでください。このスキルは第三者が書いたものです。オンにすると、モデルはその名前と説明を参照し、タスクに合うときにその指示を読み込むか受け取ります。",
+    "loading": "スキルを読み込み中",
+    "failed": "スキルを読み込めませんでした: {{message}}",
+    "files_other": "SKILL.md 以外に {{count}} 個のファイル:",
+    "textLabel": "{{name}} の SKILL.md",
+    "enable": "オンにする"
+  },
+  "update": {
+    "upToDate": "{{name}} は最新です。",
+    "checkFailed": "{{name}} のアップデートを確認できませんでした",
+    "title": "{{name}} をアップデート",
+    "introGithub": "{{source}} に新しいバージョンがあります（コミット {{commit}}）。",
+    "introFolder": "フォルダー {{source}} が変更されました。",
+    "version": "バージョン {{from}} → {{to}}。",
+    "summary": "追加 {{added}}、変更 {{changed}}、削除 {{removed}}。",
+    "kind": {
+      "added": "追加",
+      "changed": "変更",
+      "removed": "削除"
+    },
+    "note": "スキルのオン・オフの状態は変わりません。",
+    "install": "アップデート",
+    "done": "{{name}} をアップデートしました。",
+    "failed": "{{name}} をアップデートできませんでした"
+  },
+  "remove": {
+    "title": "{{name}} を削除しますか？",
+    "body": "スキルのファイルが Ylide のデータフォルダーから削除されます。あとで再び追加できます。",
+    "confirm": "削除"
+  },
+  "add": {
+    "fromGithub": "GitHub から追加",
+    "fromFolder": "フォルダーから追加",
+    "title": "GitHub からスキルを追加",
+    "intro": "リポジトリ、またはその中のフォルダーのアドレスを貼り付けてください。Ylide がそこにあるすべての SKILL.md を一覧表示するので、インストールするものを選びます。",
+    "permission": "スキルのダウンロードはオフになっています。スキルを一覧表示してダウンロードするために、Ylide は GitHub（api.github.com と raw.githubusercontent.com）に問い合わせます。あなたに関する情報は何も送信されません。この設定は「設定 › ネットワークとプライバシー」で再びオフにできます。",
+    "addressLabel": "リポジトリのアドレス",
+    "addressHint": "例: https://github.com/morluto/rea または https://github.com/owner/repo/tree/main/skills",
+    "search": "スキルを一覧表示",
+    "searching": "GitHub に問い合わせ中",
+    "found_other": "{{repo}} の {{count}} 個のスキル、コミット",
+    "chooseAll": "すべて選択",
+    "chooseNone": "選択を解除",
+    "listLabel": "リポジトリ内のスキル",
+    "alreadyInstalled": "インストール済み",
+    "notInstallable": "インストール不可",
+    "viewContent": "SKILL.md を表示",
+    "startOff": "新しいスキルは最初オフになっています。内容を確認したあと、「スキル」ページでオンにします。",
+    "install_other": "{{count}} 個のスキルをインストール",
+    "installNone": "インストール",
+    "installed_other": "{{count}} 個のスキルを追加しました",
+    "installedBody_other": "まだオフのままです。読んでからオンにしてください。",
+    "installFailed": "スキルをインストールできませんでした",
+    "folderFailed": "このフォルダーのスキルを追加できませんでした"
+  },
+  "permission": {
+    "title": "スキルのダウンロードを許可しますか？",
+    "body": "許可すると、スキルを一覧表示、インストール、アップデートするときに、Ylide が GitHub（api.github.com と raw.githubusercontent.com）に問い合わせます。あなたに関する情報は何も送信されません。この設定は「設定 › ネットワークとプライバシー」で再びオフにできます。",
+    "allow": "スキルのダウンロードを許可"
+  }
+}

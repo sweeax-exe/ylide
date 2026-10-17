@@ -10,7 +10,7 @@ use crate::permissions::{
 use crate::protocol::{AgentEvent, AgentMessage, AgentState, AgentStatus, Blackboard, MessageKind, Review};
 use crate::roles::{PromptTemplates, RoleDefinition};
 use crate::textcalls::parse_text_tool_calls;
-use crate::tools::{ShellConfig, ToolEnv, ToolOutcome, describe_call, execute, tool_spec};
+use crate::tools::{SKILL_READ, ShellConfig, ToolEnv, ToolOutcome, describe_call, execute, tool_spec};
 use async_trait::async_trait;
 use inference::{ChatMessage, ChatRequest, FinishReason, LlmError, MessageRole};
 use serde::Deserialize;
@@ -89,6 +89,11 @@ pub struct RunContext {
     pub events: Arc<dyn Fn(AgentEvent) + Send + Sync>,
     pub control: RunControl,
     pub blackboard: Mutex<Blackboard>,
+    /// The skills the user enabled; every role that uses tools can read them.
+    pub skills: Vec<skills::EnabledSkill>,
+    /// Images that came with the request (data URLs); the orchestrator and
+    /// the agent that works on a task see them with their first message.
+    pub goal_images: Vec<String>,
     /// Tools the user approved "always" during this run.
     always_allowed: Mutex<HashSet<String>>,
     /// Files read by any agent in this run (guards blind overwrites).
@@ -122,6 +127,8 @@ impl RunContext {
             events,
             control: RunControl::default(),
             blackboard: Mutex::new(Blackboard::default()),
+            skills: Vec::new(),
+            goal_images: Vec::new(),
             always_allowed: Mutex::default(),
             read_files: Mutex::default(),
             worked_commands: Mutex::default(),
@@ -130,8 +137,20 @@ impl RunContext {
         }
     }
 
+    /// The run with the user's enabled skills.
+    pub fn with_skills(mut self, skills: Vec<skills::EnabledSkill>) -> Self {
+        self.skills = skills;
+        self
+    }
+
     pub fn emit(&self, event: AgentEvent) {
         (self.events)(event);
+    }
+
+    /// The run with images of the request (for a model that sees).
+    pub fn with_goal_images(mut self, images: Vec<String>) -> Self {
+        self.goal_images = images;
+        self
     }
 
     /// Commands that exited with 0 in this run, each once.
@@ -234,7 +253,8 @@ fn estimate_tokens(messages: &[ChatMessage]) -> u32 {
                 + m.tool_calls.iter().map(|t| t.function.arguments.len() + t.function.name.len()).sum::<usize>()
         })
         .sum();
-    (chars as f64 / 3.5) as u32
+    let images: usize = messages.iter().map(|m| m.images.len()).sum();
+    (chars as f64 / 3.5) as u32 + images as u32 * inference::image::ESTIMATED_TOKENS
 }
 
 /// Keeps the conversation inside the context window.
@@ -254,6 +274,11 @@ fn compact(messages: &mut [ChatMessage], context_tokens: u32) {
         if message.role == MessageRole::Tool && message.content.as_ref().is_some_and(|c| c.len() > 400) {
             message.content = Some("[older tool output removed to save context; call the tool again if you need it]".into());
         }
+        // Images image_view returned; those of the request (a user message) stay.
+        if message.role == MessageRole::Tool && !message.images.is_empty() {
+            message.images.clear();
+            message.content = Some("[older image removed to save context; call image_view again if you need it]".into());
+        }
     }
 }
 
@@ -268,8 +293,17 @@ pub async fn run_agent(
     router: &dyn AskRouter,
 ) -> AgentEnd {
     let role = agent.role;
-    let tool_defs: Vec<_> = role.tools.iter().filter_map(|t| tool_spec(t)).map(|s| s.definition()).collect();
-    let tool_names: Vec<&str> = role.tools.iter().map(String::as_str).collect();
+    let mut tools = role.tools.clone();
+    if !ctx.skills.is_empty() && !tools.is_empty() && !tools.iter().any(|t| t == SKILL_READ) {
+        tools.push(SKILL_READ.to_string());
+    }
+    // A model that sees can look at the project's images, in every role that uses tools.
+    let image_view = crate::tools::IMAGE_VIEW;
+    if agent.model.vision() && !tools.is_empty() && !tools.iter().any(|t| t == image_view) {
+        tools.push(image_view.to_string());
+    }
+    let tool_defs: Vec<_> = tools.iter().filter_map(|t| tool_spec(t)).map(|s| s.definition()).collect();
+    let tool_names: Vec<&str> = tools.iter().map(String::as_str).collect();
     let mut text_only_turns = 0;
     let mut failures: HashMap<String, u32> = HashMap::new();
     let mut transient_errors = 0;
@@ -477,7 +511,7 @@ pub async fn run_agent(
                             output.push_str(&ctx.templates.repeated_failure);
                         }
                     }
-                    conversation.push(ChatMessage::tool_result(&call.id, output));
+                    conversation.push(ChatMessage::tool_result(&call.id, output).with_images(outcome.images));
                 }
             }
         }
@@ -498,6 +532,10 @@ async fn execute_with_permission(
     let Some(spec) = tool_spec(name) else {
         return error_outcome(format!("unknown tool '{name}'"));
     };
+    // Only offered to a model that sees, but a role may list it by hand.
+    if name == crate::tools::IMAGE_VIEW && !agent.model.vision() {
+        return error_outcome(crate::tools::NO_VISION.into());
+    }
     let command = args["command"].as_str();
     if let Some(reason) = command.and_then(crate::permissions::hard_denied) {
         let msg = format!("Blocked by Ylide's safety rules: this command {reason}. Agents can never run it; ask the user to run it themselves if it is really needed.");
@@ -506,6 +544,7 @@ async fn execute_with_permission(
             ok: false,
             summary: msg,
             change: None,
+            images: Vec::new(),
         };
     }
     let pre_approved = ctx.always_allowed.lock().unwrap().contains(name);
@@ -542,6 +581,7 @@ async fn execute_with_permission(
                     ok: false,
                     summary: msg,
                     change: None,
+                    images: Vec::new(),
                 };
             }
         }
@@ -571,6 +611,8 @@ async fn execute_with_permission(
         shell: &ctx.shell,
         cancel: &ctx.control.cancel,
         read_files: &ctx.read_files,
+        skills: &ctx.skills,
+        skill_chars: skills::prompt::read_budget(agent.model.context_tokens()),
     };
     let outcome = execute(name, args, &env).await;
     if let Some(change) = &outcome.change {
@@ -655,6 +697,7 @@ fn error_outcome(message: String) -> ToolOutcome {
         ok: false,
         summary: message,
         change: None,
+        images: Vec::new(),
     }
 }
 

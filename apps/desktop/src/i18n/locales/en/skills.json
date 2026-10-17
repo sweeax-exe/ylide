@@ -1,0 +1,110 @@
+{
+  "page": {
+    "title": "Skills",
+    "intro": "Skills teach your models new tasks: a folder with instructions (SKILL.md) and optional reference files, in the open Agent Skills format. They work with every model, in the chat and for the agents. Switch each one on or off."
+  },
+  "trust": "Skills are instructions written by third parties. Read a skill before you switch it on: Ylide shows it to you the first time. Skills never run anything themselves; a command from a skill runs only through the agents and their approval mode.",
+  "loading": "Loading skills",
+  "loadFailed": "The skills could not be loaded: {{message}}",
+  "installed": {
+    "title": "Installed",
+    "description": "Kept in Ylide's data folder and available in every project. New skills start switched off.",
+    "emptyTitle": "No skills yet",
+    "emptyBody": "Add skills from a GitHub repository, for example https://github.com/morluto/rea, or from a folder on this computer."
+  },
+  "project": {
+    "title": "From the project",
+    "description": "Skills in the open project's .agents/skills folder. Ylide reads them there and never changes them; switching one on applies to this project only.",
+    "empty": "This project has no skills in <0>.agents/skills</0>."
+  },
+  "usage": {
+    "title": "How models use skills",
+    "description": "Local models have small contexts, so skills are loaded step by step.",
+    "agents": "<0>Agents</0> see the name and description of every skill that is on. When a task fits, they read the skill with the tool <1>skill_read</1>, also its reference files, in parts.",
+    "chat": "<0>Chat</0> sees the same list. To give the chat a skill's instructions, mention it in your message, e.g. <1>@reverse-engineer-anything</1>; it then stays attached for the rest of the conversation.",
+    "scripts": "<0>Scripts</0> in a skill never run on their own. An agent can only run one as a normal command, under your approval mode.",
+    "mcp": "<0>Tools of a skill:</0> some skills, such as REA's, expect their own MCP server and programs. Ylide gives the model their instructions only; MCP servers are not supported yet."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "from the project",
+    "on": "On",
+    "broken": "Cannot be used",
+    "commit": "@ {{commit}}",
+    "files_one": "{{count}} file",
+    "files_other": "{{count}} files",
+    "openOnGithub": "GitHub",
+    "view": "View content",
+    "checkUpdate": "Check for updates",
+    "remove": "Remove {{name}}",
+    "switch": "Use {{name}}"
+  },
+  "content": {
+    "title": "Skill {{name}}",
+    "note": "This is the text the models get. It was written by a third party.",
+    "confirmNote": "Read the skill before you switch it on. It was written by a third party; from now on the models see its name and description, and read or get its instructions when a task fits.",
+    "loading": "Loading the skill",
+    "failed": "The skill could not be read: {{message}}",
+    "files_one": "Besides SKILL.md, {{count}} file:",
+    "files_other": "Besides SKILL.md, {{count}} files:",
+    "textLabel": "SKILL.md of {{name}}",
+    "enable": "Switch on"
+  },
+  "update": {
+    "upToDate": "{{name}} is up to date.",
+    "checkFailed": "Could not check {{name}} for updates",
+    "title": "Update {{name}}",
+    "introGithub": "A newer version is available in {{source}} (commit {{commit}}).",
+    "introFolder": "The folder {{source}} has changed.",
+    "version": "Version {{from}} → {{to}}.",
+    "summary": "{{added}} added, {{changed}} changed, {{removed}} removed.",
+    "kind": {
+      "added": "added",
+      "changed": "changed",
+      "removed": "removed"
+    },
+    "note": "Whether the skill is on stays as it is.",
+    "install": "Update",
+    "done": "{{name}} was updated.",
+    "failed": "Could not update {{name}}"
+  },
+  "remove": {
+    "title": "Remove {{name}}?",
+    "body": "The skill's files are deleted from Ylide's data folder. You can add it again later.",
+    "confirm": "Remove"
+  },
+  "add": {
+    "fromGithub": "Add from GitHub",
+    "fromFolder": "Add from folder",
+    "title": "Add skills from GitHub",
+    "intro": "Paste the address of a repository or of a folder in it. Ylide lists every SKILL.md in it; you pick which to install.",
+    "permission": "Skill downloads are off. To list and download skills, Ylide asks GitHub (api.github.com and raw.githubusercontent.com). Nothing about you is sent. You can switch this off again under Settings › Network.",
+    "addressLabel": "Repository address",
+    "addressHint": "For example https://github.com/morluto/rea or https://github.com/owner/repo/tree/main/skills",
+    "search": "List skills",
+    "searching": "Asking GitHub",
+    "found_one": "{{count}} skill in {{repo}} at",
+    "found_other": "{{count}} skills in {{repo}} at",
+    "chooseAll": "Choose all",
+    "chooseNone": "Choose none",
+    "listLabel": "Skills in the repository",
+    "alreadyInstalled": "Installed",
+    "notInstallable": "Cannot be installed",
+    "viewContent": "View SKILL.md",
+    "startOff": "New skills start switched off. You switch them on on the Skills page, after you have seen their content.",
+    "install_one": "Install {{count}} skill",
+    "install_other": "Install {{count}} skills",
+    "installNone": "Install",
+    "installed_one": "{{count}} skill added",
+    "installed_other": "{{count}} skills added",
+    "installedBody_one": "It is still off. Switch it on when you have read it.",
+    "installedBody_other": "They are still off. Switch each one on when you have read it.",
+    "installFailed": "The skills could not be installed",
+    "folderFailed": "The skills in this folder could not be added"
+  },
+  "permission": {
+    "title": "Allow skill downloads?",
+    "body": "Ylide then asks GitHub (api.github.com and raw.githubusercontent.com) for skills when you list, install or update them. Nothing about you is sent. You can switch this off again under Settings › Network.",
+    "allow": "Allow skill downloads"
+  }
+}

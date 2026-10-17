@@ -218,6 +218,17 @@
             }
           }
         },
+        "projector": {
+          "type": ["object", "null"],
+          "description": "Vision projector (llama.cpp --mmproj) in the same repository. Present exactly when capabilities.vision is true.",
+          "required": ["path", "sizeBytes", "sha256"],
+          "additionalProperties": false,
+          "properties": {
+            "path": { "type": "string", "pattern": "\\.gguf$" },
+            "sizeBytes": { "type": "integer", "minimum": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
         "fim": {
           "type": ["object", "null"],
           "required": ["prefix", "suffix", "middle"],

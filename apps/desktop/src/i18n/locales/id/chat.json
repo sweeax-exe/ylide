@@ -81,7 +81,8 @@
     "noFiles": "Tidak ada file yang ditemukan.",
     "searching": "Mencari",
     "symbolsHint": "Ketik dua karakter atau lebih untuk mencari simbol.",
-    "hint": "<0>↑</0> <1>↓</1> untuk memilih, <2>Enter</2> untuk melampirkan, <3>Esc</3> untuk menutup"
+    "hint": "<0>↑</0> <1>↓</1> untuk memilih, <2>Enter</2> untuk melampirkan, <3>Esc</3> untuk menutup",
+    "skills": "Skill"
   },
   "symbolKind": {
     "function": "fungsi",

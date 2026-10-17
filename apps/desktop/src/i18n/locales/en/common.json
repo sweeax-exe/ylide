@@ -33,7 +33,8 @@
     "chat": "Chat",
     "agents": "Agents",
     "models": "Models",
-    "settings": "Settings"
+    "settings": "Settings",
+    "skills": "Skills"
   },
   "titlebar": {
     "noProject": "No folder open",
@@ -81,7 +82,8 @@
     "modelDownload": "model download",
     "runtimeDownload": "runtime download",
     "updateCheck": "update check",
-    "updateDownload": "update download"
+    "updateDownload": "update download",
+    "skillDownload": "skill download"
   },
   "errors": {
     "generic": "Something went wrong: {{message}}",
@@ -106,7 +108,42 @@
     "update_format": "The update has a format Ylide cannot install: {{message}}",
     "update_too_large": "The update is unusually large and was not downloaded.",
     "update_launch": "The installer could not be started: {{message}}",
-    "update_unsupported": "On this system, install updates by hand."
+    "update_unsupported": "On this system, install updates by hand.",
+    "skill_invalid": "This is not a valid skill: {{message}}",
+    "skill_too_large": "The skill is too large: {{message}}",
+    "skill_exists": "A skill with this name is installed already ({{message}}). Remove it first to install it again.",
+    "skill_not_found": "This skill no longer exists.",
+    "skill_renamed": "The new version has another name ({{message}}). Remove the skill and add the new one.",
+    "skill_address": "That is not the address of a GitHub repository: {{message}}",
+    "skill_none_found": "No skills found here: {{message}}",
+    "skill_repo_not_found": "GitHub does not know this repository, or it is private.",
+    "skill_rate_limited": "GitHub's limit for requests without an account is used up. Try again in an hour.",
+    "skill_gone": "The skill is no longer in its repository: {{message}}",
+    "no_vision": "The model that is running cannot see images. On the Models page, switch on “Understand images” for a model that can.",
+    "bad_image": "The image cannot be used: {{message}}",
+    "not_projector": "This is not an image module (mmproj GGUF file).",
+    "no_projector": "This model has no image input."
+  },
+  "images": {
+    "attach": "Attach images",
+    "attached": "Attached images: {{n}}",
+    "label": "Image {{n}}: {{name}}, {{size}} pixels",
+    "labelShort": "Image {{n}}",
+    "pasted": "pasted",
+    "remove": "Remove {{label}}",
+    "notSent": "Images are not sent",
+    "noModel": "Start a model that understands images to attach them.",
+    "switchOn": "{{model}} can understand images: switch on “Understand images” for it on the Models page and start it again.",
+    "cannotSee": "{{model}} cannot see images.",
+    "visionModels": "Models that can: {{models}}.",
+    "missing": "The image module of {{model}} is missing. Switch “Understand images” off and on again on the Models page.",
+    "failed": "{{model}} runs without image input because its image module did not load. The server log has the details.",
+    "problem": {
+      "unsupported": "Only PNG, JPEG, WebP and GIF images can be attached.",
+      "tooLarge": "The image is larger than 20 MB.",
+      "damaged": "The image could not be read.",
+      "tooMany": "At most {{max}} images per message; the rest were not attached."
+    }
   },
   "reasons": {
     "fitsInVram": "Fits completely into your graphics memory ({{vramGb}} GB used).",

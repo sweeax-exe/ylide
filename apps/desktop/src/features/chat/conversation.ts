@@ -20,6 +20,8 @@ export interface UserTurn {
   mentions: Mention[];
   /** Context as resolved by the core; null until its `context` event arrives. */
   context: ContextItem[] | null;
+  /** Images sent with the message (scaled-down data URLs, see lib/images.ts); saved with the chat. */
+  images: string[];
 }
 
 export interface AssistantTurn {
@@ -41,8 +43,8 @@ export interface AssistantTurn {
 
 export type Turn = UserTurn | AssistantTurn;
 
-export function userTurn(id: string, content: string, mentions: Mention[]): UserTurn {
-  return { id, role: 'user', content, mentions, context: null };
+export function userTurn(id: string, content: string, mentions: Mention[], images: string[] = []): UserTurn {
+  return { id, role: 'user', content, mentions, context: null, images };
 }
 
 export function assistantTurn(id: string, requestId: string): AssistantTurn {
@@ -79,17 +81,17 @@ export function sentUserContent(turn: UserTurn): string {
  * Exchanges without an answer (failed, or stopped before any text) are left
  * out so roles keep alternating, which many chat templates require.
  */
-export function requestMessages(history: Turn[], newMessage: string): UiMessage[] {
+export function requestMessages(history: Turn[], newMessage: string, newImages: string[] = []): UiMessage[] {
   const out: UiMessage[] = [];
   for (let i = 0; i < history.length; i++) {
     const turn = history[i];
     if (turn.role !== 'user') continue;
     const answer = history[i + 1];
     if (!answer || answer.role !== 'assistant' || answer.status === 'streaming' || answer.status === 'error' || !answer.content.trim()) continue;
-    out.push({ role: 'user', content: sentUserContent(turn) });
-    out.push({ role: 'assistant', content: answer.content });
+    out.push({ role: 'user', content: sentUserContent(turn), images: turn.images });
+    out.push({ role: 'assistant', content: answer.content, images: [] });
   }
-  out.push({ role: 'user', content: newMessage });
+  out.push({ role: 'user', content: newMessage, images: newImages });
   return out;
 }
 

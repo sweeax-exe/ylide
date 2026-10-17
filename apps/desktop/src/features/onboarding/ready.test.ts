@@ -12,6 +12,7 @@ const info = (status: ServerInfo['status']): ServerInfo => ({
   slots: 1,
   status,
   toolCalls: 'unknown',
+  vision: 'off',
   command: [],
 });
 

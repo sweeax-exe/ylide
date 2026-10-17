@@ -1,0 +1,8 @@
+# Files compiled into the app (include_str!) keep LF on every checkout, so a
+# build from a Windows checkout with core.autocrlf=true embeds exactly the text
+# of a release build (and the tests that compare it keep passing).
+apps/desktop/src-tauri/prompts/** text eol=lf
+apps/desktop/src-tauri/licenses/** text eol=lf
+apps/desktop/src-tauri/tauri.conf.json text eol=lf
+crates/agent/prompts/** text eol=lf
+registry/** text eol=lf

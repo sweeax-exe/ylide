@@ -7,6 +7,10 @@ import type { Placement } from "./Placement";
  */
 export type Plan = { placement: Placement, context: number, kvCacheType: KvCacheType, weightsBytes: number, kvBytes: number, overheadBytes: number, 
 /**
+ * Vision projector with its buffer (0 while image input is off).
+ */
+projectorBytes: number, 
+/**
  * Total that must fit on the GPU.
  */
 vramBytes: number, 

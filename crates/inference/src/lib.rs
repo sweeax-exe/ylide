@@ -3,6 +3,7 @@
 //! chat, inline edit and agents onto its parallel slots.
 
 pub mod client;
+pub mod image;
 pub mod openai;
 pub mod scheduler;
 pub mod server;

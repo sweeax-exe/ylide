@@ -33,7 +33,8 @@
     "chat": "Chat",
     "agents": "Agents",
     "models": "Modèles",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "skills": "Compétences"
   },
   "titlebar": {
     "noProject": "Aucun dossier ouvert",
@@ -82,7 +83,8 @@
     "modelDownload": "téléchargement de modèle",
     "runtimeDownload": "téléchargement de runtime",
     "updateCheck": "recherche de mises à jour",
-    "updateDownload": "téléchargement de mise à jour"
+    "updateDownload": "téléchargement de mise à jour",
+    "skillDownload": "téléchargement de compétences"
   },
   "errors": {
     "generic": "Une erreur s’est produite : {{message}}",
@@ -107,7 +109,42 @@
     "update_format": "La mise à jour a un format qu’Ylide ne peut pas installer : {{message}}",
     "update_too_large": "La mise à jour est anormalement volumineuse et n’a pas été téléchargée.",
     "update_launch": "Le programme d’installation n’a pas pu être lancé : {{message}}",
-    "update_unsupported": "Sur ce système, installez les mises à jour manuellement."
+    "update_unsupported": "Sur ce système, installez les mises à jour manuellement.",
+    "skill_invalid": "Ce n’est pas une compétence valide : {{message}}",
+    "skill_too_large": "La compétence est trop volumineuse : {{message}}",
+    "skill_exists": "Une compétence portant ce nom est déjà installée ({{message}}). Retirez-la d’abord pour la réinstaller.",
+    "skill_not_found": "Cette compétence n’existe plus.",
+    "skill_renamed": "La nouvelle version porte un autre nom ({{message}}). Retirez la compétence et ajoutez la nouvelle.",
+    "skill_address": "Ce n’est pas l’adresse d’un dépôt GitHub : {{message}}",
+    "skill_none_found": "Aucune compétence trouvée ici : {{message}}",
+    "skill_repo_not_found": "GitHub ne connaît pas ce dépôt, ou il est privé.",
+    "skill_rate_limited": "La limite de GitHub pour les requêtes sans compte est atteinte. Réessayez dans une heure.",
+    "skill_gone": "La compétence ne se trouve plus dans son dépôt : {{message}}",
+    "no_vision": "Le modèle lancé ne voit pas les images. Sur la page Modèles, activez « Comprendre les images » pour un modèle qui le peut.",
+    "bad_image": "L’image ne peut pas être utilisée : {{message}}",
+    "not_projector": "Ce n’est pas un module d’image (fichier GGUF mmproj).",
+    "no_projector": "Ce modèle ne prend pas d’images."
+  },
+  "images": {
+    "attach": "Joindre des images",
+    "attached": "Images jointes : {{n}}",
+    "label": "Image {{n}} : {{name}}, {{size}} pixels",
+    "labelShort": "Image {{n}}",
+    "pasted": "collée",
+    "remove": "Retirer {{label}}",
+    "notSent": "Les images ne sont pas envoyées",
+    "noModel": "Lancez un modèle qui comprend les images pour en joindre.",
+    "switchOn": "{{model}} peut comprendre les images : activez « Comprendre les images » sur la page Modèles, puis relancez-le.",
+    "cannotSee": "{{model}} ne voit pas les images.",
+    "visionModels": "Modèles qui le peuvent : {{models}}.",
+    "missing": "Le module d’image de {{model}} est manquant. Désactivez puis réactivez « Comprendre les images » sur la page Modèles.",
+    "failed": "{{model}} fonctionne sans images, car son module d’image n’a pas pu être chargé. Le journal du serveur donne les détails.",
+    "problem": {
+      "unsupported": "Seules les images PNG, JPEG, WebP et GIF peuvent être jointes.",
+      "tooLarge": "L’image dépasse 20 Mo.",
+      "damaged": "L’image n’a pas pu être lue.",
+      "tooMany": "Au plus {{max}} images par message ; les autres n’ont pas été jointes."
+    }
   },
   "reasons": {
     "fitsInVram": "Tient entièrement dans votre mémoire graphique ({{vramGb}} GB utilisés).",

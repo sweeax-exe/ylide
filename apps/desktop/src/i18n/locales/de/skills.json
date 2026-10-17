@@ -1,0 +1,110 @@
+{
+  "page": {
+    "title": "Skills",
+    "intro": "Skills bringen deinen Modellen neue Aufgaben bei: ein Ordner mit Anweisungen (SKILL.md) und optionalen Referenzdateien, im offenen Agent-Skills-Format. Sie funktionieren mit jedem Modell, im Chat und für die Agents. Jeden Skill schaltest du einzeln ein oder aus."
+  },
+  "trust": "Skills sind Anweisungen, die Dritte geschrieben haben. Lies einen Skill, bevor du ihn einschaltest: Ylide zeigt ihn dir beim ersten Mal. Skills führen selbst nichts aus; ein Befehl aus einem Skill läuft nur über die Agents und deren Freigabemodus.",
+  "loading": "Skills werden geladen",
+  "loadFailed": "Die Skills konnten nicht geladen werden: {{message}}",
+  "installed": {
+    "title": "Installiert",
+    "description": "Liegen in Ylides Datenordner und stehen in jedem Projekt bereit. Neue Skills sind zuerst ausgeschaltet.",
+    "emptyTitle": "Noch keine Skills",
+    "emptyBody": "Füge Skills aus einem GitHub-Repository hinzu, zum Beispiel https://github.com/morluto/rea, oder aus einem Ordner auf diesem Rechner."
+  },
+  "project": {
+    "title": "Aus dem Projekt",
+    "description": "Skills im Ordner .agents/skills des geöffneten Projekts. Ylide liest sie dort und ändert sie nie; Einschalten gilt nur für dieses Projekt.",
+    "empty": "Dieses Projekt hat keine Skills in <0>.agents/skills</0>."
+  },
+  "usage": {
+    "title": "So nutzen die Modelle Skills",
+    "description": "Lokale Modelle haben einen kleinen Kontext, deshalb werden Skills schrittweise geladen.",
+    "agents": "<0>Agents</0> sehen Name und Beschreibung jedes eingeschalteten Skills. Passt eine Aufgabe dazu, lesen sie den Skill mit dem Werkzeug <1>skill_read</1>, auch seine Referenzdateien, in Teilen.",
+    "chat": "<0>Chat</0> sieht dieselbe Liste. Damit der Chat die Anweisungen eines Skills bekommt, erwähne ihn in deiner Nachricht, z. B. <1>@reverse-engineer-anything</1>; er bleibt dann für den Rest des Gesprächs angehängt.",
+    "scripts": "<0>Skripte</0> eines Skills laufen nie von selbst. Ein Agent kann eines nur als normalen Befehl ausführen, unter deinem Freigabemodus.",
+    "mcp": "<0>Werkzeuge eines Skills:</0> Manche Skills, etwa die von REA, erwarten einen eigenen MCP-Server und Programme. Ylide gibt dem Modell nur ihre Anweisungen; MCP-Server werden noch nicht unterstützt."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "aus dem Projekt",
+    "on": "An",
+    "broken": "Nicht nutzbar",
+    "commit": "@ {{commit}}",
+    "files_one": "{{count}} Datei",
+    "files_other": "{{count}} Dateien",
+    "openOnGithub": "GitHub",
+    "view": "Inhalt ansehen",
+    "checkUpdate": "Nach Updates suchen",
+    "remove": "{{name}} entfernen",
+    "switch": "{{name}} verwenden"
+  },
+  "content": {
+    "title": "Skill {{name}}",
+    "note": "Das ist der Text, den die Modelle bekommen. Er stammt von Dritten.",
+    "confirmNote": "Lies den Skill, bevor du ihn einschaltest. Er stammt von Dritten; ab jetzt sehen die Modelle seinen Namen und seine Beschreibung und lesen oder bekommen seine Anweisungen, wenn eine Aufgabe passt.",
+    "loading": "Skill wird geladen",
+    "failed": "Der Skill konnte nicht gelesen werden: {{message}}",
+    "files_one": "Neben SKILL.md {{count}} Datei:",
+    "files_other": "Neben SKILL.md {{count}} Dateien:",
+    "textLabel": "SKILL.md von {{name}}",
+    "enable": "Einschalten"
+  },
+  "update": {
+    "upToDate": "{{name}} ist auf dem neuesten Stand.",
+    "checkFailed": "{{name}} konnte nicht auf Updates geprüft werden",
+    "title": "{{name}} aktualisieren",
+    "introGithub": "In {{source}} gibt es eine neuere Version (Commit {{commit}}).",
+    "introFolder": "Der Ordner {{source}} hat sich geändert.",
+    "version": "Version {{from}} → {{to}}.",
+    "summary": "{{added}} hinzugefügt, {{changed}} geändert, {{removed}} entfernt.",
+    "kind": {
+      "added": "neu",
+      "changed": "geändert",
+      "removed": "entfernt"
+    },
+    "note": "Ob der Skill eingeschaltet ist, bleibt, wie es ist.",
+    "install": "Aktualisieren",
+    "done": "{{name}} wurde aktualisiert.",
+    "failed": "{{name}} konnte nicht aktualisiert werden"
+  },
+  "remove": {
+    "title": "{{name}} entfernen?",
+    "body": "Die Dateien des Skills werden aus Ylides Datenordner gelöscht. Du kannst ihn später wieder hinzufügen.",
+    "confirm": "Entfernen"
+  },
+  "add": {
+    "fromGithub": "Aus GitHub hinzufügen",
+    "fromFolder": "Aus Ordner hinzufügen",
+    "title": "Skills aus GitHub hinzufügen",
+    "intro": "Füge die Adresse eines Repositorys oder eines Ordners darin ein. Ylide listet jede SKILL.md darin auf; du wählst, welche installiert werden.",
+    "permission": "Skill-Downloads sind aus. Zum Auflisten und Herunterladen fragt Ylide bei GitHub an (api.github.com und raw.githubusercontent.com). Dabei wird nichts über dich gesendet. Unter Einstellungen › Netzwerk kannst du das wieder ausschalten.",
+    "addressLabel": "Adresse des Repositorys",
+    "addressHint": "Zum Beispiel https://github.com/morluto/rea oder https://github.com/owner/repo/tree/main/skills",
+    "search": "Skills auflisten",
+    "searching": "Frage bei GitHub an",
+    "found_one": "{{count}} Skill in {{repo}} bei",
+    "found_other": "{{count}} Skills in {{repo}} bei",
+    "chooseAll": "Alle wählen",
+    "chooseNone": "Keine wählen",
+    "listLabel": "Skills im Repository",
+    "alreadyInstalled": "Installiert",
+    "notInstallable": "Nicht installierbar",
+    "viewContent": "SKILL.md ansehen",
+    "startOff": "Neue Skills sind zuerst ausgeschaltet. Du schaltest sie auf der Skills-Seite ein, nachdem du ihren Inhalt gesehen hast.",
+    "install_one": "{{count}} Skill installieren",
+    "install_other": "{{count}} Skills installieren",
+    "installNone": "Installieren",
+    "installed_one": "{{count}} Skill hinzugefügt",
+    "installed_other": "{{count}} Skills hinzugefügt",
+    "installedBody_one": "Noch ist er aus. Schalte ihn ein, wenn du ihn gelesen hast.",
+    "installedBody_other": "Noch sind sie aus. Schalte jeden ein, wenn du ihn gelesen hast.",
+    "installFailed": "Die Skills konnten nicht installiert werden",
+    "folderFailed": "Die Skills in diesem Ordner konnten nicht hinzugefügt werden"
+  },
+  "permission": {
+    "title": "Skill-Downloads erlauben?",
+    "body": "Ylide fragt dann bei GitHub (api.github.com und raw.githubusercontent.com) nach Skills, wenn du sie auflistest, installierst oder aktualisierst. Dabei wird nichts über dich gesendet. Unter Einstellungen › Netzwerk kannst du das wieder ausschalten.",
+    "allow": "Skill-Downloads erlauben"
+  }
+}

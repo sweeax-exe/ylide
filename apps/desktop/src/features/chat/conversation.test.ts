@@ -48,15 +48,25 @@ describe('requestMessages', () => {
     turns = applyChatEvent(turns, 'r1', { type: 'context', items: [item('CTX')] }, 0);
     turns = applyChatEvent(turns, 'r1', { type: 'done', result: result('Because.') }, 0);
     expect(requestMessages(turns, 'And now?')).toEqual([
-      { role: 'user', content: 'CTX\n\nWhy?' },
-      { role: 'assistant', content: 'Because.' },
-      { role: 'user', content: 'And now?' },
+      { role: 'user', content: 'CTX\n\nWhy?', images: [] },
+      { role: 'assistant', content: 'Because.', images: [] },
+      { role: 'user', content: 'And now?', images: [] },
     ]);
   });
   it('leaves out exchanges without an answer so roles alternate', () => {
     let turns = started();
     turns = markFailed(turns, 'r1', { code: 'model', message: 'boom' }, 0);
-    expect(requestMessages(turns, 'Again')).toEqual([{ role: 'user', content: 'Again' }]);
+    expect(requestMessages(turns, 'Again')).toEqual([{ role: 'user', content: 'Again', images: [] }]);
+  });
+  it('sends the images of earlier questions again, and those of the new one', () => {
+    const png = 'data:image/png;base64,iVBORw0KGgo=';
+    let turns: Turn[] = [userTurn('u1', 'What is this?', [], [png]), assistantTurn('a1', 'r1')];
+    turns = applyChatEvent(turns, 'r1', { type: 'done', result: result('A cart page.') }, 0);
+    expect(requestMessages(turns, '', [png, png])).toEqual([
+      { role: 'user', content: 'What is this?', images: [png] },
+      { role: 'assistant', content: 'A cart page.', images: [] },
+      { role: 'user', content: '', images: [png, png] },
+    ]);
   });
   it('keeps a stopped answer that has text', () => {
     let turns = started();

@@ -6,6 +6,7 @@ import type { ContextInfo } from "./ContextInfo";
 import type { EmbeddingInfo } from "./EmbeddingInfo";
 import type { FimFormat } from "./FimFormat";
 import type { License } from "./License";
+import type { ModelFile } from "./ModelFile";
 import type { Quality } from "./Quality";
 import type { RequestDefaults } from "./RequestDefaults";
 import type { Role } from "./Role";
@@ -20,7 +21,13 @@ id: string, name: string, family: string, publisher: string, releaseDate: string
 /**
  * Per-request parameters the IDE sends for each kind of work.
  */
-requestDefaults: RequestDefaults | null, source: Source, variants: Array<Variant>, fim: FimFormat | null, embedding: EmbeddingInfo | null, benchmarks: Array<Benchmark>, 
+requestDefaults: RequestDefaults | null, source: Source, variants: Array<Variant>, 
+/**
+ * Vision projector (llama.cpp `--mmproj`) from the same repository, for
+ * image input. Present exactly when `capabilities.vision` is set. Apps
+ * before 0.1.6 ignore it (unknown fields are skipped).
+ */
+projector: ModelFile | null, fim: FimFormat | null, embedding: EmbeddingInfo | null, benchmarks: Array<Benchmark>, 
 /**
  * Extra llama-server arguments this model needs (e.g. `--jinja`).
  */

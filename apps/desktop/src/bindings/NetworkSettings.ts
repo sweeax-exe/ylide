@@ -16,4 +16,9 @@ allowRuntimeDownloads: boolean,
 /**
  * Ask ylide.app for a newer version at startup (and when the user checks).
  */
-allowUpdateChecks: boolean, registryUrl: string, };
+allowUpdateChecks: boolean, 
+/**
+ * Let the Skills page list and download skills from GitHub. Off until the
+ * user switches it on (the Skills page asks on first use).
+ */
+allowSkillDownloads: boolean, registryUrl: string, };

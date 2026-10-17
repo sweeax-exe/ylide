@@ -31,8 +31,9 @@
   },
   "chat": {
     "title": "Pregúntale a tu proyecto.",
-    "body": "Adjunta archivos, carpetas o símbolos con @. La respuesta llega palabra por palabra desde el modelo de tu tarjeta gráfica, y lo que preguntas se queda aquí.",
+    "body": "Adjunta archivos, carpetas o símbolos con @. Los modelos que entienden imágenes también ven las capturas de pantalla y fotos que pegas o arrastras, en el chat y en los agentes. La respuesta llega palabra por palabra desde el modelo de tu tarjeta gráfica, y lo que preguntas se queda aquí.",
     "question": "¿Qué hace applyDiscount en <code>@cart.js</code>?",
+    "image": "Imagen 1: captura de pantalla del carrito",
     "answer": "Descuenta un porcentaje de cada artículo y redondea al céntimo. Rechaza los valores menores que 0 o mayores que 100 con un <code>TypeError</code>.",
     "stats": "75 tokens por segundo, en este ordenador",
     "you": "Tú",
@@ -60,6 +61,18 @@
     "step5": "El revisor aprueba la tarea. Ves cada cambio antes de que sea definitivo.",
     "task": "Tarea"
   },
+  "skills": {
+    "title": "Enseña a tus modelos cómo trabajas.",
+    "body": "Las habilidades son instrucciones en el formato abierto Agent Skills: un SKILL.md y archivos de referencia opcionales. Añádelas desde un repositorio de GitHub o una carpeta, y cualquier modelo puede usarlas, en el chat y en los agentes. Las habilidades nuevas empiezan desactivadas, y Ylide te muestra cada una antes de que la actives.",
+    "listLabel": "Habilidades instaladas",
+    "writeTests": "Escribe pruebas al estilo de este proyecto.",
+    "releaseNotes": "Redacta notas de versión a partir del registro de git.",
+    "apiReview": "Revisa si los endpoints modificados rompen la compatibilidad.",
+    "fromProject": "del proyecto",
+    "new": "nueva",
+    "on": "Activada",
+    "off": "Desactivada"
+  },
   "hardware": {
     "title": "A la medida de tu hardware.",
     "body": "La primera vez que lo abres, Ylide mide tu tarjeta gráfica, tu memoria y tu procesador, y te propone el modelo más potente que funcione con fluidez en ese hardware. Después descarga el modelo, comprueba el archivo y lo inicia."
@@ -85,8 +98,8 @@
     "note": "Capturas de la interfaz en inglés, tomadas en el ordenador del desarrollador."
   },
   "privacy": {
-    "title": "Cuatro puertas al exterior. Todas en tus manos.",
-    "body": "Ylide no recopila datos de uso, no requiere iniciar sesión y nunca sube tu código. Solo se conecta a internet para estos cuatro fines. Puedes desactivar cada uno, y todas las solicitudes aparecen en el registro de red.",
+    "title": "Cinco puertas al exterior. Todas en tus manos.",
+    "body": "Ylide no recopila datos de uso, no requiere iniciar sesión y nunca sube tu código. Solo se conecta a internet para estos cinco fines. Puedes desactivar cada uno, las descargas de habilidades siguen desactivadas hasta que las permitas, y todas las solicitudes aparecen en el registro de red.",
     "listLabel": "Las únicas conexiones que hace Ylide",
     "registry": "Actualizar la lista de modelos",
     "registryHost": "ylide.app",
@@ -96,6 +109,8 @@
     "runtimesHost": "github.com",
     "updates": "Buscar actualizaciones",
     "updatesHost": "ylide.app",
+    "skills": "Descargar habilidades",
+    "skillsHost": "github.com",
     "on": "activado"
   },
   "open": {

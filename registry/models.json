@@ -1,8 +1,8 @@
 {
   "$schema": "./schema/registry.schema.json",
   "schemaVersion": 2,
-  "registryVersion": "2026.10.16",
-  "updatedAt": "2026-10-16",
+  "registryVersion": "2026.10.17",
+  "updatedAt": "2026-10-17",
   "runtimes": [
     {
       "id": "llama.cpp",
@@ -419,7 +419,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 79,
@@ -533,6 +533,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 899283680,
+        "sha256": "8971ee4f331ff0a4c609374f32984b3d4e6dc086c0aa35f1d637fad1829e887f"
+      },
       "benchmarks": [
         {
           "name": "SWE-bench Verified",
@@ -569,7 +574,7 @@
         "hybrid-attention",
         "long-context"
       ],
-      "notes": "Hybrid attention (no KV shifting): keep prompts append-only. Never load the mmproj file. llama.cpp #30118: some tool calls arrive as <function=...> text and are repaired by the IDE. An MTP build exists (unsloth/Qwen3.6-35B-A3B-MTP-GGUF) and is pending an A/B test."
+      "notes": "Hybrid attention (no KV shifting): keep prompts append-only. The vision projector (mmproj) is loaded only when the user switches on image input for the model. llama.cpp #30118: some tool calls arrive as <function=...> text and are repaired by the IDE. An MTP build exists (unsloth/Qwen3.6-35B-A3B-MTP-GGUF) and is pending an A/B test."
     },
     {
       "id": "qwen3.8-27b",
@@ -624,7 +629,7 @@
       "capabilities": {
         "toolCalling": "excellent",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 86,
@@ -738,6 +743,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 927607488,
+        "sha256": "cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e"
+      },
       "benchmarks": [
         {
           "name": "Terminal-Bench 2.1",
@@ -773,7 +783,7 @@
         "dense",
         "hybrid-attention"
       ],
-      "notes": "Default reasoning_effort is xhigh and over-thinks; the IDE sends medium for agents. Use q8_0 KV on 16 GB GPUs. A separate MTP head (MTP/mtp-Qwen3.8-27B-Q4_0.gguf) is pending an A/B test."
+      "notes": "Default reasoning_effort is xhigh and over-thinks; the IDE sends medium for agents. Use q8_0 KV on 16 GB GPUs. A separate MTP head (MTP/mtp-Qwen3.8-27B-Q4_0.gguf) is pending an A/B test. The vision projector (mmproj) is loaded only when the user switches on image input for the model."
     },
     {
       "id": "qwen3.6-27b",
@@ -824,7 +834,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 82,
@@ -914,6 +924,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 927607360,
+        "sha256": "eacf610d1ee4bd5ed0197a0777dd8f4fceb8eefa27009067c7d496cb68fbde45"
+      },
       "benchmarks": [
         {
           "name": "SWE-rebench (2026-05-15..07-01)",
@@ -941,7 +956,7 @@
         "dense",
         "hybrid-attention"
       ],
-      "notes": "Never load the mmproj file."
+      "notes": "The vision projector (mmproj) is loaded only when the user switches on image input for the model."
     },
     {
       "id": "qwen3-coder-next",
@@ -1116,7 +1131,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "always",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 78,
@@ -1170,6 +1185,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-Muse-Glimmer-30B-Q4_K_M.gguf",
+        "sizeBytes": 1400328928,
+        "sha256": "f48b452316f9b213758e8659444029b961a24a07f99a1abb2a9f88b06f7c00c6"
+      },
       "benchmarks": [
         {
           "name": "Terminal-Bench 2.1 (Artificial Analysis)",
@@ -1196,7 +1216,7 @@
       "tags": [
         "dense"
       ],
-      "notes": "Reasoning cannot be disabled. Needs llama.cpp >= b10353. Tool-call parsing has not been independently tested; the IDE runs a tool round-trip self-test before first use."
+      "notes": "Reasoning cannot be disabled. Needs llama.cpp >= b10353. Tool-call parsing has not been independently tested; the IDE runs a tool round-trip self-test before first use. The vision projector (mmproj) is loaded only when the user switches on image input for the model. The repository publishes the projector only as Q4_K_M."
     },
     {
       "id": "gpt-oss-20b",
@@ -1372,7 +1392,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 62,
@@ -1444,6 +1464,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 175115840,
+        "sha256": "91f086971e56d7a7d8d39e271873fccdb49541bd259d6e02c401a4f1cb7a219e"
+      },
       "benchmarks": [
         {
           "name": "LiveCodeBench v6",
@@ -1463,7 +1488,7 @@
         "dense",
         "small"
       ],
-      "notes": "Never load the mmproj file."
+      "notes": "The vision projector (mmproj) is loaded only when the user switches on image input for the model. The projector also holds an audio encoder, which the IDE does not use."
     },
     {
       "id": "qwen3.5-9b",
@@ -1514,7 +1539,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 57,
@@ -1589,6 +1614,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 918166080,
+        "sha256": "f70dc3509053962b0d0d3ee8a7eacebf5d60aa560cad78254ae8698516ae029f"
+      },
       "benchmarks": [
         {
           "name": "BFCL-V4",
@@ -1609,7 +1639,7 @@
         "small",
         "hybrid-attention"
       ],
-      "notes": "Never load the mmproj file."
+      "notes": "The vision projector (mmproj) is loaded only when the user switches on image input for the model."
     },
     {
       "id": "qwen3.5-4b",
@@ -1656,7 +1686,7 @@
       "capabilities": {
         "toolCalling": "basic",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 45,
@@ -1719,6 +1749,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 672423616,
+        "sha256": "cd88edcf8d031894960bb0c9c5b9b7e1fea6ebee02b9f7ce925a00d12891f864"
+      },
       "benchmarks": [
         {
           "name": "BFCL-V4",
@@ -1739,7 +1774,7 @@
         "small",
         "hybrid-attention"
       ],
-      "notes": null
+      "notes": "The vision projector (mmproj) is loaded only when the user switches on image input for the model."
     },
     {
       "id": "qwen3.5-2b",
@@ -1785,7 +1820,7 @@
       "capabilities": {
         "toolCalling": "basic",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 34,
@@ -1848,6 +1883,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "mmproj-F16.gguf",
+        "sizeBytes": 668227264,
+        "sha256": "7035e9cb8d7c6a9681d07eef9a364783e86ea4cd73faab2eabb4f43a101830c7"
+      },
       "benchmarks": [
         {
           "name": "BFCL-V4 (thinking)",
@@ -1867,7 +1907,7 @@
         "dense",
         "tiny"
       ],
-      "notes": null
+      "notes": "The vision projector (mmproj) is loaded only when the user switches on image input for the model."
     },
     {
       "id": "qwen3.6-35b-a3b-uncensored",
@@ -1923,7 +1963,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 78,
@@ -2026,6 +2066,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "Qwen3.6-35B-A3B-uncensored-heretic-mmproj-BF16.gguf",
+        "sizeBytes": 902822240,
+        "sha256": "1c625f05cd52e90abc76a5f756226c3a5fe279593379c22f6c6846c970a0cd18"
+      },
       "fim": null,
       "embedding": null,
       "benchmarks": [
@@ -2049,7 +2094,7 @@
         "long-context",
         "uncensored"
       ],
-      "notes": "Uncensored variant of qwen3.6-35b-a3b: Heretic v1.2.0 (MPOA) on the official Qwen weights, only o_proj/out_proj/down_proj edited, no fine-tune or merge. Quality is the original's minus the published MMLU drop (83.7 -> 83.2 %); UGI NatInt holds up (no think 25.4 -> 28.4, think 31.0 -> 31.6); there is no independent coding or tool-calling benchmark. Static quants (no imatrix, no IQ types). The embedded chat template is llmfan46's adaptation of froggeric's template against tool-call loops (https://huggingface.co/llmfan46/Qwen3.6-35B-A3B-uncensored-heretic/discussions/3; one user report, not measured), not the official one; it keeps the official tool-call format. Files re-uploaded on 2026-05-29 (missing blk.40 tensor fixed); the author is out of Hugging Face storage, so the revision is pinned. Never load the mmproj file.",
+      "notes": "Uncensored variant of qwen3.6-35b-a3b: Heretic v1.2.0 (MPOA) on the official Qwen weights, only o_proj/out_proj/down_proj edited, no fine-tune or merge. Quality is the original's minus the published MMLU drop (83.7 -> 83.2 %); UGI NatInt holds up (no think 25.4 -> 28.4, think 31.0 -> 31.6); there is no independent coding or tool-calling benchmark. Static quants (no imatrix, no IQ types). The embedded chat template is llmfan46's adaptation of froggeric's template against tool-call loops (https://huggingface.co/llmfan46/Qwen3.6-35B-A3B-uncensored-heretic/discussions/3; one user report, not measured), not the official one; it keeps the official tool-call format. Files re-uploaded on 2026-05-29 (missing blk.40 tensor fixed); the author is out of Hugging Face storage, so the revision is pinned. The vision projector (mmproj) is loaded only when the user switches on image input for the model. The repository offers the projector only in BF16.",
       "uncensored": true
     },
     {
@@ -2101,7 +2146,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 79,
@@ -2192,6 +2237,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "Qwen3.6-27B-mmproj-BF16.gguf",
+        "sizeBytes": 931146048,
+        "sha256": "c5c8c41da6d155a61edd21b7e3aa50b6ef77f122d502d36afe4a4d5c3e494d4f"
+      },
       "fim": null,
       "embedding": null,
       "benchmarks": [
@@ -2214,7 +2264,7 @@
         "hybrid-attention",
         "uncensored"
       ],
-      "notes": "Uncensored variant of qwen3.6-27b: Heretic v1.2.0 (MPOA) on the official Qwen weights, no fine-tune or merge. Quality is the original's minus the published MMLU drop (86.7 -> 85.6 %) and the independent UGI NatInt drop (think 33.2 -> 29.2, no think 30.7 -> 22.9, the mode chat and inline use); there is no independent coding or tool-calling benchmark. Static quants. The embedded chat template is llmfan46's adaptation of froggeric's template against tool-call loops (https://huggingface.co/llmfan46/Qwen3.6-35B-A3B-uncensored-heretic/discussions/3; one user report, not measured), not the official one; it keeps the official tool-call format. GGUFs re-uploaded on 2026-05-06 with that template, history squashed on 2026-05-25; the author is out of Hugging Face storage, so the revision is pinned. Never load the mmproj file.",
+      "notes": "Uncensored variant of qwen3.6-27b: Heretic v1.2.0 (MPOA) on the official Qwen weights, no fine-tune or merge. Quality is the original's minus the published MMLU drop (86.7 -> 85.6 %) and the independent UGI NatInt drop (think 33.2 -> 29.2, no think 30.7 -> 22.9, the mode chat and inline use); there is no independent coding or tool-calling benchmark. Static quants. The embedded chat template is llmfan46's adaptation of froggeric's template against tool-call loops (https://huggingface.co/llmfan46/Qwen3.6-35B-A3B-uncensored-heretic/discussions/3; one user report, not measured), not the official one; it keeps the official tool-call format. GGUFs re-uploaded on 2026-05-06 with that template, history squashed on 2026-05-25; the author is out of Hugging Face storage, so the revision is pinned. The vision projector (mmproj) is loaded only when the user switches on image input for the model. The repository offers the projector only in BF16.",
       "uncensored": true
     },
     {
@@ -2266,7 +2316,7 @@
       "capabilities": {
         "toolCalling": "good",
         "reasoning": "optional",
-        "vision": false
+        "vision": true
       },
       "quality": {
         "coding": 56,
@@ -2344,6 +2394,11 @@
           ]
         }
       ],
+      "projector": {
+        "path": "Qwen3.5-9B-mmproj-BF16.gguf",
+        "sizeBytes": 921704896,
+        "sha256": "d89c4bc142d02ed64aeed5c0a358bdead9109f21f4ada03a6b2df17a1aa94d9e"
+      },
       "fim": null,
       "embedding": null,
       "benchmarks": [
@@ -2367,7 +2422,7 @@
         "hybrid-attention",
         "uncensored"
       ],
-      "notes": "Uncensored variant of qwen3.5-9b: Heretic v1.2.0 (ARA) on the official Qwen weights, only attention output projections edited, no fine-tune or merge. Quality is the original's minus the published MMLU drop (78.6 -> 78.4 %); there is no independent coding or tool-calling benchmark. Static quants. The embedded chat template is Qwen's official one with relaxed system-message checks: it thinks unless enable_thinking is false, while unsloth's template for the original thinks only when it is true. llama-server sends enable_thinking=true by default, so every mode sets it explicitly (agent true, chat and inline false), matching the original. Files renamed on 2026-10-12 (contents unchanged); the revision is pinned. Never load the mmproj file.",
+      "notes": "Uncensored variant of qwen3.5-9b: Heretic v1.2.0 (ARA) on the official Qwen weights, only attention output projections edited, no fine-tune or merge. Quality is the original's minus the published MMLU drop (78.6 -> 78.4 %); there is no independent coding or tool-calling benchmark. Static quants. The embedded chat template is Qwen's official one with relaxed system-message checks: it thinks unless enable_thinking is false, while unsloth's template for the original thinks only when it is true. llama-server sends enable_thinking=true by default, so every mode sets it explicitly (agent true, chat and inline false), matching the original. Files renamed on 2026-10-12 (contents unchanged); the revision is pinned. The vision projector (mmproj) is loaded only when the user switches on image input for the model. The repository offers the projector only in BF16.",
       "uncensored": true
     },
     {

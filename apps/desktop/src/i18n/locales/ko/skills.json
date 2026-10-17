@@ -1,0 +1,104 @@
+{
+  "page": {
+    "title": "스킬",
+    "intro": "스킬은 모델에 새로운 작업을 가르칩니다. 스킬은 지시 사항(SKILL.md)과 선택적인 참고 파일이 담긴 폴더이며, 개방형 Agent Skills 형식을 따릅니다. 모든 모델에서 작동하며, 채팅과 에이전트 모두에 사용할 수 있습니다. 스킬마다 켜거나 끌 수 있습니다."
+  },
+  "trust": "스킬은 제3자가 작성한 지시 사항입니다. 스킬을 켜기 전에 읽어 보세요. 처음에는 Ylide가 내용을 보여 줍니다. 스킬은 스스로 아무것도 실행하지 않습니다. 스킬에 있는 명령은 에이전트를 통해서만, 에이전트의 승인 모드에 따라 실행됩니다.",
+  "loading": "스킬 불러오는 중",
+  "loadFailed": "스킬을 불러오지 못했습니다: {{message}}",
+  "installed": {
+    "title": "설치됨",
+    "description": "Ylide 데이터 폴더에 보관되며 모든 프로젝트에서 사용할 수 있습니다. 새 스킬은 꺼진 상태로 시작합니다.",
+    "emptyTitle": "아직 스킬이 없습니다",
+    "emptyBody": "GitHub 저장소(예: https://github.com/morluto/rea)나 이 컴퓨터의 폴더에서 스킬을 추가하세요."
+  },
+  "project": {
+    "title": "프로젝트에서",
+    "description": "열려 있는 프로젝트의 .agents/skills 폴더에 있는 스킬입니다. Ylide는 그 위치에서 읽기만 하고 절대 변경하지 않습니다. 스킬을 켜면 이 프로젝트에만 적용됩니다.",
+    "empty": "이 프로젝트의 <0>.agents/skills</0>에 스킬이 없습니다."
+  },
+  "usage": {
+    "title": "모델이 스킬을 사용하는 방법",
+    "description": "로컬 모델은 컨텍스트가 작기 때문에 스킬을 단계별로 불러옵니다.",
+    "agents": "<0>에이전트</0>는 켜져 있는 모든 스킬의 이름과 설명을 봅니다. 작업에 맞는 스킬이 있으면 <1>skill_read</1> 도구로 그 스킬과 참고 파일을 나누어 읽습니다.",
+    "chat": "<0>채팅</0>도 같은 목록을 봅니다. 채팅에 스킬의 지시 사항을 전달하려면 메시지에서 <1>@reverse-engineer-anything</1>처럼 스킬을 언급하세요. 그러면 대화가 끝날 때까지 첨부된 상태로 유지됩니다.",
+    "scripts": "스킬에 포함된 <0>스크립트</0>는 절대 스스로 실행되지 않습니다. 에이전트는 승인 모드에 따라 일반 명령으로만 실행할 수 있습니다.",
+    "mcp": "<0>스킬의 도구:</0> REA의 스킬처럼 자체 MCP 서버와 프로그램이 필요한 스킬도 있습니다. Ylide는 모델에 지시 사항만 전달하며, MCP 서버는 아직 지원하지 않습니다."
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "프로젝트에서",
+    "on": "켜짐",
+    "broken": "사용할 수 없음",
+    "commit": "@ {{commit}}",
+    "files_other": "파일 {{count}}개",
+    "openOnGithub": "GitHub",
+    "view": "내용 보기",
+    "checkUpdate": "업데이트 확인",
+    "remove": "{{name}} 제거",
+    "switch": "{{name}} 사용"
+  },
+  "content": {
+    "title": "스킬 {{name}}",
+    "note": "모델이 받는 텍스트입니다. 제3자가 작성했습니다.",
+    "confirmNote": "켜기 전에 스킬을 읽어 보세요. 제3자가 작성한 스킬입니다. 켜면 이제부터 모델이 스킬의 이름과 설명을 보고, 작업에 맞을 때 지시 사항을 읽거나 받습니다.",
+    "loading": "스킬 불러오는 중",
+    "failed": "스킬을 읽지 못했습니다: {{message}}",
+    "files_other": "SKILL.md 외 파일 {{count}}개:",
+    "textLabel": "{{name}}의 SKILL.md",
+    "enable": "켜기"
+  },
+  "update": {
+    "upToDate": "{{name}} 스킬이 최신 상태입니다.",
+    "checkFailed": "{{name}} 스킬의 업데이트를 확인하지 못했습니다",
+    "title": "{{name}} 업데이트",
+    "introGithub": "{{source}}에 새 버전이 있습니다(커밋 {{commit}}).",
+    "introFolder": "{{source}} 폴더가 변경되었습니다.",
+    "version": "버전 {{from}} → {{to}}.",
+    "summary": "추가 {{added}}개, 변경 {{changed}}개, 삭제 {{removed}}개.",
+    "kind": {
+      "added": "추가됨",
+      "changed": "변경됨",
+      "removed": "삭제됨"
+    },
+    "note": "스킬이 켜져 있는지 여부는 그대로 유지됩니다.",
+    "install": "업데이트",
+    "done": "{{name}} 스킬을 업데이트했습니다.",
+    "failed": "{{name}} 스킬을 업데이트하지 못했습니다"
+  },
+  "remove": {
+    "title": "{{name}} 스킬을 제거하시겠습니까?",
+    "body": "스킬 파일이 Ylide 데이터 폴더에서 삭제됩니다. 나중에 다시 추가할 수 있습니다.",
+    "confirm": "제거"
+  },
+  "add": {
+    "fromGithub": "GitHub에서 추가",
+    "fromFolder": "폴더에서 추가",
+    "title": "GitHub에서 스킬 추가",
+    "intro": "저장소 또는 저장소 안 폴더의 주소를 붙여 넣으세요. Ylide가 그 안의 모든 SKILL.md를 나열하면, 설치할 스킬을 고르면 됩니다.",
+    "permission": "스킬 다운로드가 꺼져 있습니다. 스킬을 나열하고 다운로드하기 위해 Ylide는 GitHub(api.github.com 및 raw.githubusercontent.com)에 요청합니다. 사용자에 관한 정보는 전송되지 않습니다. ‘설정 › 네트워크 및 개인정보 보호’에서 다시 끌 수 있습니다.",
+    "addressLabel": "저장소 주소",
+    "addressHint": "예: https://github.com/morluto/rea 또는 https://github.com/owner/repo/tree/main/skills",
+    "search": "스킬 나열",
+    "searching": "GitHub에 요청하는 중",
+    "found_other": "{{repo}}의 스킬 {{count}}개, 커밋",
+    "chooseAll": "모두 선택",
+    "chooseNone": "모두 선택 해제",
+    "listLabel": "저장소의 스킬",
+    "alreadyInstalled": "설치됨",
+    "notInstallable": "설치할 수 없음",
+    "viewContent": "SKILL.md 보기",
+    "startOff": "새 스킬은 꺼진 상태로 시작합니다. 내용을 확인한 뒤 ‘스킬’ 페이지에서 켜세요.",
+    "install_other": "스킬 {{count}}개 설치",
+    "installNone": "설치",
+    "installed_other": "스킬 {{count}}개 추가됨",
+    "installedBody_other": "아직 꺼져 있습니다. 읽어 본 뒤 켜세요.",
+    "installFailed": "스킬을 설치하지 못했습니다",
+    "folderFailed": "이 폴더의 스킬을 추가하지 못했습니다"
+  },
+  "permission": {
+    "title": "스킬 다운로드를 허용하시겠습니까?",
+    "body": "허용하면 스킬을 나열, 설치 또는 업데이트할 때 Ylide가 GitHub(api.github.com 및 raw.githubusercontent.com)에 스킬을 요청합니다. 사용자에 관한 정보는 전송되지 않습니다. ‘설정 › 네트워크 및 개인정보 보호’에서 다시 끌 수 있습니다.",
+    "allow": "스킬 다운로드 허용"
+  }
+}

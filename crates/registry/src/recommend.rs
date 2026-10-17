@@ -631,6 +631,7 @@ pub(crate) mod tests {
                     quality_penalty: *penalty,
                 })
                 .collect(),
+            projector: None,
             fim: roles.contains(&Role::Fim).then(|| FimFormat {
                 prefix: "<p>".into(),
                 suffix: "<s>".into(),

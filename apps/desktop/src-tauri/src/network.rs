@@ -1,7 +1,8 @@
-//! The only door to the internet. Ylide makes exactly four kinds of outbound
+//! The only door to the internet. Ylide makes exactly five kinds of outbound
 //! requests, each switchable in the settings and each recorded in a log the
-//! user can read: registry updates, model downloads, runtime downloads and
-//! update checks (with the installer download that follows one).
+//! user can read: registry updates, model downloads, runtime downloads,
+//! update checks (with the installer download that follows one) and skill
+//! downloads from GitHub (off until the user allows them).
 //! Requests never carry user identifiers.
 
 use crate::error::{AppError, AppResult};
@@ -25,6 +26,7 @@ pub enum NetPurpose {
     RuntimeDownload,
     UpdateCheck,
     UpdateDownload,
+    SkillDownload,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, TS)]
@@ -77,6 +79,7 @@ impl NetworkGate {
             NetPurpose::ModelDownload => settings.allow_model_downloads,
             NetPurpose::RuntimeDownload => settings.allow_runtime_downloads,
             NetPurpose::UpdateCheck | NetPurpose::UpdateDownload => settings.allow_update_checks,
+            NetPurpose::SkillDownload => settings.allow_skill_downloads,
         };
         if allowed {
             Ok(())
@@ -143,6 +146,9 @@ mod tests {
         s.allow_update_checks = false;
         assert!(gate.check(&s, NetPurpose::UpdateCheck).is_err());
         assert!(gate.check(&s, NetPurpose::UpdateDownload).is_err(), "no installer download without update checks");
+        assert!(gate.check(&s, NetPurpose::SkillDownload).is_err(), "skill downloads start switched off");
+        s.allow_skill_downloads = true;
+        assert!(gate.check(&s, NetPurpose::SkillDownload).is_ok());
     }
 
     #[test]

@@ -16,7 +16,9 @@ pub enum MessageRole {
     Tool,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
+/// A message as sent to the server. With images, the content goes out as an
+/// array of `image_url` and `text` parts (its `Serialize` is written by hand).
+#[derive(Debug, Clone, PartialEq, Deserialize, TS)]
 #[ts(export)]
 pub struct ChatMessage {
     pub role: MessageRole,
@@ -30,6 +32,38 @@ pub struct ChatMessage {
     pub tool_calls: Vec<ToolCall>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tool_call_id: Option<String>,
+    /// Images that go with the text, as data URLs (see [`crate::image`]).
+    /// Only a model with its vision projector loaded can take them.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub images: Vec<String>,
+}
+
+impl Serialize for ChatMessage {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeMap;
+        let mut map = serializer.serialize_map(None)?;
+        map.serialize_entry("role", &self.role)?;
+        if self.images.is_empty() {
+            if let Some(content) = &self.content {
+                map.serialize_entry("content", content)?;
+            }
+        } else {
+            // Images first, then the text that refers to them, as vision models are trained.
+            let mut parts: Vec<Value> = self.images.iter().map(|url| serde_json::json!({"type": "image_url", "image_url": {"url": url}})).collect();
+            if let Some(text) = self.content.as_deref().filter(|t| !t.is_empty()) {
+                parts.push(serde_json::json!({"type": "text", "text": text}));
+            }
+            map.serialize_entry("content", &parts)?;
+        }
+        if !self.tool_calls.is_empty() {
+            map.serialize_entry("tool_calls", &self.tool_calls)?;
+        }
+        if let Some(id) = &self.tool_call_id {
+            map.serialize_entry("tool_call_id", id)?;
+        }
+        map.end()
+    }
 }
 
 impl ChatMessage {
@@ -55,7 +89,14 @@ impl ChatMessage {
             reasoning_content: None,
             tool_calls: Vec::new(),
             tool_call_id: None,
+            images: Vec::new(),
         }
+    }
+
+    /// The message with images (data URLs) attached.
+    pub fn with_images(mut self, images: Vec<String>) -> Self {
+        self.images = images;
+        self
     }
 }
 
@@ -487,6 +528,7 @@ impl Accumulator {
                 reasoning_content: (!self.reasoning.is_empty()).then_some(self.reasoning),
                 tool_calls,
                 tool_call_id: None,
+                images: Vec::new(),
             },
             finish_reason,
             usage: self.usage,
@@ -593,5 +635,33 @@ mod tests {
         assistant.reasoning_content = Some("secret thoughts".into());
         let v = serde_json::to_value(&assistant).unwrap();
         assert!(v.get("reasoning_content").is_none(), "reasoning is never sent back");
+    }
+
+    #[test]
+    fn images_go_out_as_content_parts() {
+        let png = crate::image::data_url(crate::image::ImageFormat::Png, &crate::image::tests::png_header(2, 3));
+        let req = ChatRequest::new(vec![
+            ChatMessage::system("You see images."),
+            ChatMessage::user("What is on the screenshot?").with_images(vec![png.clone()]),
+            ChatMessage::tool_result("call_1", "Image docs/ui.png (2x3 PNG):").with_images(vec![png.clone()]),
+            ChatMessage::user("").with_images(vec![png.clone(), png.clone()]),
+        ]);
+        let v = serde_json::to_value(&req).unwrap();
+        assert_eq!(v["messages"][0]["content"], "You see images.", "text alone stays a string");
+        assert_eq!(
+            v["messages"][1]["content"],
+            serde_json::json!([
+                {"type": "image_url", "image_url": {"url": png}},
+                {"type": "text", "text": "What is on the screenshot?"}
+            ])
+        );
+        assert_eq!(v["messages"][1]["role"], "user");
+        assert_eq!(v["messages"][2]["tool_call_id"], "call_1");
+        assert_eq!(v["messages"][2]["content"][0]["type"], "image_url");
+        assert_eq!(v["messages"][2]["content"][1]["text"], "Image docs/ui.png (2x3 PNG):");
+        assert_eq!(v["messages"][3]["content"].as_array().unwrap().len(), 2, "no empty text part");
+        // Results read back (stored runs) have no images; nothing else changes.
+        let back: ChatMessage = serde_json::from_value(serde_json::to_value(ChatMessage::assistant("ok")).unwrap()).unwrap();
+        assert_eq!(back, ChatMessage::assistant("ok"));
     }
 }

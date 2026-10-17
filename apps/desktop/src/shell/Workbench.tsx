@@ -1,4 +1,4 @@
-import { Bot, ChevronDown, Copy, FolderOpen, Files, MessageSquare, Minus, Search, Settings, Square, X, Cpu } from 'lucide-react';
+import { Bot, ChevronDown, Copy, FolderOpen, Files, GraduationCap, MessageSquare, Minus, Search, Settings, Square, X, Cpu } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Braid, LogoMark } from '../components/Braid';
@@ -11,6 +11,7 @@ import { QuickOpen } from '../features/editor/QuickOpen';
 import { SearchPanel } from '../features/editor/SearchPanel';
 import { ModelsView } from '../features/settings/ModelsView';
 import { SettingsView } from '../features/settings/SettingsView';
+import { SkillsView } from '../features/skills/SkillsView';
 import { reportError } from '../lib/errors';
 import { formatTokens } from '../lib/format';
 import { pickFolder } from '../lib/ipc';
@@ -95,7 +96,7 @@ export function Workbench() {
           </>
         )}
         <main className={s.main}>
-          {layout.main === 'settings' ? <SettingsView /> : layout.main === 'models' ? <ModelsView /> : <EditorArea />}
+          {layout.main === 'settings' ? <SettingsView /> : layout.main === 'models' ? <ModelsView /> : layout.main === 'skills' ? <SkillsView /> : <EditorArea />}
         </main>
         {layout.right && (
           <>
@@ -202,6 +203,7 @@ function ActivityRail() {
       {item(layout.main === 'editor' && layout.sidebar === 'search', t('rail.search'), <Search size={19} />, () => layout.toggleSidebar('search'))}
       {item(layout.right === 'chat', t('rail.chat'), <MessageSquare size={19} />, () => layout.toggleRight('chat'))}
       {item(layout.right === 'agents', t('rail.agents'), <Bot size={19} />, () => layout.toggleRight('agents'))}
+      {item(layout.main === 'skills', t('rail.skills'), <GraduationCap size={19} />, () => layout.setMain(layout.main === 'skills' ? 'editor' : 'skills'))}
       <div className={s.railSpacer} />
       {item(layout.main === 'models', t('rail.models'), <Cpu size={19} />, () => layout.setMain(layout.main === 'models' ? 'editor' : 'models'))}
       {item(layout.main === 'settings', t('rail.settings'), <Settings size={19} />, () => layout.setMain(layout.main === 'settings' ? 'editor' : 'settings'))}

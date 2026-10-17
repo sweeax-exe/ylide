@@ -81,7 +81,8 @@
     "noFiles": "No se encontraron archivos.",
     "searching": "Buscando",
     "symbolsHint": "Escribe dos o más caracteres para buscar símbolos.",
-    "hint": "<0>↑</0> <1>↓</1> para elegir, <2>Intro</2> para adjuntar, <3>Esc</3> para cerrar"
+    "hint": "<0>↑</0> <1>↓</1> para elegir, <2>Intro</2> para adjuntar, <3>Esc</3> para cerrar",
+    "skills": "Habilidades"
   },
   "symbolKind": {
     "function": "función",

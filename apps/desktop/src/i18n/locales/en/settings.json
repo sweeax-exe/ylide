@@ -311,7 +311,7 @@
   "network": {
     "title": "Network and privacy",
     "statementTitle": "No telemetry, no accounts.",
-    "statementBody": "Ylide does not collect usage data, has no sign-in and never uploads your code. It connects to the internet only for the four purposes below, and only while they are switched on. Your prompts and files go to the model on this computer, or to the external server you set up under Advanced.",
+    "statementBody": "Ylide does not collect usage data, has no sign-in and never uploads your code. It connects to the internet only for the five purposes below, and only while they are switched on. Your prompts and files go to the model on this computer, or to the external server you set up under Advanced.",
     "allowedTitle": "Allowed connections",
     "allowedDescription": "Switch off any of these and Ylide will not make that request.",
     "registry": {
@@ -342,6 +342,10 @@
     "updates": {
       "label": "Check for updates",
       "hint": "Asks ylide.app once at startup whether a newer version of Ylide exists. Only the version number is sent. The update itself is downloaded only when you install it."
+    },
+    "skills": {
+      "label": "Skill downloads",
+      "hint": "Lists and downloads skills from GitHub (api.github.com, raw.githubusercontent.com) when you add, install or update them on the Skills page. Off until you allow it."
     }
   },
   "advanced": {
@@ -462,6 +466,13 @@
     "contextValue": "{{tokens}} tokens",
     "slots": "Parallel requests",
     "toolCalls": "Tool calls",
+    "vision": "Images",
+    "visionState": {
+      "off": "Off",
+      "on": "Understood",
+      "missing": "Image module missing",
+      "failed": "Did not load"
+    },
     "tools": {
       "unknown": {
         "label": "Not tested",
@@ -521,7 +532,19 @@
     "forgetBody": "Ylide forgets this model. The file stays where it is; nothing is deleted.",
     "deleteActive": "This model is running. It is stopped first.",
     "deleteAssigned": "Where it is chosen for chat, autocomplete or code search, the choice is cleared.",
-    "deleteAgain": "You can download it again from the catalog."
+    "deleteAgain": "You can download it again from the catalog.",
+    "vision": {
+      "label": "Understand images (+{{size}} GB)",
+      "downloading": "Downloading the image module: {{percent}} %",
+      "downloadFailed": "The image module could not be downloaded. Switch it on again to retry.",
+      "missing": "The image module is missing; the model runs without image input.",
+      "failed": "The image module did not load; the model runs without image input.",
+      "pending": "Takes effect the next time the model starts.",
+      "restart": "Restart now",
+      "own": "Image module: {{file}}",
+      "removeOwn": "Remove the image module",
+      "pick": "Choose image module (mmproj) …"
+    }
   },
   "downloads": {
     "title": "Downloads",
@@ -544,7 +567,8 @@
     "retry": "Retry download of {{name}}",
     "cancel": "Cancel download of {{name}}",
     "progressLabel": "Download progress of {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · image module"
   },
   "catalog": {
     "title": "Catalog",
@@ -577,6 +601,9 @@
       "optional": "Optional",
       "always": "Always on"
     },
+    "vision": "Images",
+    "visionYes": "Understands images (+{{size}} GB, optional)",
+    "visionNo": "Text only",
     "roles": "Suited for",
     "source": "Source",
     "modelCard": "Model card",

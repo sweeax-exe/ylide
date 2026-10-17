@@ -9,7 +9,8 @@
 // Two lists come out of the one file:
 //   https://ylide.app/registry/v2/models.json  the list as it is (schema 2), read by Ylide 0.1.4 and newer
 //   https://ylide.app/registry/models.json     schema 1 without the uncensored models, for Ylide 0.1.3
-//                                              and older, which do not know the flag and could recommend them
+//                                              and older, which do not know the flag and could recommend them;
+//                                              also without vision projectors, which they cannot load
 //
 // The signing key is read like in release.mjs (TAURI_SIGNING_PRIVATE_KEY_PATH
 // or ~/.tauri/ylide-updater.key).
@@ -43,15 +44,23 @@ if (registry.schemaVersion !== 2) {
   console.error(`registry/models.json has schema ${registry.schemaVersion}; this script publishes schema 2 and the schema 1 list derived from it`);
   process.exit(1);
 }
+// Ylide 0.1.3 and older ignore unknown fields, but they cannot load a projector, so
+// the list says what they can do: no projector and no vision.
 const legacy = {
   ...registry,
   schemaVersion: 1,
-  models: registry.models.filter((m) => !m.uncensored).map(({ uncensored, ...m }) => m),
+  models: registry.models
+    .filter((m) => !m.uncensored)
+    .map(({ uncensored, projector, ...m }) => ({ ...m, capabilities: { ...m.capabilities, vision: false } })),
 };
 const dropped = registry.models.length - legacy.models.length;
 // Ylide 0.1.3 and older must get exactly the models they understand.
 if (legacy.models.some((m) => 'uncensored' in m) || legacy.models.length !== registry.models.filter((m) => m.uncensored !== true).length) {
   console.error('the schema 1 list still contains uncensored models');
+  process.exit(1);
+}
+if (legacy.models.some((m) => 'projector' in m || m.capabilities.vision)) {
+  console.error('the schema 1 list still contains vision projectors');
   process.exit(1);
 }
 

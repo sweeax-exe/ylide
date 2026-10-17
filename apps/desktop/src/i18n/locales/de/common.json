@@ -33,7 +33,8 @@
     "chat": "Chat",
     "agents": "Agents",
     "models": "Modelle",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "skills": "Skills"
   },
   "titlebar": {
     "noProject": "Kein Ordner geöffnet",
@@ -81,7 +82,8 @@
     "modelDownload": "Modell-Download",
     "runtimeDownload": "Laufzeit-Download",
     "updateCheck": "Suche nach Updates",
-    "updateDownload": "Update-Download"
+    "updateDownload": "Update-Download",
+    "skillDownload": "Skill-Download"
   },
   "errors": {
     "generic": "Etwas ist schiefgelaufen: {{message}}",
@@ -106,7 +108,42 @@
     "update_format": "Das Update hat ein Format, das Ylide nicht installieren kann: {{message}}",
     "update_too_large": "Das Update ist ungewöhnlich groß und wurde nicht geladen.",
     "update_launch": "Der Installer konnte nicht gestartet werden: {{message}}",
-    "update_unsupported": "Auf diesem System installierst du Updates von Hand."
+    "update_unsupported": "Auf diesem System installierst du Updates von Hand.",
+    "skill_invalid": "Das ist kein gültiger Skill: {{message}}",
+    "skill_too_large": "Der Skill ist zu groß: {{message}}",
+    "skill_exists": "Ein Skill mit diesem Namen ist schon installiert ({{message}}). Entferne ihn zuerst, um ihn neu zu installieren.",
+    "skill_not_found": "Diesen Skill gibt es nicht mehr.",
+    "skill_renamed": "Die neue Version hat einen anderen Namen ({{message}}). Entferne den Skill und füge den neuen hinzu.",
+    "skill_address": "Das ist keine Adresse eines GitHub-Repositorys: {{message}}",
+    "skill_none_found": "Hier wurden keine Skills gefunden: {{message}}",
+    "skill_repo_not_found": "GitHub kennt dieses Repository nicht, oder es ist privat.",
+    "skill_rate_limited": "GitHubs Grenze für Anfragen ohne Konto ist aufgebraucht. Versuche es in einer Stunde wieder.",
+    "skill_gone": "Der Skill ist nicht mehr in seinem Repository: {{message}}",
+    "no_vision": "Das laufende Modell kann keine Bilder sehen. Schalte auf der Modelle-Seite „Bilder verstehen“ für ein Modell ein, das es kann.",
+    "bad_image": "Das Bild lässt sich nicht verwenden: {{message}}",
+    "not_projector": "Das ist kein Bildmodul (mmproj-GGUF-Datei).",
+    "no_projector": "Dieses Modell hat kein Bildverständnis."
+  },
+  "images": {
+    "attach": "Bilder anhängen",
+    "attached": "Angehängte Bilder: {{n}}",
+    "label": "Bild {{n}}: {{name}}, {{size}} Pixel",
+    "labelShort": "Bild {{n}}",
+    "pasted": "eingefügt",
+    "remove": "{{label}} entfernen",
+    "notSent": "Bilder werden nicht gesendet",
+    "noModel": "Starte ein Modell, das Bilder versteht, um Bilder anzuhängen.",
+    "switchOn": "{{model}} kann Bilder verstehen: Schalte auf der Modelle-Seite „Bilder verstehen“ ein und starte das Modell neu.",
+    "cannotSee": "{{model}} kann keine Bilder sehen.",
+    "visionModels": "Diese Modelle können es: {{models}}.",
+    "missing": "Das Bildmodul von {{model}} fehlt. Schalte „Bilder verstehen“ auf der Modelle-Seite aus und wieder ein.",
+    "failed": "{{model}} läuft ohne Bildverständnis, weil sein Bildmodul nicht geladen werden konnte. Details stehen im Server-Log.",
+    "problem": {
+      "unsupported": "Nur PNG-, JPEG-, WebP- und GIF-Bilder lassen sich anhängen.",
+      "tooLarge": "Das Bild ist größer als 20 MB.",
+      "damaged": "Das Bild konnte nicht gelesen werden.",
+      "tooMany": "Höchstens {{max}} Bilder pro Nachricht; die übrigen wurden nicht angehängt."
+    }
   },
   "reasons": {
     "fitsInVram": "Passt komplett in deinen Grafikspeicher ({{vramGb}} GB belegt).",

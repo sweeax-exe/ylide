@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ServerInfo } from '../../../bindings/ServerInfo';
 import type { ToolCallSupport } from '../../../bindings/ToolCallSupport';
+import type { VisionState } from '../../../bindings/VisionState';
 import { Braid } from '../../../components/Braid';
 import { Badge, Button, IconButton, type Tone } from '../../../components/ui';
 import { reportError } from '../../../lib/errors';
@@ -19,6 +20,7 @@ import { ServerLog } from './ServerLog';
 import { UncensoredBadge } from './Uncensored';
 
 const TOOL_TONE: Record<ToolCallSupport, Tone> = { unknown: 'neutral', native: 'success', repaired: 'warning', failed: 'danger' };
+const VISION_TONE: Record<VisionState, Tone> = { off: 'neutral', on: 'success', missing: 'warning', failed: 'warning' };
 
 export function ActiveModel() {
   const { t } = useTranslation('settings');
@@ -113,6 +115,9 @@ export function ActiveModel() {
         <Metric label={t('active.slots')}>{server.slots}</Metric>
         <Metric label={t('active.toolCalls')}>
           <Badge tone={TOOL_TONE[server.toolCalls]}>{t(`active.tools.${server.toolCalls}.label`)}</Badge>
+        </Metric>
+        <Metric label={t('active.vision')}>
+          <Badge tone={VISION_TONE[server.vision]}>{t(`active.visionState.${server.vision}`)}</Badge>
         </Metric>
       </dl>
       <p className={s.toolsExplain}>{t(`active.tools.${server.toolCalls}.body`)}</p>

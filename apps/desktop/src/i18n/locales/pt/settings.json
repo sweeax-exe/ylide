@@ -313,7 +313,7 @@
   "network": {
     "title": "Rede e privacidade",
     "statementTitle": "Sem telemetria, sem contas.",
-    "statementBody": "O Ylide não coleta dados de uso, não tem login e nunca faz upload do seu código. Ele só se conecta à internet para as quatro finalidades abaixo, e apenas enquanto estiverem ativadas. Seus prompts e arquivos vão para o modelo neste computador ou para o servidor externo que você configurar em Avançado.",
+    "statementBody": "O Ylide não coleta dados de uso, não tem login e nunca faz upload do seu código. Ele só se conecta à internet para as cinco finalidades abaixo, e apenas enquanto estiverem ativadas. Seus prompts e arquivos vão para o modelo neste computador ou para o servidor externo que você configurar em Avançado.",
     "allowedTitle": "Conexões permitidas",
     "allowedDescription": "Desative qualquer uma delas e o Ylide não fará essa solicitação.",
     "registry": {
@@ -344,6 +344,10 @@
     "updates": {
       "label": "Verificar atualizações",
       "hint": "Consulta o ylide.app uma vez, ao iniciar, para saber se existe uma versão mais nova do Ylide. Só o número da versão é enviado. A atualização em si só é baixada quando você a instala."
+    },
+    "skills": {
+      "label": "Downloads de habilidades",
+      "hint": "Lista e baixa habilidades do GitHub (api.github.com, raw.githubusercontent.com) quando você as adiciona, instala ou atualiza na página Habilidades. Desativado até você permitir."
     }
   },
   "advanced": {
@@ -464,6 +468,13 @@
     "contextValue": "{{tokens}} tokens",
     "slots": "Solicitações paralelas",
     "toolCalls": "Chamadas de ferramentas",
+    "vision": "Imagens",
+    "visionState": {
+      "off": "Desativadas",
+      "on": "Entendidas",
+      "missing": "Módulo de imagem faltando",
+      "failed": "Não carregou"
+    },
     "tools": {
       "unknown": {
         "label": "Não testado",
@@ -524,7 +535,19 @@
     "forgetBody": "O Ylide esquece este modelo. O arquivo fica onde está; nada é excluído.",
     "deleteActive": "Este modelo está em execução. Ele será parado primeiro.",
     "deleteAssigned": "Se ele estiver escolhido para chat, autocompletar ou busca de código, essa escolha será removida.",
-    "deleteAgain": "Você pode baixá-lo de novo pelo catálogo."
+    "deleteAgain": "Você pode baixá-lo de novo pelo catálogo.",
+    "vision": {
+      "label": "Entender imagens (+{{size}} GB)",
+      "downloading": "Baixando o módulo de imagem: {{percent}} %",
+      "downloadFailed": "Não foi possível baixar o módulo de imagem. Ative de novo para tentar outra vez.",
+      "missing": "O módulo de imagem está faltando; o modelo roda sem imagens.",
+      "failed": "O módulo de imagem não carregou; o modelo roda sem imagens.",
+      "pending": "Vale a partir da próxima vez que o modelo for iniciado.",
+      "restart": "Reiniciar agora",
+      "own": "Módulo de imagem: {{file}}",
+      "removeOwn": "Remover o módulo de imagem",
+      "pick": "Escolher módulo de imagem (mmproj) …"
+    }
   },
   "downloads": {
     "title": "Downloads",
@@ -547,7 +570,8 @@
     "retry": "Tentar novamente o download de {{name}}",
     "cancel": "Cancelar download de {{name}}",
     "progressLabel": "Progresso do download de {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · módulo de imagem"
   },
   "catalog": {
     "title": "Catálogo",
@@ -582,6 +606,9 @@
       "optional": "Opcional",
       "always": "Sempre ativo"
     },
+    "vision": "Imagens",
+    "visionYes": "Entende imagens (+{{size}} GB, opcional)",
+    "visionNo": "Só texto",
     "roles": "Indicado para",
     "source": "Fonte",
     "modelCard": "Ficha do modelo",

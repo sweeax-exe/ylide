@@ -33,7 +33,8 @@
     "chat": "聊天",
     "agents": "智能体",
     "models": "模型",
-    "settings": "设置"
+    "settings": "设置",
+    "skills": "技能"
   },
   "titlebar": {
     "noProject": "未打开文件夹",
@@ -80,7 +81,8 @@
     "modelDownload": "模型下载",
     "runtimeDownload": "运行时下载",
     "updateCheck": "更新检查",
-    "updateDownload": "更新下载"
+    "updateDownload": "更新下载",
+    "skillDownload": "技能下载"
   },
   "errors": {
     "generic": "出现错误：{{message}}",
@@ -105,7 +107,42 @@
     "update_format": "Ylide 无法安装这种格式的更新：{{message}}",
     "update_too_large": "此更新体积异常大，因此未下载。",
     "update_launch": "无法启动安装程序：{{message}}",
-    "update_unsupported": "在此系统上，请手动安装更新。"
+    "update_unsupported": "在此系统上，请手动安装更新。",
+    "skill_invalid": "这不是有效的技能：{{message}}",
+    "skill_too_large": "技能太大：{{message}}",
+    "skill_exists": "已安装同名技能（{{message}}）。要重新安装，请先将其移除。",
+    "skill_not_found": "此技能已不存在。",
+    "skill_renamed": "新版本的名称不同（{{message}}）。请移除该技能，然后添加新的技能。",
+    "skill_address": "这不是 GitHub 仓库的地址：{{message}}",
+    "skill_none_found": "此处未找到技能：{{message}}",
+    "skill_repo_not_found": "GitHub 上不存在此仓库，或者它是私有仓库。",
+    "skill_rate_limited": "GitHub 对未登录请求的限额已用完。请一小时后再试。",
+    "skill_gone": "该技能已不在其仓库中：{{message}}",
+    "no_vision": "正在运行的模型无法查看图片。请在“模型”页面为能理解图片的模型开启“理解图片”。",
+    "bad_image": "无法使用该图片：{{message}}",
+    "not_projector": "这不是图片模块（mmproj GGUF 文件）。",
+    "no_projector": "此模型不支持图片输入。"
+  },
+  "images": {
+    "attach": "附加图片",
+    "attached": "已附加的图片：{{n}}",
+    "label": "图片 {{n}}：{{name}}，{{size}} 像素",
+    "labelShort": "图片 {{n}}",
+    "pasted": "粘贴的",
+    "remove": "移除{{label}}",
+    "notSent": "图片不会发送",
+    "noModel": "请先启动能理解图片的模型，再附加图片。",
+    "switchOn": "{{model}} 能理解图片：请在“模型”页面为它开启“理解图片”，然后重新启动。",
+    "cannotSee": "{{model}} 无法查看图片。",
+    "visionModels": "能理解图片的模型：{{models}}。",
+    "missing": "{{model}} 的图片模块缺失。请在“模型”页面关闭后重新开启“理解图片”。",
+    "failed": "{{model}} 的图片模块未能加载，因此它在没有图片输入的情况下运行。详情见服务器日志。",
+    "problem": {
+      "unsupported": "只能附加 PNG、JPEG、WebP 和 GIF 图片。",
+      "tooLarge": "图片超过 20 MB。",
+      "damaged": "无法读取图片。",
+      "tooMany": "每条消息最多 {{max}} 张图片；其余的未附加。"
+    }
   },
   "reasons": {
     "fitsInVram": "可完全放入你的显存（占用 {{vramGb}} GB）。",

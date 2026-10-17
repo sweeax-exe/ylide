@@ -70,6 +70,7 @@
     "goalLabel": "¿Qué deben hacer los agentes?",
     "goalPlaceholder": "Por ejemplo: corrige el total del carrito y añade una prueba para carritos vacíos",
     "goalHint": "Describe el resultado que quieres. Ctrl+Intro inicia la ejecución.",
+    "imagesHint": "Las imágenes van al agente que planifica y a los agentes que realizan las tareas.",
     "start": "Iniciar agentes",
     "readiness": "Requisitos",
     "modelReady": "{{model}} está en ejecución",

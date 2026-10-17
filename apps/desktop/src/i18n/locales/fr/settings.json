@@ -313,7 +313,7 @@
   "network": {
     "title": "Réseau et confidentialité",
     "statementTitle": "Pas de télémétrie, pas de compte.",
-    "statementBody": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il se connecte à Internet uniquement pour les quatre usages ci-dessous, et seulement tant qu’ils sont activés. Vos prompts et vos fichiers vont au modèle sur cet ordinateur, ou au serveur externe que vous avez configuré dans Avancé.",
+    "statementBody": "Ylide ne collecte aucune donnée d’utilisation, ne demande aucun compte et n’envoie jamais votre code. Il se connecte à Internet uniquement pour les cinq usages ci-dessous, et seulement tant qu’ils sont activés. Vos prompts et vos fichiers vont au modèle sur cet ordinateur, ou au serveur externe que vous avez configuré dans Avancé.",
     "allowedTitle": "Connexions autorisées",
     "allowedDescription": "Si vous désactivez l’une d’elles, Ylide n’effectue plus cette requête.",
     "registry": {
@@ -344,6 +344,10 @@
     "updates": {
       "label": "Recherche de mises à jour",
       "hint": "Demande une fois à ylide.app, au démarrage, si une version plus récente d’Ylide existe. Seul le numéro de version est envoyé. La mise à jour elle-même n’est téléchargée que lorsque vous l’installez."
+    },
+    "skills": {
+      "label": "Téléchargements de compétences",
+      "hint": "Liste et télécharge des compétences depuis GitHub (api.github.com, raw.githubusercontent.com) quand vous les ajoutez, les installez ou les mettez à jour sur la page Compétences. Désactivé tant que vous ne l’autorisez pas."
     }
   },
   "advanced": {
@@ -464,6 +468,13 @@
     "contextValue": "{{tokens}} tokens",
     "slots": "Requêtes parallèles",
     "toolCalls": "Appels d’outils",
+    "vision": "Images",
+    "visionState": {
+      "off": "Désactivées",
+      "on": "Comprises",
+      "missing": "Module d’image manquant",
+      "failed": "Non chargé"
+    },
     "tools": {
       "unknown": {
         "label": "Non testé",
@@ -524,7 +535,19 @@
     "forgetBody": "Ylide oublie ce modèle. Le fichier reste là où il est ; rien n’est supprimé.",
     "deleteActive": "Ce modèle est en cours d’exécution. Il sera d’abord arrêté.",
     "deleteAssigned": "S’il est choisi pour le chat, l’autocomplétion ou la recherche de code, ce choix sera effacé.",
-    "deleteAgain": "Vous pourrez le télécharger à nouveau depuis le catalogue."
+    "deleteAgain": "Vous pourrez le télécharger à nouveau depuis le catalogue.",
+    "vision": {
+      "label": "Comprendre les images (+{{size}} Go)",
+      "downloading": "Téléchargement du module d’image : {{percent}} %",
+      "downloadFailed": "Le module d’image n’a pas pu être téléchargé. Réactivez-le pour réessayer.",
+      "missing": "Le module d’image est manquant ; le modèle fonctionne sans images.",
+      "failed": "Le module d’image n’a pas pu être chargé ; le modèle fonctionne sans images.",
+      "pending": "S’applique au prochain lancement du modèle.",
+      "restart": "Relancer maintenant",
+      "own": "Module d’image : {{file}}",
+      "removeOwn": "Retirer le module d’image",
+      "pick": "Choisir un module d’image (mmproj) …"
+    }
   },
   "downloads": {
     "title": "Téléchargements",
@@ -547,7 +570,8 @@
     "retry": "Relancer le téléchargement de {{name}}",
     "cancel": "Annuler le téléchargement de {{name}}",
     "progressLabel": "Progression du téléchargement de {{name}}",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · module d’image"
   },
   "catalog": {
     "title": "Catalogue",
@@ -582,6 +606,9 @@
       "optional": "Facultative",
       "always": "Toujours active"
     },
+    "vision": "Images",
+    "visionYes": "Comprend les images (+{{size}} Go, facultatif)",
+    "visionNo": "Texte seulement",
     "roles": "Adapté à",
     "source": "Source",
     "modelCard": "Fiche du modèle",

@@ -91,6 +91,7 @@ flowchart LR
 | `inference` | llama-server process management (free port, per-launch API key passed by file, job object, orphan cleanup, log ring buffer), OpenAI-compatible streaming client (SSE parser, tool-call assembly), FIM and embeddings calls, slot scheduler with priorities and cache affinity. |
 | `workspace` | Sandboxed project access (no escape via `..`, symlinks, UNC/device paths, alternate data streams or reserved names), file tree honoring `.gitignore`, ripgrep-based search, fuzzy file finder, symbol finder, @-mention context resolution with token budgets. |
 | `agent` | Tools with JSON schemas, permission modes and hard denials, content-addressed checkpoints, the agent loop and the orchestrator with Coder and Reviewer. |
+| `skills` | Agent Skills (SKILL.md folders): frontmatter parsing and checks, the store of installed skills with their source and on/off state, the open project's `.agents/skills`, the bounded prompt list and `skill_read`, GitHub addresses and trees. |
 | `apps/desktop/src-tauri` | Tauri commands, settings, network gate, model store, runtime manager, chat/inline/agent wiring, file watcher. |
 
 ## 3. Folder structure
@@ -100,7 +101,7 @@ ylide/
   Cargo.toml                 workspace: crates/* + apps/desktop/src-tauri
   package.json               npm workspace root (scripts)
   crates/
-    hardware/  registry/  downloader/  inference/  workspace/  agent/
+    hardware/  registry/  downloader/  inference/  workspace/  agent/  skills/
   apps/desktop/
     src-tauri/               Rust app crate (commands, state, services)
       prompts/               default chat and inline prompts (editable in settings)
@@ -113,7 +114,7 @@ ylide/
       state/                 app, layout, editor bridge, toasts
       components/            shared UI building blocks
       shell/                 workbench layout, title bar, status bar
-      features/              onboarding, editor, chat, agents, settings
+      features/              onboarding, editor, chat, agents, skills, settings
   registry/
     models.json              the model registry (versioned data)
     schema/registry.schema.json
@@ -178,6 +179,50 @@ sequenceDiagram
   end
   O-->>UI: run finished (outcome, summary); every event streamed live
 ```
+
+### Skills
+
+Skills (the open Agent Skills format: a folder with a `SKILL.md` and
+optional reference files) are installed into the local data folder, so every
+model can use them, or read in place from the project's `.agents/skills`.
+Each has its own switch; new ones start off, and the UI shows a skill's text
+before it is switched on the first time. GitHub installs list the repository
+with one git tree request and fetch only the chosen folders, pinned to the
+commit, through the network gate.
+
+Local contexts are small, so skills reach the model step by step: prompts
+carry only the names and descriptions of the enabled skills (capped); the
+agents read a skill or one of its files with the read-only tool `skill_read`,
+in parts sized to the model's context; the chat, which has no tools, gets a
+skill's text in its system prompt once the user mentions it as `@name`.
+Scripts in a skill never run by themselves, only as normal agent commands
+under the approval mode.
+
+### Images
+
+Models with a vision projector (`capabilities.vision`, see
+`docs/registry.md`) can take images once the user switches on "Understand
+images" for the model; the projector is downloaded then and loaded with
+`--mmproj` (see Launch flags).
+
+* **Chat and agent requests**: images are pasted (Ctrl+V), dropped, or
+  picked with the file dialog (the core reads the picked file; the web view
+  has no file access). The web view scales them to at most 1568 px on the
+  long side and re-encodes them (PNG for screenshots and graphics, JPEG for
+  photos), which also drops metadata such as a photo's GPS position. They go
+  to llama-server as `image_url` content parts with data URLs
+  (`ChatMessage::images` in `crates/inference`); the core checks type and
+  size (`inference::image`). While the running model cannot see, the attach
+  button is off and the UI says which models can.
+* **Saved chats** keep the scaled images inside the conversation file, so a
+  continued chat sends them again byte-identical (KV cache). With a model that
+  cannot see, earlier images are replaced by a note and the chat goes on.
+* **Agents**: the request's images go with the first message of the
+  orchestrator and of each agent working on a task, once per conversation.
+  Every role that uses tools gets the read-only tool `image_view` while the
+  model sees: it returns an image file of the project (PNG, JPEG, WebP, GIF
+  first frame) as an image part of the tool result. Compaction replaces
+  older `image_view` images with a note, like older tool output.
 
 ## 5. Model registry
 
@@ -311,6 +356,18 @@ In command-line order:
   `plan_for` picks only when F16 does not fit at that context; otherwise
   llama.cpp's F16 default.
 * **Threads**: `-t <physical cores>`.
+* **Image input** (when "Understand images" is on for the model, see
+  `docs/registry.md`): `--mmproj <projector file>`, and `--image-max-tokens
+  2048` when the build lists it, which caps the tokens of one image and with
+  them the projector's compute buffer. With `--fit`, llama-server adds the
+  projector's worst-case memory to the fit target itself ("[mtmd] adding …
+  MiB to fit_params_target"); the planned split counts it in the plan (file
+  size + 512 MiB). A projector file that is gone is left out, and a server
+  that exits because the projector does not load ("failed to load multimodal
+  model", "Failed to load CLIP model", a text/projector size mismatch) is
+  started once more without it. Either way the model runs without image
+  input, `ServerInfo.vision` says `missing` or `failed`, and the server log
+  view shows a line saying so.
 * **`--cache-ram`**: RAM for llama-server's prompt cache, which keeps the KV
   state of earlier prompts for reuse: 8192 MiB with 48 GiB of RAM or more,
   4096 MiB from 24 GiB, else 1024 MiB.
@@ -399,9 +456,10 @@ Usually only one large model fits into VRAM. Ylide therefore:
 
 ## 8. Safety and privacy
 
-* **Network**: four purposes only (registry update, model download, runtime
-  download, update check with the installer download that follows it), each
-  switchable and logged in a log visible in the settings. Updates are verified
+* **Network**: five purposes only (registry update, model download, runtime
+  download, update check with the installer download that follows it, skill
+  download from GitHub, off by default), each switchable and logged in a log
+  visible in the settings. Updates are verified
   against a minisign key built into the app; see docs/releasing.md.
   HTTPS only, User-Agent `Ylide/<version>` without any identifier. No
   telemetry, no accounts. The web view itself cannot reach the network

@@ -5,6 +5,7 @@
 //
 //   node tools/registry/gguf-meta.mjs <repo> <path> [revision]
 //   node tools/registry/gguf-meta.mjs --registry [--write]   (all models in registry/models.json)
+//   node tools/registry/gguf-meta.mjs --projectors           (projector type of every vision projector)
 //
 // GGUF v3 layout: magic, version, tensor_count, kv_count, KV pairs, tensor infos,
 // alignment padding, tensor data. Tensor sizes are derived from offset
@@ -97,18 +98,24 @@ function parse(bytes, fileSize) {
   return { version, meta, tensors, headerBytes: r.o };
 }
 
-export async function ggufMeta(repo, path, revision = 'main') {
+/** Metadata and tensor table of a GGUF file on Hugging Face (header only). */
+export async function ggufHeader(repo, path, revision = 'main') {
   const url = `https://huggingface.co/${repo}/resolve/${revision}/${path.split('/').map(encodeURIComponent).join('/')}`;
   let size = 8 << 20;
   for (;;) {
     const { bytes, total } = await fetchRange(url, 0, size - 1);
     try {
-      return summarize(parse(bytes, total), total);
+      return { ...parse(bytes, total), fileSize: total };
     } catch (e) {
       if (!(e instanceof Truncated) || size >= total) throw e;
       size *= 2;
     }
   }
+}
+
+export async function ggufMeta(repo, path, revision = 'main') {
+  const header = await ggufHeader(repo, path, revision);
+  return summarize(header, header.fileSize);
 }
 
 const EXPERT = /\.ffn_(up|down|gate|gate_up)_(ch)?exps\b/;
@@ -168,8 +175,32 @@ function summarize({ meta, tensors }, fileSize) {
   };
 }
 
+/** What llama.cpp needs to know about a vision projector (mmproj): its type picks the vision encoder. */
+export async function projectorMeta(repo, path, revision = 'main') {
+  const { meta, fileSize } = await ggufHeader(repo, path, revision);
+  return {
+    architecture: meta['general.architecture'],
+    type: meta['general.type'] ?? null,
+    projectorType: meta['clip.vision.projector_type'] ?? meta['clip.projector_type'] ?? null,
+    audioProjectorType: meta['clip.audio.projector_type'] ?? null,
+    imageSize: meta['clip.vision.image_size'] ?? null,
+    patchSize: meta['clip.vision.patch_size'] ?? null,
+    fileSize,
+  };
+}
+
 async function main() {
   const args = process.argv.slice(2);
+  if (args[0] === '--projectors') {
+    const file = fileURLToPath(new URL('../../registry/models.json', import.meta.url));
+    const registry = JSON.parse(await readFile(file, 'utf8'));
+    for (const model of registry.models.filter((m) => m.projector)) {
+      const p = await projectorMeta(model.source.hfRepo, model.projector.path, model.source.revision);
+      const audio = p.audioProjectorType ? `, audio ${p.audioProjectorType}` : '';
+      console.log(`${model.id}: ${p.architecture}/${p.type ?? '-'}, projector ${p.projectorType ?? 'unknown'}${audio}, image ${p.imageSize ?? '-'} px, patch ${p.patchSize ?? '-'}`);
+    }
+    return;
+  }
   if (args[0] !== '--registry') {
     const [repo, path, rev] = args;
     if (!repo || !path) {

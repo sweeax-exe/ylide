@@ -33,7 +33,8 @@
     "chat": "채팅",
     "agents": "에이전트",
     "models": "모델",
-    "settings": "설정"
+    "settings": "설정",
+    "skills": "스킬"
   },
   "titlebar": {
     "noProject": "열린 폴더 없음",
@@ -80,7 +81,8 @@
     "modelDownload": "모델 다운로드",
     "runtimeDownload": "런타임 다운로드",
     "updateCheck": "업데이트 확인",
-    "updateDownload": "업데이트 다운로드"
+    "updateDownload": "업데이트 다운로드",
+    "skillDownload": "스킬 다운로드"
   },
   "errors": {
     "generic": "문제가 발생했습니다: {{message}}",
@@ -105,7 +107,42 @@
     "update_format": "Ylide에서 설치할 수 없는 형식의 업데이트입니다: {{message}}",
     "update_too_large": "업데이트 크기가 비정상적으로 커서 다운로드하지 않았습니다.",
     "update_launch": "설치 프로그램을 시작하지 못했습니다: {{message}}",
-    "update_unsupported": "이 시스템에서는 업데이트를 직접 설치하세요."
+    "update_unsupported": "이 시스템에서는 업데이트를 직접 설치하세요.",
+    "skill_invalid": "올바른 스킬이 아닙니다: {{message}}",
+    "skill_too_large": "스킬이 너무 큽니다: {{message}}",
+    "skill_exists": "이 이름의 스킬이 이미 설치되어 있습니다({{message}}). 다시 설치하려면 먼저 제거하세요.",
+    "skill_not_found": "이 스킬은 더 이상 존재하지 않습니다.",
+    "skill_renamed": "새 버전의 이름이 다릅니다({{message}}). 스킬을 제거한 뒤 새 스킬을 추가하세요.",
+    "skill_address": "GitHub 저장소 주소가 아닙니다: {{message}}",
+    "skill_none_found": "여기에서 스킬을 찾을 수 없습니다: {{message}}",
+    "skill_repo_not_found": "GitHub에 이 저장소가 없거나 비공개 저장소입니다.",
+    "skill_rate_limited": "계정 없이 보낼 수 있는 GitHub 요청 한도를 모두 사용했습니다. 1시간 후에 다시 시도하세요.",
+    "skill_gone": "스킬이 더 이상 저장소에 없습니다: {{message}}",
+    "no_vision": "실행 중인 모델은 이미지를 볼 수 없습니다. 모델 페이지에서 이미지를 이해하는 모델의 \"이미지 이해\"를 켜세요.",
+    "bad_image": "이미지를 사용할 수 없습니다: {{message}}",
+    "not_projector": "이미지 모듈(mmproj GGUF 파일)이 아닙니다.",
+    "no_projector": "이 모델은 이미지 입력을 지원하지 않습니다."
+  },
+  "images": {
+    "attach": "이미지 첨부",
+    "attached": "첨부된 이미지: {{n}}",
+    "label": "이미지 {{n}}: {{name}}, {{size}} 픽셀",
+    "labelShort": "이미지 {{n}}",
+    "pasted": "붙여넣음",
+    "remove": "{{label}} 제거",
+    "notSent": "이미지는 전송되지 않습니다",
+    "noModel": "이미지를 첨부하려면 이미지를 이해하는 모델을 시작하세요.",
+    "switchOn": "{{model}}은(는) 이미지를 이해할 수 있습니다. 모델 페이지에서 \"이미지 이해\"를 켜고 다시 시작하세요.",
+    "cannotSee": "{{model}}은(는) 이미지를 볼 수 없습니다.",
+    "visionModels": "이미지를 이해하는 모델: {{models}}.",
+    "missing": "{{model}}의 이미지 모듈이 없습니다. 모델 페이지에서 \"이미지 이해\"를 껐다가 다시 켜세요.",
+    "failed": "이미지 모듈을 불러오지 못해 {{model}}이(가) 이미지 없이 실행 중입니다. 자세한 내용은 서버 로그에 있습니다.",
+    "problem": {
+      "unsupported": "PNG, JPEG, WebP, GIF 이미지만 첨부할 수 있습니다.",
+      "tooLarge": "이미지가 20MB보다 큽니다.",
+      "damaged": "이미지를 읽을 수 없습니다.",
+      "tooMany": "메시지당 이미지는 최대 {{max}}개입니다. 나머지는 첨부되지 않았습니다."
+    }
   },
   "reasons": {
     "fitsInVram": "그래픽 메모리에 완전히 들어갑니다({{vramGb}} GB 사용).",

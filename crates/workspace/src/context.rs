@@ -40,6 +40,8 @@ pub enum ContextKind {
     Folder,
     Symbol,
     Selection,
+    /// A skill the user mentioned with `@name` (added by the chat, not resolved here).
+    Skill,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]

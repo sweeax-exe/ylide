@@ -111,6 +111,8 @@ export interface RunData {
   /** Null until the core reports it (events can arrive before `start` resolves). */
   runId: string | null;
   goal: string;
+  /** Images that went with the goal (data URLs); not kept across restarts. */
+  images: string[];
   /** Root of the project the run works in; a run is only continued there. */
   project: string | null;
   /** The finished run this one continues; its agents were told about it. */
@@ -146,10 +148,11 @@ export const STREAM_TAIL = 240;
 export const ACTIVE_STATES: ReadonlySet<AgentState> = new Set(['thinking', 'callingTool']);
 export const WAITING_STATES: ReadonlySet<AgentState> = new Set(['waitingForApproval', 'waitingForAnswer']);
 
-export function createRun(goal: string, startedAt: number, from: { project?: string | null; continues?: ContinuedRun | null } = {}): RunData {
+export function createRun(goal: string, startedAt: number, from: { project?: string | null; continues?: ContinuedRun | null; images?: string[] } = {}): RunData {
   return {
     runId: null,
     goal,
+    images: from.images ?? [],
     project: from.project ?? null,
     continues: from.continues ?? null,
     stored: false,

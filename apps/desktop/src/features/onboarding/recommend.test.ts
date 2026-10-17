@@ -17,6 +17,7 @@ const plan = (over: Partial<Plan>): Plan => ({
   weightsBytes: 8 * GiB,
   kvBytes: 2 * GiB,
   overheadBytes: 1 * GiB,
+  projectorBytes: 0,
   vramBytes: 11 * GiB,
   ramBytes: 0,
   estTokensPerSec: 50,

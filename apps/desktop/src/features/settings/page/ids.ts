@@ -10,6 +10,12 @@ export const SETTINGS_SECTIONS = {
   advanced: 'settings-advanced',
 } as const;
 
+export const SKILL_SECTIONS = {
+  installed: 'skills-installed',
+  project: 'skills-project',
+  usage: 'skills-usage',
+} as const;
+
 export const MODEL_SECTIONS = {
   active: 'models-active',
   installed: 'models-installed',

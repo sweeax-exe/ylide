@@ -70,6 +70,7 @@
     "goalLabel": "Apa yang harus dikerjakan agen?",
     "goalPlaceholder": "Contoh: perbaiki total keranjang dan tambahkan tes untuk keranjang kosong",
     "goalHint": "Jelaskan hasil yang Anda inginkan. Ctrl+Enter memulai proses.",
+    "imagesHint": "Gambar dikirim ke agen yang menyusun rencana dan ke agen yang mengerjakan tugas.",
     "start": "Mulai agen",
     "readiness": "Persyaratan",
     "modelReady": "{{model}} sedang berjalan",

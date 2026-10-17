@@ -8,7 +8,7 @@ import { Badge, Button, IconButton, Progress, type Tone } from '../../../compone
 import { reportError } from '../../../lib/errors';
 import { formatBytes, formatDuration, formatGB, formatNumber } from '../../../lib/format';
 import { api } from '../../../lib/ipc';
-import { useApp } from '../../../state/app';
+import { modelName, useApp } from '../../../state/app';
 import { downloadedBytes, fraction, remainingSeconds, totalBytes, visibleDownloads } from '../logic/downloads';
 import { keepFocusInSection } from '../page/focus';
 import { MODEL_SECTIONS } from '../page/ids';
@@ -63,7 +63,7 @@ export function JobActions({ job, compact = false }: { job: DownloadJob; compact
       restoreFocus();
     }
   };
-  const resume = (from: HTMLElement) => act(from, () => api.models.download(job.modelId, job.quant));
+  const resume = (from: HTMLElement) => act(from, () => (job.projector ? api.models.downloadProjector(job.modelId) : api.models.download(job.modelId, job.quant)));
   const running = job.state.state === 'running';
   return (
     <span className={s.actions}>
@@ -116,13 +116,14 @@ const known = (facts: Array<string | null>) => facts.filter((f): f is string => 
 
 export function DownloadRow({ job }: { job: DownloadJob }) {
   const { t } = useTranslation('settings');
+  const registry = useApp((st) => st.registry);
   const status = jobStatus(job);
   const f = useJobFacts(job);
   const facts = known([f.amount, f.speed, f.remaining, f.file]);
   return (
     <li className={s.row}>
       <div className={s.top}>
-        <span className={s.name}>{job.name}</span>
+        <span className={s.name}>{job.projector ? t('downloads.projector', { model: modelName(registry, job.modelId) }) : job.name}</span>
         <Badge tone={status.tone}>{t(`downloads.state.${status.key}`)}</Badge>
         <span className={s.numbers}>
           {facts.map((fact) => (

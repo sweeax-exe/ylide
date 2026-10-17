@@ -3,6 +3,11 @@
 //! Layout: `<models dir>/<publisher>__<repo>/<file path in repo>`. Files are
 //! keyed by repository + path (some repos use identical file names), and the
 //! SHA-256 from the registry is verified before a file counts as installed.
+//!
+//! Image input is switched per model: the registry's vision projector is
+//! downloaded like a variant (job `<model>@mmproj`) and recorded on every
+//! installed variant of the model; an imported model gets a projector file
+//! the user picks.
 
 use crate::error::{AppError, AppResult};
 use crate::network::{NetPurpose, NetworkGate};
@@ -41,6 +46,10 @@ pub struct InstalledModel {
     /// Ylide. An imported file that matches a registry variant keeps that
     /// model's id, so its recommended settings apply.
     pub custom: bool,
+    /// Vision projector loaded with the model (`--mmproj`): image input is
+    /// on. Downloaded from the registry (with its hash) or picked by the user.
+    #[serde(default)]
+    pub projector: Option<InstalledFile>,
 }
 
 impl InstalledModel {
@@ -49,6 +58,9 @@ impl InstalledModel {
         self.files.first().map(|f| f.path.as_str())
     }
 }
+
+/// Quant part of the job id of a projector download (`<model>@mmproj`).
+pub const PROJECTOR_JOB: &str = "mmproj";
 
 #[derive(Debug, Clone, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase", tag = "state")]
@@ -67,8 +79,11 @@ pub enum JobState {
 pub struct DownloadJob {
     pub job_id: String,
     pub model_id: String,
+    /// The variant, or [`PROJECTOR_JOB`] for a vision projector.
     pub quant: String,
     pub name: String,
+    /// Downloads the vision projector of `model_id`, not a variant.
+    pub projector: bool,
     pub state: JobState,
     pub progress: Option<Progress>,
     #[ts(type = "number")]
@@ -131,7 +146,8 @@ impl ModelStore {
             .and_then(|s| serde_json::from_str::<Vec<InstalledModel>>(&s).ok())
             .unwrap_or_default()
             .into_iter()
-            // Drop entries whose files were deleted outside the app.
+            // Drop entries whose files were deleted outside the app. A missing
+            // projector keeps the entry: the model then starts without image input.
             .filter(|m| m.files.iter().all(|f| Path::new(&f.path).exists()))
             .collect();
         *self.manifest.lock().unwrap() = list;
@@ -179,6 +195,17 @@ impl ModelStore {
             .collect()
     }
 
+    /// Where the vision projector of a registry model lives, if it has one.
+    pub fn projector_spec(&self, model: &Model) -> Option<FileSpec> {
+        let variant = Variant {
+            quant: PROJECTOR_JOB.into(),
+            bits_per_weight: 16.0,
+            files: vec![model.projector.clone()?],
+            quality_penalty: 0.0,
+        };
+        self.file_specs(model, &variant).pop()
+    }
+
     /// Starts (or resumes) a download. Progress is emitted as `models://job`.
     pub fn start_download(
         self: &Arc<Self>,
@@ -188,12 +215,7 @@ impl ModelStore {
         model_id: &str,
         quant: &str,
     ) -> AppResult<DownloadJob> {
-        let model = registry
-            .models
-            .iter()
-            .find(|m| m.id == model_id)
-            .ok_or_else(|| AppError::new("unknown_model", model_id))?
-            .clone();
+        let model = find_model(registry, model_id)?;
         let variant = model
             .variants
             .iter()
@@ -201,6 +223,26 @@ impl ModelStore {
             .ok_or_else(|| AppError::new("unknown_variant", quant))?
             .clone();
         let specs = self.file_specs(&model, &variant);
+        let name = format!("{} {}", model.name, quant);
+        self.run_job(app, gate, &model, name, specs, Done::Variant(variant))
+    }
+
+    /// Downloads the registry model's vision projector. Once it is complete
+    /// (checksum verified), every installed variant of the model loads it.
+    pub fn start_projector_download(self: &Arc<Self>, app: &AppHandle, gate: Arc<NetworkGate>, registry: &Registry, model_id: &str) -> AppResult<DownloadJob> {
+        let model = find_model(registry, model_id)?;
+        let spec = self.projector_spec(&model).ok_or_else(|| AppError::new("no_projector", model_id))?;
+        let name = format!("{} {}", model.name, PROJECTOR_JOB);
+        self.run_job(app, gate, &model, name, vec![spec], Done::Projector)
+    }
+
+    fn run_job(self: &Arc<Self>, app: &AppHandle, gate: Arc<NetworkGate>, model: &Model, name: String, specs: Vec<FileSpec>, done: Done) -> AppResult<DownloadJob> {
+        let model = model.clone();
+        let model_id = model.id.as_str();
+        let quant = match &done {
+            Done::Variant(v) => v.quant.clone(),
+            Done::Projector => PROJECTOR_JOB.to_string(),
+        };
         let total: u64 = specs.iter().map(|s| s.size_bytes).sum();
 
         // Enough space? Partial files from an earlier run count as already there.
@@ -220,13 +262,14 @@ impl ModelStore {
             }
         }
 
-        let id = job_id(model_id, quant);
+        let id = job_id(model_id, &quant);
         let cancel = CancellationToken::new();
         let job = DownloadJob {
             job_id: id.clone(),
             model_id: model_id.to_string(),
-            quant: quant.to_string(),
-            name: format!("{} {}", model.name, quant),
+            quant,
+            name,
+            projector: matches!(done, Done::Projector),
             state: JobState::Running,
             progress: None,
             total_bytes: total,
@@ -283,25 +326,17 @@ impl ModelStore {
             match &result {
                 Ok(()) => {
                     gate.record(NetPurpose::ModelDownload, &specs[0].url, "completed, checksum verified");
-                    let installed = InstalledModel {
-                        model_id: model.id.clone(),
-                        quant: variant.quant.clone(),
-                        name: model.name.clone(),
-                        files: specs
-                            .iter()
-                            .map(|s| InstalledFile {
-                                path: s.dest.display().to_string(),
-                                size_bytes: s.size_bytes,
-                                sha256: Some(s.sha256.clone()),
-                            })
-                            .collect(),
-                        installed_at_unix_ms: now_ms(),
-                        custom: false,
-                    };
-                    {
-                        let mut list = store.manifest.lock().unwrap();
-                        list.retain(|m| !(m.model_id == installed.model_id && m.quant == installed.quant));
-                        list.push(installed);
+                    let files: Vec<InstalledFile> = specs
+                        .iter()
+                        .map(|s| InstalledFile {
+                            path: s.dest.display().to_string(),
+                            size_bytes: s.size_bytes,
+                            sha256: Some(s.sha256.clone()),
+                        })
+                        .collect();
+                    match &done {
+                        Done::Variant(variant) => store.add_variant(&model, &variant.quant, files),
+                        Done::Projector => store.set_projector_of(&model.id, files.into_iter().next()),
                     }
                     if let Err(e) = store.save() {
                         tracing::error!("could not save model manifest: {e}");
@@ -358,13 +393,86 @@ impl ModelStore {
         };
         if !running && let Some((model_id, quant)) = job_id.split_once('@') {
             // Paused or failed: remove the partial files directly.
-            if let Some(model) = registry.models.iter().find(|m| m.id == model_id)
-                && let Some(variant) = model.variants.iter().find(|v| v.quant == quant)
-            {
-                downloader::discard_partial(&self.file_specs(model, variant)).await?;
+            if let Some(model) = registry.models.iter().find(|m| m.id == model_id) {
+                let specs = match model.variants.iter().find(|v| v.quant == quant) {
+                    Some(variant) => self.file_specs(model, variant),
+                    None if quant == PROJECTOR_JOB => self.projector_spec(model).into_iter().collect(),
+                    None => vec![],
+                };
+                downloader::discard_partial(&specs).await?;
             }
         }
         Ok(())
+    }
+
+    /// Records a finished variant download. Image input is switched per
+    /// model, so a variant of a model that already loads its projector gets it too.
+    fn add_variant(&self, model: &Model, quant: &str, files: Vec<InstalledFile>) {
+        let mut list = self.manifest.lock().unwrap();
+        let projector = list.iter().find(|m| m.model_id == model.id && m.projector.is_some()).and_then(|m| m.projector.clone());
+        list.retain(|m| !(m.model_id == model.id && m.quant == quant));
+        list.push(InstalledModel {
+            model_id: model.id.clone(),
+            quant: quant.to_string(),
+            name: model.name.clone(),
+            files,
+            installed_at_unix_ms: now_ms(),
+            custom: false,
+            projector,
+        });
+    }
+
+    /// Sets (or clears) the projector of every installed variant of `model_id`.
+    fn set_projector_of(&self, model_id: &str, projector: Option<InstalledFile>) {
+        for m in self.manifest.lock().unwrap().iter_mut().filter(|m| m.model_id == model_id) {
+            m.projector = projector.clone();
+        }
+    }
+
+    /// Switches image input of `model_id` off: the projector is no longer
+    /// loaded, and a downloaded one is deleted (a file the user picked stays).
+    pub fn disable_projector(&self, model_id: &str) -> AppResult<()> {
+        let old: Vec<InstalledFile> = self.manifest.lock().unwrap().iter().filter(|m| m.model_id == model_id).filter_map(|m| m.projector.clone()).collect();
+        self.set_projector_of(model_id, None);
+        self.save()?;
+        for file in &old {
+            self.remove_if_ours(file);
+        }
+        Ok(())
+    }
+
+    /// Uses a projector file the user has (for an imported model). It must be
+    /// a GGUF vision projector, not a model.
+    pub fn use_projector_file(&self, model_id: &str, path: &Path) -> AppResult<InstalledModel> {
+        let meta = std::fs::metadata(path).map_err(|_| AppError::new("not_found", path.display()))?;
+        if gguf_architecture(path).as_deref() != Some("clip") {
+            return Err(AppError::new("not_projector", path.display()));
+        }
+        if !self.manifest.lock().unwrap().iter().any(|m| m.model_id == model_id) {
+            return Err(AppError::new("model_not_installed", model_id));
+        }
+        let file = InstalledFile {
+            path: path.display().to_string(),
+            size_bytes: meta.len(),
+            sha256: None,
+        };
+        self.set_projector_of(model_id, Some(file));
+        self.save()?;
+        let list = self.manifest.lock().unwrap();
+        Ok(list.iter().find(|m| m.model_id == model_id).cloned().expect("checked above"))
+    }
+
+    /// Deletes a downloaded projector inside the models folder that no installed model loads any more.
+    fn remove_if_ours(&self, file: &InstalledFile) {
+        if file.sha256.is_none() {
+            return;
+        }
+        let in_use = self.manifest.lock().unwrap().iter().any(|m| m.projector.as_ref().is_some_and(|p| p.path == file.path));
+        let dir = dunce_canonical(&self.dir());
+        let p = dunce_canonical(Path::new(&file.path));
+        if !in_use && p.starts_with(&dir) {
+            let _ = std::fs::remove_file(&p);
+        }
     }
 
     /// Deletes an installed model's files (only files inside the models folder;
@@ -385,7 +493,12 @@ impl ModelStore {
                 }
             }
         }
-        self.save()
+        self.save()?;
+        // The projector goes with the model's last variant.
+        if let Some(projector) = &model.projector {
+            self.remove_if_ours(projector);
+        }
+        Ok(())
     }
 
     /// Registers a GGUF file the user already has (any model, any finetune).
@@ -424,6 +537,7 @@ impl ModelStore {
             }],
             installed_at_unix_ms: now_ms(),
             custom: true,
+            projector: None,
         };
         {
             let mut list = self.manifest.lock().unwrap();
@@ -433,6 +547,35 @@ impl ModelStore {
         self.save()?;
         Ok(model)
     }
+}
+
+/// What finishing a download job records.
+enum Done {
+    Variant(Variant),
+    Projector,
+}
+
+fn find_model(registry: &Registry, model_id: &str) -> AppResult<Model> {
+    registry.models.iter().find(|m| m.id == model_id).cloned().ok_or_else(|| AppError::new("unknown_model", model_id))
+}
+
+/// `general.architecture` of a GGUF file ("clip" for vision projectors), from its header.
+fn gguf_architecture(path: &Path) -> Option<String> {
+    use std::io::Read;
+    let mut head = Vec::new();
+    std::fs::File::open(path).ok()?.take(64 << 10).read_to_end(&mut head).ok()?;
+    if head.get(..4)? != b"GGUF" {
+        return None;
+    }
+    // The key comes early in the metadata, with a string value: type 8, u64 length, bytes.
+    let key = b"general.architecture";
+    let at = head.windows(key.len()).position(|w| w == key)? + key.len();
+    let value_type = u32::from_le_bytes(head.get(at..at + 4)?.try_into().ok()?);
+    let len = u64::from_le_bytes(head.get(at + 4..at + 12)?.try_into().ok()?) as usize;
+    if value_type != 8 || len > 64 {
+        return None;
+    }
+    Some(String::from_utf8_lossy(head.get(at + 12..at + 12 + len)?).into_owned())
 }
 
 fn dunce_canonical(p: &Path) -> PathBuf {
@@ -509,6 +652,106 @@ mod tests {
         // Same name, different size: an ordinary custom model.
         std::fs::write(&path, b"GGUF\x03\x00\x00\x00").unwrap();
         assert!(store.import_custom(&path, &reg).unwrap().model_id.starts_with("custom:"));
+    }
+
+    /// A GGUF header with only `general.architecture`.
+    fn gguf_with_architecture(arch: &str) -> Vec<u8> {
+        let key = "general.architecture";
+        let mut b = b"GGUF".to_vec();
+        b.extend(3u32.to_le_bytes());
+        b.extend(0u64.to_le_bytes());
+        b.extend(1u64.to_le_bytes());
+        b.extend((key.len() as u64).to_le_bytes());
+        b.extend(key.as_bytes());
+        b.extend(8u32.to_le_bytes());
+        b.extend((arch.len() as u64).to_le_bytes());
+        b.extend(arch.as_bytes());
+        b
+    }
+
+    #[test]
+    fn the_projector_downloads_next_to_the_model() {
+        let reg = registry::bundled();
+        let model = reg.models.iter().find(|m| m.id == "qwen3.6-35b-a3b").unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let store = ModelStore::new(dir.path().to_path_buf());
+        let spec = store.projector_spec(model).unwrap();
+        assert!(spec.url.ends_with("/mmproj-F16.gguf") && spec.url.contains(&model.source.revision), "{}", spec.url);
+        assert_eq!(spec.dest, dir.path().join("unsloth__Qwen3.6-35B-A3B-GGUF").join("mmproj-F16.gguf"));
+        assert_eq!(spec.sha256, model.projector.as_ref().unwrap().sha256);
+        assert!(store.projector_spec(reg.models.iter().find(|m| m.id == "gpt-oss-20b").unwrap()).is_none());
+    }
+
+    #[test]
+    fn image_input_is_switched_per_model() {
+        let reg = registry::bundled();
+        let model = reg.models.iter().find(|m| m.id == "qwen3.6-35b-a3b").unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let store = ModelStore::new(dir.path().join("models"));
+        let file = |name: &str, bytes: &[u8]| {
+            let path = store.dir().join(name);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(&path, bytes).unwrap();
+            InstalledFile { path: path.display().to_string(), size_bytes: bytes.len() as u64, sha256: Some("0".repeat(64)) }
+        };
+        store.add_variant(model, "Q4", vec![file("a.gguf", b"GGUF")]);
+        store.add_variant(model, "Q8", vec![file("b.gguf", b"GGUF")]);
+        let projector = file("mmproj-F16.gguf", &gguf_with_architecture("clip"));
+        store.set_projector_of(&model.id, Some(projector.clone()));
+        store.save().unwrap();
+        // A variant downloaded later loads it too; the switch is per model.
+        store.add_variant(model, "Q6", vec![file("c.gguf", b"GGUF")]);
+        assert!(store.installed().iter().all(|m| m.projector.as_ref() == Some(&projector)));
+        // The manifest keeps it across restarts.
+        let store = ModelStore::new(dir.path().join("models"));
+        assert_eq!(store.find(&model.id, "Q8").unwrap().projector, Some(projector.clone()));
+
+        // Deleting a variant keeps the projector for the others; the last one takes it along.
+        store.delete(&model.id, "Q4").unwrap();
+        store.delete(&model.id, "Q6").unwrap();
+        assert!(Path::new(&projector.path).exists());
+        store.delete(&model.id, "Q8").unwrap();
+        assert!(!Path::new(&projector.path).exists());
+
+        // Off: no longer loaded, and the downloaded file is gone.
+        store.add_variant(model, "Q4", vec![file("a.gguf", b"GGUF")]);
+        let projector = file("mmproj-F16.gguf", &gguf_with_architecture("clip"));
+        store.set_projector_of(&model.id, Some(projector.clone()));
+        store.disable_projector(&model.id).unwrap();
+        assert!(store.installed().iter().all(|m| m.projector.is_none()));
+        assert!(!Path::new(&projector.path).exists());
+    }
+
+    #[test]
+    fn an_imported_model_takes_a_projector_the_user_picks() {
+        let dir = tempfile::tempdir().unwrap();
+        let store = ModelStore::new(dir.path().join("models"));
+        let reg = registry::bundled();
+        let model = dir.path().join("my-vlm.gguf");
+        std::fs::write(&model, gguf_with_architecture("qwen35")).unwrap();
+        let m = store.import_custom(&model, &reg).unwrap();
+        assert_eq!(m.projector, None, "off after import");
+
+        assert_eq!(store.use_projector_file(&m.model_id, &model).unwrap_err().code, "not_projector", "the model itself is no projector");
+        let text = dir.path().join("notes.gguf");
+        std::fs::write(&text, b"not a gguf").unwrap();
+        assert_eq!(store.use_projector_file(&m.model_id, &text).unwrap_err().code, "not_projector");
+        let mmproj = dir.path().join("mmproj-my-vlm.gguf");
+        std::fs::write(&mmproj, gguf_with_architecture("clip")).unwrap();
+        assert_eq!(store.use_projector_file("custom:other", &mmproj).unwrap_err().code, "model_not_installed");
+        let with = store.use_projector_file(&m.model_id, &mmproj).unwrap();
+        assert_eq!(with.projector.as_ref().map(|p| p.path.clone()), Some(mmproj.display().to_string()));
+        assert_eq!(with.projector.unwrap().sha256, None);
+
+        // Switching it off keeps the user's file.
+        store.disable_projector(&m.model_id).unwrap();
+        assert!(mmproj.exists() && store.installed()[0].projector.is_none());
+    }
+
+    #[test]
+    fn manifests_without_projectors_still_load() {
+        let old = r#"{"modelId":"m","quant":"Q4","name":"M","files":[],"installedAtUnixMs":0,"custom":false}"#;
+        assert_eq!(serde_json::from_str::<InstalledModel>(old).unwrap().projector, None);
     }
 
     #[test]

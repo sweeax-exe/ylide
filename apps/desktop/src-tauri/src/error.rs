@@ -43,3 +43,9 @@ from_error!(inference::LlmError, "model");
 from_error!(inference::ServerError, "server");
 from_error!(reqwest::Error, "network");
 from_error!(tauri::Error, "tauri");
+
+impl From<skills::SkillError> for AppError {
+    fn from(e: skills::SkillError) -> Self {
+        AppError::new(e.code(), e)
+    }
+}

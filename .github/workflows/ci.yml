@@ -17,6 +17,8 @@ jobs:
     name: Rust
     runs-on: windows-latest
     steps:
+      # Check out the files as they are stored, like the release builds do.
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -52,6 +54,7 @@ jobs:
     name: UI
     runs-on: windows-latest
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:

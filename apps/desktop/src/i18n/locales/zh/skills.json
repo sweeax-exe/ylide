@@ -1,0 +1,104 @@
+{
+  "page": {
+    "title": "技能",
+    "intro": "技能可以教会你的模型完成新任务：每个技能是一个文件夹，包含指令（SKILL.md）和可选的参考文件，采用开放的 Agent Skills 格式。技能适用于所有模型，可用于聊天，也可供智能体使用。每个技能都可以单独开启或关闭。"
+  },
+  "trust": "技能是由第三方编写的指令。开启技能前请先阅读：第一次开启时，Ylide 会向你展示它的内容。技能本身从不运行任何东西；技能中的命令只能通过智能体运行，并遵循它们的批准模式。",
+  "loading": "正在加载技能",
+  "loadFailed": "无法加载技能：{{message}}",
+  "installed": {
+    "title": "已安装",
+    "description": "保存在 Ylide 的数据文件夹中，可在所有项目中使用。新技能默认处于关闭状态。",
+    "emptyTitle": "还没有技能",
+    "emptyBody": "从 GitHub 仓库（例如 https://github.com/morluto/rea）或这台电脑上的文件夹添加技能。"
+  },
+  "project": {
+    "title": "来自项目",
+    "description": "当前打开项目的 .agents/skills 文件夹中的技能。Ylide 只在原处读取它们，从不修改；开启某个技能只对此项目生效。",
+    "empty": "此项目的 <0>.agents/skills</0> 中没有技能。"
+  },
+  "usage": {
+    "title": "模型如何使用技能",
+    "description": "本地模型的上下文较小，因此技能会分步加载。",
+    "agents": "<0>智能体</0>可以看到每个已开启技能的名称和描述。当任务与某个技能相符时，它们会用 <1>skill_read</1> 工具分段读取该技能及其参考文件。",
+    "chat": "<0>聊天</0>可以看到同一份列表。要让聊天获得某个技能的指令，请在消息中提及它，例如 <1>@reverse-engineer-anything</1>；之后它会在本次对话的剩余部分中一直保持附加。",
+    "scripts": "技能中的<0>脚本</0>从不自行运行。智能体只能将其作为普通命令运行，并受你的批准模式约束。",
+    "mcp": "<0>技能的工具：</0>有些技能（例如 REA 的技能）需要自己的 MCP 服务器和程序。Ylide 只把它们的指令提供给模型；目前尚不支持 MCP 服务器。"
+  },
+  "row": {
+    "version": "v{{version}}",
+    "fromProject": "来自项目",
+    "on": "已开启",
+    "broken": "无法使用",
+    "commit": "@ {{commit}}",
+    "files_other": "{{count}} 个文件",
+    "openOnGithub": "GitHub",
+    "view": "查看内容",
+    "checkUpdate": "检查更新",
+    "remove": "移除 {{name}}",
+    "switch": "使用 {{name}}"
+  },
+  "content": {
+    "title": "技能 {{name}}",
+    "note": "这是模型收到的文本，由第三方编写。",
+    "confirmNote": "开启前请先阅读此技能。它由第三方编写；开启后，模型会看到它的名称和描述，并在任务相符时读取或获得它的指令。",
+    "loading": "正在加载技能",
+    "failed": "无法读取技能：{{message}}",
+    "files_other": "除 SKILL.md 外，还有 {{count}} 个文件：",
+    "textLabel": "{{name}} 的 SKILL.md",
+    "enable": "开启"
+  },
+  "update": {
+    "upToDate": "{{name}} 已是最新版本。",
+    "checkFailed": "无法检查 {{name}} 的更新",
+    "title": "更新 {{name}}",
+    "introGithub": "{{source}} 中有更新的版本（提交 {{commit}}）。",
+    "introFolder": "文件夹 {{source}} 已更改。",
+    "version": "版本 {{from}} → {{to}}。",
+    "summary": "新增 {{added}} 个，更改 {{changed}} 个，删除 {{removed}} 个。",
+    "kind": {
+      "added": "新增",
+      "changed": "已更改",
+      "removed": "已删除"
+    },
+    "note": "技能的开启状态保持不变。",
+    "install": "更新",
+    "done": "{{name}} 已更新。",
+    "failed": "无法更新 {{name}}"
+  },
+  "remove": {
+    "title": "移除 {{name}}？",
+    "body": "该技能的文件将从 Ylide 的数据文件夹中删除。你之后可以再次添加它。",
+    "confirm": "移除"
+  },
+  "add": {
+    "fromGithub": "从 GitHub 添加",
+    "fromFolder": "从文件夹添加",
+    "title": "从 GitHub 添加技能",
+    "intro": "粘贴仓库或其中某个文件夹的地址。Ylide 会列出其中的每个 SKILL.md，由你选择要安装哪些。",
+    "permission": "技能下载已关闭。为了列出和下载技能，Ylide 会向 GitHub（api.github.com 和 raw.githubusercontent.com）发出请求。不会发送任何关于你的信息。你可以在“设置 › 网络和隐私”中再次关闭此项。",
+    "addressLabel": "仓库地址",
+    "addressHint": "例如 https://github.com/morluto/rea 或 https://github.com/owner/repo/tree/main/skills",
+    "search": "列出技能",
+    "searching": "正在查询 GitHub",
+    "found_other": "{{repo}} 中有 {{count}} 个技能，提交",
+    "chooseAll": "全选",
+    "chooseNone": "全不选",
+    "listLabel": "仓库中的技能",
+    "alreadyInstalled": "已安装",
+    "notInstallable": "无法安装",
+    "viewContent": "查看 SKILL.md",
+    "startOff": "新技能默认处于关闭状态。查看内容后，你可以在“技能”页面开启它们。",
+    "install_other": "安装 {{count}} 个技能",
+    "installNone": "安装",
+    "installed_other": "已添加 {{count}} 个技能",
+    "installedBody_other": "新添加的技能仍处于关闭状态。阅读之后再开启。",
+    "installFailed": "无法安装技能",
+    "folderFailed": "无法添加此文件夹中的技能"
+  },
+  "permission": {
+    "title": "允许技能下载？",
+    "body": "之后，当你列出、安装或更新技能时，Ylide 会向 GitHub（api.github.com 和 raw.githubusercontent.com）查询技能。不会发送任何关于你的信息。你可以在“设置 › 网络和隐私”中再次关闭此项。",
+    "allow": "允许技能下载"
+  }
+}

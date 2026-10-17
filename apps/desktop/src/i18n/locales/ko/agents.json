@@ -70,6 +70,7 @@
     "goalLabel": "에이전트에게 맡길 일",
     "goalPlaceholder": "예: 장바구니 합계를 수정하고 빈 장바구니 테스트 추가",
     "goalHint": "원하는 결과를 설명하세요. Ctrl+Enter를 누르면 실행이 시작됩니다.",
+    "imagesHint": "이미지는 계획을 세우는 에이전트와 작업을 수행하는 에이전트에게 전달됩니다.",
     "start": "에이전트 시작",
     "readiness": "사전 요구 사항",
     "modelReady": "{{model}} 실행 중",

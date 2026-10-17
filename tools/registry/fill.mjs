@@ -6,7 +6,7 @@
 //   node tools/registry/fill.mjs --pin      also pin model revisions to commit hashes
 //   node tools/registry/fill.mjs --check    verify everything, write nothing (CI)
 //
-// Model files: Hugging Face tree API (LFS oid = SHA-256 of the file).
+// Model files and vision projectors: Hugging Face tree API (LFS oid = SHA-256 of the file).
 // Runtime assets: GitHub release API (asset "digest" field).
 
 import { readFile, writeFile } from 'node:fs/promises';
@@ -105,6 +105,9 @@ for (const model of registry.models) {
     for (const file of variant.files) {
       apply(file, tree.get(file.path), `${model.id}/${variant.quant}/${file.path}`);
     }
+  }
+  if (model.projector) {
+    apply(model.projector, tree.get(model.projector.path), `${model.id}/projector/${model.projector.path}`);
   }
 }
 

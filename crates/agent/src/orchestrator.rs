@@ -152,6 +152,8 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
 
     // Long-term project knowledge: read once, shown to every role.
     let notes = ctx.ws.read_text(knowledge::FILE).map(|f| knowledge::prompt_section(&f.content, knowledge::PROMPT_CHARS)).unwrap_or_default();
+    // The enabled skills by name and description; agents read one with skill_read when they need it.
+    let skills = skills::prompt::listing(&ctx.skills, skills::prompt::Audience::Agent);
 
     // ---- 1. Plan ------------------------------------------------------------
     let open = previous.map(PreviousRun::open_tasks).unwrap_or_default();
@@ -159,7 +161,7 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
         // The run starts with them, so the planner may add nothing (see `submit_plan`).
         ctx.blackboard.lock().unwrap().plan = Some(Plan { goal: goal.to_string(), summary: String::new(), tasks: open.clone() });
     }
-    let plan = match make_plan(&ctx, team, &router, goal, &notes, previous).await {
+    let plan = match make_plan(&ctx, team, &router, goal, &notes, &skills, previous).await {
         Ok(p) => carry_over(p, open, previous.map_or(0, PreviousRun::last_task_number)),
         Err(outcome) => {
             // Open tasks stay in the report, so a later run still picks them up.
@@ -180,7 +182,7 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
             cancelled = true;
             break;
         }
-        if !run_task(&ctx, team, &router, &task.id, &notes).await {
+        if !run_task(&ctx, team, &router, &task.id, &notes, &skills).await {
             cancelled = ctx.control.cancel.is_cancelled();
             if cancelled {
                 break;
@@ -228,6 +230,7 @@ async fn make_plan(
     router: &Router<'_>,
     goal: &str,
     notes: &str,
+    skills: &str,
     previous: Option<&PreviousRun>,
 ) -> Result<Plan, RunOutcome> {
     let Some(role) = team.role("orchestrator") else {
@@ -240,9 +243,11 @@ async fn make_plan(
     values.insert("environment", environment_description(&ctx.shell));
     let mut conversation = vec![
         ChatMessage::system(role.system_prompt.clone()),
-        ChatMessage::user(planning_request(&ctx.templates.planner, values, notes, previous)),
+        ChatMessage::user(planning_request(&ctx.templates.planner, values, notes, skills, previous)),
     ];
-    let end = run_agent(ctx, &team.spec(role), &mut conversation, None, None, router).await;
+    let spec = team.spec(role);
+    conversation[1].images = request_images(ctx, &spec);
+    let end = run_agent(ctx, &spec, &mut conversation, None, None, router).await;
     ctx.status("orchestrator", "orchestrator", AgentState::Idle, "plan ready", None);
     let draft = match end {
         AgentEnd::Plan(p) => p,
@@ -254,10 +259,10 @@ async fn make_plan(
     Ok(to_plan(goal, draft, team))
 }
 
-/// Fills the planner template with the project notes and the previous run's section.
-fn planning_request(template: &str, values: BTreeMap<&str, String>, notes: &str, previous: Option<&PreviousRun>) -> String {
+/// Fills the planner template with the project notes, the enabled skills and the previous run's section.
+fn planning_request(template: &str, values: BTreeMap<&str, String>, notes: &str, skills: &str, previous: Option<&PreviousRun>) -> String {
     let section = previous.map(|p| format!("{}\n", p.describe())).unwrap_or_default();
-    fill_sections(template, values, &[("project_notes", notes.to_string()), ("previous", section)])
+    fill_sections(template, values, &[("project_notes", notes.to_string()), ("skills", skills.to_string()), ("previous", section)])
 }
 
 /// Fills `template`. Each of `sections` goes where the template names it, or
@@ -323,6 +328,12 @@ fn carry_over(mut plan: Plan, open: Vec<Task>, last_number: usize) -> Plan {
         plan.tasks.push(task);
     }
     plan
+}
+
+/// The request's images for an agent's first message, if its model sees.
+/// They go once per conversation, so a long run does not repeat them.
+fn request_images(ctx: &RunContext, agent: &AgentSpec<'_>) -> Vec<String> {
+    if agent.model.vision() { ctx.goal_images.clone() } else { Vec::new() }
 }
 
 fn draft_single(goal: &str) -> PlanDraft {
@@ -444,7 +455,7 @@ fn format_review(review: &Review) -> String {
 }
 
 /// Runs one task through Coder and Reviewer. Returns false if it failed.
-async fn run_task(ctx: &RunContext, team: &Team, router: &Router<'_>, task_id: &str, notes: &str) -> bool {
+async fn run_task(ctx: &RunContext, team: &Team, router: &Router<'_>, task_id: &str, notes: &str, skills: &str) -> bool {
     let Some(task) = update_task(ctx, task_id, |t| t.status = TaskStatus::InProgress) else { return false };
     let checkpoint = match ctx.checkpoints.begin(&ctx.run_id, &format!("{}: {} ({})", task.id, task.title, task.assignee)) {
         Ok(c) => c,
@@ -472,8 +483,9 @@ async fn run_task(ctx: &RunContext, team: &Team, router: &Router<'_>, task_id: &
     values.insert("environment", environment_description(&ctx.shell));
     let mut conversation = vec![
         ChatMessage::system(worker_role.system_prompt.clone()),
-        ChatMessage::user(fill_sections(&ctx.templates.coder_task, values, &[("project_notes", notes.to_string())])),
+        ChatMessage::user(fill_sections(&ctx.templates.coder_task, values, &[("project_notes", notes.to_string()), ("skills", skills.to_string())])),
     ];
+    conversation[1].images = request_images(ctx, &worker);
 
     loop {
         let end = run_agent(ctx, &worker, &mut conversation, Some(task_id), Some(&checkpoint.id), router).await;
@@ -517,7 +529,7 @@ async fn run_task(ctx: &RunContext, team: &Team, router: &Router<'_>, task_id: &
                 values.insert("environment", environment_description(&ctx.shell));
                 let mut review_conv = vec![
                     ChatMessage::system(reviewer_role.system_prompt.clone()),
-                    ChatMessage::user(fill_sections(&ctx.templates.reviewer_task, values, &[("project_notes", notes.to_string())])),
+                    ChatMessage::user(fill_sections(&ctx.templates.reviewer_task, values, &[("project_notes", notes.to_string()), ("skills", skills.to_string())])),
                 ];
                 match run_agent(ctx, &team.spec(reviewer_role), &mut review_conv, Some(task_id), Some(&checkpoint.id), router).await {
                     AgentEnd::Review(r) => Some(r),
@@ -610,33 +622,38 @@ mod tests {
         let previous = PreviousRun::new("Add a cart", RunOutcome::Completed, "", &crate::protocol::Blackboard::default(), vec![]);
         let template = "{previous}Request from the user:\n{goal}";
 
-        let fresh = planning_request(template, values(), "", None);
+        let fresh = planning_request(template, values(), "", "", None);
         assert_eq!(fresh, "Request from the user:\nNow add tests", "a fresh run is unchanged");
 
-        let continued = planning_request(template, values(), "", Some(&previous));
+        let continued = planning_request(template, values(), "", "", Some(&previous));
         assert!(continued.starts_with("Previous run (the request below continues it"), "{continued}");
         assert!(continued.contains("Request: Add a cart\n"), "{continued}");
         assert!(continued.ends_with("\n\nRequest from the user:\nNow add tests"), "{continued}");
 
         // Templates saved before `{previous}` existed still get the section, in front.
-        let old = planning_request("Request from the user:\n{goal}", values(), "", Some(&previous));
+        let old = planning_request("Request from the user:\n{goal}", values(), "", "", Some(&previous));
         assert_eq!(old, continued);
-        assert_eq!(planning_request("Request from the user:\n{goal}", values(), "", None), fresh);
+        assert_eq!(planning_request("Request from the user:\n{goal}", values(), "", "", None), fresh);
     }
 
     #[test]
-    fn project_notes_go_first_also_in_templates_without_the_field() {
+    fn project_notes_and_skills_go_first_also_in_templates_without_the_fields() {
         let values = || BTreeMap::from([("goal", "Fix it".to_string())]);
         let previous = PreviousRun::new("Add a cart", RunOutcome::Completed, "", &crate::protocol::Blackboard::default(), vec![]);
         let notes = "Project notes from AGENTS.md ...\n\n";
-        let current = planning_request("{project_notes}{previous}Request: {goal}", values(), notes, Some(&previous));
-        assert!(current.starts_with(notes), "{current}");
+        let skills = "Skills the user enabled ...\n\n";
+        let current = planning_request("{project_notes}{skills}{previous}Request: {goal}", values(), notes, skills, Some(&previous));
+        assert!(current.starts_with(&format!("{notes}{skills}Previous run")), "{current}");
         assert!(current.contains("\n\nRequest: Fix it"));
-        let old = planning_request("Request: {goal}", values(), notes, Some(&previous));
-        assert_eq!(old, current, "saved templates get both sections in front, in the same order");
-        assert_eq!(planning_request("Request: {goal}", values(), "", None), "Request: Fix it");
-        let coder = fill_sections("Task: {task}", BTreeMap::from([("task", "T1".to_string())]), &[("project_notes", notes.to_string())]);
-        assert_eq!(coder, format!("{notes}Task: T1"));
+        let old = planning_request("Request: {goal}", values(), notes, skills, Some(&previous));
+        assert_eq!(old, current, "saved templates get every section in front, in the same order");
+        // Templates saved before {skills} existed still get the list.
+        let before_skills = planning_request("{project_notes}{previous}Request: {goal}", values(), notes, skills, Some(&previous));
+        assert!(before_skills.starts_with(&format!("{skills}{notes}Previous run")), "{before_skills}");
+        assert_eq!(planning_request("Request: {goal}", values(), "", "", None), "Request: Fix it");
+        let sections = [("project_notes", notes.to_string()), ("skills", skills.to_string())];
+        let coder = fill_sections("Task: {task}", BTreeMap::from([("task", "T1".to_string())]), &sections);
+        assert_eq!(coder, format!("{notes}{skills}Task: T1"));
     }
 
     #[test]
@@ -659,11 +676,11 @@ mod tests {
     }
 
     #[test]
-    fn the_default_planner_template_has_a_place_for_the_previous_run() {
+    fn the_default_templates_have_a_place_for_notes_skills_and_the_previous_run() {
         let t = crate::roles::PromptTemplates::default();
-        assert!(t.planner.starts_with("{project_notes}{previous}"), "{}", t.planner);
+        assert!(t.planner.starts_with("{project_notes}{skills}{previous}"), "{}", t.planner);
         for (name, template) in [("coderTask", &t.coder_task), ("reviewerTask", &t.reviewer_task)] {
-            assert!(template.starts_with("{project_notes}"), "{name}: {template}");
+            assert!(template.starts_with("{project_notes}{skills}"), "{name}: {template}");
         }
     }
 

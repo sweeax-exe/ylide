@@ -2,6 +2,7 @@ import { ArrowUp, AtSign, FolderOpen, ScanText, Square } from 'lucide-react';
 import { forwardRef, memo, useEffect, useId, useImperativeHandle, useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Mention } from '../../bindings/Mention';
+import { AttachImagesButton, ImageStrip, useImageInput, useVision } from '../../components/ImageInput';
 import { Button, IconButton, Spinner, TextArea } from '../../components/ui';
 import { reportError } from '../../lib/errors';
 import { formatNumber, formatTokens } from '../../lib/format';
@@ -109,8 +110,11 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
   const { t } = useTranslation('chat');
   const draft = useChat((st) => st.draft);
   const mentions = useChat((st) => st.draftMentions);
+  const images = useChat((st) => st.draftImages);
   const streaming = useChat((st) => st.activeRequestId !== null);
-  const { setDraft, addMentions, send, stop } = useChat.getState();
+  const { setDraft, addMentions, send, stop, setDraftImages } = useChat.getState();
+  const vision = useVision();
+  const imageInput = useImageInput(() => useChat.getState().draftImages, setDraftImages, vision);
   const ready = useApp((st) => st.server?.status.state === 'ready');
   const workspace = useApp((st) => st.workspace);
   // The last project is still being reopened at startup: questions wait for it.
@@ -132,7 +136,9 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
   const trigger = focused && typed && typed.start !== dismissedAt ? typed : null;
   const search = useMentionSearch(trigger ? trigger.query : null, workspace?.name ?? '');
   const active = trigger && activeState.query === trigger.query ? Math.min(activeState.index, Math.max(0, search.items.length - 1)) : 0;
-  const canSend = ready && !reopening && !streaming && draft.trim().length > 0;
+  // Images only go to a model that sees; a question may be only images.
+  const imagesBlocked = images.length > 0 && !vision.canSee;
+  const canSend = ready && !reopening && !streaming && (draft.trim().length > 0 || images.length > 0) && !imagesBlocked;
 
   /** Moves the caret after React has rendered the new text. */
   const placeCaret = (position: number) => {
@@ -212,7 +218,7 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
     if (!trigger) return;
     const next = applyTrigger(draft, trigger, caret, item.insert);
     setDraft(next.text);
-    addMentions([item.mention]);
+    if (item.mention) addMentions([item.mention]);
     placeCaret(next.caret);
   };
 
@@ -277,9 +283,20 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
   const selectionLabel = selection ? `${basename(selection.path)}:${selection.startLine}-${selection.endLine}` : '';
 
   return (
-    <div className={s.composer}>
+    <div
+      className={`${s.composer} ${imageInput.dragging ? s.dropping : ''}`}
+      onDragOver={imageInput.onDragOver}
+      onDragLeave={imageInput.onDragLeave}
+      onDrop={imageInput.onDrop}
+    >
       <ModelNotice />
       <DraftContext mentions={mentions} />
+      <ImageStrip images={images} onRemove={imageInput.remove} />
+      {imagesBlocked && (
+        <p className={s.imageWarning} role="status">
+          {vision.hint}
+        </p>
+      )}
       {!workspace && !reopening && <NoProjectHint />}
       <div ref={fieldRef} className={s.field}>
         <TextArea
@@ -294,6 +311,7 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
           aria-controls={trigger ? listId : undefined}
           aria-activedescendant={trigger && search.items.length ? optionId(listId, active) : undefined}
           onChange={onChange}
+          onPaste={imageInput.onPaste}
           onSelect={(e) => setCaret(e.currentTarget.selectionStart)}
           onKeyDown={onKeyDown}
           onFocus={() => setFocused(true)}
@@ -315,6 +333,7 @@ const ComposerField = forwardRef<ComposerHandle, { maxHeight: number }>(function
         <IconButton label={t('composer.addContext')} onClick={insertAt} disabled={!workspace}>
           <AtSign size={15} />
         </IconButton>
+        <AttachImagesButton vision={vision} onPick={imageInput.pick} busy={imageInput.busy} />
         <Button
           variant="ghost"
           size="sm"

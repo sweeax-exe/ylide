@@ -11,9 +11,9 @@ import type { AssistantTurn, Turn } from './conversation';
 export const CHAT_FORMAT = 1;
 const TITLE_LENGTH = 60;
 
-/** Title of a chat: the start of its first question, on one line. */
+/** Title of a chat: the start of its first question with text, on one line. */
 export function chatTitle(turns: Turn[]): string {
-  const first = turns.find((t) => t.role === 'user');
+  const first = turns.find((t) => t.role === 'user' && t.content.trim());
   const text = (first?.content ?? '').replace(/\s+/g, ' ').trim();
   // Cut by characters, not UTF-16 units: half an emoji is not valid text and
   // the core would refuse every save of the chat.
@@ -50,6 +50,8 @@ export function fromStored(chat: StoredChat): Turn[] {
         content: t.content,
         mentions: Array.isArray(t.mentions) ? (t.mentions as Mention[]) : [],
         context: Array.isArray(t.context) ? (t.context as ContextItem[]) : null,
+        // Chats saved before images existed have none.
+        images: Array.isArray(t.images) ? t.images.filter(isString) : [],
       });
     } else if (t.role === 'assistant' && isString(t.requestId)) {
       const answer = raw as AssistantTurn;

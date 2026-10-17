@@ -41,9 +41,14 @@ recommend it. So the publish script writes two lists from the one file:
 | Address | Schema | Read by |
 |---|---|---|
 | `https://ylide.app/registry/v2/models.json` | 2, the file as it is | Ylide 0.1.4 and newer |
-| `https://ylide.app/registry/models.json` | 1, without the uncensored models and the flag | Ylide 0.1.3 and older |
+| `https://ylide.app/registry/models.json` | 1, without the uncensored models and the flag, without vision projectors (`vision: false`) | Ylide 0.1.3 and older |
 
 Validation refuses an uncensored model in a schema 1 list.
+
+Fields added later without a new schema version (such as `projector`) are
+optional: every Ylide version skips fields it does not know (no type in
+`schema.rs` denies unknown fields; `tests::unknown_fields_are_ignored`), so
+0.1.4 and 0.1.5 read the v2 list with projectors as before.
 
 ## Top level
 
@@ -65,11 +70,12 @@ Validation refuses an uncensored model in a schema 1 list.
 | `license` | `id` (SPDX or `LicenseRef-...`), `name`, `url`, `commercialUse`, `notes`. Models whose license forbids commercial use or restricts IDE-like products are not added. |
 | `architecture` | `type` (dense/moe), `paramsTotalB`, `paramsActiveB`, `layers`, `attentionLayers` (hybrid models), `kvHeads`, `headDimK`, `headDimV`, `slidingWindow` + `slidingWindowLayers`, `kvBytesPerTokenF16` (override for exotic layouts), `expertFraction` (share of weights in expert tensors), `recurrentStateMib`. Read from the GGUF header with `tools/registry/gguf-meta.mjs`. |
 | `context` | `max` and `recommended` tokens. |
-| `capabilities` | `toolCalling` (none/basic/good/excellent), `reasoning` (none/optional/always), `vision`. |
+| `capabilities` | `toolCalling` (none/basic/good/excellent), `reasoning` (none/optional/always), `vision` (understands images; requires `projector`). |
 | `quality` | Curated 0-100 `coding` and `agentic` scores derived from the listed benchmarks, used for ranking only. Prefer independent results (SWE-rebench, Artificial Analysis) over self-reported ones. |
 | `requestDefaults` | Per mode (`agent`, `chat`, `inline`): `temperature`, `topP`, `topK`, `minP`, `presencePenalty`, `repeatPenalty`, `templateKwargs` (sent as `chat_template_kwargs`, e.g. `{"enable_thinking": false}`), following the model card. |
 | `source` | `hfRepo` and `revision` (a pinned commit, so hashes stay valid). |
 | `variants[]` | `quant`, `bitsPerWeight`, `qualityPenalty` (quantization loss), `files[]` (`path`, `sizeBytes`, `sha256`; several files for split GGUFs). |
+| `projector` | Vision projector for image input (llama.cpp `--mmproj`): `path`, `sizeBytes`, `sha256` of a file in the same repository and revision. Present exactly when `capabilities.vision` is `true`. See below. |
 | `fim` | Token format for autocomplete models. |
 | `embedding` | `dimensions`, `pooling`, `maxTokens`, query/document prefixes. |
 | `benchmarks[]` | `name`, `score`, `unit`, `sourceUrl`, `selfReported`, `date`. |
@@ -84,8 +90,36 @@ Validation refuses an uncensored model in a schema 1 list.
    hashes from the Hugging Face API (runtime assets from the GitHub API).
 3. `node tools/registry/gguf-meta.mjs --registry --write` reads the GGUF
    headers and corrects the architecture values.
-4. Bump `registryVersion`, run `cargo test -p registry` and open a pull
+4. If the repository has a vision projector, add it (see below) and run
+   `node tools/registry/gguf-meta.mjs --projectors`.
+5. Bump `registryVersion`, run `cargo test -p registry` and open a pull
    request with the sources for license and benchmark numbers.
+
+## Vision projectors
+
+Models that understand images need a second file next to the weights, the
+projector (`mmproj`), which turns an image into tokens. It is downloaded only
+when the user switches on "Understand images" for the model on the Models
+page, and llama-server is then started with `--mmproj`. The memory estimate
+counts it as its file size plus 512 MiB for encoding one image (images are
+capped at 2048 tokens with `--image-max-tokens`), on the GPU or, without
+one, in RAM.
+
+* Take the projector from the model's own repository, so it is pinned with
+  the same `revision`: F16 (or Q8_0) when offered, otherwise BF16. F32 copies
+  are twice the size for no gain.
+* Set `capabilities.vision` only when the projector's type is supported by
+  the pinned llama.cpp build. `gguf-meta.mjs --projectors` prints each
+  projector's `clip.projector_type`; the build knows a type when its
+  `mtmd` library has the matching vision graph (`tools/mtmd/models/` in
+  llama.cpp).
+* `fill.mjs` fills its size and hash like those of the variants.
+
+Current projectors (llama.cpp b11669): `qwen3vl_merger` for the Qwen 3.5, 3.6
+and 3.8 models and their uncensored variants, `gemma4uv` for Gemma 4 (its file
+also holds an audio encoder, which Ylide does not use) and `muse-glimmer` for
+Muse Glimmer (published only as Q4_K_M). Qwen3-Coder-Next and gpt-oss have no
+vision; the embedding model's projector is not listed.
 
 ## Uncensored variants
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { ContextItem } from '../../bindings/ContextItem';
 import type { Mention } from '../../bindings/Mention';
 import { Braid } from '../../components/Braid';
+import { ImageStrip } from '../../components/ImageInput';
 import { Button } from '../../components/ui';
 import { errorText } from '../../lib/errors';
 import { formatNumber } from '../../lib/format';
@@ -66,7 +67,8 @@ export const UserMessage = memo(function UserMessage({ turn }: { turn: UserTurn 
     <article className={s.user}>
       <h3 className="visually-hidden">{t('messages.you')}</h3>
       <SentContext turn={turn} />
-      <p className={s.userText}>{turn.content}</p>
+      <ImageStrip images={turn.images} />
+      {turn.content && <p className={s.userText}>{turn.content}</p>}
     </article>
   );
 });

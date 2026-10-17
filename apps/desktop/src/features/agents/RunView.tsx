@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { RunOutcome } from '../../bindings/RunOutcome';
 import { Braid } from '../../components/Braid';
 import { Dialog } from '../../components/Dialog';
+import { ImageStrip } from '../../components/ImageInput';
 import { Badge, Button, Segmented, Spinner } from '../../components/ui';
 import { ActivityFeed } from './ActivityFeed';
 import { AgentList } from './AgentList';
@@ -152,6 +153,7 @@ function RunHeader({ run }: { run: RunData }) {
     <header className={s.header}>
       {run.continues && <Continues from={run.continues} />}
       <Goal text={run.goal} />
+      <ImageStrip images={run.images} size="sm" />
       <div className={s.controls}>
         <div className={s.state}>
           {status}

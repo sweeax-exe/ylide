@@ -309,7 +309,7 @@
   "network": {
     "title": "네트워크 및 개인정보 보호",
     "statementTitle": "텔레메트리 없음, 계정 없음.",
-    "statementBody": "Ylide는 사용 데이터를 수집하지 않고, 로그인 기능이 없으며, 코드를 절대 업로드하지 않습니다. 아래 네 가지 목적으로만, 그리고 해당 항목이 켜져 있을 때만 인터넷에 연결합니다. 프롬프트와 파일은 이 컴퓨터의 모델이나 ‘고급’에서 설정한 외부 서버로 전송됩니다.",
+    "statementBody": "Ylide는 사용 데이터를 수집하지 않고, 로그인 기능이 없으며, 코드를 절대 업로드하지 않습니다. 아래 다섯 가지 목적으로만, 그리고 해당 항목이 켜져 있을 때만 인터넷에 연결합니다. 프롬프트와 파일은 이 컴퓨터의 모델이나 ‘고급’에서 설정한 외부 서버로 전송됩니다.",
     "allowedTitle": "허용된 연결",
     "allowedDescription": "이 중 하나를 끄면 Ylide는 해당 요청을 보내지 않습니다.",
     "registry": {
@@ -340,6 +340,10 @@
     "updates": {
       "label": "업데이트 확인",
       "hint": "시작할 때 한 번 ylide.app에 Ylide의 새 버전이 있는지 묻습니다. 버전 번호만 전송됩니다. 업데이트 자체는 설치할 때만 다운로드됩니다."
+    },
+    "skills": {
+      "label": "스킬 다운로드",
+      "hint": "‘스킬’ 페이지에서 스킬을 추가, 설치 또는 업데이트할 때 GitHub(api.github.com, raw.githubusercontent.com)에서 스킬을 나열하고 다운로드합니다. 허용하기 전까지는 꺼져 있습니다."
     }
   },
   "advanced": {
@@ -460,6 +464,13 @@
     "contextValue": "{{tokens}} 토큰",
     "slots": "병렬 요청",
     "toolCalls": "도구 호출",
+    "vision": "이미지",
+    "visionState": {
+      "off": "꺼짐",
+      "on": "이해함",
+      "missing": "이미지 모듈 없음",
+      "failed": "불러오지 못함"
+    },
     "tools": {
       "unknown": {
         "label": "테스트 안 됨",
@@ -518,7 +529,19 @@
     "forgetBody": "Ylide가 이 모델을 목록에서 뺍니다. 파일은 그대로 남으며 아무것도 삭제되지 않습니다.",
     "deleteActive": "이 모델은 실행 중이므로 먼저 중지됩니다.",
     "deleteAssigned": "채팅, 자동 완성 또는 코드 검색용으로 선택되어 있다면 선택이 해제됩니다.",
-    "deleteAgain": "카탈로그에서 다시 다운로드할 수 있습니다."
+    "deleteAgain": "카탈로그에서 다시 다운로드할 수 있습니다.",
+    "vision": {
+      "label": "이미지 이해 (+{{size}} GB)",
+      "downloading": "이미지 모듈 다운로드 중: {{percent}} %",
+      "downloadFailed": "이미지 모듈을 다운로드하지 못했습니다. 다시 시도하려면 다시 켜세요.",
+      "missing": "이미지 모듈이 없습니다. 모델이 이미지 없이 실행 중입니다.",
+      "failed": "이미지 모듈을 불러오지 못했습니다. 모델이 이미지 없이 실행 중입니다.",
+      "pending": "다음에 모델을 시작할 때 적용됩니다.",
+      "restart": "지금 다시 시작",
+      "own": "이미지 모듈: {{file}}",
+      "removeOwn": "이미지 모듈 제거",
+      "pick": "이미지 모듈(mmproj) 선택…"
+    }
   },
   "downloads": {
     "title": "다운로드",
@@ -541,7 +564,8 @@
     "retry": "{{name}} 다운로드 다시 시도",
     "cancel": "{{name}} 다운로드 취소",
     "progressLabel": "{{name}} 다운로드 진행률",
-    "failed": "{{message}}"
+    "failed": "{{message}}",
+    "projector": "{{model}} · 이미지 모듈"
   },
   "catalog": {
     "title": "카탈로그",
@@ -572,6 +596,9 @@
       "optional": "선택 가능",
       "always": "항상 켜짐"
     },
+    "vision": "이미지",
+    "visionYes": "이미지 이해 (+{{size}} GB, 선택)",
+    "visionNo": "텍스트만",
     "roles": "적합한 용도",
     "source": "출처",
     "modelCard": "모델 카드",

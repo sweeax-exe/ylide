@@ -27,6 +27,16 @@ describe('chat history', () => {
     expect(fromStored(JSON.parse(JSON.stringify(stored)) as StoredChat)).toEqual(turns);
   });
 
+  it('keeps the images of a question, and reads chats saved before images existed', () => {
+    const png = 'data:image/png;base64,iVBORw0KGgo=';
+    const turns: Turn[] = [userTurn('u1', '', [], [png]), answer('done'), userTurn('u2', 'And this one?', [], [png, png]), answer('done')];
+    const stored = toStored('c1', 5, turns, 9);
+    expect(fromStored(JSON.parse(JSON.stringify(stored)) as StoredChat)).toEqual(turns);
+    expect(stored.summary.title, 'a question that is only an image gives no title').toBe('And this one?');
+    const old = { ...stored, turns: [{ id: 'u', role: 'user', content: 'q', mentions: [], context: null }] } as StoredChat;
+    expect(fromStored(old)).toEqual([userTurn('u', 'q', [])]);
+  });
+
   it('turns an answer that was still being written into a stopped one', () => {
     const [, restored] = fromStored(toStored('c', 1, [userTurn('u', 'q', []), answer('streaming')], 2));
     expect((restored as AssistantTurn).status).toBe('cancelled');

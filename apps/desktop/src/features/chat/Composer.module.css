@@ -8,6 +8,19 @@
   background: var(--bg-app);
 }
 
+/* Images dragged over the composer. */
+.dropping {
+  outline: 1px dashed var(--accent);
+  outline-offset: -4px;
+}
+
+.imageWarning {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  color: var(--warning);
+}
+
 /* ---------- Model notice ---------- */
 .notice {
   display: flex;

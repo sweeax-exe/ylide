@@ -31,9 +31,9 @@ export const emojiNames = [
 export const links = {
   website: 'https://ylide.app',
   privacy: 'https://ylide.app/privacy/',
-  // Set once the repository is public; the welcome and contributing messages
-  // then show a "Source code" button.
-  github: null,
+  // The welcome and contributing messages show a "Source code" button for it;
+  // null hides the button.
+  github: 'https://github.com/sweeax-exe/ylide',
   latest: 'https://ylide.app/updates/latest.json',
   discordTerms: 'https://discord.com/terms',
   discordGuidelines: 'https://discord.com/guidelines',
