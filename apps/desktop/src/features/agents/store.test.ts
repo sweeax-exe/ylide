@@ -14,7 +14,7 @@ const api = vi.hoisted(() => ({
 }));
 vi.mock('../../lib/ipc', () => ({ api }));
 vi.mock('../../lib/errors', () => ({ reportError: vi.fn() }));
-vi.mock('../../i18n', () => ({ default: { t: (key: string) => key } }));
+vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, language: 'de', resolvedLanguage: 'de' } }));
 vi.mock('../../state/app', () => ({ useApp: { getState: () => ({ workspace: { root: 'D:/shop' } }), subscribe: () => () => undefined } }));
 vi.mock('../../state/layout', () => ({ useLayout: { getState: () => ({ right: 'agents' }) } }));
 vi.mock('../../state/toasts', () => ({ useToasts: { getState: () => ({ push: vi.fn() }) } }));
@@ -51,20 +51,23 @@ describe('agent run images', () => {
     // Images typed for the next step of an earlier run stay out of a new run.
     store.getState().setFollowUpImages([image('not-yet')]);
     await store.getState().start(store.getState().draft);
-    expect(api.agents.start).toHaveBeenLastCalledWith('Build the cart like the mockup', expect.any(Function), null, ['data:image/png;base64,mockup']);
+    expect(api.agents.start).toHaveBeenLastCalledWith('Build the cart like the mockup', expect.any(Function), null, ['data:image/png;base64,mockup'], 'de');
     expect(store.getState().draftImages).toEqual([]);
     expect(store.getState().run?.images).toEqual(['data:image/png;base64,mockup']);
 
-    emit({ type: 'runFinished', runId: 'run-1', outcome: 'completed', summary: 'Done.' });
+    emit({ type: 'runFinished', runId: 'run-1', outcome: 'completed', summary: 'Done.', recap: null });
     await flush();
     expect(store.getState().phase).toBe('finished');
 
     store.getState().setFollowUpImages([image('bug'), image('detail')]);
     await store.getState().continueRun('The button is still blue, see the screenshots');
-    expect(api.agents.start).toHaveBeenLastCalledWith('The button is still blue, see the screenshots', expect.any(Function), 'run-1', [
-      'data:image/png;base64,bug',
-      'data:image/png;base64,detail',
-    ]);
+    expect(api.agents.start).toHaveBeenLastCalledWith(
+      'The button is still blue, see the screenshots',
+      expect.any(Function),
+      'run-1',
+      ['data:image/png;base64,bug', 'data:image/png;base64,detail'],
+      'de',
+    );
     expect(store.getState().followUpImages).toEqual([]);
     expect(store.getState().run?.images).toHaveLength(2);
   });

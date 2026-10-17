@@ -64,7 +64,8 @@
     "reviewing": "Meninjau perubahan",
     "stepLimit": "Batas langkah tercapai",
     "answering": "Menjawab {{agent}}",
-    "notes": "Memperbarui pengetahuan proyek"
+    "notes": "Memperbarui pengetahuan proyek",
+    "recap": "Menulis ringkasan"
   },
   "idle": {
     "goalLabel": "Apa yang harus dikerjakan agen?",
@@ -131,6 +132,12 @@
     "noChanges": "Tidak ada file yang diubah.",
     "notesUpdated": "Pengetahuan proyek diperbarui di AGENTS.md",
     "openNotes": "Buka AGENTS.md"
+  },
+  "report": {
+    "noPlan": "Tidak ada rencana yang dibuat.",
+    "stoppedBeforePlan": "Proses dihentikan sebelum ada rencana.",
+    "openComments": "Peninjau masih punya komentar terbuka setelah putaran terakhir.",
+    "noRecap": "Orkestrator tidak menulis ringkasan, jadi berikut daftar tugasnya."
   },
   "next": {
     "label": "Apa yang harus dikerjakan agen selanjutnya?",

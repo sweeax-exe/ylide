@@ -64,7 +64,8 @@
     "reviewing": "Revisando los cambios",
     "stepLimit": "Límite de pasos alcanzado",
     "answering": "Respondiendo a {{agent}}",
-    "notes": "Actualizando el conocimiento del proyecto"
+    "notes": "Actualizando el conocimiento del proyecto",
+    "recap": "Escribiendo el resumen"
   },
   "idle": {
     "goalLabel": "¿Qué deben hacer los agentes?",
@@ -135,6 +136,12 @@
     "noChanges": "No se modificó ningún archivo.",
     "notesUpdated": "Conocimiento del proyecto actualizado en AGENTS.md",
     "openNotes": "Abrir AGENTS.md"
+  },
+  "report": {
+    "noPlan": "No se hizo ningún plan.",
+    "stoppedBeforePlan": "La ejecución se detuvo antes de tener un plan.",
+    "openComments": "El revisor aún tenía comentarios abiertos tras la última ronda.",
+    "noRecap": "El orquestador no escribió ningún resumen, así que aquí están las tareas."
   },
   "next": {
     "label": "¿Qué deben hacer los agentes ahora?",

@@ -126,6 +126,7 @@ fn agent_team(handle: &ChatHandle) -> Team {
         max_review_rounds: 1,
         review_enabled: true,
         update_notes: false,
+        summarize: false,
     }
 }
 

@@ -42,8 +42,8 @@ const channelName = (key) => allChannels().find((c) => c.key === key).name;
 const roleName = (key) => roleSpec.find((r) => r.key === key).name;
 
 export class Tickets {
-  constructor({ counter, emojis }) {
-    this.counter = counter;
+  constructor({ state, emojis }) {
+    this.state = state;
     this.emojis = emojis;
     this.ideaCooldown = new Map();
   }
@@ -113,7 +113,7 @@ export class Tickets {
 
     const open = this.category(guild, 'openTickets');
     if (!open) throw new Error('the "Open tickets" category is missing; run the setup');
-    const number = this.counter.next();
+    const number = this.state.nextTicket();
     const name = ticketName(type, number);
     const overwrites = open.permissionOverwrites.cache.map((o) => ({ id: o.id, type: o.type, allow: o.allow.bitfield, deny: o.deny.bitfield }));
     overwrites.push({ id: owner.id, type: OverwriteType.Member, allow: ticketMember, deny: 0n });

@@ -3,7 +3,7 @@ import type { AgentEvent } from '../../bindings/AgentEvent';
 import type { AgentState } from '../../bindings/AgentState';
 import type { LastRun } from '../../bindings/LastRun';
 import type { Task } from '../../bindings/Task';
-import { appendStream, applyDecision, applyEvent, changedFiles, continuationOf, continueBlock, createRun, currentTask, isGenerating, notesUpdated, openTaskCount, removeQuestion, restoreRun, STREAM_TAIL, type RunData, type ToolFeedItem } from './run';
+import { appendStream, applyDecision, applyEvent, changedFiles, continuationOf, continueBlock, createRun, currentTask, isGenerating, notesUpdated, openTaskCount, removeQuestion, reportLines, restoreRun, STREAM_TAIL, tasksOf, type RunData, type ToolFeedItem } from './run';
 
 const R = 'run-1';
 const status = (agentId: string, state: AgentState, step = '', taskId: string | null = null, tps = 0, total = 0): AgentEvent => ({
@@ -119,7 +119,7 @@ describe('applyEvent', () => {
       { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 't', detail: 'd' } },
     ]);
     expect(isGenerating(run)).toBe(true);
-    run = applyEvent(run, { type: 'runFinished', runId: R, outcome: 'cancelled', summary: 'Stopped.' }, 9000);
+    run = applyEvent(run, { type: 'runFinished', runId: R, outcome: 'cancelled', summary: 'Stopped.', recap: null }, 9000);
     expect(run.outcome).toBe('cancelled');
     expect(run.finishedAt).toBe(9000);
     expect(run.approvals).toEqual([]);
@@ -166,11 +166,11 @@ describe('continuing a run', () => {
   const finished = () =>
     feed([
       { type: 'runStarted', runId: R, goal: 'Add a cart' },
-      { type: 'runFinished', runId: R, outcome: 'completed', summary: '✔ T1 Cart model' },
+      { type: 'runFinished', runId: R, outcome: 'completed', summary: '✔ T1 Cart model', recap: 'Das Modell steht.' },
     ], createRun('Add a cart', 1000, { project: 'D:/shop' }));
 
   it('keeps goal, outcome and summary of a finished run', () => {
-    expect(continuationOf(finished())).toEqual({ runId: R, goal: 'Add a cart', outcome: 'completed', summary: '✔ T1 Cart model' });
+    expect(continuationOf(finished())).toEqual({ runId: R, goal: 'Add a cart', outcome: 'completed', summary: '✔ T1 Cart model', recap: 'Das Modell steht.', tasks: [] });
   });
 
   it('has nothing to continue while the run is going or before the core named it', () => {
@@ -208,6 +208,7 @@ describe('a run kept across restarts', () => {
     plan: { goal: 'Add a cart', summary: 'Model, then view.', tasks: [task('T1', { status: 'done' }), task('T2', { status: 'skipped' }), task('T3')] },
     changes: [{ path: 'src/cart.ts', kind: 'created', diff: '', checkpointId: 'run-7-1' }],
     earlierGoals: [],
+    recap: null,
   };
 
   it('comes back with goal, tasks, result and changed files, marked as stored', () => {
@@ -238,5 +239,40 @@ describe('project notes', () => {
     expect(notesUpdated({ ...run, changes: [change('agents.md', 'modified')] })).toBe(true);
     expect(notesUpdated({ ...run, changes: [change('AGENTS.md', 'modified'), change('AGENTS.md', 'deleted')] })).toBe(false);
     expect(notesUpdated({ ...run, changes: [change('docs/AGENTS.md', 'modified')] })).toBe(false);
+  });
+});
+
+describe('the summary a run ends with', () => {
+  it('comes with the end of the run and goes along when it is continued or restored', () => {
+    const run = feed([
+      { type: 'planReady', runId: R, plan: { goal: 'g', summary: 's', tasks: [task('T1')] } },
+      { type: 'taskUpdated', runId: R, task: task('T1', { status: 'done', result: 'Done.' }) },
+      { type: 'runFinished', runId: R, outcome: 'completed', summary: '✔ T1 Task T1', recap: '- `total()` rechnet jetzt richtig.' },
+    ]);
+    expect(run.recap).toBe('- `total()` rechnet jetzt richtig.');
+    const from = continuationOf(run)!;
+    expect(from.recap).toBe(run.recap);
+    expect(from.tasks.map((t) => t.status)).toEqual(['done']);
+    const stopped = feed([{ type: 'runFinished', runId: R, outcome: 'cancelled', summary: 'x', recap: null }]);
+    expect(stopped.recap).toBeNull();
+  });
+
+  it('falls back to a task list with the first line of each result', () => {
+    const lines = reportLines([
+      task('T1', { status: 'done', result: 'Fixed total().\nMore detail.' }),
+      task('T2', { status: 'done', result: 'Added a test.', review: { verdict: 'request_changes', summary: 'Edge case.', comments: [] } }),
+      task('T3', { status: 'failed', result: `Stopped: ${'x'.repeat(300)}` }),
+      task('T4'),
+    ]);
+    expect(lines.map((l) => [l.id, l.status, l.openComments])).toEqual([
+      ['T1', 'done', false],
+      ['T2', 'done', true],
+      ['T3', 'failed', false],
+      ['T4', 'pending', false],
+    ]);
+    expect(lines[0].result).toBe('Fixed total().');
+    expect(lines[2].result).toHaveLength(201);
+    expect(lines[3].result).toBeNull();
+    expect(tasksOf({ tasks: { T2: task('T2'), T1: task('T1') }, taskOrder: ['T1', 'T2', 'T9'] }).map((t) => t.id)).toEqual(['T1', 'T2']);
   });
 });

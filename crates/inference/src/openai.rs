@@ -206,6 +206,11 @@ pub struct ChatRequest {
     /// Server-specific fields (e.g. llama-server's `reasoning_budget_tokens`), sent as-is.
     #[serde(flatten, skip_serializing_if = "serde_json::Map::is_empty")]
     pub extra: serde_json::Map<String, Value>,
+    /// A short text answer beside the agents' work (a summary, notes): the app
+    /// gives it its chat defaults, which keep thinking off or low, so the
+    /// answer is not used up by reasoning. Not sent.
+    #[serde(skip)]
+    pub quick: bool,
 }
 
 impl ChatRequest {

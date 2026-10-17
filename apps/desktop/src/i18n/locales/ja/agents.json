@@ -64,7 +64,8 @@
     "reviewing": "変更をレビュー中",
     "stepLimit": "ステップ上限に達しました",
     "answering": "{{agent}} に回答中",
-    "notes": "プロジェクトの知識を更新中"
+    "notes": "プロジェクトの知識を更新中",
+    "recap": "要約を作成中"
   },
   "idle": {
     "goalLabel": "エージェントに何を依頼しますか？",
@@ -131,6 +132,12 @@
     "noChanges": "変更されたファイルはありません。",
     "notesUpdated": "AGENTS.md のプロジェクトの知識を更新しました",
     "openNotes": "AGENTS.md を開く"
+  },
+  "report": {
+    "noPlan": "計画は作成されませんでした。",
+    "stoppedBeforePlan": "計画ができる前に実行が停止されました。",
+    "openComments": "最後のラウンドの後も、レビュアーの未解決の指摘が残っていました。",
+    "noRecap": "オーケストレーターの要約がないため、タスクの一覧を表示しています。"
   },
   "next": {
     "label": "次にエージェントに何を依頼しますか？",

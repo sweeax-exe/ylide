@@ -8,9 +8,10 @@
 
 import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
 import { loadEnv } from '../env.js';
-import { Counter } from './state.js';
+import { State } from './state.js';
 import { Tickets } from './tickets.js';
 import { startVersionWatch } from './version.js';
+import { ReleaseAnnouncer } from './releases.js';
 import { log } from './log.js';
 
 const SWEEP_EVERY = 30 * 60 * 1000;
@@ -78,11 +79,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.once(Events.ClientReady, async () => {
   const emojis = Object.fromEntries((await client.application.emojis.fetch()).map((e) => [e.name, e.id]));
-  tickets = new Tickets({ counter: new Counter(env.dataDir), emojis });
-  startVersionWatch();
+  const state = new State(env.dataDir);
+  tickets = new Tickets({ state, emojis });
   const guild = await client.guilds.fetch(env.guildId);
   await guild.channels.fetch();
   await guild.roles.fetch();
+  const releases = new ReleaseAnnouncer({ state, guild, emojis });
+  startVersionWatch((release) => releases.check(release));
   const sweep = () => tickets.sweep(guild).catch((error) => log(`sweep failed: ${error.message}`));
   sweep();
   setInterval(sweep, SWEEP_EVERY);

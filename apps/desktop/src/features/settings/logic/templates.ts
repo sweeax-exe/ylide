@@ -4,7 +4,7 @@ import type { PromptTemplates } from '../../../bindings/PromptTemplates';
 
 export type TemplateKey = keyof PromptTemplates;
 
-export const TEMPLATE_KEYS: readonly TemplateKey[] = ['planner', 'coderTask', 'reviewerTask', 'feedback', 'question', 'continue', 'repeatedFailure', 'notes'];
+export const TEMPLATE_KEYS: readonly TemplateKey[] = ['planner', 'coderTask', 'reviewerTask', 'feedback', 'question', 'continue', 'repeatedFailure', 'notes', 'recap'];
 
 /**
  * Values the core fills into each template (crates/agent/src/orchestrator.rs).
@@ -20,6 +20,7 @@ export const TEMPLATE_PLACEHOLDERS: Readonly<Record<TemplateKey, readonly string
   continue: [],
   repeatedFailure: [],
   notes: ['notes', 'overview', 'commands', 'max_lines'],
+  recap: ['language', 'goal', 'approach', 'tasks', 'files', 'commands'],
 };
 
 /** Placeholders used in a text, in order of first use. Same syntax as `fill` in the core. */

@@ -8,4 +8,8 @@ export type PromptTemplates = { planner: string, coderTask: string, reviewerTask
  * Asks the orchestrator for the new project notes after a run. Settings
  * saved before it existed get the default.
  */
-notes: string, };
+notes: string, 
+/**
+ * Asks the orchestrator for the summary a run ends with, in the user's language.
+ */
+recap: string, };

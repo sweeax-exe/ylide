@@ -24,7 +24,12 @@ pub struct LastRun {
     #[ts(type = "number")]
     pub finished_at_unix_ms: u64,
     pub outcome: RunOutcome,
+    /// The plain task list (English).
     pub summary: String,
+    /// The orchestrator's summary in the user's language (none in records
+    /// written before it existed, for stopped runs, or when it failed).
+    #[serde(default)]
+    pub recap: Option<String>,
     pub plan: Option<Plan>,
     /// File changes in order, without their diffs.
     pub changes: Vec<FileChange>,
@@ -40,7 +45,7 @@ impl LastRun {
             messages: vec![],
             changed_files: self.changes.iter().map(|c| c.path.clone()).collect(),
         };
-        PreviousRun::new(&self.goal, self.outcome, &self.summary, &board, self.earlier_goals.clone())
+        PreviousRun::new(&self.goal, self.outcome, &self.summary, &board, self.earlier_goals.clone()).with_recap(self.recap.clone())
     }
 }
 
@@ -104,6 +109,7 @@ mod tests {
             finished_at_unix_ms: 9_000,
             outcome: RunOutcome::Cancelled,
             summary: "✔ T1 task T1".into(),
+            recap: Some("Das Warenkorb-Modell steht, die Ansicht fehlt noch.".into()),
             plan: Some(Plan {
                 goal: "Add a cart".into(),
                 summary: "Model, then view.".into(),
@@ -140,6 +146,19 @@ mod tests {
     }
 
     #[test]
+    fn records_from_before_the_summary_still_load() {
+        let runs = store("old-record");
+        let shop = Path::new("D:/projects/shop");
+        let mut old = serde_json::to_value(record("run-1")).unwrap();
+        old.as_object_mut().unwrap().remove("recap");
+        fs::create_dir_all(&runs.root).unwrap();
+        fs::write(runs.file(shop), serde_json::to_vec(&old).unwrap()).unwrap();
+        let loaded = runs.load(shop).expect("old record loads");
+        assert_eq!(loaded.recap, None);
+        assert_eq!(loaded.run_id, "run-1");
+    }
+
+    #[test]
     fn a_broken_record_is_no_record() {
         let runs = store("broken");
         let shop = Path::new("D:/projects/shop");
@@ -154,6 +173,7 @@ mod tests {
         assert_eq!(previous.goal, "Add a cart");
         assert_eq!(previous.changed_files, vec!["src/cart.ts"]);
         assert_eq!(previous.earlier_goals, vec!["Set up the shop"]);
+        assert_eq!(previous.recap.as_deref(), Some("Das Warenkorb-Modell steht, die Ansicht fehlt noch."));
         let open: Vec<String> = previous.open_tasks().into_iter().map(|t| t.id).collect();
         assert_eq!(open, vec!["T2"]);
     }

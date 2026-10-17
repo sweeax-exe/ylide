@@ -64,7 +64,8 @@
     "reviewing": "Prüft die Änderungen",
     "stepLimit": "Schrittlimit erreicht",
     "answering": "Beantwortet eine Frage von {{agent}}",
-    "notes": "Aktualisiert das Projektwissen"
+    "notes": "Aktualisiert das Projektwissen",
+    "recap": "Schreibt die Zusammenfassung"
   },
   "idle": {
     "goalLabel": "Was sollen die Agents tun?",
@@ -133,6 +134,12 @@
     "noChanges": "Es wurden keine Dateien geändert.",
     "notesUpdated": "Projektwissen in AGENTS.md aktualisiert",
     "openNotes": "AGENTS.md öffnen"
+  },
+  "report": {
+    "noPlan": "Es wurde kein Plan erstellt.",
+    "stoppedBeforePlan": "Der Lauf wurde gestoppt, bevor ein Plan stand.",
+    "openComments": "Der Reviewer hatte nach der letzten Runde noch offene Anmerkungen.",
+    "noRecap": "Vom Orchestrator gibt es keine Zusammenfassung, darum hier die Aufgaben."
   },
   "next": {
     "label": "Was sollen die Agents als Nächstes tun?",

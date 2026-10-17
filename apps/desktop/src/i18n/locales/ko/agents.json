@@ -64,7 +64,8 @@
     "reviewing": "변경 사항 리뷰 중",
     "stepLimit": "단계 한도 도달",
     "answering": "{{agent}}에게 답변하는 중",
-    "notes": "프로젝트 지식 업데이트 중"
+    "notes": "프로젝트 지식 업데이트 중",
+    "recap": "요약 작성 중"
   },
   "idle": {
     "goalLabel": "에이전트에게 맡길 일",
@@ -131,6 +132,12 @@
     "noChanges": "변경된 파일이 없습니다.",
     "notesUpdated": "AGENTS.md의 프로젝트 지식을 업데이트했습니다",
     "openNotes": "AGENTS.md 열기"
+  },
+  "report": {
+    "noPlan": "계획이 만들어지지 않았습니다.",
+    "stoppedBeforePlan": "계획이 세워지기 전에 실행이 중지되었습니다.",
+    "openComments": "마지막 라운드 후에도 리뷰어의 해결되지 않은 의견이 남아 있었습니다.",
+    "noRecap": "오케스트레이터가 요약을 쓰지 않아 작업 목록을 보여 드립니다."
   },
   "next": {
     "label": "에이전트에게 다음으로 맡길 일",

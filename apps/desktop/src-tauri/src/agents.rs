@@ -81,6 +81,14 @@ pub(crate) struct AgentModel {
     pub(crate) vision: bool,
 }
 
+/// The registry's agent defaults, or its chat defaults for a quick side answer
+/// (summary, notes), which keep thinking off or low: reasoning would use up
+/// the answer's token budget.
+fn apply_agent_mode(req: &mut ChatRequest, model: Option<&Model>) {
+    let mode = if req.quick { Mode::Chat } else { Mode::Agent };
+    apply_mode(req, model, mode);
+}
+
 #[async_trait]
 impl ChatModel for AgentModel {
     async fn chat(
@@ -89,7 +97,7 @@ impl ChatModel for AgentModel {
         cancel: &CancellationToken,
         on_delta: &mut (dyn FnMut(Delta) + Send),
     ) -> Result<ChatResult, LlmError> {
-        apply_mode(&mut req, self.model.as_ref(), Mode::Agent);
+        apply_agent_mode(&mut req, self.model.as_ref());
         self.inner.chat(req, cancel, on_delta).await
     }
 
@@ -109,7 +117,7 @@ pub struct RunEntry {
     /// Requests of the runs this one continues, oldest first.
     pub earlier_goals: Vec<String>,
     /// Outcome and summary, recorded before the UI hears that the run ended.
-    pub ended: Arc<Mutex<Option<(RunOutcome, String)>>>,
+    pub ended: Arc<Mutex<Option<Ended>>>,
     /// File changes so far, without diffs, for the stored record.
     pub changes: Arc<Mutex<Vec<FileChange>>>,
     /// The run's model sees: answers and messages of the user may carry images.
@@ -119,10 +127,19 @@ pub struct RunEntry {
 impl RunEntry {
     /// What a run that continues this one is told about it; `None` while it still runs.
     pub fn as_previous(&self) -> Option<PreviousRun> {
-        let (outcome, summary) = self.ended.lock().unwrap().clone()?;
+        let ended = self.ended.lock().unwrap().clone()?;
         let board = self.ctx.blackboard.lock().unwrap();
-        Some(PreviousRun::new(&self.goal, outcome, &summary, &board, self.earlier_goals.clone()))
+        let previous = PreviousRun::new(&self.goal, ended.outcome, &ended.summary, &board, self.earlier_goals.clone());
+        Some(previous.with_recap(ended.recap))
     }
+}
+
+/// How a run ended, as its `RunFinished` event said.
+#[derive(Debug, Clone)]
+pub struct Ended {
+    pub outcome: RunOutcome,
+    pub summary: String,
+    pub recap: Option<String>,
 }
 
 #[derive(Default)]
@@ -166,6 +183,7 @@ fn team_for(state: &AppState, handle: &ChatHandle) -> Team {
         max_review_rounds: settings.agent.max_review_rounds,
         review_enabled: settings.agent.review_enabled,
         update_notes: settings.agent.update_project_notes,
+        summarize: true,
     }
 }
 
@@ -178,7 +196,15 @@ pub fn checkpoint_store(state: &AppState) -> AppResult<CheckpointStore> {
 /// `channel`. With `previous_run`, the new run continues that finished run.
 /// `images` (data URLs) go with the request to the orchestrator and to the
 /// agents working on its tasks; the model must see.
-pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous_run: Option<String>, channel: Channel<AgentEvent>) -> AppResult<String> {
+/// `language` is the app's UI language; the summary at the end is written in it.
+pub async fn start(
+    state: &AppState,
+    goal: String,
+    images: Vec<String>,
+    previous_run: Option<String>,
+    language: String,
+    channel: Channel<AgentEvent>,
+) -> AppResult<String> {
     let handle = state
         .runtime
         .chat_handle()
@@ -200,7 +226,9 @@ pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous
     let (record_end, record_changes) = (ended.clone(), changes.clone());
     let emit: EventSink = Arc::new(move |e| {
         match &e {
-            AgentEvent::RunFinished { outcome, summary, .. } => *record_end.lock().unwrap() = Some((*outcome, summary.clone())),
+            AgentEvent::RunFinished { outcome, summary, recap, .. } => {
+                *record_end.lock().unwrap() = Some(Ended { outcome: *outcome, summary: summary.clone(), recap: recap.clone() })
+            }
             AgentEvent::ToolResult { change: Some(change), .. } => record_change(&mut record_changes.lock().unwrap(), change),
             _ => {}
         }
@@ -222,7 +250,8 @@ pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous
             emit,
         )
         .with_skills(skills)
-        .with_goal_images(images),
+        .with_goal_images(images)
+        .with_language(language),
     );
     let entry = Arc::new(RunEntry {
         ctx: ctx.clone(),
@@ -247,6 +276,7 @@ pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous
             finished_at_unix_ms: now_ms(),
             outcome: report.outcome,
             summary: report.summary,
+            recap: report.recap,
             plan: report.plan,
             changes: entry.changes.lock().unwrap().clone(),
             earlier_goals: entry.earlier_goals.clone(),
@@ -277,4 +307,27 @@ fn find_previous(state: &AppState, project: &Path, id: &str) -> AppResult<Previo
 
 fn now_ms() -> u64 {
     SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as u64).unwrap_or(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quick_side_answers_think_little() {
+        let reg = registry::bundled();
+        let qwen = reg.models.iter().find(|m| m.id == "qwen3.6-35b-a3b").unwrap();
+        let mut work = ChatRequest::new(vec![]);
+        apply_agent_mode(&mut work, Some(qwen));
+        assert_eq!(work.chat_template_kwargs, Some(serde_json::json!({"preserve_thinking": true})));
+        let mut quick = ChatRequest::new(vec![]);
+        quick.quick = true;
+        apply_agent_mode(&mut quick, Some(qwen));
+        assert_eq!(quick.chat_template_kwargs, Some(serde_json::json!({"enable_thinking": false})));
+        let gpt = reg.models.iter().find(|m| m.id == "qwen3.8-27b").unwrap();
+        let mut quick = ChatRequest::new(vec![]);
+        quick.quick = true;
+        apply_agent_mode(&mut quick, Some(gpt));
+        assert_eq!(quick.chat_template_kwargs, Some(serde_json::json!({"reasoning_effort": "low"})));
+    }
 }

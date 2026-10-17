@@ -306,6 +306,10 @@
     "notes": {
       "label": "Projektwissen",
       "hint": "Geht nach einem Lauf an den Orchestrator, um Ylides Abschnitt in AGENTS.md zu aktualisieren."
+    },
+    "recap": {
+      "label": "Zusammenfassung",
+      "hint": "Geht am Ende eines Laufs an den Orchestrator, damit er eine kurze Zusammenfassung in deiner Sprache schreibt."
     }
   },
   "network": {

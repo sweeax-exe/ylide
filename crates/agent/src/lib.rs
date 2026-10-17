@@ -6,6 +6,7 @@
 //! * [`runner`]: the loop for one agent; [`orchestrator`]: the multi-agent run.
 //! * [`previous`]: what a run that continues an earlier one is told about it.
 //! * [`knowledge`]: long-term project notes in the project's `AGENTS.md`.
+//! * [`recap`]: the summary a run ends with, in the user's language.
 //! * [`roles`]: editable role definitions and prompt templates (no hidden prompts).
 
 pub mod checkpoints;
@@ -16,6 +17,7 @@ pub mod orchestrator;
 pub mod permissions;
 pub mod previous;
 pub mod protocol;
+pub mod recap;
 pub mod roles;
 pub mod runner;
 pub mod textcalls;

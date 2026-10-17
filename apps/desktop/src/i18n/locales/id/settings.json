@@ -304,6 +304,10 @@
     "notes": {
       "label": "Pengetahuan proyek",
       "hint": "Dikirim ke orkestrator setelah proses untuk memperbarui bagian Ylide di AGENTS.md."
+    },
+    "recap": {
+      "label": "Ringkasan",
+      "hint": "Dikirim ke orkestrator di akhir proses agar ia menulis ringkasan singkat dalam bahasa Anda."
     }
   },
   "network": {

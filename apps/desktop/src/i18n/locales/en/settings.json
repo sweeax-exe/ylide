@@ -306,6 +306,10 @@
     "notes": {
       "label": "Project knowledge",
       "hint": "Sent to the orchestrator after a run, to update Ylide’s section of AGENTS.md."
+    },
+    "recap": {
+      "label": "Summary",
+      "hint": "Sent to the orchestrator at the end of a run, to write a short summary in your language."
     }
   },
   "network": {

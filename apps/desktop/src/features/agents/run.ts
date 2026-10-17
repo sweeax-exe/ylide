@@ -105,6 +105,8 @@ export interface ContinuedRun {
   goal: string;
   outcome: RunOutcome;
   summary: string | null;
+  recap: string | null;
+  tasks: Task[];
 }
 
 export interface RunData {
@@ -136,7 +138,10 @@ export interface RunData {
   /** Pending questions for the user, oldest first. */
   questions: UserQuestion[];
   outcome: RunOutcome | null;
+  /** The plain task list from the core (English; the UI shows its own, translated). */
   summary: string | null;
+  /** The orchestrator's summary in the user's language; null when it wrote none. */
+  recap: string | null;
 }
 
 /** Tools that end an agent's turn; the core never sends a result for them. */
@@ -172,6 +177,7 @@ export function createRun(goal: string, startedAt: number, from: { project?: str
     questions: [],
     outcome: null,
     summary: null,
+    recap: null,
   };
 }
 
@@ -294,7 +300,7 @@ export function applyEvent(run: RunData, event: AgentEvent, at: number): RunData
     }
 
     case 'runFinished':
-      return { ...next, outcome: event.outcome, summary: event.summary, finishedAt: at, approvals: [], questions: [] };
+      return { ...next, outcome: event.outcome, summary: event.summary, recap: event.recap ?? null, finishedAt: at, approvals: [], questions: [] };
   }
 }
 
@@ -368,7 +374,36 @@ export function appendStream(tail: string, text: string): string {
 /** What a run that continues `run` keeps of it; null until it has ended. */
 export function continuationOf(run: RunData): ContinuedRun | null {
   if (!run.outcome || !run.runId) return null;
-  return { runId: run.runId, goal: run.goal, outcome: run.outcome, summary: run.summary };
+  return { runId: run.runId, goal: run.goal, outcome: run.outcome, summary: run.summary, recap: run.recap, tasks: tasksOf(run) };
+}
+
+/** The run's tasks in plan order. */
+export function tasksOf(run: Pick<RunData, 'tasks' | 'taskOrder'>): Task[] {
+  return run.taskOrder.map((id) => run.tasks[id]).filter((t): t is Task => !!t);
+}
+
+export interface ReportLine {
+  id: string;
+  title: string;
+  status: Task['status'];
+  /** First line of the task's result. */
+  result: string | null;
+  /** The reviewer still requested changes after the last round. */
+  openComments: boolean;
+}
+
+/** The task list shown when there is no summary (stopped run, or the model could not write one). */
+export function reportLines(tasks: Task[]): ReportLine[] {
+  return tasks.map((t) => {
+    const first = t.result?.trim().split('\n')[0]?.trim() ?? '';
+    return {
+      id: t.id,
+      title: t.title,
+      status: t.status,
+      result: first ? (first.length > 200 ? `${first.slice(0, 200)}…` : first) : null,
+      openComments: t.review?.verdict === 'request_changes',
+    };
+  });
 }
 
 /**
@@ -387,6 +422,7 @@ export function restoreRun(last: LastRun, project: string | null): RunData {
     changes: last.changes,
     outcome: last.outcome,
     summary: last.summary,
+    recap: last.recap ?? null,
     stored: true,
   };
 }

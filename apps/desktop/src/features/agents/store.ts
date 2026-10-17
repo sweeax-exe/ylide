@@ -182,6 +182,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
         },
         continues?.runId ?? null,
         images,
+        i18n.resolvedLanguage ?? i18n.language ?? 'en',
       );
       if (gen !== generation) return;
       const { run } = get();

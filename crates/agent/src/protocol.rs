@@ -161,6 +161,10 @@ impl Blackboard {
     }
 }
 
+/// Start of the summary of a review that never happened: the reviewer gave no
+/// verdict (step limit, error, plain-text answer) and the task was accepted.
+pub const NO_VERDICT: &str = "Reviewer did not submit a verdict";
+
 pub(crate) fn first_line(s: &str, max: usize) -> String {
     let line = s.lines().next().unwrap_or_default();
     if line.chars().count() > max { format!("{}…", line.chars().take(max).collect::<String>()) } else { line.to_string() }
@@ -252,6 +256,9 @@ pub enum AgentEvent {
     Message { run_id: String, message: AgentMessage },
     #[serde(rename_all = "camelCase")]
     CheckpointCreated { run_id: String, checkpoint: Checkpoint },
+    /// `summary` is the plain task list (English, for agents and logs);
+    /// `recap` the orchestrator's summary in the user's language, when it
+    /// could write one.
     #[serde(rename_all = "camelCase")]
-    RunFinished { run_id: String, outcome: RunOutcome, summary: String },
+    RunFinished { run_id: String, outcome: RunOutcome, summary: String, recap: Option<String> },
 }

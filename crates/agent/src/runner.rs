@@ -98,6 +98,9 @@ pub struct RunContext {
     /// Images that came with the request (data URLs); the orchestrator and
     /// the agent that works on a task see them with their first message.
     pub goal_images: Vec<String>,
+    /// The user's language (app language code, "en" by default): the summary
+    /// at the end of the run is written in it.
+    pub language: String,
     /// Tools the user approved "always" during this run.
     always_allowed: Mutex<HashSet<String>>,
     /// Files read by any agent in this run (guards blind overwrites).
@@ -133,6 +136,7 @@ impl RunContext {
             blackboard: Mutex::new(Blackboard::default()),
             skills: Vec::new(),
             goal_images: Vec::new(),
+            language: "en".into(),
             always_allowed: Mutex::default(),
             read_files: Mutex::default(),
             worked_commands: Mutex::default(),
@@ -154,6 +158,12 @@ impl RunContext {
     /// The run with images of the request (for a model that sees).
     pub fn with_goal_images(mut self, images: Vec<String>) -> Self {
         self.goal_images = images;
+        self
+    }
+
+    /// The run for a user of this app language ("de", "pt", ...).
+    pub fn with_language(mut self, language: impl Into<String>) -> Self {
+        self.language = language.into();
         self
     }
 

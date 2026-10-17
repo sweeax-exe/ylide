@@ -12,22 +12,36 @@ Sets up the Ylide Discord server and runs its ticket bot.
   ticket system: a panel in `#tickets` with four buttons, a form for each, a
   private channel per ticket, claim, close, reopen, delete, transcripts and a
   log in `#ticket-log`. Feature ideas from the panel become public posts in the
-  `#ideas` forum.
+  `#ideas` forum. It also announces every new Ylide version in `#releases`
+  (release notes in English and German, Download and GitHub buttons, a ping
+  for the Release pings role) and publishes the post to servers that follow
+  the channel.
 
 Built with [discord.js](https://discord.js.org) 14 (Apache-2.0), plain
 JavaScript, no build step. Icons are [Lucide](https://lucide.dev) (ISC).
 
 ## Privacy
 
-The bot keeps nothing about people outside Discord. On the server it stores one
-number, the last ticket number (`state.json`). Who opened a ticket, who claimed
+The bot keeps nothing about people outside Discord. On the server it stores the
+last ticket number and the last announced Ylide version (`state.json`). Who opened a ticket, who claimed
 it and whether it is closed live in the ticket channel itself. Closed tickets
 are deleted 48 hours after their last message; before that, an HTML transcript
 is posted to the team-only `#ticket-log`. Log lines name tickets by channel
 name only, without user names, IDs or message content.
 
-The bot asks one outside address: `https://ylide.app/updates/latest.json`, to
-suggest the current version in the bug report form.
+Outside Discord the bot asks two addresses, without any user data:
+`https://ylide.app/updates/latest.json` every ten minutes (the current version
+for the bug report form and for release announcements), and, once per new
+version, GitHub's API to see whether the release page `v<version>` exists yet.
+It waits up to 30 minutes for that page, then links the repository instead.
+
+### Release announcements
+
+A version newer than the last announced one gets one post; restarts never
+repeat it (the version is saved, and the bot also checks its own recent posts
+in `#releases`). On its very first start the bot only records the current
+version. To announce everything after a given version instead, deploy with
+`node deploy/deploy.mjs --release-baseline 0.1.7`.
 
 ## 1. Developer Portal
 
@@ -112,6 +126,7 @@ as the unprivileged user `ylide-discord`, with its state in
 node deploy/deploy.mjs --install   # once, as root: Node.js, user, folders, unit
 node deploy/deploy.mjs             # upload a release as deploy@ylide and restart
 node deploy/deploy.mjs --status    # service state and recent log lines
+node deploy/deploy.mjs --release-baseline 0.1.7   # deploy and announce versions after 0.1.7
 ```
 
 Run the bot either on the server or locally (`npm start`), never both at once:

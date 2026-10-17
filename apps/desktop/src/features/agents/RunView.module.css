@@ -75,21 +75,10 @@
   gap: 6px;
 }
 
-.continuesSummary {
+.continuesReport {
   align-self: stretch;
-  max-height: 160px;
-  margin: 0;
-  padding: 6px var(--space-2);
+  max-height: 220px;
   overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-panel);
-  background: var(--bg-raised);
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  line-height: var(--leading-prose);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  user-select: text;
 }
 
 .goalWrap {
@@ -267,21 +256,6 @@
 .cancelled {
   color: var(--text-3);
   flex: none;
-}
-
-.summaryText {
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-panel);
-  background: var(--bg-raised);
-  font-family: var(--font-ui);
-  font-size: var(--text-base);
-  line-height: var(--leading-prose);
-  color: var(--text-2);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  user-select: text;
 }
 
 .notes {

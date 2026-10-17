@@ -308,6 +308,10 @@
     "notes": {
       "label": "Connaissances du projet",
       "hint": "Envoyé à l’orchestrateur après une exécution pour mettre à jour la section de Ylide dans AGENTS.md."
+    },
+    "recap": {
+      "label": "Résumé",
+      "hint": "Envoyé à l’orchestrateur à la fin d’une exécution, pour qu’il rédige un court résumé dans votre langue."
     }
   },
   "network": {

@@ -64,7 +64,8 @@
     "reviewing": "Reviewing the changes",
     "stepLimit": "Step limit reached",
     "answering": "Answering {{agent}}",
-    "notes": "Updating the project knowledge"
+    "notes": "Updating the project knowledge",
+    "recap": "Writing the summary"
   },
   "idle": {
     "goalLabel": "What should the agents do?",
@@ -133,6 +134,12 @@
     "noChanges": "No files were changed.",
     "notesUpdated": "Project knowledge updated in AGENTS.md",
     "openNotes": "Open AGENTS.md"
+  },
+  "report": {
+    "noPlan": "No plan was made.",
+    "stoppedBeforePlan": "The run was stopped before a plan was made.",
+    "openComments": "The reviewer still had open comments after the last round.",
+    "noRecap": "The orchestrator wrote no summary, so here are the tasks."
   },
   "next": {
     "label": "What should the agents do next?",

@@ -64,7 +64,8 @@
     "reviewing": "Relecture des modifications",
     "stepLimit": "Limite d’étapes atteinte",
     "answering": "Répond à {{agent}}",
-    "notes": "Mise à jour des connaissances du projet"
+    "notes": "Mise à jour des connaissances du projet",
+    "recap": "Rédaction du résumé"
   },
   "idle": {
     "goalLabel": "Que doivent faire les agents ?",
@@ -135,6 +136,12 @@
     "noChanges": "Aucun fichier n’a été modifié.",
     "notesUpdated": "Connaissances du projet mises à jour dans AGENTS.md",
     "openNotes": "Ouvrir AGENTS.md"
+  },
+  "report": {
+    "noPlan": "Aucun plan n’a été établi.",
+    "stoppedBeforePlan": "L’exécution a été arrêtée avant qu’un plan soit établi.",
+    "openComments": "Le relecteur avait encore des remarques ouvertes après le dernier tour.",
+    "noRecap": "L’orchestrateur n’a pas écrit de résumé ; voici donc les tâches."
   },
   "next": {
     "label": "Que doivent faire les agents ensuite ?",

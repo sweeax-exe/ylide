@@ -23,6 +23,8 @@ const APPROACH_CHARS: usize = 300;
 const TITLE_CHARS: usize = 100;
 const RESULT_CHARS: usize = 160;
 const SUMMARY_CHARS: usize = 600;
+/// Characters kept of the summary the user got (it may be in another language).
+const RECAP_CHARS: usize = 500;
 const MAX_FILES: usize = 20;
 
 /// The finished run a new run continues.
@@ -38,9 +40,17 @@ pub struct PreviousRun {
     pub changed_files: Vec<String>,
     /// Requests of the runs it continued in turn, oldest first.
     pub earlier_goals: Vec<String>,
+    /// The summary the user got at its end, if the orchestrator wrote one.
+    pub recap: Option<String>,
 }
 
 impl PreviousRun {
+    /// With the summary the user got at its end.
+    pub fn with_recap(mut self, recap: Option<String>) -> Self {
+        self.recap = recap.filter(|r| !r.trim().is_empty());
+        self
+    }
+
     /// Takes plan and changed files from the finished run's blackboard.
     pub fn new(
         goal: &str,
@@ -58,6 +68,7 @@ impl PreviousRun {
             summary: summary.to_string(),
             changed_files: blackboard.changed_files.iter().cloned().collect(),
             earlier_goals,
+            recap: None,
         }
     }
 
@@ -151,6 +162,9 @@ impl PreviousRun {
                     open.join(", ")
                 ));
             }
+        }
+        if let Some(recap) = &self.recap {
+            s.push_str(&format!("Summary the user got: {}\n", one_line(recap, RECAP_CHARS)));
         }
         if self.changed_files.is_empty() {
             s.push_str("Changed files: none\n");
@@ -338,5 +352,17 @@ mod tests {
         let done = PreviousRun::new("x", RunOutcome::Completed, "", &board(vec![task("T1", "a", TaskStatus::Done, None)], &[]), vec![]);
         assert!(done.open_tasks().is_empty());
         assert!(!done.describe().contains("carry over"));
+    }
+
+    #[test]
+    fn the_summary_the_user_got_goes_along_shortened() {
+        let p = stopped_run();
+        assert!(!p.describe().contains("Summary the user got"));
+        let recap = format!("Der Warenkorb rechnet jetzt richtig.\n\n{}", "Mehr. ".repeat(200));
+        let text = p.clone().with_recap(Some(recap)).describe();
+        let line = text.lines().find(|l| l.starts_with("Summary the user got: ")).expect("summary line");
+        assert!(line.starts_with("Summary the user got: Der Warenkorb rechnet jetzt richtig. Mehr."), "{line}");
+        assert_eq!(line.chars().count(), "Summary the user got: ".len() + RECAP_CHARS + 1);
+        assert!(!p.with_recap(Some("  ".into())).describe().contains("Summary the user got"));
     }
 }

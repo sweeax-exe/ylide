@@ -12,7 +12,8 @@ import { Checkpoints } from './Checkpoints';
 import { openInEditor, useNow, useRoleName } from './hooks';
 import { ChangedFilesList } from './parts';
 import { NextStep } from './NextStep';
-import { changedFiles, currentTask, isGenerating, NOTES_FILE, notesUpdated, type ContinuedRun, type RunData, type UserQuestion } from './run';
+import { RunReport } from './Report';
+import { changedFiles, currentTask, isGenerating, NOTES_FILE, notesUpdated, tasksOf, type ContinuedRun, type RunData, type UserQuestion } from './run';
 import s from './RunView.module.css';
 import { useAgentRun } from './store';
 import { TaskList } from './TaskList';
@@ -230,7 +231,9 @@ function Continues({ from }: { from: ContinuedRun }) {
           <OutcomeIcon outcome={from.outcome} size={12} />
           {t(`outcome.${from.outcome}`)}
         </span>
-        {from.summary?.trim() && <pre className={s.continuesSummary}>{from.summary.trim()}</pre>}
+        <div className={s.continuesReport}>
+          <RunReport recap={from.recap} tasks={from.tasks} outcome={from.outcome} />
+        </div>
       </div>
     </details>
   );
@@ -292,7 +295,7 @@ function Summary({ run }: { run: RunData }) {
         <span className={s.outcomeLabel}>{t(`outcome.${run.outcome}`)}</span>
         {run.finishedAt !== null && <span className={s.outcomeTime}>{formatClock(run.finishedAt - run.startedAt)}</span>}
       </div>
-      {run.summary?.trim() && <pre className={s.summaryText}>{run.summary.trim()}</pre>}
+      <RunReport recap={run.recap} tasks={tasksOf(run)} outcome={run.outcome} explain />
       {notesUpdated(run) && (
         <div className={s.notes}>
           <BookOpenText size={14} aria-hidden />

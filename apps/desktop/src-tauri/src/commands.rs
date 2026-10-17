@@ -536,8 +536,16 @@ pub async fn inline_edit(state: State<'_, AppState>, request: InlineEditRequest,
 // ---------------------------------------------------------------- agents
 
 #[tauri::command]
-pub async fn agent_start(state: State<'_, AppState>, goal: String, images: Option<Vec<String>>, previous_run: Option<String>, on_event: Channel<AgentEvent>) -> Cmd<String> {
-    agents::start(&state, goal, images.unwrap_or_default(), previous_run, on_event).await
+pub async fn agent_start(
+    state: State<'_, AppState>,
+    goal: String,
+    images: Option<Vec<String>>,
+    previous_run: Option<String>,
+    language: Option<String>,
+    on_event: Channel<AgentEvent>,
+) -> Cmd<String> {
+    let language = language.unwrap_or_else(|| "en".into());
+    agents::start(&state, goal, images.unwrap_or_default(), previous_run, language, on_event).await
 }
 
 /// The open project's last agent run, kept across restarts; none without a project.

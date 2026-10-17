@@ -63,6 +63,7 @@ fn team(models: Vec<(&str, Arc<ScriptedModel>)>) -> Team {
         max_review_rounds: 2,
         review_enabled: true,
         update_notes: false,
+        summarize: false,
     }
 }
 
@@ -670,4 +671,151 @@ async fn without_skills_there_is_no_skill_tool_and_no_list() {
     assert!(!requests[0].messages[1].content.as_deref().unwrap().contains("Skills the user enabled"));
     let refused = requests[1].messages.iter().find(|m| m.role == MessageRole::Tool).and_then(|m| m.content.clone()).unwrap();
     assert!(refused.starts_with("Error: tool 'skill_read' is not available to you."), "{refused}");
+}
+
+fn context_in(h: &Harness, language: &str, broker: Arc<dyn ApprovalBroker>) -> Arc<RunContext> {
+    let events = h.events.clone();
+    Arc::new(
+        RunContext::new(
+            "run-1",
+            h.ws.clone(),
+            h.store.clone(),
+            PermissionSettings::default(),
+            ShellConfig::default(),
+            PromptTemplates::default(),
+            broker,
+            Arc::new(move |e| events.lock().unwrap().push(e)),
+        )
+        .with_language(language),
+    )
+}
+
+#[tokio::test]
+async fn a_run_ends_with_a_summary_in_the_users_language() {
+    let h = harness("recap");
+    let orchestrator = scripted(vec![
+        plan_call(json!([{ "title": "Fix add", "description": "Make add() add." }])),
+        text("```\n- `add()` in `src/lib.rs` addiert jetzt.\n- Prüfe es mit `cargo test`.\n```"),
+    ]);
+    let coder = scripted(vec![
+        call("read_file", json!({"path": "src/lib.rs"})),
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("finish", json!({"summary": "add() adds."})),
+    ]);
+    let reviewer = scripted(vec![call("submit_review", json!({"verdict": "approve", "summary": "Correct."}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder), ("reviewer", reviewer)]);
+    t.summarize = true;
+    let ctx = context_in(&h, "de", Arc::new(AutoApprove(String::new())));
+
+    let report = run(ctx, &t, "Fix add").await;
+
+    let expected = "- `add()` in `src/lib.rs` addiert jetzt.\n- Prüfe es mit `cargo test`.";
+    assert_eq!(report.outcome, RunOutcome::Completed);
+    assert_eq!(report.recap.as_deref(), Some(expected));
+    assert!(report.summary.starts_with("✔ T1 Fix add"), "the task list stays: {}", report.summary);
+    let request = orchestrator.requests.lock().unwrap()[1].messages[1].content.clone().unwrap();
+    assert!(request.contains("for the user, in German."), "{request}");
+    assert!(request.contains("- T1 Fix add (done): add() adds. Review: approved (Correct.)."), "{request}");
+    assert!(request.contains("Changed files:\n- src/lib.rs"), "{request}");
+    let events = h.events.lock().unwrap();
+    assert!(matches!(events.last(), Some(AgentEvent::RunFinished { recap: Some(r), .. }) if r == expected));
+    // The summary streams into the orchestrator's row.
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::Status { status, .. } if status.step == crate::orchestrator::RECAP_STEP)));
+}
+
+#[tokio::test]
+async fn without_a_summary_the_run_keeps_its_task_list() {
+    let h = harness("recap-fails");
+    // No answer left for the summary: the model call fails.
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }]))]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    t.summarize = true;
+    let ctx = context_in(&h, "ja", Arc::new(AutoApprove(String::new())));
+    let report = run(ctx, &t, "x").await;
+    assert_eq!(report.outcome, RunOutcome::Completed);
+    assert_eq!(report.recap, None);
+    assert!(report.summary.contains("✔ T1 x"), "{}", report.summary);
+    assert_eq!(orchestrator.requests.lock().unwrap().len(), 2, "the summary was asked for");
+    assert!(matches!(h.events.lock().unwrap().last(), Some(AgentEvent::RunFinished { recap: None, .. })));
+}
+
+#[tokio::test]
+async fn a_stopped_run_gets_no_summary() {
+    let h = harness("recap-stopped");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }])), text("never asked for")]);
+    let coder = scripted(vec![call("ask", json!({"to": "user", "question": "Tabs or spaces?"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    t.summarize = true;
+    let ctx = context_in(&h, "de", Arc::new(Silent));
+    let control = ctx.clone();
+    tokio::spawn(async move {
+        tokio::time::sleep(std::time::Duration::from_millis(150)).await;
+        control.control.cancel();
+    });
+    let report = tokio::time::timeout(std::time::Duration::from_secs(5), run(ctx, &t, "anything")).await.expect("ends");
+    assert_eq!(report.outcome, RunOutcome::Cancelled);
+    assert_eq!(report.recap, None);
+    assert_eq!(orchestrator.remaining(), 1, "no model call for the summary");
+}
+
+#[tokio::test]
+async fn the_summary_call_thinks_little_and_cut_off_answers_are_dropped() {
+    let h = harness("recap-length");
+    let mut cut = text("- `add()` addiert jetzt, und die Tes");
+    cut.finish_reason = inference::FinishReason::Length;
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }])), cut]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    t.summarize = true;
+    let report = run(context_in(&h, "de", Arc::new(AutoApprove(String::new()))), &t, "x").await;
+    assert_eq!(report.recap, None, "a summary cut off by the token limit is not shown");
+    let requests = orchestrator.requests.lock().unwrap();
+    let req = &requests[1];
+    assert!(req.quick, "chat defaults: thinking off or low");
+    assert_eq!(req.max_tokens, Some(crate::recap::MAX_TOKENS));
+    assert_eq!(req.messages[0].content.as_deref(), Some(crate::recap::SYSTEM), "not the orchestrator's planning prompt");
+    assert!(req.tools.is_empty());
+}
+
+#[tokio::test]
+async fn a_plan_instead_of_a_summary_is_dropped() {
+    let h = harness("recap-plan");
+    let orchestrator = scripted(vec![
+        plan_call(json!([{ "title": "x", "description": "y" }])),
+        text(r#"{"summary": "Do it again", "tasks": [{"title": "x", "description": "y"}]}"#),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let mut t = team(vec![("orchestrator", orchestrator), ("coder", coder)]);
+    t.summarize = true;
+    let report = run(context_in(&h, "en", Arc::new(AutoApprove(String::new()))), &t, "x").await;
+    assert_eq!(report.recap, None);
+}
+
+#[tokio::test]
+async fn the_summary_names_the_work_not_the_project_notes() {
+    let h = harness("recap-notes");
+    let orchestrator = scripted(vec![
+        plan_call(json!([{ "title": "Fix add", "description": "Make add() add." }])),
+        text("**Structure:** one crate."),
+        text("Fixed add()."),
+    ]);
+    let coder = scripted(vec![
+        call("read_file", json!({"path": "src/lib.rs"})),
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("finish", json!({"summary": "add() adds."})),
+    ]);
+    // The reviewer answers in text and never gives a verdict.
+    let reviewer = scripted(vec![text("Looks fine to me."), text("Still fine.")]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder), ("reviewer", reviewer)]);
+    t.summarize = true;
+    t.update_notes = true;
+    let report = run(context_in(&h, "en", Arc::new(AutoApprove(String::new()))), &t, "Fix add").await;
+    assert_eq!(report.recap.as_deref(), Some("Fixed add()."));
+    assert!(h.dir.join("AGENTS.md").exists(), "the notes were written");
+    let request = orchestrator.requests.lock().unwrap()[2].messages[1].content.clone().unwrap();
+    assert!(request.contains("Changed files:\n- src/lib.rs\n\n"), "{request}");
+    assert!(!request.contains("AGENTS.md"), "{request}");
+    assert!(request.contains("Review: not done ("), "{request}");
+    assert!(!request.contains("Review: approved"), "{request}");
 }

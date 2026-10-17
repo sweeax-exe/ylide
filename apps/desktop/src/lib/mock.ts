@@ -12,6 +12,7 @@
 //   question  the agent asks the user a question during the run
 //   changes   the reviewer requests changes once
 //   lastrun   the project has a failed agent run from an earlier session, with open tasks
+//   norecap   the orchestrator writes no summary at the end (the task list stands in)
 //   skills    starts with installed skills, one of them broken (see ./mockSkills.ts)
 //   novision  the installed model starts with image input off (no projector)
 //   ratelimit GitHub refuses skill listings: its request limit is used up
@@ -428,6 +429,7 @@ function storedRun(): LastRun {
     },
     changes: [{ path: 'src/cart.ts', kind: 'modified', diff: '', checkpointId: 'run-earlier-1' }],
     earlierGoals: [],
+    recap: null,
   };
 }
 
@@ -443,7 +445,7 @@ function openTasks(previous: LastRun): Task[] {
 }
 
 /** With `previous`, a short run that continues it: its open tasks first, then the new request. */
-async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) => void, previous: LastRun | null = null) {
+async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) => void, previous: LastRun | null = null, language = 'en') {
   const carried = previous ? openTasks(previous) : [];
   const record: LastRun = {
     runId: id,
@@ -455,6 +457,7 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     plan: carried.length ? { goal, summary: '', tasks: carried } : null,
     changes: [],
     earlierGoals: previous ? [...previous.earlierGoals, previous.goal].slice(-3) : [],
+    recap: null,
   };
   // Keeps the record the core would store when the run ends.
   const send = (e: AgentEvent) => {
@@ -462,7 +465,7 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     if (e.type === 'taskUpdated' && record.plan) record.plan = { ...record.plan, tasks: record.plan.tasks.map((t) => (t.id === e.task.id ? e.task : t)) };
     if (e.type === 'toolResult' && e.change) record.changes.push({ ...e.change, diff: '' });
     if (e.type === 'runFinished') {
-      Object.assign(record, { outcome: e.outcome, summary: e.summary, finishedAtUnixMs: Date.now() });
+      Object.assign(record, { outcome: e.outcome, summary: e.summary, recap: e.recap, finishedAtUnixMs: Date.now() });
       runRecords.set(id, record);
       lastRun = record;
     }
@@ -538,6 +541,15 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     send({ type: 'toolResult', runId, agentId: 'orchestrator', callId, ok: true, summary, change: { path: 'AGENTS.md', kind: before === undefined ? 'created' : 'modified', diff, checkpointId } });
     status('orchestrator', 'orchestrator', 'idle', '', null);
   };
+  /** Like the core at the end: the orchestrator's summary in the user's language, streamed to its row. */
+  const writeRecap = async (texts: { de: string; en: string }) => {
+    if (failures.has('norecap')) return null;
+    status('orchestrator', 'orchestrator', 'thinking', 'writing the summary', null, 54);
+    const recap = language.startsWith('de') ? texts.de : texts.en;
+    await think('orchestrator', recap);
+    status('orchestrator', 'orchestrator', 'idle', '', null);
+    return recap;
+  };
   const cartNotes = '**Run and build:** `npm install`\n**Tests:** `npm test` (vitest) passes.\n**Structure:** cart logic in `src/cart.ts`, tests in `test/cart.test.ts`.\n**Decisions:** `total()` multiplies price by quantity.';
 
   try {
@@ -592,7 +604,13 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
       }
       await writeNotes(`${cartNotes}\n**Docs:** \`total()\` has a doc comment.`);
       const notes = settings.agent.updateProjectNotes && files.has('AGENTS.md') ? ', AGENTS.md' : '';
-      send({ type: 'runFinished', runId, outcome: 'completed', summary: `${lines.join('\n')}\n\nChanged files: src/cart.ts${notes}` });
+      const done = tasks.map((t) => `\`${t.id}\` ${t.title}`).join(', ');
+      const changed = `\`src/cart.ts\`${notes ? ', `AGENTS.md`' : ''}`;
+      const recap = await writeRecap({
+        de: `- **Erledigt:** ${done}. Das baut auf dem letzten Lauf auf, der die Summe im Warenkorb schon korrigiert hat.\n- **Geänderte Dateien:** ${changed}.\n- **Zum Prüfen:** Führe \`npm test\` aus und sieh dir \`total()\` in \`src/cart.ts\` an.\n- **Offen:** nichts.`,
+        en: `- **Done:** ${done}. This builds on the last run, which already fixed the cart total.\n- **Changed files:** ${changed}.\n- **To check:** run \`npm test\` and look at \`total()\` in \`src/cart.ts\`.\n- **Open:** nothing.`,
+      });
+      send({ type: 'runFinished', runId, outcome: 'completed', summary: `${lines.join('\n')}\n\nChanged files: src/cart.ts${notes}`, recap });
       return;
     }
     const plan = {
@@ -705,9 +723,14 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     status('reviewer', 'reviewer', 'idle', '', 'T2');
     await writeNotes(cartNotes);
     const notes = settings.agent.updateProjectNotes && files.has('AGENTS.md') ? ', AGENTS.md' : '';
-    send({ type: 'runFinished', runId, outcome: 'completed', summary: `✔ T1 Fix total()\n✔ T2 Add a test for empty carts\n\nChanged files: src/cart.ts, test/cart.test.ts${notes}` });
+    const changed = `\`src/cart.ts\`, \`test/cart.test.ts\`${notes ? ', `AGENTS.md`' : ''}`;
+    const recap = await writeRecap({
+      de: `- **Erledigt:** \`total()\` in \`src/cart.ts\` multipliziert jetzt den Preis mit der Menge. Vorher wurde die Menge ignoriert, darum war die Summe zu klein.\n- **Test:** \`test/cart.test.ts\` prüft zusätzlich, dass ein leerer Warenkorb 0 ergibt.\n- **Geänderte Dateien:** ${changed}.\n- **Zum Prüfen:** ${approved ? '`npm test` lief erfolgreich; führe es gern selbst aus.' : '`npm test` lief nicht, weil du den Befehl abgelehnt hast. Führe ihn selbst aus.'}\n- **Offen:** nichts.`,
+      en: `- **Done:** \`total()\` in \`src/cart.ts\` now multiplies the price by the quantity. Before, the quantity was ignored, so the total was too small.\n- **Test:** \`test/cart.test.ts\` also checks that an empty cart totals 0.\n- **Changed files:** ${changed}.\n- **To check:** ${approved ? '`npm test` passed; feel free to run it yourself.' : '`npm test` did not run because you rejected the command. Run it yourself.'}\n- **Open:** nothing.`,
+    });
+    send({ type: 'runFinished', runId, outcome: 'completed', summary: `✔ T1 Fix total()\n✔ T2 Add a test for empty carts\n\nChanged files: src/cart.ts, test/cart.test.ts${notes}`, recap });
   } catch {
-    send({ type: 'runFinished', runId, outcome: 'cancelled', summary: 'Stopped by the user.' });
+    send({ type: 'runFinished', runId, outcome: 'cancelled', summary: 'Stopped by the user.', recap: null });
   } finally {
     pendingApprovals.clear();
     pendingAnswers.clear();
@@ -1082,7 +1105,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       if (previous === undefined) throw { code: 'unknown_run', message: wanted };
       const id = `run-${Date.now()}`;
       runControl = { paused: false, cancelled: false, abort: () => undefined };
-      void simulateRun(id, args.goal, args.onEvent as (e: AgentEvent) => void, previous);
+      void simulateRun(id, args.goal, args.onEvent as (e: AgentEvent) => void, previous, String(args.language ?? 'en'));
       return r(id);
     }
     case 'agent_last_run':

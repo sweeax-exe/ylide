@@ -87,11 +87,18 @@ pub struct PromptTemplates {
     /// saved before it existed get the default.
     #[serde(default = "default_notes")]
     pub notes: String,
+    /// Asks the orchestrator for the summary a run ends with, in the user's language.
+    #[serde(default = "default_recap")]
+    pub recap: String,
 }
 
+// The bundled file has these fields, so the defaults never recurse.
 fn default_notes() -> String {
-    // The bundled file has the field, so this never recurses.
     PromptTemplates::default().notes
+}
+
+fn default_recap() -> String {
+    PromptTemplates::default().recap
 }
 
 impl Default for PromptTemplates {
@@ -149,16 +156,21 @@ mod tests {
         let t = PromptTemplates::default();
         assert!(t.coder_task.contains("{task_title}"));
         assert!(t.notes.contains("{notes}") && t.notes.contains("{max_lines}"));
+        for field in ["{language}", "{goal}", "{approach}", "{tasks}", "{files}", "{commands}"] {
+            assert!(t.recap.contains(field), "recap lacks {field}");
+        }
     }
 
     #[test]
     fn templates_saved_before_a_new_one_get_its_default() {
         let mut saved = serde_json::to_value(PromptTemplates::default()).unwrap();
         saved.as_object_mut().unwrap().remove("notes");
+        saved.as_object_mut().unwrap().remove("recap");
         saved["planner"] = "My planner {goal}".into();
         let t: PromptTemplates = serde_json::from_value(saved).unwrap();
         assert_eq!(t.planner, "My planner {goal}");
         assert_eq!(t.notes, PromptTemplates::default().notes);
+        assert_eq!(t.recap, PromptTemplates::default().recap);
     }
 
     #[test]

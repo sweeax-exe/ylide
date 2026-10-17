@@ -11,7 +11,8 @@ import { useApp } from '../../state/app';
 import { useLayout } from '../../state/layout';
 import s from './IdleView.module.css';
 import { ChangedFilesList } from './parts';
-import { changedFiles, openTaskCount, type RunData } from './run';
+import { RunReport } from './Report';
+import { changedFiles, openTaskCount, tasksOf, type RunData } from './run';
 import { useAgentRun } from './store';
 import { formatClock, formatWhen } from './text';
 
@@ -226,7 +227,9 @@ function PreviousRun({ run }: { run: RunData }) {
         )}
       </header>
       <p className={s.previousGoal}>{run.goal}</p>
-      {run.summary?.trim() && <pre className={s.previousSummary}>{run.summary.trim()}</pre>}
+      <div className={s.previousReport}>
+        <RunReport recap={run.recap} tasks={tasksOf(run)} outcome={run.outcome} />
+      </div>
       <ChangedFilesList files={files} />
       {open > 0 && <p className={s.previousOpen}>{t('idle.openTasks', { count: open })}</p>}
       <div className={s.previousActions}>

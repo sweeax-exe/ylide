@@ -191,8 +191,9 @@ export const api = {
   },
   agents: {
     /** With `previousRun`, the new run continues that finished run; `images` (data URLs) go with the request. */
-    start: (goal: string, onEvent: (e: AgentEvent) => void, previousRun: string | null = null, images: string[] = []) =>
-      call<string>('agent_start', { goal, images, previousRun, onEvent: channel(onEvent) }),
+    /** `language`: the UI language, for the summary the run ends with. */
+    start: (goal: string, onEvent: (e: AgentEvent) => void, previousRun: string | null = null, images: string[] = [], language = 'en') =>
+      call<string>('agent_start', { goal, images, previousRun, language, onEvent: channel(onEvent) }),
     approve: (runId: string, requestId: string, response: ApprovalResponse) =>
       call<boolean>('agent_approve', { runId, requestId, response }),
     /** `images` (data URLs) go with the answer to a model that sees. */

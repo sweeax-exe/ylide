@@ -64,7 +64,8 @@
     "reviewing": "正在审查更改",
     "stepLimit": "已达到步数上限",
     "answering": "正在回答 {{agent}}",
-    "notes": "正在更新项目知识"
+    "notes": "正在更新项目知识",
+    "recap": "正在撰写总结"
   },
   "idle": {
     "goalLabel": "智能体要做什么？",
@@ -131,6 +132,12 @@
     "noChanges": "没有更改任何文件。",
     "notesUpdated": "已在 AGENTS.md 中更新项目知识",
     "openNotes": "打开 AGENTS.md"
+  },
+  "report": {
+    "noPlan": "没有制定计划。",
+    "stoppedBeforePlan": "运行在制定计划之前就被停止了。",
+    "openComments": "最后一轮之后，审查者仍有未解决的意见。",
+    "noRecap": "编排者没有写总结，因此这里列出任务。"
   },
   "next": {
     "label": "智能体接下来要做什么？",

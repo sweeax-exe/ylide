@@ -12,6 +12,12 @@
 //                                      run the server setup on the server, with
 //                                      the token from /etc/ylide-discord/env
 //   node deploy/deploy.mjs --status    service state and the last log lines
+//   node deploy/deploy.mjs --release-baseline 0.1.7
+//                                      upload, then (as root, with the bot
+//                                      stopped) tell it to announce every Ylide
+//                                      version after 0.1.7 in #releases. Without
+//                                      it, the bot's first start only records the
+//                                      current version and posts nothing.
 //
 // Releases go to /opt/ylide-discord/releases/<stamp>; "current" links to the
 // active one, and the last three are kept. node_modules is uploaded as well
@@ -24,6 +30,9 @@ import { fileURLToPath } from 'node:url';
 // Without the trailing separator: on Windows `"D:\…\discord\"` would escape the quote.
 const root = fileURLToPath(new URL('..', import.meta.url)).replace(/[\\/]+$/, '');
 const args = new Set(process.argv.slice(2));
+const baselineAt = process.argv.indexOf('--release-baseline');
+const baseline = baselineAt === -1 ? null : process.argv[baselineAt + 1];
+if (baselineAt !== -1 && !/^\d+\.\d+\.\d+$/.test(baseline ?? '')) throw new Error('--release-baseline needs a version such as 0.1.7');
 const ROOT_HOST = 'ylide';
 const DEPLOY_HOST = 'deploy@ylide';
 const BASE = '/opt/ylide-discord';
@@ -83,7 +92,8 @@ echo "Installed. Next: put the token into /etc/ylide-discord/env, then deploy."`
   }
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '');
   const release = `${BASE}/releases/${stamp}`;
-  const restart = !args.has('--no-restart');
+  // With a release baseline the restart happens below, after the state is written.
+  const restart = !args.has('--no-restart') && !baseline;
   const script = [
     'set -e',
     `mkdir -p ${release}`,
@@ -99,4 +109,24 @@ echo "Installed. Next: put the token into /etc/ylide-discord/env, then deploy."`
   ].join('; ');
   const files = ['package.json', 'package-lock.json', 'src', 'assets', 'node_modules'].join(' ');
   execSync(`tar -C "${root}" -cf - ${files} | ssh ${DEPLOY_HOST} "${script}"`, { stdio: 'inherit' });
+
+  if (baseline) {
+    // The bot reads state.json only when it starts, so write it while it is stopped.
+    const setBaseline = `const fs = require('fs'); const f = '/var/lib/ylide-discord/state.json'; let d = {}; try { d = JSON.parse(fs.readFileSync(f, 'utf8')); } catch {} d.releaseBaseline = '${baseline}'; fs.writeFileSync(f, JSON.stringify(d) + '\\n');`;
+    ssh(
+      ROOT_HOST,
+      'sh -s',
+      `set -e
+systemctl stop ${SERVICE}
+install -d -o ylide-discord -g ylide-discord -m 700 /var/lib/ylide-discord
+runuser -u ylide-discord -- /usr/bin/node -e "${setBaseline}"
+echo "release baseline ${baseline}: every later version will be announced"
+systemctl reset-failed ${SERVICE} 2>/dev/null || true
+systemctl start ${SERVICE}
+sleep 6
+systemctl is-active ${SERVICE}
+journalctl --no-pager -u ${SERVICE} -n 5 -o cat
+`,
+    );
+  }
 }

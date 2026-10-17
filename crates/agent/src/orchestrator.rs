@@ -14,11 +14,12 @@ use crate::knowledge;
 use crate::llm::ChatModel;
 use crate::permissions::UserReply;
 use crate::previous::PreviousRun;
-use crate::protocol::{AgentEvent, AgentState, MessageKind, Plan, Review, RunOutcome, Task, TaskStatus, Verdict};
+use crate::protocol::{AgentEvent, AgentState, MessageKind, NO_VERDICT, Plan, Review, RunOutcome, Task, TaskStatus, Verdict};
+use crate::recap;
 use crate::roles::{RoleDefinition, fill};
 use crate::runner::{AgentEnd, AgentSpec, AskRouter, PlanDraft, RunContext, run_agent};
 use async_trait::async_trait;
-use inference::{ChatMessage, ChatRequest};
+use inference::{ChatMessage, ChatRequest, FinishReason};
 use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 
@@ -32,6 +33,8 @@ pub struct Team {
     pub review_enabled: bool,
     /// After a run, the orchestrator updates Ylide's section of AGENTS.md.
     pub update_notes: bool,
+    /// At the end, the orchestrator writes a summary in the user's language.
+    pub summarize: bool,
 }
 
 impl Team {
@@ -96,7 +99,11 @@ impl AskRouter for Router<'_> {
 pub struct RunReport {
     pub outcome: RunOutcome,
     pub plan: Option<Plan>,
+    /// The plain task list (English).
     pub summary: String,
+    /// The orchestrator's summary in the user's language; none for a stopped
+    /// run or when the model call failed.
+    pub recap: Option<String>,
     pub checkpoints: Vec<Checkpoint>,
 }
 
@@ -167,7 +174,7 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
         Err(outcome) => {
             // Open tasks stay in the report, so a later run still picks them up.
             let plan = ctx.blackboard.lock().unwrap().plan.clone();
-            return finish(&ctx, outcome, plan, "The run was stopped before a plan was made.".into());
+            return finish(&ctx, outcome, plan, "The run was stopped before a plan was made.".into(), None);
         }
     };
     ctx.blackboard.lock().unwrap().plan = Some(plan.clone());
@@ -191,6 +198,9 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
         }
     }
 
+    // The files the work changed, before the project notes are written.
+    let work_files: Vec<String> = ctx.blackboard.lock().unwrap().changed_files.iter().cloned().collect();
+
     // ---- 3. Project notes ---------------------------------------------------
     let learned = !ctx.commands_that_worked().is_empty()
         || ctx.blackboard.lock().unwrap().plan.as_ref().is_some_and(|p| p.tasks.iter().any(|t| t.status == TaskStatus::Done));
@@ -208,20 +218,55 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
     } else {
         RunOutcome::Failed
     };
-    finish(&ctx, outcome, final_plan, summary)
+    // A stopped run ends right away, with the task list.
+    let recap = if team.summarize && outcome != RunOutcome::Cancelled { write_recap(&ctx, team, goal, &work_files).await } else { None };
+    finish(&ctx, outcome, final_plan, summary, recap)
 }
 
-fn finish(ctx: &RunContext, outcome: RunOutcome, plan: Option<Plan>, summary: String) -> RunReport {
+fn finish(ctx: &RunContext, outcome: RunOutcome, plan: Option<Plan>, summary: String, recap: Option<String>) -> RunReport {
     ctx.emit(AgentEvent::RunFinished {
         run_id: ctx.run_id.clone(),
         outcome,
         summary: summary.clone(),
+        recap: recap.clone(),
     });
     RunReport {
         outcome,
         plan,
         summary,
+        recap,
         checkpoints: ctx.checkpoints.list(&ctx.run_id),
+    }
+}
+
+/// Step text while the orchestrator writes the summary (the UI translates it).
+pub const RECAP_STEP: &str = "writing the summary";
+
+/// The orchestrator's summary of the run in the user's language, streamed
+/// to its row. `files` are the files the work changed (not the project notes
+/// written after it). None when the model call fails, is stopped, takes too
+/// long or gives no usable text: the UI then shows the task list.
+async fn write_recap(ctx: &RunContext, team: &Team, goal: &str, files: &[String]) -> Option<String> {
+    let role = team.role("orchestrator")?;
+    let plan = ctx.blackboard.lock().unwrap().plan.clone();
+    let values = recap::values(goal, plan.as_ref(), files, &ctx.commands_that_worked(), &ctx.language);
+    // Its own short system message: the orchestrator's asks for a plan.
+    let mut req = ChatRequest::new(vec![ChatMessage::system(recap::SYSTEM), ChatMessage::user(fill(&ctx.templates.recap, &values))]);
+    req.temperature = role.temperature;
+    req.max_tokens = Some(recap::MAX_TOKENS);
+    req.quick = true;
+    ctx.status("orchestrator", &role.id, AgentState::Thinking, RECAP_STEP, None);
+    let (run_id, events) = (ctx.run_id.clone(), ctx.events.clone());
+    let mut on_delta = move |delta| {
+        events(AgentEvent::Delta { run_id: run_id.clone(), agent_id: "orchestrator".into(), delta });
+    };
+    let answer = tokio::time::timeout(recap::TIMEOUT, team.model_for(&role.id).chat(req, &ctx.control.cancel, &mut on_delta)).await;
+    ctx.status("orchestrator", &role.id, AgentState::Idle, "", None);
+    match answer {
+        Ok(Ok(result)) if !ctx.control.cancel.is_cancelled() => {
+            recap::from_answer(result.message.content.as_deref().unwrap_or_default(), result.finish_reason)
+        }
+        _ => None,
     }
 }
 
@@ -301,9 +346,15 @@ async fn update_notes(ctx: &RunContext, team: &Team) {
         ChatMessage::user(fill(&ctx.templates.notes, &values)),
     ]);
     req.temperature = role.temperature;
-    req.max_tokens = Some(1_500);
+    req.max_tokens = Some(2_500);
+    // A side answer: little thinking, and notes cut off by the limit are not written.
+    req.quick = true;
     let answer = team.model_for(&role.id).chat(req, &ctx.control.cancel, &mut |_| {}).await;
-    let notes = answer.map(|r| knowledge::clean_notes(&r.message.content.unwrap_or_default())).unwrap_or_default();
+    let notes = answer
+        .ok()
+        .filter(|r| r.finish_reason != FinishReason::Length)
+        .map(|r| knowledge::clean_notes(&r.message.content.unwrap_or_default()))
+        .unwrap_or_default();
     if !notes.is_empty() && current.as_deref() != Some(notes.as_str()) && !ctx.control.cancel.is_cancelled() {
         // The file was read just now, so writing it is no blind overwrite.
         ctx.mark_read(knowledge::FILE);
@@ -540,7 +591,7 @@ async fn run_task(ctx: &RunContext, team: &Team, router: &Router<'_>, task_id: &
                     }
                     other => Some(Review {
                         verdict: Verdict::Approve,
-                        summary: format!("Reviewer did not submit a verdict ({}); accepted without review.", end_label(&other)),
+                        summary: format!("{NO_VERDICT} ({}); accepted without review.", end_label(&other)),
                         comments: vec![],
                     }),
                 }

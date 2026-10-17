@@ -3,7 +3,16 @@ import type { FileChange } from "./FileChange";
 import type { RunOutcome } from "./RunOutcome";
 import type { TaskPlan } from "./TaskPlan";
 
-export type LastRun = { runId: string, goal: string, startedAtUnixMs: number, finishedAtUnixMs: number, outcome: RunOutcome, summary: string, plan: TaskPlan | null, 
+export type LastRun = { runId: string, goal: string, startedAtUnixMs: number, finishedAtUnixMs: number, outcome: RunOutcome, 
+/**
+ * The plain task list (English).
+ */
+summary: string, 
+/**
+ * The orchestrator's summary in the user's language (none in records
+ * written before it existed, for stopped runs, or when it failed).
+ */
+recap: string | null, plan: TaskPlan | null, 
 /**
  * File changes in order, without their diffs.
  */
