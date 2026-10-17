@@ -5,7 +5,7 @@
 use crate::checkpoints::CheckpointStore;
 use crate::llm::ChatModel;
 use crate::permissions::{
-    ApprovalBroker, ApprovalRequest, ApprovalResponse, Decision, PermissionSettings, ToolRisk, decide,
+    ApprovalBroker, ApprovalRequest, ApprovalResponse, Decision, PermissionSettings, ToolRisk, UserReply, decide,
 };
 use crate::protocol::{AgentEvent, AgentMessage, AgentState, AgentStatus, Blackboard, MessageKind, Review};
 use crate::roles::{PromptTemplates, RoleDefinition};
@@ -30,7 +30,7 @@ const MAX_TOOL_OUTPUT_CHARS: usize = 24_000;
 pub struct RunControl {
     pub cancel: CancellationToken,
     paused: watch::Sender<bool>,
-    interventions: Arc<Mutex<Vec<(String, String)>>>,
+    interventions: Arc<Mutex<Vec<(String, UserReply)>>>,
 }
 
 impl Default for RunControl {
@@ -59,9 +59,13 @@ impl RunControl {
     }
     /// Queues a user message for `agent_id` (`"*"` = whichever agent runs next).
     pub fn intervene(&self, agent_id: &str, text: &str) {
-        self.interventions.lock().unwrap().push((agent_id.to_string(), text.to_string()));
+        self.intervene_with(agent_id, UserReply::text(text));
     }
-    fn take_interventions(&self, agent_id: &str) -> Vec<String> {
+    /// Like [`Self::intervene`], with images for a model that sees.
+    pub fn intervene_with(&self, agent_id: &str, message: UserReply) {
+        self.interventions.lock().unwrap().push((agent_id.to_string(), message));
+    }
+    fn take_interventions(&self, agent_id: &str) -> Vec<UserReply> {
         let mut all = self.interventions.lock().unwrap();
         let (mine, rest): (Vec<_>, Vec<_>) = all.drain(..).partition(|(to, _)| to == agent_id || to == "*");
         *all = rest;
@@ -204,7 +208,20 @@ impl RunContext {
 #[async_trait]
 pub trait AskRouter: Send + Sync {
     /// The answer, or `None` if the run was cancelled while waiting for it.
-    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<String>;
+    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<UserReply>;
+}
+
+/// A message with the user's images, for a model that sees; another model
+/// gets a note in their place.
+fn with_user_images(message: ChatMessage, images: Vec<String>, vision: bool) -> ChatMessage {
+    match images.len() {
+        0 => message,
+        _ if vision => message.with_images(images),
+        n => {
+            let text = message.content.clone().unwrap_or_default();
+            ChatMessage { content: Some(format!("{text}\n\n[{n} image(s) from the user left out: this model cannot see images]")), ..message }
+        }
+    }
 }
 
 /// A plan as submitted by the orchestrator, before ids are assigned.
@@ -317,9 +334,10 @@ pub async fn run_agent(
         if ctx.control.cancel.is_cancelled() {
             return AgentEnd::Cancelled;
         }
-        for text in ctx.control.take_interventions(&agent.id) {
+        for UserReply { text, images } in ctx.control.take_interventions(&agent.id) {
             ctx.post_message("user", &agent.id, MessageKind::Intervention, &text, task_id);
-            conversation.push(ChatMessage::user(format!("Message from the user (takes priority over earlier instructions):\n{text}")));
+            let message = ChatMessage::user(format!("Message from the user (takes priority over earlier instructions):\n{text}"));
+            conversation.push(with_user_images(message, images, agent.model.vision()));
         }
         compact(conversation, agent.model.context_tokens());
 
@@ -491,9 +509,10 @@ pub async fn run_agent(
                         conversation.push(ChatMessage::tool_result(&call.id, "Error: run cancelled"));
                         continue;
                     };
-                    ctx.post_message(to, &agent.id, MessageKind::Answer, &answer, task_id);
+                    ctx.post_message(to, &agent.id, MessageKind::Answer, &answer.text, task_id);
                     tool_result(true, &format!("Answer from {to}"), None);
-                    conversation.push(ChatMessage::tool_result(&call.id, format!("Answer from {to}:\n{answer}")));
+                    let result = ChatMessage::tool_result(&call.id, format!("Answer from {to}:\n{}", answer.text));
+                    conversation.push(with_user_images(result, answer.images, agent.model.vision()));
                 }
                 _ => {
                     let outcome = execute_with_permission(ctx, agent, name, &args, &description, task_id, checkpoint_id).await;
@@ -730,8 +749,24 @@ mod tests {
         c.intervene("coder", "use tabs");
         c.intervene("*", "hurry");
         c.intervene("reviewer", "be strict");
-        assert_eq!(c.take_interventions("coder"), vec!["use tabs", "hurry"]);
-        assert_eq!(c.take_interventions("coder"), Vec::<String>::new());
-        assert_eq!(c.take_interventions("reviewer"), vec!["be strict"]);
+        c.intervene_with("reviewer", UserReply { text: "like this".into(), images: vec!["data:image/png;base64,iVBORw0KGgo=".into()] });
+        let texts = |list: Vec<UserReply>| list.into_iter().map(|r| r.text).collect::<Vec<_>>();
+        assert_eq!(texts(c.take_interventions("coder")), vec!["use tabs", "hurry"]);
+        assert_eq!(texts(c.take_interventions("coder")), Vec::<String>::new());
+        let reviewer = c.take_interventions("reviewer");
+        assert_eq!(texts(reviewer.clone()), vec!["be strict", "like this"]);
+        assert_eq!(reviewer[1].images.len(), 1, "images stay with their message");
+    }
+
+    #[test]
+    fn user_images_reach_only_a_model_that_sees() {
+        let png = "data:image/png;base64,iVBORw0KGgo=".to_string();
+        let seen = with_user_images(ChatMessage::user("Make it look like this"), vec![png.clone()], true);
+        assert_eq!((seen.images, seen.content.as_deref()), (vec![png.clone()], Some("Make it look like this")));
+        let blind = with_user_images(ChatMessage::tool_result("c1", "Answer from user:\nlike this"), vec![png.clone(), png], false);
+        assert!(blind.images.is_empty());
+        assert_eq!(blind.content.as_deref(), Some("Answer from user:\nlike this\n\n[2 image(s) from the user left out: this model cannot see images]"));
+        assert_eq!(blind.tool_call_id.as_deref(), Some("c1"));
+        assert_eq!(with_user_images(ChatMessage::user("plain"), vec![], false), ChatMessage::user("plain"));
     }
 }

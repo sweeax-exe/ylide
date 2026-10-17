@@ -188,12 +188,29 @@ pub enum ApprovalResponse {
     Reject { reason: Option<String> },
 }
 
+/// What the user writes to an agent: an answer to its question or a message
+/// during the run, with images (data URLs) for a model that sees.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct UserReply {
+    pub text: String,
+    pub images: Vec<String>,
+}
+
+impl UserReply {
+    pub fn text(text: impl Into<String>) -> Self {
+        Self {
+            text: text.into(),
+            images: Vec::new(),
+        }
+    }
+}
+
 /// Asks the user. The desktop app implements this with a dialog; tests use fixed answers.
 #[async_trait]
 pub trait ApprovalBroker: Send + Sync {
     async fn request_approval(&self, request: ApprovalRequest) -> ApprovalResponse;
     /// An agent asks the user a free-form question (tool `ask` with `to: "user"`).
-    async fn ask_user(&self, agent_id: &str, question: &str) -> String;
+    async fn ask_user(&self, agent_id: &str, question: &str) -> UserReply;
 }
 
 /// Approves everything and answers questions with a fixed text (headless use, tests).
@@ -204,8 +221,8 @@ impl ApprovalBroker for AutoApprove {
     async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
         ApprovalResponse::Approve
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> String {
-        self.0.clone()
+    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+        UserReply::text(self.0.clone())
     }
 }
 

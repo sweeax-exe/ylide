@@ -195,9 +195,10 @@ export const api = {
       call<string>('agent_start', { goal, images, previousRun, onEvent: channel(onEvent) }),
     approve: (runId: string, requestId: string, response: ApprovalResponse) =>
       call<boolean>('agent_approve', { runId, requestId, response }),
-    answer: (runId: string, questionId: string, answer: string) => call<boolean>('agent_answer', { runId, questionId, answer }),
+    /** `images` (data URLs) go with the answer to a model that sees. */
+    answer: (runId: string, questionId: string, answer: string, images: string[] = []) => call<boolean>('agent_answer', { runId, questionId, answer, images }),
     control: (runId: string, action: 'pause' | 'resume' | 'cancel') => call<void>('agent_control', { runId, action }),
-    intervene: (runId: string, agentId: string, text: string) => call<void>('agent_intervene', { runId, agentId, text }),
+    intervene: (runId: string, agentId: string, text: string, images: string[] = []) => call<void>('agent_intervene', { runId, agentId, text, images }),
     /** The open project's last run, kept across restarts. */
     lastRun: () => call<LastRun | null>('agent_last_run'),
     checkpoints: (runId: string) => call<Checkpoint[]>('checkpoints_list', { runId }),

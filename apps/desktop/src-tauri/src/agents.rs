@@ -6,7 +6,7 @@ use crate::error::{AppError, AppResult};
 use crate::runtime::ChatHandle;
 use crate::state::AppState;
 use agent::llm::ChatModel;
-use agent::permissions::{ApprovalBroker, ApprovalRequest, ApprovalResponse};
+use agent::permissions::{ApprovalBroker, ApprovalRequest, ApprovalResponse, UserReply};
 use crate::last_run::{LastRun, record_change};
 use agent::{AgentEvent, CheckpointStore, FileChange, PreviousRun, RunContext, RunOutcome, ScheduledModel, Team};
 use async_trait::async_trait;
@@ -26,7 +26,7 @@ type EventSink = Arc<dyn Fn(AgentEvent) + Send + Sync>;
 #[derive(Default)]
 pub struct UiBroker {
     approvals: Mutex<HashMap<String, oneshot::Sender<ApprovalResponse>>>,
-    questions: Mutex<HashMap<String, oneshot::Sender<String>>>,
+    questions: Mutex<HashMap<String, oneshot::Sender<UserReply>>>,
     events: Mutex<Option<EventSink>>,
     run_id: Mutex<String>,
     counter: Mutex<u64>,
@@ -37,7 +37,7 @@ impl UiBroker {
         self.approvals.lock().unwrap().remove(request_id).map(|tx| tx.send(response).is_ok()).unwrap_or(false)
     }
 
-    pub fn resolve_question(&self, question_id: &str, answer: String) -> bool {
+    pub fn resolve_question(&self, question_id: &str, answer: UserReply) -> bool {
         self.questions.lock().unwrap().remove(question_id).map(|tx| tx.send(answer).is_ok()).unwrap_or(false)
     }
 }
@@ -53,7 +53,7 @@ impl ApprovalBroker for UiBroker {
         })
     }
 
-    async fn ask_user(&self, agent_id: &str, question: &str) -> String {
+    async fn ask_user(&self, agent_id: &str, question: &str) -> UserReply {
         let id = {
             let mut c = self.counter.lock().unwrap();
             *c += 1;
@@ -69,7 +69,7 @@ impl ApprovalBroker for UiBroker {
                 question: question.to_string(),
             });
         }
-        rx.await.unwrap_or_else(|_| "(no answer)".into())
+        rx.await.unwrap_or_else(|_| UserReply::text("(no answer)"))
     }
 }
 
@@ -112,6 +112,8 @@ pub struct RunEntry {
     pub ended: Arc<Mutex<Option<(RunOutcome, String)>>>,
     /// File changes so far, without diffs, for the stored record.
     pub changes: Arc<Mutex<Vec<FileChange>>>,
+    /// The run's model sees: answers and messages of the user may carry images.
+    pub vision: bool,
 }
 
 impl RunEntry {
@@ -229,6 +231,7 @@ pub async fn start(state: &AppState, goal: String, images: Vec<String>, previous
         earlier_goals: previous.as_ref().map(PreviousRun::goal_chain).unwrap_or_default(),
         ended,
         changes,
+        vision: handle.vision,
     });
     state.agents.runs.lock().unwrap().insert(run_id.clone(), entry.clone());
     let team = team_for(state, &handle);

@@ -3,7 +3,7 @@
 // images are accepted at all; the hint says what to do otherwise.
 
 import { ImagePlus, X } from 'lucide-react';
-import { useState, type ClipboardEvent, type DragEvent } from 'react';
+import { useCallback, useRef, useState, type ClipboardEvent, type DragEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Registry } from '../bindings/Registry';
 import type { ServerInfo } from '../bindings/ServerInfo';
@@ -52,6 +52,18 @@ export function useVision(): Vision {
   const registry = useApp((st) => st.registry);
   const canSee = server?.status.state === 'ready' && server.vision === 'on';
   return { canSee, hint: canSee ? '' : visionHint(server, registry) };
+}
+
+/** Images held by one form (an answer, a message to an agent), readable while new ones are prepared. */
+export function useDraftImages(): [DraftImage[], () => DraftImage[], (images: DraftImage[]) => void] {
+  const [images, setState] = useState<DraftImage[]>([]);
+  const current = useRef(images);
+  const set = useCallback((next: DraftImage[]) => {
+    current.current = next;
+    setState(next);
+  }, []);
+  const get = useCallback(() => current.current, []);
+  return [images, get, set];
 }
 
 /** Paste, drop and the attach button for one draft (`images` reads it fresh: preparing takes a moment). */

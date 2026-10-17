@@ -161,6 +161,7 @@
 
 .form {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   margin-top: 4px;
@@ -170,6 +171,16 @@
 .form > input {
   flex: 1;
   min-width: 0;
+}
+
+/* Images of the message take a row of their own; images dragged over the form. */
+.formImages {
+  flex-basis: 100%;
+}
+
+.dropping {
+  outline: 1px dashed var(--accent);
+  outline-offset: 2px;
 }
 
 .sent {

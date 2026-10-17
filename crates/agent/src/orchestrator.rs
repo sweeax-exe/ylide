@@ -12,6 +12,7 @@ use crate::checkpoints::Checkpoint;
 use crate::edit::unified_diff;
 use crate::knowledge;
 use crate::llm::ChatModel;
+use crate::permissions::UserReply;
 use crate::previous::PreviousRun;
 use crate::protocol::{AgentEvent, AgentState, MessageKind, Plan, Review, RunOutcome, Task, TaskStatus, Verdict};
 use crate::roles::{RoleDefinition, fill};
@@ -57,7 +58,7 @@ struct Router<'a> {
 
 #[async_trait]
 impl AskRouter for Router<'_> {
-    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<String> {
+    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<UserReply> {
         if to == "user" {
             // Stopping the run must not wait for an answer that may never come.
             return tokio::select! {
@@ -66,7 +67,7 @@ impl AskRouter for Router<'_> {
             };
         }
         let Some(role) = self.team.role(to) else {
-            return Some(format!("There is no agent called '{to}'. Available: user, {}", self.team.roles.iter().map(|r| r.id.as_str()).collect::<Vec<_>>().join(", ")));
+            return Some(UserReply::text(format!("There is no agent called '{to}'. Available: user, {}", self.team.roles.iter().map(|r| r.id.as_str()).collect::<Vec<_>>().join(", "))));
         };
         ctx.status(to, &role.id, AgentState::Thinking, &format!("answering {from}"), task_id);
         let overview = ctx.blackboard.lock().unwrap().overview();
@@ -86,7 +87,7 @@ impl AskRouter for Router<'_> {
             Err(e) => format!("({to} could not answer: {e})"),
         };
         ctx.status(to, &role.id, AgentState::Idle, "", task_id);
-        Some(if answer.trim().is_empty() { format!("({to} had no answer)") } else { answer })
+        Some(UserReply::text(if answer.trim().is_empty() { format!("({to} had no answer)") } else { answer }))
     }
 }
 

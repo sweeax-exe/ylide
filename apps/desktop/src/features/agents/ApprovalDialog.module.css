@@ -121,3 +121,24 @@
   overflow-wrap: anywhere;
   user-select: text;
 }
+
+/* Images of an answer; images dragged over the dialog. */
+.answerImages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.answerImagesHint {
+  flex: 1;
+  min-width: 160px;
+  font-size: var(--text-sm);
+  color: var(--warning);
+}
+
+.dropping {
+  outline: 1px dashed var(--accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-control);
+}

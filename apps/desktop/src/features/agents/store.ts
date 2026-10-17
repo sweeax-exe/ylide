@@ -26,6 +26,8 @@ interface AgentRunState {
   draftImages: DraftImage[];
   /** Next step typed under a finished run, kept while the panel is closed. */
   followUp: string;
+  /** Images for the next step, already scaled down. */
+  followUpImages: DraftImage[];
   /** The next-step field takes the focus when it appears. */
   focusFollowUp: boolean;
   /** The current run, or the last finished one. */
@@ -48,6 +50,7 @@ interface AgentRunState {
   setDraft(draft: string): void;
   setDraftImages(images: DraftImage[]): void;
   setFollowUp(text: string): void;
+  setFollowUpImages(images: DraftImage[]): void;
   start(goal: string): Promise<void>;
   /** Starts a run that continues the finished one; its agents are told what it did. */
   continueRun(goal: string): Promise<void>;
@@ -55,8 +58,9 @@ interface AgentRunState {
   resume(): Promise<void>;
   stop(): Promise<void>;
   decide(request: ApprovalRequest, response: ApprovalResponse): Promise<void>;
-  answer(questionId: string, answer: string): Promise<boolean>;
-  intervene(agentId: string, text: string): Promise<boolean>;
+  /** `images` (data URLs) go with the answer or message to a model that sees. */
+  answer(questionId: string, answer: string, images?: string[]): Promise<boolean>;
+  intervene(agentId: string, text: string, images?: string[]): Promise<boolean>;
   restore(checkpoint: Checkpoint): Promise<string[] | null>;
   /** Back to the idle view; the finished run stays available as "previous run". */
   newRun(): void;
@@ -158,10 +162,10 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     }
   };
 
-  /** Starts a run; with `from`, one that continues that finished run. A new run takes the draft's images. */
+  /** Starts a run; with `from`, one that continues that finished run. Each takes the images of its own field. */
   const launch = async (goal: string, from: RunData | null) => {
     const text = goal.trim();
-    const images = from ? [] : get().draftImages.map((i) => i.url);
+    const images = (from ? get().followUpImages : get().draftImages).map((i) => i.url);
     const { phase, run: previous } = get();
     if (!text || phase === 'starting' || phase === 'running') return;
     const continues = from && continuationOf(from);
@@ -182,7 +186,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       if (gen !== generation) return;
       const { run } = get();
       if (run && run.runId === null) set({ run: { ...run, runId } });
-      set((s) => ({ ...(continues ? { followUp: '' } : { draft: '', draftImages: [] }), phase: s.phase === 'starting' ? 'running' : s.phase }));
+      set((s) => ({ ...(continues ? { followUp: '', followUpImages: [] } : { draft: '', draftImages: [] }), phase: s.phase === 'starting' ? 'running' : s.phase }));
     } catch (e) {
       if (gen !== generation) return;
       generation++;
@@ -197,6 +201,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     draft: '',
     draftImages: [],
     followUp: '',
+    followUpImages: [],
     focusFollowUp: false,
     run: null,
     paused: false,
@@ -216,6 +221,10 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
 
     setFollowUp(followUp) {
       set({ followUp });
+    },
+
+    setFollowUpImages(followUpImages) {
+      set({ followUpImages });
     },
 
     start(goal) {
@@ -255,11 +264,11 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       }
     },
 
-    async answer(questionId, answer) {
+    async answer(questionId, answer, images = []) {
       const runId = get().run?.runId;
       if (!runId) return false;
       try {
-        await api.agents.answer(runId, questionId, answer);
+        await api.agents.answer(runId, questionId, answer, images);
         set((s) => {
           if (!s.run) return {};
           const deferred = new Set(s.deferred);
@@ -273,11 +282,11 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       }
     },
 
-    async intervene(agentId, text) {
+    async intervene(agentId, text, images = []) {
       const runId = get().run?.runId;
       if (!runId || !text.trim()) return false;
       try {
-        await api.agents.intervene(runId, agentId, text.trim());
+        await api.agents.intervene(runId, agentId, text.trim(), images);
         return true;
       } catch (e) {
         reportError(e, t('errors.intervene'));
@@ -327,7 +336,7 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       }
       if (gen !== generation || busy() || (get().run && get().run?.project === project)) return;
       const run = last ? restoreRun(last, project) : null;
-      set({ phase: 'idle', run, followUp: '', focusFollowUp: false, restored: new Set(), streams: {}, deferred: new Set() });
+      set({ phase: 'idle', run, followUp: '', followUpImages: [], focusFollowUp: false, restored: new Set(), streams: {}, deferred: new Set() });
       // Checkpoints stay on disk, so the changes can still be undone.
       if (!run?.runId) return;
       const runId = run.runId;

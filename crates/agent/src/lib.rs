@@ -24,7 +24,7 @@ pub mod tools;
 pub use checkpoints::{Checkpoint, CheckpointStore};
 pub use llm::{ChatModel, ScheduledModel, ScriptedModel};
 pub use orchestrator::{RunReport, Team, run, run_with_previous};
-pub use permissions::{ApprovalBroker, ApprovalMode, ApprovalRequest, ApprovalResponse, PermissionSettings};
+pub use permissions::{ApprovalBroker, ApprovalMode, ApprovalRequest, ApprovalResponse, PermissionSettings, UserReply};
 pub use previous::PreviousRun;
 pub use protocol::*;
 pub use roles::{PromptTemplates, RoleDefinition, default_roles};

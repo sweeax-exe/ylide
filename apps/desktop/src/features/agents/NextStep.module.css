@@ -14,6 +14,12 @@
   animation: reveal var(--motion-base) var(--motion-ease);
 }
 
+/* Images dragged over the field. */
+.dropping {
+  outline: 1px dashed var(--accent);
+  outline-offset: -4px;
+}
+
 .label {
   font-size: var(--text-sm);
   font-weight: 600;

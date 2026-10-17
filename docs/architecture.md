@@ -218,7 +218,11 @@ images" for the model; the projector is downloaded then and loaded with
   continued chat sends them again byte-identical (KV cache). With a model that
   cannot see, earlier images are replaced by a note and the chat goes on.
 * **Agents**: the request's images go with the first message of the
-  orchestrator and of each agent working on a task, once per conversation.
+  orchestrator and of each agent working on a task, once per conversation;
+  so do the images of a next step that continues a finished run. During a
+  run, a message to one agent ("Intervene") and an answer to an agent's
+  question can carry images too: they reach that agent with the message or
+  with the `ask` tool result, and a model that cannot see gets a note instead.
   Every role that uses tools gets the read-only tool `image_view` while the
   model sees: it returns an image file of the project (PNG, JPEG, WebP, GIF
   first frame) as an image part of the tool result. Compaction replaces

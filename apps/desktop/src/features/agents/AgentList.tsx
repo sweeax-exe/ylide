@@ -2,6 +2,7 @@ import { MessageSquarePlus, Send, X } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Braid } from '../../components/Braid';
+import { AttachImagesButton, ImageStrip, useDraftImages, useImageInput, useVision } from '../../components/ImageInput';
 import { Button, IconButton, TextInput } from '../../components/ui';
 import { formatNumber } from '../../lib/format';
 import { useApp } from '../../state/app';
@@ -142,22 +143,38 @@ function InterveneForm({ agentId, name, onDone, onCancel }: { agentId: string; n
   const intervene = useAgentRun((st) => st.intervene);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
+  const [images, getImages, setImages] = useDraftImages();
+  const vision = useVision();
+  const imageInput = useImageInput(getImages, setImages, vision);
+  const imagesBlocked = images.length > 0 && !vision.canSee;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!text.trim() || busy) return;
+    if (!text.trim() || busy || imagesBlocked) return;
     setBusy(true);
-    const ok = await intervene(agentId, text);
+    const ok = await intervene(agentId, text, images.map((i) => i.url));
     setBusy(false);
     if (ok) onDone();
   };
 
   return (
-    <form className={s.form} onSubmit={submit}>
+    <form
+      className={`${s.form} ${imageInput.dragging ? s.dropping : ''}`}
+      onSubmit={submit}
+      onDragOver={imageInput.onDragOver}
+      onDragLeave={imageInput.onDragLeave}
+      onDrop={imageInput.onDrop}
+    >
+      {images.length > 0 && (
+        <div className={s.formImages}>
+          <ImageStrip images={images} onRemove={imageInput.remove} size="sm" />
+        </div>
+      )}
       <TextInput
         autoFocus
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onPaste={imageInput.onPaste}
         onKeyDown={(e) => {
           if (e.key === 'Escape') {
             e.stopPropagation();
@@ -168,7 +185,8 @@ function InterveneForm({ agentId, name, onDone, onCancel }: { agentId: string; n
         aria-label={t('agents.intervenePlaceholder', { agent: name })}
         spellCheck
       />
-      <Button type="submit" variant="primary" size="sm" icon={<Send size={13} />} loading={busy} disabled={!text.trim()}>
+      <AttachImagesButton vision={vision} onPick={imageInput.pick} busy={imageInput.busy} />
+      <Button type="submit" variant="primary" size="sm" icon={<Send size={13} />} loading={busy} disabled={!text.trim() || imagesBlocked}>
         {t('common:actions.send')}
       </Button>
       <IconButton type="button" label={t('common:actions.cancel')} onClick={onCancel}>

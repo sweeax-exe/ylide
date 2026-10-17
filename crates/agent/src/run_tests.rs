@@ -2,7 +2,7 @@
 
 use crate::llm::script::{call, text};
 use crate::llm::{ChatModel, ScriptedModel};
-use crate::permissions::{ApprovalBroker, AutoApprove, PermissionSettings};
+use crate::permissions::{ApprovalBroker, AutoApprove, PermissionSettings, UserReply};
 use crate::protocol::*;
 use crate::roles::{PromptTemplates, default_roles};
 use crate::runner::RunContext;
@@ -141,8 +141,8 @@ impl ApprovalBroker for Reject {
             reason: Some("not now".into()),
         }
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> String {
-        "no".into()
+    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+        UserReply::text("no")
     }
 }
 
@@ -194,7 +194,7 @@ impl ApprovalBroker for Silent {
     async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
         std::future::pending().await
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> String {
+    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
         std::future::pending().await
     }
 }
@@ -280,6 +280,30 @@ async fn agents_that_see_get_the_request_images_and_image_view() {
     assert!(planning[1].messages[2..].iter().all(|m| m.role == MessageRole::Tool || m.images.is_empty()), "sent once");
     let coding = coder.requests.lock().unwrap().clone();
     assert_eq!(coding[0].messages[1].images, vec![screenshot.clone()]);
+
+    // The user answers a question with a screenshot: it reaches the asking agent.
+    struct Screenshot(String);
+    #[async_trait]
+    impl ApprovalBroker for Screenshot {
+        async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
+            ApprovalResponse::Approve
+        }
+        async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+            UserReply { text: "Like this.".into(), images: vec![self.0.clone()] }
+        }
+    }
+    let h = harness("vision-answer");
+    let orchestrator = seeing(vec![plan_call(json!([{ "title": "Match it", "description": "Make add add." }]))]);
+    let coder = seeing(vec![
+        call("ask", json!({"to": "user", "question": "How should the cart look?"})),
+        call("finish", json!({"summary": "done"})),
+    ]);
+    let t = team(vec![("orchestrator", orchestrator), ("coder", coder.clone())]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(Screenshot(screenshot.clone())));
+    run(ctx, &t, "Fix the cart").await;
+    let answered = coder.requests.lock().unwrap()[1].messages.last().cloned().unwrap();
+    assert_eq!((answered.role, answered.content.as_deref()), (MessageRole::Tool, Some("Answer from user:\nLike this.")));
+    assert_eq!(answered.images, vec![screenshot.clone()]);
 
     // A model that cannot see gets neither the images nor the tool.
     let h = harness("blind");

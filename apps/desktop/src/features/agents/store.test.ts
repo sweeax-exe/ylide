@@ -1,0 +1,91 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AgentEvent } from '../../bindings/AgentEvent';
+import type { DraftImage } from '../../lib/images';
+
+// The agent store talks to the core only through lib/ipc.
+const api = vi.hoisted(() => ({
+  agents: {
+    start: vi.fn(),
+    answer: vi.fn(async () => true),
+    intervene: vi.fn(async () => undefined),
+    lastRun: vi.fn(async () => null),
+    checkpoints: vi.fn(async () => []),
+  },
+}));
+vi.mock('../../lib/ipc', () => ({ api }));
+vi.mock('../../lib/errors', () => ({ reportError: vi.fn() }));
+vi.mock('../../i18n', () => ({ default: { t: (key: string) => key } }));
+vi.mock('../../state/app', () => ({ useApp: { getState: () => ({ workspace: { root: 'D:/shop' } }), subscribe: () => () => undefined } }));
+vi.mock('../../state/layout', () => ({ useLayout: { getState: () => ({ right: 'agents' }) } }));
+vi.mock('../../state/toasts', () => ({ useToasts: { getState: () => ({ push: vi.fn() }) } }));
+
+const image = (name: string): DraftImage => ({ id: name, url: `data:image/png;base64,${name}`, width: 10, height: 10, name });
+const flush = async () => {
+  for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
+};
+
+/** Each start gets its own run id; the events of the last start go to `emit`. */
+let emit: (e: AgentEvent) => void = () => undefined;
+let runs = 0;
+
+async function load() {
+  vi.resetModules();
+  const { useAgentRun } = await import('./store');
+  return useAgentRun;
+}
+
+beforeEach(() => {
+  runs = 0;
+  vi.clearAllMocks();
+  api.agents.start.mockImplementation(async (_goal: string, onEvent: (e: AgentEvent) => void) => {
+    emit = onEvent;
+    return `run-${++runs}`;
+  });
+});
+
+describe('agent run images', () => {
+  it('sends the goal images with a new run and the next-step images when it continues', async () => {
+    const store = await load();
+    store.getState().setDraft('Build the cart like the mockup');
+    store.getState().setDraftImages([image('mockup')]);
+    // Images typed for the next step of an earlier run stay out of a new run.
+    store.getState().setFollowUpImages([image('not-yet')]);
+    await store.getState().start(store.getState().draft);
+    expect(api.agents.start).toHaveBeenLastCalledWith('Build the cart like the mockup', expect.any(Function), null, ['data:image/png;base64,mockup']);
+    expect(store.getState().draftImages).toEqual([]);
+    expect(store.getState().run?.images).toEqual(['data:image/png;base64,mockup']);
+
+    emit({ type: 'runFinished', runId: 'run-1', outcome: 'completed', summary: 'Done.' });
+    await flush();
+    expect(store.getState().phase).toBe('finished');
+
+    store.getState().setFollowUpImages([image('bug'), image('detail')]);
+    await store.getState().continueRun('The button is still blue, see the screenshots');
+    expect(api.agents.start).toHaveBeenLastCalledWith('The button is still blue, see the screenshots', expect.any(Function), 'run-1', [
+      'data:image/png;base64,bug',
+      'data:image/png;base64,detail',
+    ]);
+    expect(store.getState().followUpImages).toEqual([]);
+    expect(store.getState().run?.images).toHaveLength(2);
+  });
+
+  it('keeps the images when the core refuses the run', async () => {
+    const store = await load();
+    api.agents.start.mockRejectedValueOnce(new Error('no_vision'));
+    store.getState().setDraftImages([image('mockup')]);
+    await store.getState().start('Look at this');
+    expect(store.getState().draftImages).toHaveLength(1);
+    expect(store.getState().phase).toBe('idle');
+  });
+
+  it('sends images with an answer and with a message to an agent', async () => {
+    const store = await load();
+    await store.getState().start('Fix the cart');
+    await store.getState().answer('question-1', 'Like this', ['data:image/png;base64,a']);
+    expect(api.agents.answer).toHaveBeenCalledWith('run-1', 'question-1', 'Like this', ['data:image/png;base64,a']);
+    await store.getState().intervene('coder', ' Use this color ', ['data:image/png;base64,b']);
+    expect(api.agents.intervene).toHaveBeenCalledWith('run-1', 'coder', 'Use this color', ['data:image/png;base64,b']);
+    await store.getState().intervene('coder', 'No image');
+    expect(api.agents.intervene).toHaveBeenLastCalledWith('run-1', 'coder', 'No image', []);
+  });
+});

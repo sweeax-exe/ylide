@@ -5,6 +5,7 @@ import type { ApprovalRequest } from '../../bindings/ApprovalRequest';
 import type { ApprovalResponse } from '../../bindings/ApprovalResponse';
 import type { ToolRisk } from '../../bindings/ToolRisk';
 import { Dialog } from '../../components/Dialog';
+import { AttachImagesButton, ImageStrip, useDraftImages, useImageInput, useVision } from '../../components/ImageInput';
 import { Badge, Button, Field, TextArea, TextInput, type Tone } from '../../components/ui';
 import s from './ApprovalDialog.module.css';
 import { looksLikeDiff } from './diff';
@@ -165,11 +166,15 @@ export function QuestionDialog({ question, onLater }: { question: UserQuestion; 
   const answer = useAgentRun((st) => st.answer);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
+  const [images, getImages, setImages] = useDraftImages();
+  const vision = useVision();
+  const imageInput = useImageInput(getImages, setImages, vision);
+  const imagesBlocked = images.length > 0 && !vision.canSee;
 
   const send = async () => {
-    if (!text.trim() || busy) return;
+    if (!text.trim() || busy || imagesBlocked) return;
     setBusy(true);
-    await answer(question.id, text.trim());
+    await answer(question.id, text.trim(), images.map((i) => i.url));
     setBusy(false);
   };
 
@@ -184,13 +189,13 @@ export function QuestionDialog({ question, onLater }: { question: UserQuestion; 
           <Button variant="ghost" onClick={onLater}>
             {t('question.later')}
           </Button>
-          <Button variant="primary" onClick={() => void send()} loading={busy} disabled={!text.trim()}>
+          <Button variant="primary" onClick={() => void send()} loading={busy} disabled={!text.trim() || imagesBlocked}>
             {t('question.send')}
           </Button>
         </>
       }
     >
-      <div className={s.body}>
+      <div className={`${s.body} ${imageInput.dragging ? s.dropping : ''}`} onDragOver={imageInput.onDragOver} onDragLeave={imageInput.onDragLeave} onDrop={imageInput.onDrop}>
         <p className={s.question}>{question.question}</p>
         <Field label={t('question.answerLabel')} hint={t('question.hint')}>
           {(id) => (
@@ -200,6 +205,7 @@ export function QuestionDialog({ question, onLater }: { question: UserQuestion; 
               rows={4}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onPaste={imageInput.onPaste}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                   e.preventDefault();
@@ -209,6 +215,11 @@ export function QuestionDialog({ question, onLater }: { question: UserQuestion; 
             />
           )}
         </Field>
+        <div className={s.answerImages}>
+          <ImageStrip images={images} onRemove={imageInput.remove} size="sm" />
+          <AttachImagesButton vision={vision} onPick={imageInput.pick} busy={imageInput.busy} />
+          {imagesBlocked && <span className={s.answerImagesHint}>{vision.hint}</span>}
+        </div>
       </div>
     </Dialog>
   );

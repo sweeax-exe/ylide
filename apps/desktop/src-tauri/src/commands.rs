@@ -552,8 +552,11 @@ pub fn agent_approve(state: State<'_, AppState>, run_id: String, request_id: Str
 }
 
 #[tauri::command]
-pub fn agent_answer(state: State<'_, AppState>, run_id: String, question_id: String, answer: String) -> Cmd<bool> {
-    Ok(state.agents.get(&run_id)?.broker.resolve_question(&question_id, answer))
+pub fn agent_answer(state: State<'_, AppState>, run_id: String, question_id: String, answer: String, images: Option<Vec<String>>) -> Cmd<bool> {
+    let run = state.agents.get(&run_id)?;
+    let images = images.unwrap_or_default();
+    crate::chat::check_images(&images, run.vision)?;
+    Ok(run.broker.resolve_question(&question_id, agent::UserReply { text: answer, images }))
 }
 
 #[tauri::command]
@@ -569,8 +572,11 @@ pub fn agent_control(state: State<'_, AppState>, run_id: String, action: String)
 }
 
 #[tauri::command]
-pub fn agent_intervene(state: State<'_, AppState>, run_id: String, agent_id: String, text: String) -> Cmd<()> {
-    state.agents.get(&run_id)?.ctx.control.intervene(&agent_id, &text);
+pub fn agent_intervene(state: State<'_, AppState>, run_id: String, agent_id: String, text: String, images: Option<Vec<String>>) -> Cmd<()> {
+    let run = state.agents.get(&run_id)?;
+    let images = images.unwrap_or_default();
+    crate::chat::check_images(&images, run.vision)?;
+    run.ctx.control.intervene_with(&agent_id, agent::UserReply { text, images });
     Ok(())
 }
 

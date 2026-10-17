@@ -1094,6 +1094,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       return r(resolve !== undefined);
     }
     case 'agent_answer': {
+      if ((args.images ?? []).length && server?.vision !== 'on') throw { code: 'no_vision', message: 'the model that is running cannot see images' };
       const resolve = pendingAnswers.get(args.questionId);
       pendingAnswers.delete(args.questionId);
       resolve?.(args.answer);
@@ -1114,6 +1115,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       }
       return r(undefined);
     case 'agent_intervene': {
+      if ((args.images ?? []).length && server?.vision !== 'on') throw { code: 'no_vision', message: 'the model that is running cannot see images' };
       // The core posts the message when the agent picks it up at its next step.
       const send = runSend;
       const to = String(args.agentId);
