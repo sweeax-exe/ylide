@@ -18,10 +18,12 @@
 pub mod frontmatter;
 pub mod github;
 pub mod prompt;
+pub mod recommended;
 pub mod store;
 
 pub use frontmatter::SkillMeta;
 pub use prompt::EnabledSkill;
+pub use recommended::{McpServerSuggestion, Recommended, RecommendedInfo};
 pub use store::{Project, SkillContent, SkillInfo, SkillSource, SkillStore, SkillUpdate};
 
 #[derive(Debug, thiserror::Error)]

@@ -122,5 +122,14 @@
     "saveFailed": "The chat could not be saved to the history",
     "messages_one": "{{count}} message",
     "messages_other": "{{count}} messages"
+  },
+  "suggestions": {
+    "label": "Suggested next steps",
+    "askHint": "Send as the next message",
+    "agents": "Do it with agents",
+    "agentsLabel": "Do it with agents: {{text}}",
+    "agentsHint": "Starts an agent run with this as the goal.",
+    "agentsBusy": "An agent run is already going.",
+    "agentsNoProject": "Open a project first."
   }
 }

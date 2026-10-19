@@ -458,11 +458,13 @@ pub fn recommend(registry: &Registry, hw: &HardwareProfile) -> Recommendation {
         }
 
         // "Stronger" may be slow and may claim the VRAM reserved for autocomplete.
+        // Among equally strong models (the same model from two quantizers) the
+        // better configuration wins; `max_by` alone would return the last, worst one.
         let slow_ranked = best_per_model(registry, role, &budget, true);
         let stronger = slow_ranked
             .iter()
             .filter(|(c, m)| !used.contains(&c.model_id) && raw_quality(m, role) > primary_quality + 2.0 && c.plan.est_tokens_per_sec >= 3.0)
-            .max_by(|a, b| raw_quality(a.1, role).total_cmp(&raw_quality(b.1, role)));
+            .max_by(|a, b| raw_quality(a.1, role).total_cmp(&raw_quality(b.1, role)).then(a.0.score.total_cmp(&b.0.score)));
         if let Some((c, _)) = stronger {
             used.push(c.model_id.clone());
             alternatives.push((AlternativeKind::Stronger, c.clone()));
@@ -885,6 +887,50 @@ pub(crate) mod tests {
         ids.sort();
         ids.dedup();
         assert_eq!(ids.len(), n);
+    }
+
+    #[test]
+    fn stronger_alternative_is_the_best_configuration_of_equal_quality() {
+        // The same strong model twice: once in small files that fit the GPU, once in
+        // large files that crawl in partial offload. Both have the same quality, so
+        // the faster configuration must be offered.
+        let mut reg = test_registry();
+        let mut small = model("strong-27b-lowbit", &[Role::Chat, Role::Agent], false, 27.0, 27.0, 64, 4, 90.0, ToolCalling::Excellent,
+                              &[("IQ2_XS", 8.4, 30.0)]);
+        small.architecture.attention_layers = Some(16);
+        let mut large = small.clone();
+        large.id = "strong-27b".into();
+        large.variants = model("strong-27b", &[Role::Agent], false, 27.0, 27.0, 64, 4, 90.0, ToolCalling::Excellent, &[("IQ3_XXS", 11.0, 10.0)]).variants;
+        reg.models.push(large);
+        reg.models.push(small);
+        let r = recommend(&reg, &machine(12, 32));
+        let p = r.primary.as_ref().unwrap();
+        assert!(!p.model_id.starts_with("strong-27b"), "{}", p.model_id);
+        let stronger = r.alternatives.iter().find(|a| a.kind == AlternativeKind::Stronger).expect("a stronger alternative");
+        let fit = |id: &str| r.fits.iter().find(|c| c.model_id == id).unwrap();
+        assert!(fit("strong-27b-lowbit").plan.est_tokens_per_sec > fit("strong-27b").plan.est_tokens_per_sec * 2.0);
+        assert_eq!(stronger.candidate.model_id, "strong-27b-lowbit", "{:#?}", stronger.candidate.plan);
+    }
+
+    /// The bundled list: the low-bit Qwen3.8 27B builds put the strongest model
+    /// completely on a 16 GB GPU, and give 12 GB GPUs a usable way to run it.
+    #[test]
+    fn qwen38_low_bit_builds_fit_twelve_and_sixteen_gb() {
+        let reg = crate::bundled();
+        let mut hw = machine(16, 64);
+        hw.gpus[0].name = "NVIDIA GeForce RTX 5070 Ti".into();
+        let p = recommend(&reg, &hw).primary.unwrap();
+        assert_eq!(p.model_id, "qwen3.8-27b-gsq", "{p:#?}");
+        assert_eq!(p.plan.placement, Placement::Gpu);
+        assert!(p.plan.context >= 65_536 && p.plan.est_tokens_per_sec >= 40.0, "{p:#?}");
+
+        let mut hw = machine(12, 32);
+        hw.gpus[0].name = "NVIDIA GeForce RTX 4070".into();
+        let r = recommend(&reg, &hw);
+        let stronger = &r.alternatives.iter().find(|a| a.kind == AlternativeKind::Stronger).expect("stronger").candidate;
+        assert_eq!(stronger.model_id, "qwen3.8-27b-gsq", "{stronger:#?}");
+        assert_eq!(stronger.plan.placement, Placement::Gpu);
+        assert!(stronger.plan.est_tokens_per_sec >= 20.0, "{stronger:#?}");
     }
 
     #[test]

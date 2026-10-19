@@ -167,6 +167,42 @@ fn system32_has(file: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// The SMBIOS structure table from the firmware (RSMB provider). The buffer
+/// starts with an 8-byte RawSMBIOSData header; its `Length` field gives the
+/// size of the table that follows.
+pub(crate) fn smbios_table() -> Option<Vec<u8>> {
+    use windows::Win32::System::SystemInformation::{GetSystemFirmwareTable, RSMB};
+    // SAFETY: the first call only asks for the size; the second fills a buffer of that size.
+    let size = unsafe { GetSystemFirmwareTable(RSMB, 0, None) } as usize;
+    if size < 8 {
+        return None;
+    }
+    let mut buf = vec![0u8; size];
+    let written = unsafe { GetSystemFirmwareTable(RSMB, 0, Some(&mut buf)) } as usize;
+    if written < 8 || written > size {
+        return None;
+    }
+    let len = u32::from_le_bytes([buf[4], buf[5], buf[6], buf[7]]) as usize;
+    buf.get(8..8 + len.min(written - 8)).map(<[u8]>::to_vec)
+}
+
+/// Every processor relationship record (`RelationAll`), as one buffer.
+pub(crate) fn processor_information() -> Option<Vec<u8>> {
+    use windows::Win32::System::SystemInformation::{GetLogicalProcessorInformationEx, RelationAll, SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX};
+    let mut len = 0u32;
+    // SAFETY: the first call only reports the size (and fails with ERROR_INSUFFICIENT_BUFFER).
+    let _ = unsafe { GetLogicalProcessorInformationEx(RelationAll, None, &mut len) };
+    if len == 0 {
+        return None;
+    }
+    // u64 storage keeps the records 8-byte aligned, as the API expects.
+    let mut buf = vec![0u64; (len as usize).div_ceil(8)];
+    // SAFETY: the buffer holds `len` bytes.
+    unsafe { GetLogicalProcessorInformationEx(RelationAll, Some(buf.as_mut_ptr().cast::<SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>()), &mut len) }.ok()?;
+    let bytes: Vec<u8> = buf.iter().flat_map(|w| w.to_le_bytes()).take(len as usize).collect();
+    Some(bytes)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -65,7 +65,8 @@
     "stepLimit": "Limite d’étapes atteinte",
     "answering": "Répond à {{agent}}",
     "notes": "Mise à jour des connaissances du projet",
-    "recap": "Rédaction du résumé"
+    "recap": "Rédaction du résumé",
+    "clarify": "Attend vos réponses"
   },
   "idle": {
     "goalLabel": "Que doivent faire les agents ?",
@@ -86,7 +87,8 @@
     "showRun": "Afficher les détails",
     "openTasks_one": "Une tâche reste ouverte. En poursuivant, elle est reprise en premier.",
     "openTasks_many": "{{count}} tâches restent ouvertes. En poursuivant, elles sont reprises en premier.",
-    "openTasks_other": "{{count}} tâches restent ouvertes. En poursuivant, elles sont reprises en premier."
+    "openTasks_other": "{{count}} tâches restent ouvertes. En poursuivant, elles sont reprises en premier.",
+    "startPlanning": "Créer le plan"
   },
   "mode": {
     "label": "Autorisations",
@@ -103,7 +105,8 @@
     "confirmDeletes": "Demander avant de supprimer des fichiers",
     "unguardedCommands": "Les agents exécutent des commandes sans demander. Leurs effets ne peuvent pas être annulés.",
     "unguardedDeletes": "Les agents suppriment des fichiers sans demander. Vous pouvez les restaurer depuis les points de contrôle.",
-    "unguardedBoth": "Les agents exécutent des commandes et suppriment des fichiers sans demander. Les effets des commandes ne peuvent pas être annulés."
+    "unguardedBoth": "Les agents exécutent des commandes et suppriment des fichiers sans demander. Les effets des commandes ne peuvent pas être annulés.",
+    "confirmPlan": "D’abord planifier, puis réaliser"
   },
   "run": {
     "elapsed": "Temps écoulé",
@@ -260,7 +263,16 @@
     "answerLabel": "Votre réponse",
     "hint": "Ctrl+Entrée envoie la réponse.",
     "later": "Répondre plus tard",
-    "send": "Envoyer la réponse"
+    "send": "Envoyer la réponse",
+    "clarifyTitle": "Quelques questions avant le plan",
+    "clarifyIntro": "L’orchestrateur planifie avec vos réponses. Cliquez sur une réponse ou écrivez la vôtre ; ce que vous laissez ouvert, il le décide lui-même.",
+    "recommended": "(recommandé)",
+    "own": "Votre propre réponse",
+    "ownLabel": "Votre propre réponse à : {{question}}",
+    "several": "Vous pouvez en choisir plusieurs.",
+    "sendAll": "Envoyer les réponses",
+    "skip": "Passer",
+    "skipHint": "Planifier sans réponses : l’orchestrateur décide lui-même et indique ce qu’il a supposé."
   },
   "live": {
     "task": "{{id}} {{title}} : {{status}}",
@@ -272,6 +284,69 @@
     "answer": "Votre réponse n’a pas pu être envoyée",
     "intervene": "Votre message n’a pas pu être envoyé",
     "restore": "Les modifications n’ont pas pu être annulées",
-    "settings": "Le réglage d’autorisation n’a pas pu être enregistré"
+    "settings": "Le réglage d’autorisation n’a pas pu être enregistré",
+    "planDraft": "Le plan n’a pas pu être créé",
+    "planSave": "Le plan n’a pas pu être enregistré"
+  },
+  "workMode": {
+    "label": "Mode",
+    "plan": "Planifier",
+    "code": "Réaliser",
+    "hint": "Basculer entre planifier et réaliser ({{key}})"
+  },
+  "plan": {
+    "introTitle": "D’abord planifier, puis réaliser",
+    "introBody": "En mode planification, les agents ne font que lire, ne modifient rien et rédigent un plan. Vous le discutez et le modifiez jusqu’à ce qu’il convienne. Avec « Réaliser », ils le mettent en œuvre.",
+    "goalLabel": "Que faut-il planifier ?",
+    "goalPlaceholder": "Par exemple : des codes de réduction dans le panier",
+    "create": "Créer le plan",
+    "createHint": "Ctrl+Entrée crée le plan.",
+    "notReady": "Démarrez un modèle et ouvrez un projet pour planifier.",
+    "adopt": "Reprendre les tâches ouvertes",
+    "adoptHint": "La dernière exécution (« {{goal}} ») a des tâches ouvertes. Reprenez-les comme plan pour les retravailler.",
+    "handover": "Passe en planification dès que {{task}} est terminée.",
+    "handoverNoTask": "Passe en planification dès que la tâche en cours est terminée.",
+    "keepGoing": "Continuer à réaliser",
+    "kicker": "Plan",
+    "firstDraft": "L’orchestrateur examine le projet et rédige le plan. Rien n’est modifié.",
+    "working": "L’orchestrateur planifie …",
+    "stop": "Arrêter",
+    "approach": "Approche",
+    "done": "Déjà fait",
+    "steps": "Étapes",
+    "noSteps": "Pas encore d’étapes. Ajoutez-en une ou décrivez ci-dessous ce qui manque.",
+    "addStep": "Ajouter une étape",
+    "newStep": "Nouvelle étape",
+    "files": "Fichiers",
+    "verify": "Vérifier",
+    "risks": "Risques",
+    "questions": "Questions ouvertes",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "edit": "Modifier",
+    "remove": "Retirer",
+    "titleLabel": "Titre",
+    "descriptionLabel": "Ce qu’il faut faire",
+    "filesLabel": "Fichiers, séparés par des virgules",
+    "verifyLabel": "Comment le vérifier",
+    "apply": "Appliquer",
+    "answer": "Envoyer les réponses",
+    "answersIntro": "Réponses aux questions ouvertes :",
+    "leftOpen": "laissé ouvert, décide toi-même",
+    "notesLabel": "Historique du plan",
+    "noteCreated": "Plan créé",
+    "noteUpdated": "Plan mis à jour",
+    "noteFailed": "L’orchestrateur n’a pas pu rédiger de plan. Réessayez ou formulez-le autrement.",
+    "noteTookOver": "Les tâches ouvertes forment maintenant le plan.",
+    "chatLabel": "Discuter du plan",
+    "chatPlaceholder": "Par exemple : modifie l’étape 2, prends plutôt Vitest",
+    "send": "Envoyer",
+    "saveFile": "Enregistrer comme fichier",
+    "saved": "Plan enregistré",
+    "discard": "Abandonner le plan",
+    "discardTitle": "Abandonner le plan ?",
+    "discardBody": "Le plan et son historique sont perdus. Les fichiers enregistrés restent.",
+    "carryOut": "Réaliser",
+    "carryOutHint": "Les agents réalisent les étapes, dans le mode d’autorisation choisi."
   }
 }

@@ -7,3 +7,8 @@
   height: 100%;
   background: var(--bg-app);
 }
+
+/* "Planen | Umsetzen" in the header. */
+.modeSwitch {
+  display: flex;
+}

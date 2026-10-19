@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Limite de saída",
       "hint": "Saídas mais longas são encurtadas no meio antes que o agente as veja."
+    },
+    "confirmPlan": {
+      "label": "Primeiro planejar, depois executar",
+      "hint": "Um pedido novo abre primeiro o modo de planejamento: os agentes só leem e escrevem um plano. Ele só é executado quando você muda para “Executar”.",
+      "hintAsk": "Ligado por padrão no modo “Perguntar antes”. Um pedido novo abre primeiro o modo de planejamento; ele só é executado quando você muda para “Executar”."
+    },
+    "questionsTitle": "Perguntas de esclarecimento",
+    "questionsDescription": "Com que facilidade o orquestrador pergunta antes de planejar e o chat pergunta de volta quando um pedido não está claro. As perguntas vêm com respostas para clicar.",
+    "questions": {
+      "label": "Perguntas de esclarecimento",
+      "never": {
+        "title": "Nunca",
+        "body": "O orquestrador planeja na hora. O chat responde pela interpretação mais provável e diz o que supôs."
+      },
+      "ifNeeded": {
+        "title": "Quando necessário",
+        "body": "Só quando um pedido é realmente ambíguo ou deixa em aberto uma escolha importante que o projeto não responde. Pedidos claros começam na hora."
+      },
+      "often": {
+        "title": "Com mais frequência",
+        "body": "Também quando um pedido deixa em aberto escolhas que mudam o resultado, como o escopo, o comportamento ou nomes. No máximo uma rodada de até três perguntas."
+      }
     }
   },
   "roles": {
@@ -312,6 +334,10 @@
     "recap": {
       "label": "Resumo",
       "hint": "Enviado ao orquestrador no fim de uma execução, para que ele escreva um resumo curto no seu idioma."
+    },
+    "planning": {
+      "label": "Modo de planejamento",
+      "hint": "Enviado ao orquestrador no modo de planejamento: para um plano novo e para cada alteração nele."
     }
   },
   "network": {
@@ -383,6 +409,10 @@
       "autoCurrent": "Automático (atualmente {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (não instalado)"
+    },
+    "kvQuant": {
+      "label": "Comprimir o cache KV para ganhar velocidade",
+      "hint": "Guarda o contexto com 8 bits (q8_0) em vez de 16. Usa metade da memória, então mais do modelo cabe na GPU e as respostas costumam chegar um pouco mais rápido. Muito ligeiramente menos preciso."
     },
     "extraArgs": {
       "label": "Argumentos extras do llama-server",
@@ -506,6 +536,75 @@
     "logLoading": "Carregando o registro do servidor",
     "logFailed": "Não foi possível carregar o registro do servidor: {{message}}",
     "logEmpty": "O servidor ainda não escreveu nada."
+  },
+  "tips": {
+    "dismiss": "Ocultar esta dica",
+    "ramSpeed": {
+      "title": "Sua RAM está mais lenta do que poderia",
+      "body": "Sua RAM ({{kind}}, “{{part}}”) roda a {{configured}} MT/s, mas provavelmente foi feita para {{rated}} MT/s. Para chegar lá, ative o perfil EXPO ou XMP dela na BIOS. Modelos que rodam em parte na memória do sistema passam a responder cerca de 5–10% mais rápido.",
+      "caveat": "O perfil é um overclock garantido pelo fabricante: depois, confira rapidamente se o PC continua estável. O Ylide nunca altera configurações da BIOS."
+    }
+  },
+  "calibration": {
+    "title": "Otimizar para este PC",
+    "intro": "O Ylide testa algumas configurações do llama-server com o seu modelo e mantém as mais rápidas: modo de carregamento, tamanho do lote, threads e mais. Leva de 2 a 4 minutos; enquanto isso, o chat e os agentes ficam em pausa.",
+    "lossyKv": "Testar também um cache KV comprimido (muito ligeiramente menos preciso)",
+    "start": "Otimizar (~3 min)",
+    "again": "Medir de novo",
+    "cancel": "Cancelar",
+    "reset": "Redefinir",
+    "needsModel": "Inicie o modelo primeiro.",
+    "running": "Medição {{done}} de cerca de {{total}} …",
+    "measuring": "medindo …",
+    "speeds": "Prompt {{prompt}} tok/s · Resposta {{gen}} tok/s",
+    "tuned": "Otimizado para este PC",
+    "trial": {
+      "baseline": "Configurações atuais",
+      "loadMode": "Modo de carregamento",
+      "kvCache": "Cache KV",
+      "batchSize": "Tamanho do lote",
+      "threads": "Threads",
+      "expertCache": "Cache de GPU para especialistas",
+      "confirm": "Confirmação"
+    },
+    "outcome": {
+      "measured": "medido",
+      "better": "mais rápido, mantido",
+      "worse": "não mais rápido",
+      "different": "outra resposta, descartado",
+      "overflow": "memória insuficiente, descartado",
+      "failed": "não iniciou"
+    },
+    "result": {
+      "gen": "Respostas: antes {{before}} tok/s, agora {{after}} tok/s ({{change}})",
+      "prompt": "Leitura do prompt: antes {{before}} tok/s, agora {{after}} tok/s ({{change}})",
+      "same": "Suas configurações atuais já eram as mais rápidas ({{gen}} tok/s ao responder, {{prompt}} tok/s ao ler o prompt).",
+      "applied": "Vale para cada início deste modelo neste PC.",
+      "notApplied": "Só volta a valer quando você medir de novo.",
+      "trials": "Todas as medições ({{date}})"
+    },
+    "change": {
+      "kvQ8": "Cache KV comprimido (q8_0)",
+      "noMmap": "Modelo carregado inteiro na RAM",
+      "mmap": "Arquivo do modelo mapeado em vez de carregado (mmap)",
+      "ubatch": "Tamanho do lote {{n}}",
+      "ccd": "{{n}} threads no CCD com o maior cache",
+      "pinned": "Threads fixadas nos núcleos físicos",
+      "expertCache": "{{mib}} MiB de cache de GPU para especialistas"
+    },
+    "stale": "Algo mudou desde a medição: {{what}}. Meça de novo para que as configurações sirvam.",
+    "changed": {
+      "model": "arquivo do modelo",
+      "runtime": "versão do llama.cpp",
+      "gpu": "placa de vídeo ou driver",
+      "cpu": "processador",
+      "ram": "RAM",
+      "context": "tamanho do contexto",
+      "slots": "solicitações paralelas",
+      "projector": "entrada de imagens"
+    },
+    "cancelled": "Cancelado. As configurações anteriores continuam valendo.",
+    "failed": "A medição falhou: {{message}}"
   },
   "installed": {
     "title": "Modelos instalados",

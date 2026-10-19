@@ -5,10 +5,15 @@ import type { CustomEndpoint } from "./CustomEndpoint";
 import type { EditorSettings } from "./EditorSettings";
 import type { ModelSettings } from "./ModelSettings";
 import type { NetworkSettings } from "./NetworkSettings";
+import type { QuestionLevel } from "./QuestionLevel";
 import type { ThemeChoice } from "./ThemeChoice";
 
 export type Settings = { version: number, 
 /**
  * UI language ("de", "en"); `None` follows the system.
  */
-language: string | null, theme: ThemeChoice, onboardingDone: boolean, lastProject: string | null, network: NetworkSettings, models: ModelSettings, endpoint: CustomEndpoint, agent: AgentSettings, chat: ChatSettings, editor: EditorSettings, };
+language: string | null, theme: ThemeChoice, onboardingDone: boolean, lastProject: string | null, network: NetworkSettings, models: ModelSettings, endpoint: CustomEndpoint, agent: AgentSettings, chat: ChatSettings, editor: EditorSettings, 
+/**
+ * How readily the agents (before they plan) and the chat ask back.
+ */
+questions: QuestionLevel, };

@@ -1,6 +1,6 @@
 //! Built-in tools with their JSON schemas, risk classes and implementations.
 //!
-//! Coordination tools (`finish`, `ask`, `submit_plan`, `submit_review`) are
+//! Coordination tools (`finish`, `ask`, `clarify`, `submit_plan`, `submit_review`) are
 //! declared here but handled by the runner, because they change the flow of
 //! the run rather than the project.
 
@@ -181,16 +181,19 @@ pub fn all_tools() -> Vec<ToolSpec> {
         ToolSpec {
             name: "ask",
             risk: ToolRisk::Communicate,
-            description: "Ask another agent or the user a question when you are blocked. Use sparingly.",
+            description: "Ask another agent or the user a question when you are blocked. Use sparingly. When you ask the user and there are clear choices, give 2-4 short answers in options; put the one you recommend first and end it with ' (recommended)'. The user can always write their own answer.",
             parameters: json!({
                 "type": "object",
                 "properties": {
                     "to": { "type": "string", "description": "'orchestrator', 'reviewer', 'coder' or 'user'." },
-                    "question": { "type": "string" }
+                    "question": { "type": "string" },
+                    "options": { "type": "array", "maxItems": crate::questions::MAX_OPTIONS, "items": { "type": "string" }, "description": "Only for the user: 2-4 short answers to click." },
+                    "multiple": { "type": "boolean", "description": "The user may pick several options." }
                 },
                 "required": ["to", "question"]
             }),
         },
+        crate::questions::clarify_spec(),
         ToolSpec {
             name: "finish",
             risk: ToolRisk::Communicate,
@@ -218,9 +221,25 @@ pub fn all_tools() -> Vec<ToolSpec> {
                                 "title": { "type": "string" },
                                 "description": { "type": "string", "description": "What to do and how to verify it." },
                                 "files": { "type": "array", "items": { "type": "string" } },
-                                "assignee": { "type": "string", "description": "Role id, default 'coder'." }
+                                "assignee": { "type": "string", "description": "Role id, default 'coder'." },
+                                "verify": { "type": "string", "description": "Optional: how to check the task is done (a command or what to look at)." },
+                                "id": { "type": "string", "description": "Only when changing a plan: the id of a step you keep, e.g. 'T2'. Leave it out for new steps." }
                             },
                             "required": ["title", "description"]
+                        }
+                    },
+                    "risks": { "type": "array", "items": { "type": "string" }, "description": "Optional: what could go wrong or needs care." },
+                    "questions": {
+                        "type": "array",
+                        "maxItems": crate::questions::MAX_QUESTIONS,
+                        "description": "Optional: choices the user should make, each with 2-4 short answers in options.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question": { "type": "string" },
+                                "options": { "type": "array", "maxItems": crate::questions::MAX_OPTIONS, "items": { "type": "string" } }
+                            },
+                            "required": ["question"]
                         }
                     }
                 },
@@ -433,6 +452,7 @@ pub fn describe_call(name: &str, args: &Value) -> String {
         "search" | "find_files" => format!("{name} \"{}\"", arg_str(args, "query").unwrap_or_default()),
         "run_command" => format!("run `{}`", arg_str(args, "command").unwrap_or_default()),
         "ask" => format!("ask {}", arg_str(args, "to").unwrap_or_default()),
+        crate::questions::CLARIFY => "asking the user".into(),
         SKILL_READ => format!("{SKILL_READ} {} {}", arg_str(args, "name").unwrap_or_default(), arg_str(args, "file").unwrap_or_default()).trim().to_string(),
         other => other.to_string(),
     }

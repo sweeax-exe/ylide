@@ -4,7 +4,7 @@ import type { PromptTemplates } from '../../../bindings/PromptTemplates';
 
 export type TemplateKey = keyof PromptTemplates;
 
-export const TEMPLATE_KEYS: readonly TemplateKey[] = ['planner', 'coderTask', 'reviewerTask', 'feedback', 'question', 'continue', 'repeatedFailure', 'notes', 'recap'];
+export const TEMPLATE_KEYS: readonly TemplateKey[] = ['planner', 'coderTask', 'reviewerTask', 'feedback', 'planning', 'question', 'continue', 'repeatedFailure', 'notes', 'recap'];
 
 /**
  * Values the core fills into each template (crates/agent/src/orchestrator.rs).
@@ -16,6 +16,7 @@ export const TEMPLATE_PLACEHOLDERS: Readonly<Record<TemplateKey, readonly string
   coderTask: ['project_notes', 'skills', 'overview', 'task_id', 'task_title', 'task_description', 'task_files', 'environment'],
   reviewerTask: ['project_notes', 'skills', 'task_id', 'task_title', 'task_description', 'summary', 'diff', 'environment'],
   feedback: ['round', 'max_rounds', 'review'],
+  planning: ['project_notes', 'skills', 'previous', 'goal', 'current', 'language', 'open_questions', 'roles', 'outline', 'environment'],
   question: ['overview', 'from', 'question'],
   continue: [],
   repeatedFailure: [],

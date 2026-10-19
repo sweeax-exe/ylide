@@ -6,6 +6,7 @@
 //   ?mock=ratelimit    GitHub answers that its request limit is used up
 
 import type { NetworkLogEntry } from '../bindings/NetworkLogEntry';
+import type { RecommendedInfo } from '../bindings/RecommendedInfo';
 import type { RepoListing } from '../bindings/RepoListing';
 import type { SkillCandidate } from '../bindings/SkillCandidate';
 import type { SkillContent } from '../bindings/SkillContent';
@@ -137,6 +138,68 @@ const folderSkill = (): MockSkill => {
   };
 };
 
+// A recommended skill bundled with Ylide (the real one vendors REA's files;
+// the mock uses a short stand-in text), pinned to a commit.
+const REC_COMMIT = 'f4322b15ed1423d736bd2572cf7a8eadf2b466e1';
+const REA_REC = {
+  name: 'reverse-engineer-anything',
+  description:
+    'Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.',
+  version: '42',
+  files: ['SKILL.md', 'references/android-applications.md', 'references/connection-and-recovery.md', 'references/evidence-workflows.md', 'references/javascript-applications.md', 'references/native-and-artifacts.md', 'references/runtime-observation.md'],
+  body: '# REA\n\nUse REA when a claim depends on a shipped binary or package, decompilation, or passive runtime evidence.\n\n## Connect only when needed\n\nInstalling this skill supplies instructions; it does not register the REA MCP server, install analysis engines, or add tools to an already-running agent.\n\nRead [connection and recovery](references/connection-and-recovery.md) when the tools are missing.\n',
+  url: `https://github.com/morluto/rea/tree/${REC_COMMIT}/.agents/skills/reverse-engineer-anything`,
+};
+
+function reaText() {
+  return md(REA_REC.name, REA_REC.description, REA_REC.body, REA_REC.version);
+}
+
+function recommendedList(): RecommendedInfo[] {
+  const text = reaText();
+  return [
+    {
+      id: REA_REC.name,
+      name: REA_REC.name,
+      description: REA_REC.description,
+      version: REA_REC.version,
+      repo: 'morluto/rea',
+      commit: REC_COMMIT,
+      license: 'MIT',
+      url: REA_REC.url,
+      docsUrl: 'https://rea.tools',
+      needsMcp: true,
+      mcpNote: "REA's server (the npm package rea-agents). Check the exact command for your setup at rea.tools; its analysis engines (Ghidra, IDA, …) are installed separately.",
+      files: REA_REC.files.length,
+      bytes: text.length + (REA_REC.files.length - 1) * 7_000,
+      installed: installed.some((s) => s.info.name === REA_REC.name),
+      error: null,
+    },
+  ];
+}
+
+function reaInstalled(): MockSkill {
+  const text = reaText();
+  return {
+    info: {
+      id: REA_REC.name,
+      name: REA_REC.name,
+      description: REA_REC.description,
+      version: REA_REC.version,
+      license: 'MIT',
+      source: { kind: 'recommended', repo: 'morluto/rea', commit: REC_COMMIT, license: 'MIT', url: REA_REC.url },
+      enabled: true,
+      reviewed: true,
+      installedAtUnixMs: Date.now(),
+      files: REA_REC.files.length,
+      bytes: text.length + (REA_REC.files.length - 1) * 7_000,
+      error: null,
+    },
+    text,
+    files: REA_REC.files,
+  };
+}
+
 let installed: MockSkill[] = [];
 let projectState = { enabled: false, reviewed: false };
 let started = false;
@@ -207,6 +270,19 @@ export async function skillsCommand(command: string, args: Record<string, any>, 
     case 'skills_content': {
       const s = args.id === PROJECT_SKILL.info.id ? PROJECT_SKILL : find(args.id);
       return { text: s.text, files: s.files } satisfies SkillContent;
+    }
+    case 'skills_recommended':
+      return recommendedList();
+    case 'skills_recommended_content': {
+      if (args.name !== REA_REC.name) throw fail('skill_not_found', `there is no skill '${args.name}'`);
+      return { text: reaText(), files: REA_REC.files } satisfies SkillContent;
+    }
+    case 'skills_install_recommended': {
+      if (args.name !== REA_REC.name) throw fail('skill_not_found', `there is no skill '${args.name}'`);
+      if (installed.some((s) => s.info.name === REA_REC.name)) throw fail('skill_exists', `a skill called '${REA_REC.name}' is already installed`);
+      await sleep(300);
+      installed.push(reaInstalled());
+      return list(ctx);
     }
     case 'skills_browse': {
       const address = String(args.address).trim();

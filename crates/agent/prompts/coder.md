@@ -7,5 +7,5 @@ How to work:
 4. Verify your work when possible, for example by running the project's build, type check or tests with `run_command`. Commands must not wait for input.
 5. When the task is done, call `finish` with a short summary: what you changed, in which files, and how you verified it.
 
-If a tool returns an error, read the message and correct your call. If you are blocked by missing information, use `ask` (to `orchestrator`, `reviewer` or `user`).
+If a tool returns an error, read the message and correct your call. If you are blocked by missing information, use `ask` (to `orchestrator`, `reviewer` or `user`); when you ask the user and there are clear choices, offer them in `options`.
 Always make progress by calling a tool; reply with plain text only if you cannot continue.

@@ -10,14 +10,19 @@ import type { AgentEvent } from '../bindings/AgentEvent';
 import type { AppError } from '../bindings/AppError';
 import type { AppInfo } from '../bindings/AppInfo';
 import type { ApprovalResponse } from '../bindings/ApprovalResponse';
+import type { CalibrationEvent } from '../bindings/CalibrationEvent';
+import type { CalibrationOptions } from '../bindings/CalibrationOptions';
+import type { CalibrationStatus } from '../bindings/CalibrationStatus';
 import type { ChatEvent } from '../bindings/ChatEvent';
 import type { ChatSendRequest } from '../bindings/ChatSendRequest';
 import type { ChatSummary } from '../bindings/ChatSummary';
 import type { Checkpoint } from '../bindings/Checkpoint';
 import type { ContextItem } from '../bindings/ContextItem';
 import type { DownloadJob } from '../bindings/DownloadJob';
+import type { FileChange } from '../bindings/FileChange';
 import type { FileNode } from '../bindings/FileNode';
 import type { HardwareProfile } from '../bindings/HardwareProfile';
+import type { HardwareTips } from '../bindings/HardwareTips';
 import type { InlineEditRequest } from '../bindings/InlineEditRequest';
 import type { InlineEvent } from '../bindings/InlineEvent';
 import type { InstalledModel } from '../bindings/InstalledModel';
@@ -25,7 +30,10 @@ import type { LastRun } from '../bindings/LastRun';
 import type { Mention } from '../bindings/Mention';
 import type { ModelSelection } from '../bindings/ModelSelection';
 import type { NetworkLogEntry } from '../bindings/NetworkLogEntry';
+import type { PlanDoc } from '../bindings/PlanDoc';
+import type { PlanState } from '../bindings/PlanState';
 import type { Recommendation } from '../bindings/Recommendation';
+import type { RecommendedInfo } from '../bindings/RecommendedInfo';
 import type { RefreshOutcome } from '../bindings/RefreshOutcome';
 import type { RegistryInfo } from '../bindings/RegistryInfo';
 import type { RuntimeInstall } from '../bindings/RuntimeInstall';
@@ -90,6 +98,14 @@ export const api = {
   networkLog: () => call<NetworkLogEntry[]>('network_log'),
   hardware: {
     probe: (force = false) => call<HardwareProfile>('hardware_probe', { force }),
+    tips: () => call<HardwareTips>('hardware_tips'),
+  },
+  /** "Optimize for this PC" for the selected chat model. */
+  calibration: {
+    get: () => call<CalibrationStatus>('calibration_get'),
+    run: (options: CalibrationOptions) => call<void>('calibration_run', { options }),
+    cancel: () => call<void>('calibration_cancel'),
+    reset: () => call<void>('calibration_reset'),
   },
   registry: {
     info: () => call<RegistryInfo>('registry_info'),
@@ -178,6 +194,12 @@ export const api = {
     remove: (name: string) => call<SkillInfo[]>('skills_remove', { name }),
     /** SKILL.md in full and the skill's files. */
     content: (id: string) => call<SkillContent>('skills_content', { id }),
+    /** Recommended skills bundled with Ylide (REA is the first), each marked whether it is installed. */
+    recommended: () => call<RecommendedInfo[]>('skills_recommended'),
+    /** SKILL.md and files of a recommended skill, from the bundle (no network). */
+    recommendedContent: (name: string) => call<SkillContent>('skills_recommended_content', { name }),
+    /** Adds a recommended skill from the bundle and switches it on; returns the new installed list. */
+    installRecommended: (name: string) => call<SkillInfo[]>('skills_install_recommended', { name }),
     /** Lists the skills of a GitHub repository (needs the skill-download permission). */
     browse: (address: string) => call<RepoListing>('skills_browse', { address }),
     /** Installs folders of the listed repository at its commit, switched off. */
@@ -189,6 +211,18 @@ export const api = {
     /** Installs the version checkUpdate showed (its commit; empty for folders). */
     update: (name: string, commit: string) => call<SkillInfo>('skills_update', { name, commit }),
   },
+  plans: {
+    /** The open project's planning mode: mode, plan and the conversation about it. */
+    state: () => call<PlanState>('plan_state'),
+    save: (planState: PlanState) => call<void>('plan_state_save', { planState }),
+    /** Planning mode: a plan for `goal`, or `plan` changed as `wish` says; it arrives as `planDrafted`. */
+    draft: (request: { goal: string; plan: PlanDoc | null; wish: string | null; earlierWishes: string[]; continues: string | null; language: string }, onEvent: (e: AgentEvent) => void) =>
+      call<string>('plan_draft', { ...request, images: [], onEvent: channel(onEvent) }),
+    /** Carries out a plan: its steps become the tasks; with `continues`, it goes on with that stopped run. */
+    run: (plan: PlanDoc, continues: string | null, language: string, onEvent: (e: AgentEvent) => void) => call<string>('plan_run', { plan, continues, language, onEvent: channel(onEvent) }),
+    /** Saves the plan as docs/plans/<name>.md through the agents' write path, with a checkpoint. */
+    writeFile: (path: string, content: string) => call<FileChange>('plan_write_file', { path, content }),
+  },
   agents: {
     /** With `previousRun`, the new run continues that finished run; `images` (data URLs) go with the request. */
     /** `language`: the UI language, for the summary the run ends with. */
@@ -196,8 +230,10 @@ export const api = {
       call<string>('agent_start', { goal, images, previousRun, language, onEvent: channel(onEvent) }),
     approve: (runId: string, requestId: string, response: ApprovalResponse) =>
       call<boolean>('agent_approve', { runId, requestId, response }),
-    /** `images` (data URLs) go with the answer to a model that sees. */
-    answer: (runId: string, questionId: string, answer: string, images: string[] = []) => call<boolean>('agent_answer', { runId, questionId, answer, images }),
+    /** One answer per question of the card (empty: left open); `images` (data URLs) go with them to a model that sees. */
+    answer: (runId: string, questionId: string, answers: string[], images: string[] = []) => call<boolean>('agent_answer', { runId, questionId, answer: answers[0] ?? '', answers, images }),
+    /** Switching to planning during a run (`on`): the current task finishes, then the run stops; `false` takes it back. */
+    handover: (runId: string, on: boolean) => call<void>('agent_handover', { runId, on }),
     control: (runId: string, action: 'pause' | 'resume' | 'cancel') => call<void>('agent_control', { runId, action }),
     intervene: (runId: string, agentId: string, text: string, images: string[] = []) => call<void>('agent_intervene', { runId, agentId, text, images }),
     /** The open project's last run, kept across restarts. */
@@ -213,6 +249,7 @@ export interface EventMap {
   'runtime://server': ServerInfo | null;
   'runtime://install': RuntimeInstall;
   'runtime://log': string;
+  'runtime://calibration': CalibrationEvent;
   'fs://changed': string[];
   'network://log': NetworkLogEntry;
   'registry://updated': string;

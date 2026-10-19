@@ -12,6 +12,7 @@
 //! deletions and commands, whatever the switches say. Allow-listed command
 //! prefixes (e.g. `cargo test`) skip the prompt in `autoSafe` and `autonomous`.
 
+use crate::questions::Question;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -39,6 +40,11 @@ pub struct PermissionSettings {
     pub confirm_deletes: bool,
     /// Command prefixes that never need confirmation (except in `ask` mode).
     pub allowed_commands: Vec<String>,
+    /// A new request is planned first, in planning mode, and the tasks start
+    /// when the user switches to carrying it out. `None` follows the mode: on
+    /// in `ask`, off otherwise.
+    #[serde(default)]
+    pub confirm_plan: Option<bool>,
 }
 
 impl Default for PermissionSettings {
@@ -48,7 +54,15 @@ impl Default for PermissionSettings {
             confirm_commands: true,
             confirm_deletes: true,
             allowed_commands: vec![],
+            confirm_plan: None,
         }
+    }
+}
+
+impl PermissionSettings {
+    /// Whether a new request is planned first (see `confirm_plan`).
+    pub fn plan_approval(&self) -> bool {
+        self.confirm_plan.unwrap_or(self.mode == ApprovalMode::Ask)
     }
 }
 
@@ -209,8 +223,10 @@ impl UserReply {
 #[async_trait]
 pub trait ApprovalBroker: Send + Sync {
     async fn request_approval(&self, request: ApprovalRequest) -> ApprovalResponse;
-    /// An agent asks the user a free-form question (tool `ask` with `to: "user"`).
-    async fn ask_user(&self, agent_id: &str, question: &str) -> UserReply;
+    /// An agent asks the user: one question (tool `ask` with `to: "user"`), or
+    /// with `clarify` the orchestrator's questions before it plans. The
+    /// reply's text is what the model reads (see `questions::format_reply`).
+    async fn ask_user(&self, agent_id: &str, questions: &[Question], clarify: bool) -> UserReply;
 }
 
 /// Approves everything and answers questions with a fixed text (headless use, tests).
@@ -221,8 +237,9 @@ impl ApprovalBroker for AutoApprove {
     async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
         ApprovalResponse::Approve
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
-        UserReply::text(self.0.clone())
+    async fn ask_user(&self, _agent_id: &str, questions: &[Question], _clarify: bool) -> UserReply {
+        let answers = vec![self.0.clone(); questions.len()];
+        UserReply::text(crate::questions::format_reply(questions, &answers))
     }
 }
 
@@ -252,11 +269,29 @@ mod tests {
     }
 
     #[test]
+    fn the_plan_waits_in_ask_mode_unless_the_user_chose_otherwise() {
+        let mut s = PermissionSettings::default();
+        assert!(!s.plan_approval(), "safe steps start right away");
+        s.mode = ApprovalMode::Ask;
+        assert!(s.plan_approval(), "ask mode waits for the plan by default");
+        s.confirm_plan = Some(false);
+        assert!(!s.plan_approval());
+        s.mode = ApprovalMode::Autonomous;
+        s.confirm_plan = Some(true);
+        assert!(s.plan_approval());
+        // Saved before the switch existed: follows the mode.
+        let old: PermissionSettings = serde_json::from_str(r#"{"mode":"ask","confirmCommands":true,"confirmDeletes":true,"allowedCommands":[]}"#).unwrap();
+        assert_eq!(old.confirm_plan, None);
+        assert!(old.plan_approval());
+    }
+
+    #[test]
     fn auto_safe_asks_before_deletes_and_commands_even_with_switches_off() {
         let s = PermissionSettings {
             mode: ApprovalMode::AutoSafe,
             confirm_commands: false,
             confirm_deletes: false,
+            confirm_plan: None,
             allowed_commands: vec!["cargo test".into()],
         };
         assert_eq!(decide(&s, ToolRisk::Write, None), Decision::Allow);

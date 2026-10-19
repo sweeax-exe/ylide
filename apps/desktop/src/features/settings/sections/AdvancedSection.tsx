@@ -172,6 +172,16 @@ export function AdvancedSection({ settings }: { settings: Settings }) {
                 </Select>
               )}
             </Row>
+            <SwitchRow
+              label={t('advanced.kvQuant.label')}
+              hint={t('advanced.kvQuant.hint')}
+              checked={models.quantizeKv}
+              onChange={(v) =>
+                void save((d) => {
+                  d.models.quantizeKv = v;
+                })
+              }
+            />
             <Row label={t('advanced.extraArgs.label')} hint={t('advanced.extraArgs.hint')} wide>
               {({ id, describedBy }) => (
                 <LinesSetting

@@ -55,6 +55,24 @@ pub fn content(store: &SkillStore, ws: Option<&Workspace>, id: &str) -> AppResul
     Ok(with_project(ws, |p| store.content(id, p))?)
 }
 
+/// The recommended skills bundled with Ylide (REA is the first), each marked
+/// whether it is installed already.
+pub fn recommended(store: &SkillStore) -> Vec<skills::RecommendedInfo> {
+    store.recommended()
+}
+
+/// SKILL.md and files of a recommended skill, from the bundle (no network),
+/// for "View content" before it is installed.
+pub fn recommended_content(store: &SkillStore, name: &str) -> AppResult<skills::SkillContent> {
+    Ok(store.recommended_content(name)?)
+}
+
+/// Installs a recommended skill from the bundle and switches it on (the user
+/// saw its content first).
+pub fn install_recommended(store: &SkillStore, name: &str) -> AppResult<SkillInfo> {
+    Ok(store.install_recommended(name)?)
+}
+
 /// Installs every skill in a folder on this computer (the folder itself, or
 /// the skills in it, also below `.agents/skills`), switched off.
 pub fn install_folder(store: &SkillStore, dir: &Path) -> AppResult<Vec<SkillInfo>> {
@@ -161,6 +179,11 @@ pub async fn check_update(state: &AppState, name: &str) -> AppResult<SkillUpdate
             Ok(state.skills.compare(name, files, &commit)?)
         }
         SkillSource::Folder { path } => Ok(state.skills.compare(name, store::read_folder(Path::new(&path))?, "")?),
+        // Recommended skills update to the version Ylide ships with (bundled, no network).
+        SkillSource::Recommended { .. } => {
+            let rec = skills::recommended::find(name).ok_or_else(|| AppError::new("skill_not_found", name))?;
+            Ok(state.skills.compare(name, rec.files(), "")?)
+        }
         SkillSource::Project => Err(AppError::new("skill_not_found", name)),
     }
 }
@@ -177,6 +200,10 @@ pub async fn update(state: &AppState, name: &str, commit: &str) -> AppResult<Ski
             Ok(state.skills.update(name, files, source)?)
         }
         SkillSource::Folder { path } => Ok(state.skills.update(name, store::read_folder(Path::new(&path))?, SkillSource::Folder { path })?),
+        SkillSource::Recommended { .. } => {
+            let rec = skills::recommended::find(name).ok_or_else(|| AppError::new("skill_not_found", name))?;
+            Ok(state.skills.update(name, rec.files(), rec.source())?)
+        }
         SkillSource::Project => Err(AppError::new("skill_not_found", name)),
     }
 }
@@ -291,6 +318,25 @@ mod tests {
         assert_eq!(browse(&state, "https://gitlab.com/o/r").await.unwrap_err().code, "skill_address");
         let bad = install_github(&state, "morluto/rea", None, "../../x", &[".agents/skills/x".into()]).await.unwrap_err();
         assert_eq!(bad.code, "skill_address", "commit ids become part of addresses");
+    }
+
+    #[tokio::test]
+    async fn recommended_skill_installs_from_the_bundle_without_network() {
+        let dir = tempfile::tempdir().unwrap();
+        let state = state(dir.path());
+        // No network permission is needed: the files are bundled.
+        let listed = recommended(&state.skills);
+        let rea = listed.iter().find(|r| r.name == "reverse-engineer-anything").expect("REA is recommended");
+        assert!(!rea.installed && rea.needs_mcp && rea.license == "MIT");
+        assert!(recommended_content(&state.skills, "reverse-engineer-anything").unwrap().text.contains("reverse-engineer-anything"));
+
+        let info = install_recommended(&state.skills, "reverse-engineer-anything").unwrap();
+        assert!(info.enabled && info.license.as_deref() == Some("MIT"));
+        assert!(enabled(&state.skills, None).iter().any(|s| s.name == "reverse-engineer-anything"));
+        // It is the version Ylide ships with, so there is no update to install.
+        let update = check_update(&state, "reverse-engineer-anything").await.unwrap();
+        assert!(update.up_to_date, "{update:?}");
+        assert!(state.net.entries().is_empty(), "nothing was sent over the network");
     }
 
     /// The whole way against GitHub: list a real repository, install its

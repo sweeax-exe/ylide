@@ -8,7 +8,7 @@ pub mod openai;
 pub mod scheduler;
 pub mod server;
 
-pub use client::{Endpoint, Health, InfillExtra, LlmClient, LlmError};
+pub use client::{BenchResult, Endpoint, Health, InfillExtra, LlmClient, LlmError};
 pub use openai::{
     ChatMessage, ChatRequest, ChatResult, Delta, FinishReason, FunctionCall, MessageRole, SamplingParams, Timings,
     ToolCall, ToolDefinition, Usage,

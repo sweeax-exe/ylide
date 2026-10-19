@@ -121,7 +121,12 @@
     "no_vision": "실행 중인 모델은 이미지를 볼 수 없습니다. 모델 페이지에서 이미지를 이해하는 모델의 \"이미지 이해\"를 켜세요.",
     "bad_image": "이미지를 사용할 수 없습니다: {{message}}",
     "not_projector": "이미지 모듈(mmproj GGUF 파일)이 아닙니다.",
-    "no_projector": "이 모델은 이미지 입력을 지원하지 않습니다."
+    "no_projector": "이 모델은 이미지 입력을 지원하지 않습니다.",
+    "calibrating": "지금 이 PC에 맞게 모델을 최적화하고 있습니다. 잠시 후 다시 시도하세요.",
+    "calibration_busy": "모델이 작업 중입니다. 채팅과 에이전트가 쉬고 있을 때 최적화하세요.",
+    "calibration_not_running": "먼저 모델을 시작한 뒤 최적화하세요.",
+    "calibration_running": "이미 최적화가 진행 중입니다.",
+    "calibration_external": "외부 서버는 Ylide에서 최적화할 수 없습니다."
   },
   "images": {
     "attach": "이미지 첨부",

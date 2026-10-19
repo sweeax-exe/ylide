@@ -16,6 +16,7 @@ import { modelName, useApp } from '../../../state/app';
 import { commandLine } from '../logic/commands';
 import { keepFocusInSection } from '../page/focus';
 import s from './ActiveModel.module.css';
+import { calibrating, useCalibration } from './calibrationStore';
 import { ServerLog } from './ServerLog';
 import { UncensoredBadge } from './Uncensored';
 
@@ -28,6 +29,8 @@ export function ActiveModel() {
   const settings = useApp((st) => st.settings);
   const registry = useApp((st) => st.registry);
   const [busy, setBusy] = useState<'start' | 'stop' | null>(null);
+  // A calibration starts and stops the server itself.
+  const calibrationRuns = useCalibration(calibrating);
 
   const run = async (action: 'start' | 'stop', from: HTMLElement) => {
     // Start and Stop replace each other; keep focus on whichever is shown.
@@ -51,11 +54,11 @@ export function ActiveModel() {
   const canStart = !!selection || !!endpoint;
 
   const startStop = running ? (
-    <Button icon={<Square size={13} />} loading={busy === 'stop'} onClick={(e) => void run('stop', e.currentTarget)}>
+    <Button icon={<Square size={13} />} loading={busy === 'stop'} disabled={calibrationRuns} onClick={(e) => void run('stop', e.currentTarget)}>
       {t('common:server.stop')}
     </Button>
   ) : (
-    <Button variant="primary" icon={<Play size={13} />} loading={busy === 'start'} disabled={!canStart} onClick={(e) => void run('start', e.currentTarget)}>
+    <Button variant="primary" icon={<Play size={13} />} loading={busy === 'start'} disabled={!canStart || calibrationRuns} onClick={(e) => void run('start', e.currentTarget)}>
       {state === 'crashed' || state === 'stopped' ? t('active.startAgain') : t('common:server.start')}
     </Button>
   );
@@ -92,6 +95,7 @@ export function ActiveModel() {
             <span className={s.title}>{server.modelName}</span>
             {entry?.uncensored && <UncensoredBadge />}
             {server.quant && <Badge tone="metal">{server.quant}</Badge>}
+            {server.tuned && <Badge tone="success">{t('calibration.tuned')}</Badge>}
           </div>
           <div className={s.sub} role="status" aria-live="polite">
             {t(`active.status.${server.status.state}`)}

@@ -121,5 +121,14 @@
     "deleteConfirm": "삭제",
     "saveFailed": "채팅을 기록에 저장하지 못했습니다",
     "messages_other": "메시지 {{count}}개"
+  },
+  "suggestions": {
+    "label": "다음 단계 제안",
+    "askHint": "다음 메시지로 보내기",
+    "agents": "에이전트로 실행",
+    "agentsLabel": "에이전트로 실행: {{text}}",
+    "agentsHint": "이것을 목표로 에이전트 실행을 시작합니다.",
+    "agentsBusy": "에이전트 실행이 이미 진행 중입니다.",
+    "agentsNoProject": "먼저 프로젝트를 여세요."
   }
 }

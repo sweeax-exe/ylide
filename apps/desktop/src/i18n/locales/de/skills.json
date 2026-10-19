@@ -12,6 +12,19 @@
     "emptyTitle": "Noch keine Skills",
     "emptyBody": "Füge Skills aus einem GitHub-Repository hinzu, zum Beispiel https://github.com/morluto/rea, oder aus einem Ordner auf diesem Rechner."
   },
+  "recommended": {
+    "title": "Empfohlen",
+    "description": "Skills, die Ylide mitbringt. Sie sind aus, bis du einen hinzufügst: Lies ihn zuerst, dann schaltest du ihn mit einem Klick ein.",
+    "badge": "Empfohlen",
+    "needsMcpBadge": "Braucht einen MCP-Server",
+    "needsMcpHint": "Nutzt eigene Werkzeuge über einen MCP-Server, der getrennt eingerichtet wird.",
+    "add": "Hinzufügen",
+    "addEnable": "Hinzufügen und einschalten",
+    "added": "{{name}} hinzugefügt und eingeschaltet",
+    "addFailed": "{{name}} konnte nicht hinzugefügt werden",
+    "docs": "Doku",
+    "mcpConfirm": "Dieser Skill nutzt eigene Werkzeuge über einen MCP-Server, oft mit getrennten Analyseprogrammen. Solange dieser Server nicht verbunden ist, bekommen die Modelle die Anweisungen des Skills, aber nicht seine Werkzeuge."
+  },
   "project": {
     "title": "Aus dem Projekt",
     "description": "Skills im Ordner .agents/skills des geöffneten Projekts. Ylide liest sie dort und ändert sie nie; Einschalten gilt nur für dieses Projekt.",

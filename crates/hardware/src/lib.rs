@@ -5,9 +5,13 @@
 //! detect acceleration backends on each operating system. Adding a platform
 //! means implementing [`PlatformProbe`] in a new module; nothing else changes.
 
+mod memory;
 mod platform;
+mod topology;
 mod types;
 
+pub use memory::{MemoryModule, RamSpeedTip, memory_modules, parse_smbios, ram_speed_tip, rated_mts_from_part};
+pub use topology::{CacheGroup, CpuTopology, cpu_mask, cpu_topology, parse_processor_information};
 pub use types::*;
 
 use std::path::{Path, PathBuf};
@@ -78,6 +82,13 @@ pub fn probe(model_dir: Option<&Path>) -> HardwareProfile {
             .unwrap_or(0),
         warnings,
     }
+}
+
+/// RAM available right now (free plus reclaimable cache), without a full probe.
+pub fn available_memory() -> u64 {
+    let mut sys = sysinfo::System::new();
+    sys.refresh_memory();
+    sys.available_memory()
 }
 
 fn cpu_features() -> CpuFeatures {

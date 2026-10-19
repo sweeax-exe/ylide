@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Límite de salida",
       "hint": "Si la salida es más larga, se recorta por el medio antes de que la vea el agente."
+    },
+    "confirmPlan": {
+      "label": "Primero planificar, luego ejecutar",
+      "hint": "Una petición nueva abre primero el modo de planificación: los agentes solo leen y escriben un plan. Se ejecuta solo cuando cambias a “Ejecutar”.",
+      "hintAsk": "Activado por defecto en el modo Preguntar antes. Una petición nueva abre primero el modo de planificación; se ejecuta solo cuando cambias a “Ejecutar”."
+    },
+    "questionsTitle": "Preguntas de aclaración",
+    "questionsDescription": "Con qué facilidad el orquestador pregunta antes de planificar y el chat repregunta cuando una petición no está clara. Las preguntas vienen con respuestas para hacer clic.",
+    "questions": {
+      "label": "Preguntas de aclaración",
+      "never": {
+        "title": "Nunca",
+        "body": "El orquestador planifica enseguida. El chat responde según la interpretación más probable y dice qué supuso."
+      },
+      "ifNeeded": {
+        "title": "Si hace falta",
+        "body": "Solo cuando una petición es realmente ambigua o deja abierta una decisión importante que el proyecto no responde. Las peticiones claras empiezan enseguida."
+      },
+      "often": {
+        "title": "Más a menudo",
+        "body": "También cuando una petición deja abiertas decisiones que cambian el resultado, como el alcance, el comportamiento o los nombres. Como mucho una ronda de hasta tres preguntas."
+      }
     }
   },
   "roles": {
@@ -312,6 +334,10 @@
     "recap": {
       "label": "Resumen",
       "hint": "Se envía al orquestador al final de una ejecución para que escriba un breve resumen en tu idioma."
+    },
+    "planning": {
+      "label": "Modo de planificación",
+      "hint": "Se envía al orquestador en el modo de planificación: para un plan nuevo y para cada cambio en él."
     }
   },
   "network": {
@@ -383,6 +409,10 @@
       "autoCurrent": "Automático (ahora {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (no instalado)"
+    },
+    "kvQuant": {
+      "label": "Comprimir la caché KV para ganar velocidad",
+      "hint": "Guarda el contexto con 8 bits (q8_0) en lugar de 16. Necesita la mitad de memoria, así cabe más del modelo en la GPU y las respuestas suelen llegar algo más rápido. Apenas menos preciso."
     },
     "extraArgs": {
       "label": "Argumentos adicionales de llama-server",
@@ -506,6 +536,75 @@
     "logLoading": "Cargando el registro del servidor",
     "logFailed": "No se pudo cargar el registro del servidor: {{message}}",
     "logEmpty": "El servidor todavía no ha escrito nada."
+  },
+  "tips": {
+    "dismiss": "Ocultar este consejo",
+    "ramSpeed": {
+      "title": "Tu RAM va más lenta de lo que podría",
+      "body": "Tu RAM ({{kind}}, «{{part}}») funciona a {{configured}} MT/s, pero probablemente está hecha para {{rated}} MT/s. Para conseguirlo, activa su perfil EXPO o XMP en la BIOS. Los modelos que se ejecutan en parte en la memoria del sistema responden entonces un 5–10 % más rápido.",
+      "caveat": "El perfil es un overclock que respalda el fabricante: comprueba después que el PC funciona estable. Ylide nunca cambia ajustes de la BIOS."
+    }
+  },
+  "calibration": {
+    "title": "Optimizar para este PC",
+    "intro": "Ylide prueba algunos ajustes de llama-server con tu modelo y se queda con los más rápidos: modo de carga, tamaño de lote, hilos y más. Tarda de 2 a 4 minutos; mientras tanto, el chat y los agentes se pausan.",
+    "lossyKv": "Probar también una caché KV comprimida (apenas menos precisa)",
+    "start": "Optimizar (~3 min)",
+    "again": "Medir de nuevo",
+    "cancel": "Cancelar",
+    "reset": "Restablecer",
+    "needsModel": "Primero inicia el modelo.",
+    "running": "Medición {{done}} de unas {{total}} …",
+    "measuring": "midiendo …",
+    "speeds": "Prompt {{prompt}} tok/s · Respuesta {{gen}} tok/s",
+    "tuned": "Optimizado para este PC",
+    "trial": {
+      "baseline": "Ajustes actuales",
+      "loadMode": "Modo de carga",
+      "kvCache": "Caché KV",
+      "batchSize": "Tamaño de lote",
+      "threads": "Hilos",
+      "expertCache": "Caché de GPU para expertos",
+      "confirm": "Confirmación"
+    },
+    "outcome": {
+      "measured": "medido",
+      "better": "más rápido, se queda",
+      "worse": "no más rápido",
+      "different": "otra respuesta, descartado",
+      "overflow": "memoria insuficiente, descartado",
+      "failed": "no arrancó"
+    },
+    "result": {
+      "gen": "Respuestas: antes {{before}} tok/s, ahora {{after}} tok/s ({{change}})",
+      "prompt": "Lectura del prompt: antes {{before}} tok/s, ahora {{after}} tok/s ({{change}})",
+      "same": "Tus ajustes actuales ya eran los más rápidos ({{gen}} tok/s al responder, {{prompt}} tok/s al leer el prompt).",
+      "applied": "Se aplica en cada inicio de este modelo en este PC.",
+      "notApplied": "No se aplica hasta que vuelvas a medir.",
+      "trials": "Todas las mediciones ({{date}})"
+    },
+    "change": {
+      "kvQ8": "Caché KV comprimida (q8_0)",
+      "noMmap": "Modelo cargado por completo en la RAM",
+      "mmap": "Archivo del modelo mapeado en lugar de cargado (mmap)",
+      "ubatch": "Tamaño de lote {{n}}",
+      "ccd": "{{n}} hilos en el CCD con la caché más grande",
+      "pinned": "Hilos fijados a los núcleos físicos",
+      "expertCache": "{{mib}} MiB de caché de GPU para expertos"
+    },
+    "stale": "Algo cambió desde la medición: {{what}}. Vuelve a medir para que los ajustes encajen.",
+    "changed": {
+      "model": "archivo del modelo",
+      "runtime": "versión de llama.cpp",
+      "gpu": "tarjeta gráfica o controlador",
+      "cpu": "procesador",
+      "ram": "RAM",
+      "context": "tamaño de contexto",
+      "slots": "solicitudes en paralelo",
+      "projector": "entrada de imágenes"
+    },
+    "cancelled": "Cancelado. Siguen valiendo los ajustes anteriores.",
+    "failed": "La medición falló: {{message}}"
   },
   "installed": {
     "title": "Modelos instalados",

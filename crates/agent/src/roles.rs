@@ -79,6 +79,10 @@ pub struct PromptTemplates {
     pub coder_task: String,
     pub reviewer_task: String,
     pub feedback: String,
+    /// Planning mode: asks the orchestrator for a plan the user reviews, or
+    /// for a change to it. Settings saved before it existed get the default.
+    #[serde(default = "default_planning")]
+    pub planning: String,
     pub question: String,
     #[serde(rename = "continue")]
     pub continue_: String,
@@ -99,6 +103,10 @@ fn default_notes() -> String {
 
 fn default_recap() -> String {
     PromptTemplates::default().recap
+}
+
+fn default_planning() -> String {
+    PromptTemplates::default().planning
 }
 
 impl Default for PromptTemplates {
@@ -166,11 +174,15 @@ mod tests {
         let mut saved = serde_json::to_value(PromptTemplates::default()).unwrap();
         saved.as_object_mut().unwrap().remove("notes");
         saved.as_object_mut().unwrap().remove("recap");
+        saved.as_object_mut().unwrap().remove("planning");
         saved["planner"] = "My planner {goal}".into();
         let t: PromptTemplates = serde_json::from_value(saved).unwrap();
         assert_eq!(t.planner, "My planner {goal}");
         assert_eq!(t.notes, PromptTemplates::default().notes);
         assert_eq!(t.recap, PromptTemplates::default().recap);
+        for field in ["{goal}", "{current}", "{language}", "{open_questions}", "{outline}"] {
+            assert!(t.planning.contains(field), "planning lacks {field}");
+        }
     }
 
     #[test]

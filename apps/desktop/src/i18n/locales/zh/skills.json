@@ -12,6 +12,19 @@
     "emptyTitle": "还没有技能",
     "emptyBody": "从 GitHub 仓库（例如 https://github.com/morluto/rea）或这台电脑上的文件夹添加技能。"
   },
+  "recommended": {
+    "title": "推荐",
+    "description": "Ylide 自带的技能。默认关闭，添加后才会启用：先阅读，再一键开启。",
+    "badge": "推荐",
+    "needsMcpBadge": "需要 MCP 服务器",
+    "needsMcpHint": "通过 MCP 服务器使用自己的工具，该服务器需另行配置。",
+    "add": "添加",
+    "addEnable": "添加并开启",
+    "added": "已添加并开启 {{name}}",
+    "addFailed": "无法添加 {{name}}",
+    "docs": "文档",
+    "mcpConfirm": "此技能通过 MCP 服务器使用自己的工具，通常还需单独的分析程序。只要该服务器未连接，模型只会得到技能的指令，而不是它的工具。"
+  },
   "project": {
     "title": "来自项目",
     "description": "当前打开项目的 .agents/skills 文件夹中的技能。Ylide 只在原处读取它们，从不修改；开启某个技能只对此项目生效。",

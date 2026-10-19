@@ -14,6 +14,7 @@ const info = (status: ServerInfo['status']): ServerInfo => ({
   toolCalls: 'unknown',
   vision: 'off',
   command: [],
+  tuned: false,
 });
 
 describe('currentServer', () => {

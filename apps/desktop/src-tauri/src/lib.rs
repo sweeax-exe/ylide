@@ -1,6 +1,7 @@
 //! Ylide desktop app: wires the core crates into a Tauri application.
 
 mod agents;
+mod calibrate;
 mod chat;
 mod chats;
 mod commands;
@@ -13,6 +14,7 @@ mod migration;
 mod models;
 mod network;
 mod paths;
+mod planning;
 mod registry_service;
 mod runtime;
 mod settings;
@@ -77,6 +79,11 @@ pub fn run() {
             commands::settings_set,
             commands::network_log,
             commands::hardware_probe,
+            commands::hardware_tips,
+            calibrate::calibration_get,
+            calibrate::calibration_run,
+            calibrate::calibration_cancel,
+            calibrate::calibration_reset,
             commands::registry_info,
             commands::registry_refresh,
             commands::update_check,
@@ -124,6 +131,12 @@ pub fn run() {
             commands::agent_start,
             commands::agent_approve,
             commands::agent_answer,
+            planning::plan_state,
+            planning::plan_state_save,
+            planning::plan_draft,
+            planning::plan_run,
+            planning::agent_handover,
+            planning::plan_write_file,
             commands::agent_control,
             commands::agent_intervene,
             commands::agent_last_run,
@@ -131,6 +144,9 @@ pub fn run() {
             commands::skills_set_enabled,
             commands::skills_remove,
             commands::skills_content,
+            commands::skills_recommended,
+            commands::skills_recommended_content,
+            commands::skills_install_recommended,
             commands::skills_browse,
             commands::skills_install_github,
             commands::skills_install_folder,

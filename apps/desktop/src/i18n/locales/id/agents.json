@@ -65,7 +65,8 @@
     "stepLimit": "Batas langkah tercapai",
     "answering": "Menjawab {{agent}}",
     "notes": "Memperbarui pengetahuan proyek",
-    "recap": "Menulis ringkasan"
+    "recap": "Menulis ringkasan",
+    "clarify": "Menunggu jawaban Anda"
   },
   "idle": {
     "goalLabel": "Apa yang harus dikerjakan agen?",
@@ -84,7 +85,8 @@
     "noProject": "Tidak ada folder yang terbuka. Agen memerlukan proyek untuk bekerja.",
     "previous": "Proses sebelumnya",
     "showRun": "Tampilkan detail",
-    "openTasks_other": "{{count}} tugas masih terbuka. Saat dilanjutkan, tugas itu dikerjakan lebih dulu."
+    "openTasks_other": "{{count}} tugas masih terbuka. Saat dilanjutkan, tugas itu dikerjakan lebih dulu.",
+    "startPlanning": "Buat rencana"
   },
   "mode": {
     "label": "Persetujuan",
@@ -99,7 +101,8 @@
     "confirmDeletes": "Tanya sebelum menghapus file",
     "unguardedCommands": "Agen menjalankan perintah tanpa bertanya. Efeknya tidak dapat diurungkan.",
     "unguardedDeletes": "Agen menghapus file tanpa bertanya. Anda dapat memulihkannya dari checkpoint.",
-    "unguardedBoth": "Agen menjalankan perintah dan menghapus file tanpa bertanya. Efek perintah tidak dapat diurungkan."
+    "unguardedBoth": "Agen menjalankan perintah dan menghapus file tanpa bertanya. Efek perintah tidak dapat diurungkan.",
+    "confirmPlan": "Rencanakan dulu, lalu kerjakan"
   },
   "run": {
     "elapsed": "Waktu berjalan",
@@ -244,7 +247,16 @@
     "answerLabel": "Jawaban Anda",
     "hint": "Ctrl+Enter mengirim jawaban.",
     "later": "Jawab nanti",
-    "send": "Kirim jawaban"
+    "send": "Kirim jawaban",
+    "clarifyTitle": "Beberapa pertanyaan sebelum rencana",
+    "clarifyIntro": "Orkestrator menyusun rencana dengan jawaban Anda. Klik jawaban atau tulis jawaban sendiri; yang Anda biarkan terbuka, ia putuskan sendiri.",
+    "recommended": "(disarankan)",
+    "own": "Jawaban Anda sendiri",
+    "ownLabel": "Jawaban Anda sendiri untuk: {{question}}",
+    "several": "Anda bisa memilih beberapa.",
+    "sendAll": "Kirim jawaban",
+    "skip": "Lewati",
+    "skipHint": "Susun rencana tanpa jawaban: orkestrator memutuskan sendiri dan menyebutkan asumsinya."
   },
   "live": {
     "task": "{{id}} {{title}}: {{status}}",
@@ -256,6 +268,69 @@
     "answer": "Jawaban Anda tidak dapat dikirim",
     "intervene": "Pesan Anda tidak dapat dikirim",
     "restore": "Perubahan tidak dapat diurungkan",
-    "settings": "Pengaturan persetujuan tidak dapat disimpan"
+    "settings": "Pengaturan persetujuan tidak dapat disimpan",
+    "planDraft": "Rencana tidak dapat dibuat",
+    "planSave": "Rencana tidak dapat disimpan"
+  },
+  "workMode": {
+    "label": "Mode",
+    "plan": "Rencanakan",
+    "code": "Kerjakan",
+    "hint": "Beralih antara merencanakan dan mengerjakan ({{key}})"
+  },
+  "plan": {
+    "introTitle": "Rencanakan dulu, lalu kerjakan",
+    "introBody": "Dalam mode perencanaan, agen hanya membaca, tidak mengubah apa pun, dan menulis rencana. Anda membahas dan menyuntingnya sampai pas. Dengan “Kerjakan”, mereka menjalankannya.",
+    "goalLabel": "Apa yang perlu direncanakan?",
+    "goalPlaceholder": "Misalnya: kode diskon di keranjang",
+    "create": "Buat rencana",
+    "createHint": "Ctrl+Enter membuat rencana.",
+    "notReady": "Jalankan model dan buka proyek untuk merencanakan.",
+    "adopt": "Ambil tugas yang terbuka",
+    "adoptHint": "Proses terakhir (“{{goal}}”) masih punya tugas terbuka. Ambil sebagai rencana untuk dikerjakan ulang.",
+    "handover": "Beralih ke perencanaan setelah {{task}} selesai.",
+    "handoverNoTask": "Beralih ke perencanaan setelah tugas saat ini selesai.",
+    "keepGoing": "Lanjut mengerjakan",
+    "kicker": "Rencana",
+    "firstDraft": "Orkestrator melihat proyek dan menulis rencana. Tidak ada yang diubah.",
+    "working": "Orkestrator sedang merencanakan …",
+    "stop": "Hentikan",
+    "approach": "Pendekatan",
+    "done": "Sudah selesai",
+    "steps": "Langkah",
+    "noSteps": "Belum ada langkah. Tambahkan satu, atau jelaskan di bawah apa yang kurang.",
+    "addStep": "Tambah langkah",
+    "newStep": "Langkah baru",
+    "files": "Berkas",
+    "verify": "Periksa",
+    "risks": "Risiko",
+    "questions": "Pertanyaan terbuka",
+    "moveUp": "Naikkan",
+    "moveDown": "Turunkan",
+    "edit": "Sunting",
+    "remove": "Hapus",
+    "titleLabel": "Judul",
+    "descriptionLabel": "Yang perlu dilakukan",
+    "filesLabel": "Berkas, dipisahkan koma",
+    "verifyLabel": "Cara memeriksanya",
+    "apply": "Terapkan",
+    "answer": "Kirim jawaban",
+    "answersIntro": "Jawaban atas pertanyaan terbuka:",
+    "leftOpen": "dibiarkan terbuka, putuskan sendiri",
+    "notesLabel": "Riwayat rencana",
+    "noteCreated": "Rencana dibuat",
+    "noteUpdated": "Rencana diperbarui",
+    "noteFailed": "Orkestrator tidak dapat menulis rencana. Coba lagi atau rumuskan dengan cara lain.",
+    "noteTookOver": "Tugas yang terbuka sekarang menjadi rencana.",
+    "chatLabel": "Bahas rencana",
+    "chatPlaceholder": "Misalnya: ubah langkah 2, lebih baik pakai Vitest",
+    "send": "Kirim",
+    "saveFile": "Simpan sebagai berkas",
+    "saved": "Rencana disimpan",
+    "discard": "Buang rencana",
+    "discardTitle": "Buang rencana?",
+    "discardBody": "Rencana dan riwayatnya akan hilang. Berkas yang disimpan tetap ada.",
+    "carryOut": "Kerjakan",
+    "carryOutHint": "Agen menjalankan langkah-langkahnya dalam mode persetujuan yang dipilih."
   }
 }

@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Limite de sortie",
       "hint": "Une sortie plus longue est raccourcie au milieu avant que l’agent la voie."
+    },
+    "confirmPlan": {
+      "label": "D’abord planifier, puis réaliser",
+      "hint": "Une nouvelle demande ouvre d’abord le mode planification : les agents ne font que lire et rédigent un plan. Il n’est réalisé que lorsque vous passez à « Réaliser ».",
+      "hintAsk": "Activé par défaut en mode « Demander d’abord ». Une nouvelle demande ouvre d’abord le mode planification ; elle n’est réalisée que lorsque vous passez à « Réaliser »."
+    },
+    "questionsTitle": "Questions de clarification",
+    "questionsDescription": "À quel point l’orchestrateur pose des questions avant de planifier, et le chat demande des précisions quand une demande n’est pas claire. Les questions viennent avec des réponses à cliquer.",
+    "questions": {
+      "label": "Questions de clarification",
+      "never": {
+        "title": "Jamais",
+        "body": "L’orchestrateur planifie tout de suite. Le chat répond selon l’interprétation la plus probable et indique ce qu’il a supposé."
+      },
+      "ifNeeded": {
+        "title": "Si nécessaire",
+        "body": "Seulement quand une demande est vraiment ambiguë ou laisse ouvert un choix important auquel le projet ne répond pas. Les demandes claires démarrent tout de suite."
+      },
+      "often": {
+        "title": "Plus souvent",
+        "body": "Aussi quand une demande laisse ouverts des choix qui changent le résultat, comme la portée, le comportement ou les noms. Au plus une série de trois questions."
+      }
     }
   },
   "roles": {
@@ -312,6 +334,10 @@
     "recap": {
       "label": "Résumé",
       "hint": "Envoyé à l’orchestrateur à la fin d’une exécution, pour qu’il rédige un court résumé dans votre langue."
+    },
+    "planning": {
+      "label": "Mode planification",
+      "hint": "Envoyé à l’orchestrateur en mode planification : pour un nouveau plan et pour chaque modification."
     }
   },
   "network": {
@@ -383,6 +409,10 @@
       "autoCurrent": "Automatique (actuellement {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (non installé)"
+    },
+    "kvQuant": {
+      "label": "Compresser le cache KV pour gagner en vitesse",
+      "hint": "Stocke le contexte sur 8 bits (q8_0) au lieu de 16. Il prend moitié moins de mémoire : une plus grande part du modèle tient sur le GPU et les réponses arrivent en général un peu plus vite. Très légèrement moins précis."
     },
     "extraArgs": {
       "label": "Arguments supplémentaires de llama-server",
@@ -506,6 +536,75 @@
     "logLoading": "Chargement du journal du serveur",
     "logFailed": "Le journal du serveur n’a pas pu être chargé : {{message}}",
     "logEmpty": "Le serveur n’a encore rien écrit."
+  },
+  "tips": {
+    "dismiss": "Masquer ce conseil",
+    "ramSpeed": {
+      "title": "Votre RAM tourne moins vite qu’elle le pourrait",
+      "body": "Votre RAM ({{kind}}, « {{part}} ») tourne à {{configured}} MT/s, mais elle est probablement conçue pour {{rated}} MT/s. Pour y arriver, activez son profil EXPO ou XMP dans le BIOS. Les modèles qui tournent en partie dans la mémoire système répondent alors environ 5 à 10 % plus vite.",
+      "caveat": "Le profil est un overclocking garanti par le fabricant : vérifiez ensuite rapidement que le PC reste stable. Ylide ne modifie jamais les réglages du BIOS."
+    }
+  },
+  "calibration": {
+    "title": "Optimiser pour ce PC",
+    "intro": "Ylide essaie quelques réglages de llama-server avec votre modèle et garde les plus rapides : mode de chargement, taille de lot, threads et plus. Cela prend 2 à 4 minutes ; le chat et les agents sont en pause pendant ce temps.",
+    "lossyKv": "Essayer aussi un cache KV compressé (très légèrement moins précis)",
+    "start": "Optimiser (~3 min)",
+    "again": "Mesurer à nouveau",
+    "cancel": "Annuler",
+    "reset": "Réinitialiser",
+    "needsModel": "Démarrez d’abord le modèle.",
+    "running": "Mesure {{done}} sur environ {{total}} …",
+    "measuring": "mesure en cours …",
+    "speeds": "Prompt {{prompt}} tok/s · Réponse {{gen}} tok/s",
+    "tuned": "Optimisé pour ce PC",
+    "trial": {
+      "baseline": "Réglages actuels",
+      "loadMode": "Mode de chargement",
+      "kvCache": "Cache KV",
+      "batchSize": "Taille de lot",
+      "threads": "Threads",
+      "expertCache": "Cache GPU pour les experts",
+      "confirm": "Confirmation"
+    },
+    "outcome": {
+      "measured": "mesuré",
+      "better": "plus rapide, conservé",
+      "worse": "pas plus rapide",
+      "different": "autre réponse, écarté",
+      "overflow": "mémoire trop juste, écarté",
+      "failed": "n’a pas démarré"
+    },
+    "result": {
+      "gen": "Réponses : avant {{before}} tok/s, maintenant {{after}} tok/s ({{change}})",
+      "prompt": "Lecture du prompt : avant {{before}} tok/s, maintenant {{after}} tok/s ({{change}})",
+      "same": "Vos réglages actuels étaient déjà les plus rapides ({{gen}} tok/s pour répondre, {{prompt}} tok/s pour lire le prompt).",
+      "applied": "S’applique à chaque démarrage de ce modèle sur ce PC.",
+      "notApplied": "Ne s’applique plus tant que vous ne mesurez pas à nouveau.",
+      "trials": "Toutes les mesures ({{date}})"
+    },
+    "change": {
+      "kvQ8": "Cache KV compressé (q8_0)",
+      "noMmap": "Modèle chargé entièrement en RAM",
+      "mmap": "Fichier du modèle mappé au lieu d’être chargé (mmap)",
+      "ubatch": "Taille de lot {{n}}",
+      "ccd": "{{n}} threads sur le CCD au plus grand cache",
+      "pinned": "Threads attachés aux cœurs physiques",
+      "expertCache": "{{mib}} Mio de cache GPU pour les experts"
+    },
+    "stale": "Quelque chose a changé depuis la mesure : {{what}}. Mesurez à nouveau pour que les réglages conviennent.",
+    "changed": {
+      "model": "fichier du modèle",
+      "runtime": "version de llama.cpp",
+      "gpu": "carte graphique ou pilote",
+      "cpu": "processeur",
+      "ram": "RAM",
+      "context": "taille du contexte",
+      "slots": "requêtes parallèles",
+      "projector": "entrée d’images"
+    },
+    "cancelled": "Annulé. Les réglages précédents restent en vigueur.",
+    "failed": "La mesure a échoué : {{message}}"
   },
   "installed": {
     "title": "Modèles installés",

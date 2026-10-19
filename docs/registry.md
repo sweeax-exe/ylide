@@ -121,6 +121,37 @@ also holds an audio encoder, which Ylide does not use) and `muse-glimmer` for
 Muse Glimmer (published only as Q4_K_M). Qwen3-Coder-Next and gpt-oss have no
 vision; the embedding model's projector is not listed.
 
+## Quantizations by other publishers
+
+Sometimes a research group publishes better low-bit files of a listed model
+than the usual GGUF publishers, for example 2-3 bit files that keep almost
+all of the model's quality and so let it run fully on a smaller GPU. Such
+files get their own entry, because `source` (repository and revision) belongs
+to the model and the download URLs are built from it:
+
+* `id` is the base model's id plus a suffix for the method
+  (`qwen3.8-27b-gsq`), `family` stays the base model's, and `publisher` names
+  both ("Qwen (Alibaba), GGUF by ISTA-DASLab").
+* `quality`, `capabilities`, `context`, `requestDefaults` and `llamaArgs`
+  are copied from the base entry; the architecture is read from the new
+  files with `gguf-meta.mjs` (files without the MTP head have one layer less).
+* The license is the base model's: take the files only if the publisher's
+  card says the weights inherit it.
+* `qualityPenalty` per quant follows the publisher's own measurements against
+  the full-precision model, plus a margin because they are self-reported.
+  `notes` lists those numbers and says that they are self-reported.
+* If the GGUF embeds a different chat template than the base entry's files,
+  `notes` says so, and the tool self-test (Models page) and a short agent run
+  in Ylide must pass before the entry goes in.
+* A pinned `revision`, as always.
+
+The recommender treats such an entry like any other model. When two entries
+have the same quality, the "Stronger" alternative is the faster configuration
+of the two.
+
+Current entry: `qwen3.8-27b-gsq`, ISTA-DASLab's GSQ-RCO files of Qwen3.8 27B
+(IQ2_XS to IQ3_S, 8.4 to 11.8 GB), which run fully on 12-16 GB GPUs.
+
 ## Uncensored variants
 
 Some users want a model that does not refuse. The list offers a few variants

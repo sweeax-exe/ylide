@@ -12,6 +12,19 @@
     "emptyTitle": "Todavía no hay habilidades",
     "emptyBody": "Añade habilidades desde un repositorio de GitHub, por ejemplo https://github.com/morluto/rea, o desde una carpeta de este equipo."
   },
+  "recommended": {
+    "title": "Recomendadas",
+    "description": "Habilidades que vienen con Ylide. Están desactivadas hasta que añadas una: léela primero y luego actívala con un clic.",
+    "badge": "Recomendada",
+    "needsMcpBadge": "Necesita un servidor MCP",
+    "needsMcpHint": "Usa sus propias herramientas a través de un servidor MCP, que se configura aparte.",
+    "add": "Añadir",
+    "addEnable": "Añadir y activar",
+    "added": "{{name}} añadida y activada",
+    "addFailed": "No se pudo añadir {{name}}",
+    "docs": "Documentación",
+    "mcpConfirm": "Esta habilidad usa sus propias herramientas a través de un servidor MCP, a menudo con programas de análisis aparte. Mientras ese servidor no esté conectado, los modelos reciben las instrucciones de la habilidad, pero no sus herramientas."
+  },
   "project": {
     "title": "Del proyecto",
     "description": "Habilidades de la carpeta .agents/skills del proyecto abierto. Ylide las lee ahí y nunca las modifica; activar una solo afecta a este proyecto.",

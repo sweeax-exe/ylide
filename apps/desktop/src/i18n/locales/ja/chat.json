@@ -121,5 +121,14 @@
     "deleteConfirm": "削除",
     "saveFailed": "チャットを履歴に保存できませんでした",
     "messages_other": "{{count}} 件のメッセージ"
+  },
+  "suggestions": {
+    "label": "次のステップの提案",
+    "askHint": "次のメッセージとして送信",
+    "agents": "エージェントで実行",
+    "agentsLabel": "エージェントで実行: {{text}}",
+    "agentsHint": "これを目標にエージェントの実行を始めます。",
+    "agentsBusy": "エージェントの実行がすでに進行中です。",
+    "agentsNoProject": "先にプロジェクトを開いてください。"
   }
 }

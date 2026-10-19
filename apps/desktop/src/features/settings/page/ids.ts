@@ -12,6 +12,7 @@ export const SETTINGS_SECTIONS = {
 
 export const SKILL_SECTIONS = {
   installed: 'skills-installed',
+  recommended: 'skills-recommended',
   project: 'skills-project',
   usage: 'skills-usage',
 } as const;

@@ -124,5 +124,14 @@
     "messages_few": "{{count}} сообщения",
     "messages_many": "{{count}} сообщений",
     "messages_other": "{{count}} сообщения"
+  },
+  "suggestions": {
+    "label": "Предлагаемые следующие шаги",
+    "askHint": "Отправить следующим сообщением",
+    "agents": "Сделать агентами",
+    "agentsLabel": "Сделать агентами: {{text}}",
+    "agentsHint": "Запускает агентов с этой целью.",
+    "agentsBusy": "Агенты уже работают.",
+    "agentsNoProject": "Сначала откройте проект."
   }
 }

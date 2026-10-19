@@ -11,9 +11,11 @@ import type { ChangeKind } from '../../bindings/ChangeKind';
 import type { Checkpoint } from '../../bindings/Checkpoint';
 import type { FileChange } from '../../bindings/FileChange';
 import type { LastRun } from '../../bindings/LastRun';
+import type { Question } from '../../bindings/Question';
 import type { RunOutcome } from '../../bindings/RunOutcome';
 import type { Task } from '../../bindings/Task';
 import type { TaskPlan } from '../../bindings/TaskPlan';
+import { questionsOf } from './questions';
 
 /** Every event except streamed deltas, in arrival order. */
 export interface TimelineEntry {
@@ -95,7 +97,12 @@ export type FeedItem = ToolFeedItem | MessageFeedItem | PlanFeedItem | DecisionF
 export interface UserQuestion {
   id: string;
   agentId: string;
+  /** The text of all questions (for banners and logs). */
   question: string;
+  /** One, or up to three before the plan; each maybe with answers to click. */
+  questions: Question[];
+  /** The orchestrator asks before it plans. */
+  clarify: boolean;
   at: number;
 }
 
@@ -145,7 +152,7 @@ export interface RunData {
 }
 
 /** Tools that end an agent's turn; the core never sends a result for them. */
-const TURN_ENDING_TOOLS = new Set(['finish', 'submit_plan', 'submit_review', 'ask']);
+const TURN_ENDING_TOOLS = new Set(['finish', 'submit_plan', 'submit_review', 'ask', 'clarify']);
 
 /** Characters of streamed text kept per agent. */
 export const STREAM_TAIL = 240;
@@ -225,8 +232,9 @@ export function applyEvent(run: RunData, event: AgentEvent, at: number): RunData
     }
 
     case 'planReady': {
-      const tasks = { ...next.tasks };
-      const order = [...next.taskOrder];
+      // The plan is the whole task list: a changed plan replaces the first one.
+      const tasks: Record<string, Task> = {};
+      const order: string[] = [];
       for (const task of event.plan.tasks) {
         if (!tasks[task.id]) order.push(task.id);
         tasks[task.id] = task;
@@ -284,9 +292,15 @@ export function applyEvent(run: RunData, event: AgentEvent, at: number): RunData
       if (next.approvals.some((a) => a.id === event.request.id)) return next;
       return { ...next, approvals: [...next.approvals, event.request] };
 
-    case 'questionForUser':
+    case 'questionForUser': {
       if (next.questions.some((q) => q.id === event.questionId)) return next;
-      return { ...next, questions: [...next.questions, { id: event.questionId, agentId: event.agentId, question: event.question, at }] };
+      const question: UserQuestion = { id: event.questionId, agentId: event.agentId, question: event.question, questions: questionsOf(event), clarify: event.clarify ?? false, at };
+      return { ...next, questions: [...next.questions, question] };
+    }
+
+    case 'planDrafted':
+      // Planning mode keeps its plan itself (planStore.ts).
+      return next;
 
     case 'message': {
       const item: MessageFeedItem = { kind: 'message', id: `msg-${seq}`, seq, at, message: event.message };
@@ -339,6 +353,7 @@ export function applyDecision(run: RunData, request: ApprovalRequest, response: 
 export function removeQuestion(run: RunData, questionId: string): RunData {
   return { ...run, questions: run.questions.filter((q) => q.id !== questionId) };
 }
+
 
 export interface ChangedFile {
   path: string;

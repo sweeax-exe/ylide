@@ -42,6 +42,8 @@ interface ChatState {
   setDraftImages(images: DraftImage[]): void;
   /** Sends the draft (text, images or both). Returns false if there was nothing to send or a request is running. */
   send(): boolean;
+  /** Sends a suggested next step as the next question; the draft stays. */
+  sendSuggestion(text: string): boolean;
   stop(): void;
   retry(answerId: string): void;
   newChat(): void;
@@ -211,6 +213,13 @@ export const useChat = create<ChatState>((set, get) => {
       if ((!content && !draftImages.length) || activeRequestId || useApp.getState().reopening) return false;
       set({ draft: '', draftMentions: [], draftImages: [] });
       run(turns, userTurn(newId(), content, draftMentions, draftImages.map((i) => i.url)));
+      return true;
+    },
+
+    sendSuggestion(text) {
+      const content = text.trim();
+      if (!content || get().activeRequestId || useApp.getState().reopening) return false;
+      run(get().turns, userTurn(newId(), content, []));
       return true;
     },
 

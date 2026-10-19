@@ -29,4 +29,10 @@ extraArgs: Array<string>,
 /**
  * Start the main model automatically when the app opens.
  */
-autostart: boolean, };
+autostart: boolean, 
+/**
+ * Always use a q8_0 KV cache (`-ctk/-ctv q8_0`): half the memory for the
+ * context, so more of the model fits on the GPU; very slightly lossy.
+ * Off: q8_0 only where an F16 cache does not fit.
+ */
+quantizeKv: boolean, };

@@ -122,7 +122,12 @@
     "no_vision": "The model that is running cannot see images. On the Models page, switch on “Understand images” for a model that can.",
     "bad_image": "The image cannot be used: {{message}}",
     "not_projector": "This is not an image module (mmproj GGUF file).",
-    "no_projector": "This model has no image input."
+    "no_projector": "This model has no image input.",
+    "calibrating": "The model is being optimized for this PC right now. Try again in a moment.",
+    "calibration_busy": "The model is working right now. Optimize when chat and agents are idle.",
+    "calibration_not_running": "Start the model first, then optimize it.",
+    "calibration_running": "An optimization is already running.",
+    "calibration_external": "An external server cannot be optimized from Ylide."
   },
   "images": {
     "attach": "Attach images",

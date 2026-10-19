@@ -121,7 +121,12 @@
     "no_vision": "正在运行的模型无法查看图片。请在“模型”页面为能理解图片的模型开启“理解图片”。",
     "bad_image": "无法使用该图片：{{message}}",
     "not_projector": "这不是图片模块（mmproj GGUF 文件）。",
-    "no_projector": "此模型不支持图片输入。"
+    "no_projector": "此模型不支持图片输入。",
+    "calibrating": "正在为这台电脑优化模型，请稍后再试。",
+    "calibration_busy": "模型正在工作。请在聊天和代理空闲时再优化。",
+    "calibration_not_running": "请先启动模型，然后再优化。",
+    "calibration_running": "已经有一次优化在进行中。",
+    "calibration_external": "无法在 Ylide 中优化外部服务器。"
   },
   "images": {
     "attach": "附加图片",

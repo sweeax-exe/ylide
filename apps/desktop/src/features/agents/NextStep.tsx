@@ -10,6 +10,7 @@ import { AttachImagesButton, ImageStrip, useImageInput, useVision } from '../../
 import { Button, TextArea } from '../../components/ui';
 import { useApp } from '../../state/app';
 import s from './NextStep.module.css';
+import { usePlanning } from './planStore';
 import { continueBlock, openTaskCount, type RunData } from './run';
 import { useAgentRun } from './store';
 
@@ -41,9 +42,18 @@ export function NextStep({ run }: { run: RunData }) {
     focused();
   }, [focus, focused]);
 
+  // With "plan first", the next step is planned first, with the open tasks in the plan.
+  const permissions = useApp((st) => st.settings?.agent.permissions);
+  const planFirst = !!permissions && (permissions.confirmPlan ?? permissions.mode === 'ask');
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
-    if (canContinue) void continueRun(text);
+    if (!canContinue) return;
+    if (planFirst) {
+      void usePlanning
+        .getState()
+        .planNext(run, text)
+        .then((ok) => ok && setText(''));
+    } else void continueRun(text);
   };
 
   const blockText = block === 'otherProject' ? t('next.otherProject') : block === 'noProject' ? t('idle.noProject') : block === 'noModel' ? t('idle.noModel') : null;

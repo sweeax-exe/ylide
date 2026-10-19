@@ -3,8 +3,10 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActiveModel } from './models/ActiveModel';
+import { Calibration } from './models/Calibration';
 import { Catalog } from './models/Catalog';
 import { Downloads } from './models/Downloads';
+import { HardwareTips } from './models/HardwareTips';
 import { InstalledModels } from './models/InstalledModels';
 import { RegistryCard } from './models/RegistryCard';
 import { Runtimes } from './models/Runtimes';
@@ -29,6 +31,8 @@ export function ModelsView() {
     <Page view="models" title={t('modelsPage.title')} intro={t('modelsPage.intro')} sections={sections}>
       <PageSection id={MODEL_SECTIONS.active} title={t('active.title')} description={t('active.description')}>
         <ActiveModel />
+        <Calibration />
+        <HardwareTips />
       </PageSection>
       <InstalledModels />
       <Downloads />

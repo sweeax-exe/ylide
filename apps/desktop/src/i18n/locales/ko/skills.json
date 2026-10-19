@@ -12,6 +12,19 @@
     "emptyTitle": "아직 스킬이 없습니다",
     "emptyBody": "GitHub 저장소(예: https://github.com/morluto/rea)나 이 컴퓨터의 폴더에서 스킬을 추가하세요."
   },
+  "recommended": {
+    "title": "추천",
+    "description": "Ylide에 기본 포함된 스킬입니다. 추가하기 전에는 꺼져 있으며, 먼저 읽어 본 뒤 한 번의 클릭으로 켤 수 있습니다.",
+    "badge": "추천",
+    "needsMcpBadge": "MCP 서버 필요",
+    "needsMcpHint": "자체 도구를 MCP 서버를 통해 사용하며, 서버는 따로 설정합니다.",
+    "add": "추가",
+    "addEnable": "추가하고 켜기",
+    "added": "{{name}}을(를) 추가하고 켰습니다",
+    "addFailed": "{{name}}을(를) 추가하지 못했습니다",
+    "docs": "문서",
+    "mcpConfirm": "이 스킬은 자체 도구를 MCP 서버를 통해 사용하며, 대개 별도의 분석 프로그램도 필요합니다. 해당 서버가 연결되기 전에는 모델이 스킬의 지시 사항만 받고 도구는 사용할 수 없습니다."
+  },
   "project": {
     "title": "프로젝트에서",
     "description": "열려 있는 프로젝트의 .agents/skills 폴더에 있는 스킬입니다. Ylide는 그 위치에서 읽기만 하고 절대 변경하지 않습니다. 스킬을 켜면 이 프로젝트에만 적용됩니다.",

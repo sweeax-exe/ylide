@@ -68,6 +68,10 @@
   color: var(--text-2);
 }
 
+.planSwitch {
+  font-size: var(--text-sm);
+}
+
 .guards {
   display: flex;
   flex-direction: column;

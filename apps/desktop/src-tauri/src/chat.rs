@@ -7,6 +7,7 @@
 use crate::error::{AppError, AppResult};
 use crate::runtime::ChatHandle;
 use crate::state::AppState;
+use agent::QuestionLevel;
 use inference::{ChatMessage, ChatRequest, ChatResult, Delta, Priority};
 use registry::{ModeDefaults, Model};
 use serde::{Deserialize, Serialize};
@@ -105,11 +106,33 @@ pub fn context_budget(user_limit: u32, model_context: Option<u32>) -> u32 {
 /// Characters of the project's AGENTS.md in the chat's system prompt.
 const CHAT_NOTES_CHARS: usize = 4_000;
 
-/// The chat's system prompt: the setting, the open project's name, its
-/// AGENTS.md (the user's rules and what the agents noted), bounded, and the
-/// skills section.
-fn system_prompt(base: &str, ws: Option<&workspace::Workspace>, skills: &str) -> String {
+/// How the chat suggests next steps and when it asks back (setting
+/// "Rückfragen"). The UI turns the `suggestions` block at the end of an
+/// answer into buttons and never shows it as text (features/chat/suggestions.ts).
+pub fn interaction_section(level: QuestionLevel) -> String {
+    let questions = match level {
+        QuestionLevel::Never => "Do not ask clarifying questions: answer the most likely reading and say in one sentence what you assumed.",
+        QuestionLevel::IfNeeded => {
+            "If a request is really unclear (it can mean very different things, and the attached files do not settle it), do not guess: your answer is one short question, written as normal text, followed by the suggestions block with 2-3 likely answers to it, worded as the user would answer. The question never goes into the block. Otherwise answer right away."
+        }
+        QuestionLevel::Often => {
+            "If a request leaves an important choice open (the approach, the scope, a library), ask first: your answer is one short question, written as normal text, followed by the suggestions block with 2-3 likely answers to it, worded as the user would answer. The question never goes into the block. Do not ask when the request is clear."
+        }
+    };
+    format!(
+        "{questions}\n\nWhen it helps, end your answer with 2-3 short suggestions for what the user could ask or do next: a fenced block with the language `suggestions`, one suggestion per line, as the very last thing in your answer. Write each one as a message the user could send you, in the language of the user's message, in at most about 12 words. Start a line with \"change: \" (this word stays in English) when it asks for a change to the project's files; give other lines no label. Leave the block out when nothing useful comes next. The form, with your own suggestions in place of the parts in angle brackets:\n```suggestions\n<a question the user could ask next>\nchange: <a change to the project's files the user could ask for>\n```"
+    )
+}
+
+/// The chat's system prompt: the setting, how it asks back and suggests
+/// next steps, the open project's name, its AGENTS.md (the user's rules and
+/// what the agents noted), bounded, and the skills section.
+fn system_prompt(base: &str, interaction: &str, ws: Option<&workspace::Workspace>, skills: &str) -> String {
     let mut system = base.to_string();
+    if !interaction.is_empty() {
+        system.push_str("\n\n");
+        system.push_str(interaction);
+    }
     if let Some(ws) = ws {
         system.push_str(&format!("\n\nThe open project is \"{}\".", ws.name()));
         if let Ok(file) = ws.read_text(agent::knowledge::FILE) {
@@ -216,7 +239,8 @@ pub async fn send(state: &AppState, req: ChatSendRequest, channel: Channel<ChatE
     let (skill_prompt, skill_chips) = skills_section(&enabled, user_texts, h.context);
     let _ = channel.send(ChatEvent::Context { items: items.iter().cloned().chain(skill_chips).collect() });
 
-    let mut messages = vec![ChatMessage::system(system_prompt(&settings.chat.system_prompt, ws.as_ref(), &skill_prompt))];
+    let interaction = interaction_section(settings.questions);
+    let mut messages = vec![ChatMessage::system(system_prompt(&settings.chat.system_prompt, &interaction, ws.as_ref(), &skill_prompt))];
     for m in history {
         // Sent before: already checked, and sent the same way again for the KV cache.
         messages.push(history_message(m.role, &m.content, &m.images, h.vision));
@@ -444,14 +468,14 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let ws = workspace::Workspace::open(&dir).unwrap();
-        let without = system_prompt("Be brief.", Some(&ws), "");
+        let without = system_prompt("Be brief.", "", Some(&ws), "");
         assert!(without.starts_with("Be brief.\n\nThe open project is") && !without.contains("AGENTS.md"), "{without}");
         std::fs::write(dir.join("AGENTS.md"), format!("Always use pnpm.\n{}", "x\n".repeat(5_000))).unwrap();
-        let with = system_prompt("Be brief.", Some(&ws), "");
+        let with = system_prompt("Be brief.", "", Some(&ws), "");
         assert!(with.contains("Project notes from AGENTS.md") && with.contains("Always use pnpm."), "{with}");
         assert!(with.contains("the rest was left out"), "bounded");
         assert!(with.len() < "Be brief.".len() + CHAT_NOTES_CHARS + 1_000);
-        assert_eq!(system_prompt("Be brief.", None, ""), "Be brief.");
+        assert_eq!(system_prompt("Be brief.", "", None, ""), "Be brief.");
     }
 
     #[test]
@@ -478,7 +502,23 @@ mod tests {
         let labels: Vec<(&str, bool)> = chips.iter().map(|c| (c.label.as_str(), c.truncated)).collect();
         assert_eq!(labels, vec![("@pdf", false), ("@long", true)]);
         assert!(chips.iter().all(|c| c.kind == ContextKind::Skill && c.error.is_none() && c.tokens > 0));
-        let prompt = system_prompt("Be brief.", None, &text);
+        let prompt = system_prompt("Be brief.", "", None, &text);
         assert!(prompt.starts_with("Be brief.\n\nSkills the user enabled"), "{prompt}");
+    }
+
+    #[test]
+    fn the_chat_suggests_next_steps_and_asks_back_as_set() {
+        for level in [QuestionLevel::Never, QuestionLevel::IfNeeded, QuestionLevel::Often] {
+            let section = interaction_section(level);
+            assert!(section.contains("```suggestions\n") && section.contains("\nchange: ") && section.contains("2-3 short suggestions"), "{section}");
+            // The example block is closed, so the UI's parser would read it too.
+            assert_eq!(section.matches("```").count(), 2, "{section}");
+        }
+        assert!(interaction_section(QuestionLevel::Never).starts_with("Do not ask clarifying questions"));
+        assert!(interaction_section(QuestionLevel::IfNeeded).contains("really unclear"));
+        assert!(interaction_section(QuestionLevel::Often).contains("leaves an important choice open"));
+        // It follows the user's own prompt and comes before the project.
+        let prompt = system_prompt("Be brief.", &interaction_section(QuestionLevel::IfNeeded), None, "");
+        assert!(prompt.starts_with("Be brief.\n\nIf a request is really unclear"), "{prompt}");
     }
 }

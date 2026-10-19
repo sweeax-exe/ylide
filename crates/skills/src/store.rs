@@ -50,6 +50,18 @@ pub enum SkillSource {
     /// Copied from a folder on this computer.
     #[serde(rename_all = "camelCase")]
     Folder { path: String },
+    /// A recommended skill bundled with Ylide (see `recommended`), with where
+    /// its files came from for attribution and updates.
+    #[serde(rename_all = "camelCase")]
+    Recommended {
+        /// "owner/repo".
+        repo: String,
+        commit: String,
+        /// SPDX licence from the source repository.
+        license: String,
+        /// The skill's folder on GitHub at the pinned commit.
+        url: String,
+    },
     /// In the open project's `.agents/skills`, read in place.
     Project,
 }
@@ -299,6 +311,40 @@ impl SkillStore {
         Ok(added.iter().map(|e| self.installed_info(e)).collect())
     }
 
+    /// The recommended skills bundled with Ylide, each marked whether a skill
+    /// of its name is installed already (then it is not offered again).
+    pub fn recommended(&self) -> Vec<crate::recommended::RecommendedInfo> {
+        let installed = self.installed_names();
+        crate::recommended::catalog().iter().map(|r| r.info(installed.contains(r.name))).collect()
+    }
+
+    /// SKILL.md in full and the files of a recommended skill, for "View content"
+    /// before it is installed (read from the bundle, no network).
+    pub fn recommended_content(&self, name: &str) -> Result<SkillContent> {
+        crate::recommended::find(name).ok_or_else(|| SkillError::NotFound(name.to_string()))?.content()
+    }
+
+    /// Installs a recommended skill from the bundle and switches it on. The
+    /// user has seen its content first (the Skills page shows it before this),
+    /// so it is marked reviewed. Fails if a skill of that name already exists.
+    pub fn install_recommended(&self, name: &str) -> Result<SkillInfo> {
+        let rec = crate::recommended::find(name).ok_or_else(|| SkillError::NotFound(name.to_string()))?;
+        let (meta, files) = check(rec.files())?;
+        if meta.name != name {
+            return Err(SkillError::Renamed { old: name.to_string(), new: meta.name });
+        }
+        let _guard = self.guard();
+        let mut index = self.read_index();
+        if index.skills.iter().any(|e| e.name == meta.name) {
+            return Err(SkillError::Exists(meta.name));
+        }
+        self.write_folder(&meta.name, &files)?;
+        let entry = Entry { name: meta.name, source: rec.source(), enabled: true, reviewed: true, installed_at_unix_ms: now_ms() };
+        index.skills.push(entry.clone());
+        self.write_index(&index)?;
+        Ok(self.installed_info(&entry))
+    }
+
     /// What installing `files` over the skill `name` would change.
     pub fn compare(&self, name: &str, files: Vec<SkillFile>, commit: &str) -> Result<SkillUpdate> {
         let (meta, files) = check(files)?;
@@ -371,7 +417,15 @@ impl SkillStore {
 
     fn installed_info(&self, e: &Entry) -> SkillInfo {
         let dir = self.dir.join(&e.name);
-        info(e.name.clone(), e.name.clone(), &dir, read_meta(&dir).map_err(|err| err.to_string()), e.source.clone(), (e.enabled, e.reviewed), e.installed_at_unix_ms)
+        let mut si = info(e.name.clone(), e.name.clone(), &dir, read_meta(&dir).map_err(|err| err.to_string()), e.source.clone(), (e.enabled, e.reviewed), e.installed_at_unix_ms);
+        // Recommended skills carry their licence from the source repository, even
+        // when the SKILL.md itself names none (REA's does not).
+        if let SkillSource::Recommended { license, .. } = &e.source
+            && si.license.is_none()
+        {
+            si.license = Some(license.clone());
+        }
+        si
     }
 
     fn read_index(&self) -> Index {
@@ -849,6 +903,29 @@ mod tests {
         assert!(dir.path().join("skills.json.broken").exists());
         store.install(vec![(files("a", &[]), folder())]).unwrap();
         assert_eq!(store.list(None).len(), 1);
+    }
+
+    #[test]
+    fn recommended_skills_install_enabled_and_reviewed() {
+        let dir = tempfile::tempdir().unwrap();
+        let store = SkillStore::new(dir.path().to_path_buf());
+        let listed = store.recommended();
+        let rea = listed.iter().find(|r| r.name == "reverse-engineer-anything").expect("REA is recommended");
+        assert!(!rea.installed && rea.needs_mcp && rea.license == "MIT");
+        assert!(store.recommended_content("reverse-engineer-anything").unwrap().text.contains("reverse-engineer-anything"));
+
+        let info = store.install_recommended("reverse-engineer-anything").unwrap();
+        assert!(info.enabled && info.reviewed, "a recommended skill the user added is on");
+        assert_eq!(info.license.as_deref(), Some("MIT"), "licence comes from the source repository");
+        assert!(matches!(info.source, SkillSource::Recommended { .. }));
+        assert!(store.enabled(None).iter().any(|s| s.name == "reverse-engineer-anything"));
+        assert!(store.recommended().iter().find(|r| r.name == "reverse-engineer-anything").unwrap().installed, "no longer offered");
+
+        // A second add is refused; removing puts it back on offer.
+        assert!(matches!(store.install_recommended("reverse-engineer-anything"), Err(SkillError::Exists(_))));
+        assert!(matches!(store.install_recommended("nope"), Err(SkillError::NotFound(_))));
+        store.remove("reverse-engineer-anything").unwrap();
+        assert!(!store.recommended().iter().find(|r| r.name == "reverse-engineer-anything").unwrap().installed);
     }
 
     #[test]

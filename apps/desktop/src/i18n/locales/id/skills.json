@@ -12,6 +12,19 @@
     "emptyTitle": "Belum ada skill",
     "emptyBody": "Tambahkan skill dari repositori GitHub, misalnya https://github.com/morluto/rea, atau dari folder di komputer ini."
   },
+  "recommended": {
+    "title": "Direkomendasikan",
+    "description": "Skill yang disertakan bersama Ylide. Nonaktif sampai Anda menambahkannya: baca dulu, lalu aktifkan dengan satu klik.",
+    "badge": "Direkomendasikan",
+    "needsMcpBadge": "Perlu server MCP",
+    "needsMcpHint": "Menggunakan alatnya sendiri melalui server MCP, yang diatur secara terpisah.",
+    "add": "Tambahkan",
+    "addEnable": "Tambahkan dan aktifkan",
+    "added": "{{name}} ditambahkan dan diaktifkan",
+    "addFailed": "{{name}} tidak dapat ditambahkan",
+    "docs": "Dokumentasi",
+    "mcpConfirm": "Skill ini menggunakan alatnya sendiri melalui server MCP, sering kali dengan program analisis terpisah. Selama server itu belum terhubung, model hanya menerima instruksi skill, bukan alatnya."
+  },
   "project": {
     "title": "Dari proyek",
     "description": "Skill di folder .agents/skills pada proyek yang terbuka. Ylide membacanya di sana dan tidak pernah mengubahnya; mengaktifkan skill hanya berlaku untuk proyek ini.",

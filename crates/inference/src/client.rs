@@ -262,6 +262,31 @@ impl LlmClient {
             .map_err(|e| LlmError::Protocol(e.to_string()))
     }
 
+    /// One raw completion for measuring speed (llama-server `/completion`):
+    /// the whole prompt is processed (no prompt cache), then exactly
+    /// `n_predict` tokens are generated greedily, so runs are comparable and
+    /// their text can be compared.
+    pub async fn bench(&self, prompt: &str, n_predict: u32) -> Result<BenchResult, LlmError> {
+        let body = json!({
+            "prompt": prompt,
+            "n_predict": n_predict,
+            "ignore_eos": true,
+            "cache_prompt": false,
+            "temperature": 0.0,
+            "top_k": 1,
+            "stream": false,
+        });
+        let response = self
+            .request(reqwest::Method::POST, "/completion")
+            .json(&body)
+            .timeout(Duration::from_secs(600))
+            .send()
+            .await
+            .map_err(|e| LlmError::Connection(e.to_string()))?;
+        let v: Value = Self::check(response).await?.json().await.map_err(|e| LlmError::Protocol(e.to_string()))?;
+        parse_bench(&v).ok_or_else(|| LlmError::Protocol("no timings in the /completion response".into()))
+    }
+
     /// Model ids offered by the server (`/v1/models`).
     pub async fn models(&self) -> Result<Vec<String>, LlmError> {
         let response = self
@@ -278,5 +303,47 @@ impl LlmClient {
             .as_array()
             .map(|a| a.iter().filter_map(|m| m["id"].as_str().map(str::to_string)).collect())
             .unwrap_or_default())
+    }
+}
+
+/// Speeds of one [`LlmClient::bench`] run, from llama-server's `timings`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct BenchResult {
+    pub content: String,
+    pub prompt_tokens: u32,
+    pub prompt_per_second: f64,
+    pub predicted_tokens: u32,
+    pub predicted_per_second: f64,
+}
+
+fn parse_bench(v: &Value) -> Option<BenchResult> {
+    let t = &v["timings"];
+    Some(BenchResult {
+        content: v["content"].as_str().unwrap_or_default().to_string(),
+        prompt_tokens: t["prompt_n"].as_u64()? as u32,
+        prompt_per_second: t["prompt_per_second"].as_f64()?,
+        predicted_tokens: t["predicted_n"].as_u64()? as u32,
+        predicted_per_second: t["predicted_per_second"].as_f64()?,
+    })
+}
+
+#[cfg(test)]
+mod bench_tests {
+    use super::*;
+
+    #[test]
+    fn reads_llama_server_timings() {
+        // Shape of a b11669 /completion response (shortened).
+        let v = json!({
+            "content": "fn main() {}",
+            "stop": true,
+            "timings": {"cache_n": 0, "prompt_n": 3072, "prompt_ms": 1520.4, "prompt_per_second": 2020.5,
+                        "predicted_n": 64, "predicted_ms": 1201.0, "predicted_per_second": 53.29}
+        });
+        let r = parse_bench(&v).unwrap();
+        assert_eq!((r.prompt_tokens, r.predicted_tokens), (3072, 64));
+        assert_eq!((r.prompt_per_second, r.predicted_per_second), (2020.5, 53.29));
+        assert_eq!(r.content, "fn main() {}");
+        assert!(parse_bench(&json!({"content": "x"})).is_none(), "a server without timings");
     }
 }

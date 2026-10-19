@@ -121,7 +121,12 @@
     "no_vision": "Model yang berjalan tidak dapat melihat gambar. Di halaman Model, aktifkan \"Pahami gambar\" untuk model yang bisa.",
     "bad_image": "Gambar tidak dapat digunakan: {{message}}",
     "not_projector": "Ini bukan modul gambar (file GGUF mmproj).",
-    "no_projector": "Model ini tidak menerima gambar."
+    "no_projector": "Model ini tidak menerima gambar.",
+    "calibrating": "Model sedang dioptimalkan untuk PC ini. Coba lagi sebentar lagi.",
+    "calibration_busy": "Model sedang bekerja. Optimalkan saat chat dan agen sedang diam.",
+    "calibration_not_running": "Mulai modelnya dulu, lalu optimalkan.",
+    "calibration_running": "Optimasi sudah berjalan.",
+    "calibration_external": "Server eksternal tidak bisa dioptimalkan dari Ylide."
   },
   "images": {
     "attach": "Lampirkan gambar",

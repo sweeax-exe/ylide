@@ -142,7 +142,7 @@ impl ApprovalBroker for Reject {
             reason: Some("not now".into()),
         }
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+    async fn ask_user(&self, _agent_id: &str, _questions: &[crate::Question], _clarify: bool) -> UserReply {
         UserReply::text("no")
     }
 }
@@ -195,7 +195,7 @@ impl ApprovalBroker for Silent {
     async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
         std::future::pending().await
     }
-    async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+    async fn ask_user(&self, _agent_id: &str, _questions: &[crate::Question], _clarify: bool) -> UserReply {
         std::future::pending().await
     }
 }
@@ -289,7 +289,7 @@ async fn agents_that_see_get_the_request_images_and_image_view() {
         async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
             ApprovalResponse::Approve
         }
-        async fn ask_user(&self, _agent_id: &str, _question: &str) -> UserReply {
+        async fn ask_user(&self, _agent_id: &str, _questions: &[crate::Question], _clarify: bool) -> UserReply {
             UserReply { text: "Like this.".into(), images: vec![self.0.clone()] }
         }
     }
@@ -818,4 +818,416 @@ async fn the_summary_names_the_work_not_the_project_notes() {
     assert!(!request.contains("AGENTS.md"), "{request}");
     assert!(request.contains("Review: not done ("), "{request}");
     assert!(!request.contains("Review: approved"), "{request}");
+}
+
+/// A user at the question card: records what was asked and answers with fixed answers.
+#[derive(Default)]
+struct Answering {
+    answers: Vec<String>,
+    asked: Mutex<Vec<(String, Vec<crate::Question>, bool)>>,
+}
+
+impl Answering {
+    fn with(answers: &[&str]) -> Arc<Self> {
+        Arc::new(Self { answers: answers.iter().map(|a| a.to_string()).collect(), ..Self::default() })
+    }
+}
+
+#[async_trait]
+impl ApprovalBroker for Answering {
+    async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
+        ApprovalResponse::Approve
+    }
+    async fn ask_user(&self, agent_id: &str, questions: &[crate::Question], clarify: bool) -> UserReply {
+        self.asked.lock().unwrap().push((agent_id.to_string(), questions.to_vec(), clarify));
+        UserReply::text(crate::questions::format_reply(questions, &self.answers))
+    }
+}
+
+fn context_with(h: &Harness, permissions: PermissionSettings, broker: Arc<dyn ApprovalBroker>, setup: impl FnOnce(RunContext) -> RunContext) -> Arc<RunContext> {
+    let events = h.events.clone();
+    let ctx = RunContext::new("run-1", h.ws.clone(), h.store.clone(), permissions, ShellConfig::default(), PromptTemplates::default(), broker, Arc::new(move |e| events.lock().unwrap().push(e)));
+    Arc::new(setup(ctx))
+}
+
+fn tool_names(request: &inference::ChatRequest) -> Vec<String> {
+    request.tools.iter().map(|t| t.function.name.clone()).collect()
+}
+
+fn last_content(request: &inference::ChatRequest) -> String {
+    request.messages.last().and_then(|m| m.content.clone()).unwrap_or_default()
+}
+
+#[tokio::test]
+async fn an_ambiguous_request_gets_one_round_of_questions_before_the_plan() {
+    let h = harness("clarify");
+    let orchestrator = scripted(vec![
+        call("list_dir", json!({"path": ""})),
+        call("clarify", json!({"questions": [
+            {"question": "Welcher Test-Runner?", "options": ["Vitest (empfohlen)", "Jest"]},
+            "Soll die alte API bleiben?"
+        ]})),
+        // A second round is refused: the planner plans with what it has.
+        call("clarify", json!({"questions": ["Noch etwas?"]})),
+        plan_call(json!([{ "title": "Add tests", "description": "With Vitest." }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder.clone())]);
+    let broker = Answering::with(&["Vitest", ""]);
+    let ctx = context_with(&h, PermissionSettings::default(), broker.clone(), |c| c.with_language("de"));
+
+    let report = run(ctx, &t, "Add tests").await;
+
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    let asked = broker.asked.lock().unwrap().clone();
+    assert_eq!(asked.len(), 1, "one round only: {asked:?}");
+    let (agent, questions, clarify) = &asked[0];
+    assert_eq!((agent.as_str(), *clarify, questions.len()), ("orchestrator", true, 2));
+    assert_eq!(questions[0].options.iter().map(|o| (o.label.as_str(), o.recommended)).collect::<Vec<_>>(), vec![("Vitest", true), ("Jest", false)]);
+    assert!(questions[1].options.is_empty());
+
+    let requests = orchestrator.requests.lock().unwrap().clone();
+    let clarify_tool = requests[0].tools.iter().find(|t| t.function.name == "clarify").expect("the planner may ask");
+    assert!(clarify_tool.function.description.contains("in German") && clarify_tool.function.description.contains("once per run"), "{}", clarify_tool.function.description);
+    let answers = last_content(&requests[2]);
+    assert!(answers.starts_with("Answers from the user:\n1. Welcher Test-Runner?\nAnswer: Vitest\n\n2. Soll die alte API bleiben?\nAnswer: (no answer"), "{answers}");
+    assert!(last_content(&requests[3]).contains("You already asked the user once"), "{}", last_content(&requests[3]));
+    assert!(!tool_names(&coder.requests.lock().unwrap()[0]).contains(&"clarify".to_string()), "only the planner asks before the plan");
+
+    let events = h.events.lock().unwrap();
+    let messages: Vec<(&str, MessageKind)> = events
+        .iter()
+        .filter_map(|e| match e {
+            AgentEvent::Message { message, .. } => Some((message.from.as_str(), message.kind)),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(messages, vec![("orchestrator", MessageKind::Question), ("user", MessageKind::Answer)]);
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::Status { status, .. } if status.step == "asking the user" && status.state == AgentState::WaitingForAnswer)));
+}
+
+#[tokio::test]
+async fn a_garbled_round_of_questions_plans_right_away() {
+    let h = harness("clarify-garbage");
+    let orchestrator = scripted(vec![
+        call("clarify", json!({"questions": [1, {"options": ["a", "b"]}, ""]})),
+        // Nor can it try again with good questions.
+        call("clarify", json!({"questions": ["Which one?"]})),
+        plan_call(json!([{ "title": "Fix add", "description": "Make add add." }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let broker = Answering::with(&["x"]);
+    let report = run(context(&h, PermissionSettings::default(), broker.clone()), &t, "fix add").await;
+    assert_eq!(report.outcome, RunOutcome::Completed);
+    assert_eq!(report.plan.unwrap().tasks[0].title, "Fix add");
+    assert!(broker.asked.lock().unwrap().is_empty(), "nothing usable was asked");
+    let requests = orchestrator.requests.lock().unwrap();
+    assert!(last_content(&requests[1]).contains("no usable question"), "{}", last_content(&requests[1]));
+    assert!(last_content(&requests[2]).contains("already asked"));
+}
+
+#[tokio::test]
+async fn questions_written_as_json_are_asked_too() {
+    let h = harness("clarify-text");
+    let orchestrator = scripted(vec![
+        text("Before I plan:\n{\"questions\": [{\"question\": \"Which database?\", \"options\": [\"SQLite (recommended)\", \"Postgres\"]}]}"),
+        plan_call(json!([{ "title": "Store carts", "description": "In SQLite." }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let broker = Answering::with(&["SQLite"]);
+    let report = run(context(&h, PermissionSettings::default(), broker.clone()), &t, "store the carts").await;
+    assert_eq!(report.outcome, RunOutcome::Completed);
+    assert_eq!(broker.asked.lock().unwrap()[0].1[0].options[0].label, "SQLite");
+    let answer = orchestrator.requests.lock().unwrap()[1].messages.last().cloned().unwrap();
+    assert_eq!(answer.role, MessageRole::User);
+    assert!(answer.content.unwrap().starts_with("Answers from the user:\nSQLite\n"));
+}
+
+#[tokio::test]
+async fn with_questions_off_the_planner_cannot_ask() {
+    let h = harness("clarify-never");
+    let orchestrator = scripted(vec![
+        call("clarify", json!({"questions": ["Which one?"]})),
+        plan_call(json!([{ "title": "Fix add", "description": "Make add add." }])),
+    ]);
+    let coder = scripted(vec![call("finish", json!({"summary": "done"}))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", coder)]);
+    let broker = Answering::with(&["x"]);
+    let ctx = context_with(&h, PermissionSettings::default(), broker.clone(), |c| c.with_questions(crate::QuestionLevel::Never));
+    let report = run(ctx, &t, "fix add").await;
+    assert_eq!(report.outcome, RunOutcome::Completed);
+    assert!(broker.asked.lock().unwrap().is_empty());
+    {
+        let requests = orchestrator.requests.lock().unwrap();
+        assert!(!tool_names(&requests[0]).contains(&"clarify".to_string()));
+        assert!(last_content(&requests[1]).contains("tool 'clarify' is not available to you"));
+    }
+
+    // "Often" words the tool for more questions.
+    let h = harness("clarify-often");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "x", "description": "y" }]))]);
+    let t = team(vec![("orchestrator", orchestrator.clone()), ("coder", scripted(vec![call("finish", json!({"summary": "done"}))]))]);
+    run(context_with(&h, PermissionSettings::default(), Answering::with(&[]), |c| c.with_questions(crate::QuestionLevel::Often)), &t, "x").await;
+    let tool = orchestrator.requests.lock().unwrap()[0].tools.iter().find(|t| t.function.name == "clarify").cloned().unwrap();
+    assert!(tool.function.description.contains("choices open that change the result"));
+}
+
+#[tokio::test]
+async fn asking_the_user_offers_answers_to_click() {
+    let h = harness("ask-options");
+    let orchestrator = scripted(vec![plan_call(json!([{ "title": "Test it", "description": "Add a test." }]))]);
+    let coder = scripted(vec![
+        call("ask", json!({"to": "user", "question": "Which runner?", "options": ["Vitest (recommended)", "Jest", "Mocha"], "multiple": false})),
+        call("finish", json!({"summary": "done"})),
+    ]);
+    let t = team(vec![("orchestrator", orchestrator), ("coder", coder.clone())]);
+    let broker = Answering::with(&["Jest"]);
+    let ctx = context_with(&h, PermissionSettings::default(), broker.clone(), |c| c.with_language("fr"));
+    run(ctx, &t, "test it").await;
+    let asked = broker.asked.lock().unwrap().clone();
+    assert_eq!(asked.len(), 1);
+    let (agent, questions, clarify) = &asked[0];
+    assert_eq!((agent.as_str(), *clarify), ("coder", false));
+    assert_eq!(questions[0].options.len(), 3);
+    assert!(questions[0].options[0].recommended);
+    let requests = coder.requests.lock().unwrap();
+    let ask = requests[0].tools.iter().find(|t| t.function.name == "ask").unwrap();
+    assert!(ask.function.description.ends_with("Write questions for the user in French."));
+    assert_eq!(last_content(&requests[1]), "Answer from user:\nJest");
+    drop(requests);
+    // The message log shows the options with the question.
+    let events = h.events.lock().unwrap();
+    assert!(events.iter().any(|e| matches!(e, AgentEvent::Message { message, .. } if message.content == "Which runner?\nOptions: Vitest (recommended) / Jest / Mocha")));
+}
+
+/// Records approvals; in planning mode there must be none.
+#[derive(Default)]
+struct Watching {
+    approvals: Mutex<Vec<String>>,
+}
+
+#[async_trait]
+impl ApprovalBroker for Watching {
+    async fn request_approval(&self, request: ApprovalRequest) -> ApprovalResponse {
+        self.approvals.lock().unwrap().push(request.tool);
+        ApprovalResponse::Approve
+    }
+    async fn ask_user(&self, _agent_id: &str, _questions: &[crate::Question], _clarify: bool) -> UserReply {
+        UserReply::text("ok")
+    }
+}
+
+fn plan_with(tasks: serde_json::Value) -> ChatResult {
+    call(
+        "submit_plan",
+        json!({
+            "summary": "Fix add(), then test it.",
+            "tasks": tasks,
+            "risks": ["Callers may rely on the bug"],
+            "questions": [{ "question": "Add a test?", "options": ["Yes (recommended)", "No"] }]
+        }),
+    )
+}
+
+#[tokio::test]
+async fn planning_only_reads_even_when_the_model_tries_to_change_things() {
+    let h = harness("planning-read-only");
+    let orchestrator = scripted(vec![
+        call("write_file", json!({"path": "src/lib.rs", "content": "broken"})),
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("delete_file", json!({"path": "src/lib.rs"})),
+        call("run_command", json!({"command": "echo hacked > hacked.txt"})),
+        call("read_file", json!({"path": "src/lib.rs"})),
+        plan_with(json!([
+            { "title": "Fix add", "description": "Make add() add.", "files": ["src/lib.rs"], "verify": "cargo test" },
+            { "title": "Test add", "description": "Add a test." }
+        ])),
+    ]);
+    let mut t = team(vec![("orchestrator", orchestrator.clone())]);
+    // A user who gave the orchestrator role tools that change things.
+    t.roles.iter_mut().find(|r| r.id == "orchestrator").unwrap().tools.extend(["write_file", "edit_file", "delete_file", "run_command"].map(String::from));
+    let broker = Arc::new(Watching::default());
+    let ctx = context_with(&h, PermissionSettings { mode: crate::ApprovalMode::Autonomous, confirm_commands: false, confirm_deletes: false, ..PermissionSettings::default() }, broker.clone(), |c| c.read_only().with_language("de"));
+    let req = crate::PlanRequest { goal: "Fix the add function".into(), ..Default::default() };
+
+    let doc = crate::draft_plan(ctx.clone(), &t, &req, None).await.expect("a plan");
+
+    assert_eq!(std::fs::read_to_string(h.dir.join("src/lib.rs")).unwrap(), "pub fn add(a: i32, b: i32) -> i32 {\n    a - b\n}\n", "nothing changed");
+    assert!(!h.dir.join("hacked.txt").exists(), "no command ran");
+    assert!(broker.approvals.lock().unwrap().is_empty(), "nothing even asked for approval");
+    let requests = orchestrator.requests.lock().unwrap().clone();
+    let mut offered = tool_names(&requests[0]);
+    offered.sort();
+    assert_eq!(offered, vec!["find_files", "list_dir", "read_file", "search", "submit_plan"], "only reading tools and the plan");
+    for (i, m) in requests[4].messages.iter().filter(|m| m.role == MessageRole::Tool).enumerate() {
+        assert!(m.content.as_deref().unwrap().contains("not available to you"), "call {i}: {:?}", m.content);
+    }
+    let request = requests[0].messages[1].content.clone().unwrap();
+    assert!(request.starts_with("Planning mode: you only read the project"), "{request}");
+    assert!(request.contains("Write the plan in German") && request.contains("only for important choices"), "{request}");
+
+    assert_eq!(doc.goal, "Fix the add function");
+    assert_eq!(doc.steps.iter().map(|s| (s.id.as_str(), s.verify.as_str())).collect::<Vec<_>>(), vec![("T1", "cargo test"), ("T2", "")]);
+    assert_eq!(doc.risks, vec!["Callers may rely on the bug"]);
+    assert_eq!(doc.questions[0].options.len(), 2);
+    {
+        let events = h.events.lock().unwrap();
+        assert!(events.iter().any(|e| matches!(e, AgentEvent::PlanDrafted { plan, .. } if plan == &doc)));
+        assert!(matches!(events.last(), Some(AgentEvent::RunFinished { outcome: RunOutcome::Completed, .. })));
+        assert!(!events.iter().any(|e| matches!(e, AgentEvent::ToolResult { change: Some(_), .. })));
+    }
+
+    // The write path itself refuses too, whatever calls it.
+    let role = t.role("orchestrator").unwrap();
+    let spec = crate::runner::AgentSpec { id: "orchestrator".into(), role, model: orchestrator.clone(), extra_tools: vec![] };
+    let outcome = crate::runner::call_tool(&ctx, &spec, "write_file", json!({"path": "x.txt", "content": "x"})).await;
+    assert!(!outcome.ok && outcome.output.contains("planning mode"), "{}", outcome.output);
+    assert!(!h.dir.join("x.txt").exists());
+}
+
+#[tokio::test]
+async fn a_plan_changes_as_the_user_wishes_and_keeps_its_step_ids() {
+    let h = harness("planning-change");
+    let current = crate::PlanDoc {
+        goal: "Fix the add function".into(),
+        approach: "Fix, then test.".into(),
+        steps: vec![
+            crate::PlanStep { id: "T1".into(), title: "Fix add".into(), description: "Make add() add.".into(), files: vec!["src/lib.rs".into()], verify: "cargo test".into(), assignee: "coder".into() },
+            // The user renamed this step by hand.
+            crate::PlanStep { id: "T2".into(), title: "Test add with negatives".into(), description: String::new(), files: vec![], verify: String::new(), assignee: "coder".into() },
+        ],
+        risks: vec![],
+        questions: vec![],
+    };
+    let orchestrator = scripted(vec![plan_with(json!([
+        { "id": "T1", "title": "Fix add", "description": "Make add() add.", "files": ["src/lib.rs"] },
+        { "title": "Document add", "description": "Add a doc comment." },
+        { "id": "T2", "title": "Test add with negatives", "description": "Use cargo test." }
+    ]))]);
+    let t = team(vec![("orchestrator", orchestrator.clone())]);
+    let ctx = context_with(&h, PermissionSettings::default(), Arc::new(Watching::default()), |c| c.read_only().with_questions(crate::QuestionLevel::Never));
+    let req = crate::PlanRequest {
+        goal: current.goal.clone(),
+        current: Some(current),
+        wish: Some("Füge vor den Tests einen Schritt für die Doku ein".into()),
+        earlier_wishes: vec!["Erst den Fix".into()],
+    };
+    let doc = crate::draft_plan(ctx, &t, &req, None).await.expect("a changed plan");
+    assert_eq!(doc.steps.iter().map(|s| s.id.as_str()).collect::<Vec<_>>(), vec!["T1", "T3", "T2"]);
+    assert!(doc.questions.is_empty(), "the user wants no questions");
+    let request = orchestrator.requests.lock().unwrap()[0].messages[1].content.clone().unwrap();
+    assert!(request.contains("- [T2] Test add with negatives\n"), "the user's own edit is in the request: {request}");
+    assert!(request.contains("The user's new wish:\nFüge vor den Tests einen Schritt für die Doku ein"), "{request}");
+    assert!(request.contains("Earlier wishes of the user:\n- Erst den Fix"), "{request}");
+    assert!(request.contains("Add no open questions"), "{request}");
+}
+
+#[tokio::test]
+async fn a_planning_run_without_a_plan_fails_and_a_stopped_one_is_cancelled() {
+    let h = harness("planning-none");
+    let t = team(vec![("orchestrator", scripted(vec![text("I would rather not."), text("Still no.")]))]);
+    let ctx = context_with(&h, PermissionSettings::default(), Arc::new(Watching::default()), |c| c.read_only());
+    assert_eq!(crate::draft_plan(ctx, &t, &crate::PlanRequest { goal: "x".into(), ..Default::default() }, None).await, None);
+    assert!(matches!(h.events.lock().unwrap().last(), Some(AgentEvent::RunFinished { outcome: RunOutcome::Failed, .. })));
+
+    let h = harness("planning-stopped");
+    let t = team(vec![("orchestrator", scripted(vec![plan_with(json!([{ "title": "x", "description": "y" }]))]))]);
+    let ctx = context_with(&h, PermissionSettings::default(), Arc::new(Watching::default()), |c| c.read_only());
+    ctx.control.cancel();
+    assert_eq!(crate::draft_plan(ctx, &t, &crate::PlanRequest { goal: "x".into(), ..Default::default() }, None).await, None);
+    assert!(matches!(h.events.lock().unwrap().last(), Some(AgentEvent::RunFinished { outcome: RunOutcome::Cancelled, .. })));
+}
+
+fn doc(steps: &[(&str, &str)]) -> crate::PlanDoc {
+    crate::PlanDoc {
+        goal: "Make add right".into(),
+        approach: "Step by step.".into(),
+        steps: steps
+            .iter()
+            .map(|(id, title)| crate::PlanStep { id: id.to_string(), title: title.to_string(), description: format!("Do {title}."), files: vec![], verify: "cargo test".into(), assignee: "coder".into() })
+            .collect(),
+        risks: vec![],
+        questions: vec![],
+    }
+}
+
+/// A run whose `control` asks to stop after the task that is in progress
+/// once `task` starts.
+fn stopping_at(h: &Harness, task: &'static str) -> Arc<RunContext> {
+    let events = h.events.clone();
+    let control: Arc<Mutex<Option<crate::RunControl>>> = Arc::default();
+    let stop = control.clone();
+    let ctx = Arc::new(RunContext::new(
+        "run-1",
+        h.ws.clone(),
+        h.store.clone(),
+        PermissionSettings::default(),
+        ShellConfig::default(),
+        PromptTemplates::default(),
+        Arc::new(AutoApprove(String::new())),
+        Arc::new(move |e: AgentEvent| {
+            if let AgentEvent::TaskUpdated { task: t, .. } = &e
+                && t.id == task
+                && t.status == TaskStatus::InProgress
+                && let Some(c) = stop.lock().unwrap().as_ref()
+            {
+                c.stop_after_task(true);
+            }
+            events.lock().unwrap().push(e);
+        }),
+    ));
+    *control.lock().unwrap() = Some(ctx.control.clone());
+    ctx
+}
+
+#[tokio::test]
+async fn a_plan_runs_as_its_tasks_and_switching_to_planning_stops_after_the_current_one() {
+    let h = harness("plan-run");
+    let coder = scripted(vec![
+        call("edit_file", json!({"path": "src/lib.rs", "old_text": "a - b", "new_text": "a + b"})),
+        call("finish", json!({"summary": "add() adds."})),
+    ]);
+    let t = team(vec![("coder", coder.clone())]);
+    let first = doc(&[("T1", "Fix add"), ("T2", "Test add"), ("T3", "Docs")]);
+
+    // The user switches to planning while T1 runs: T1 finishes, nothing else starts.
+    let report = crate::run_plan(stopping_at(&h, "T1"), &t, &first).await;
+    assert_eq!(report.outcome, RunOutcome::Cancelled);
+    let tasks = &report.plan.as_ref().unwrap().tasks;
+    assert_eq!(tasks.iter().map(|t| (t.id.as_str(), t.status)).collect::<Vec<_>>(), vec![("T1", TaskStatus::Done), ("T2", TaskStatus::Pending), ("T3", TaskStatus::Pending)]);
+    assert!(tasks[0].description.ends_with("How to verify: cargo test"), "{}", tasks[0].description);
+    assert_eq!(coder.remaining(), 0, "no model call for T2");
+    let coding = coder.requests.lock().unwrap()[0].messages[1].content.clone().unwrap();
+    assert!(coding.contains("Your task T1: Fix add"), "{coding}");
+    assert!(!h.events.lock().unwrap().iter().any(|e| matches!(e, AgentEvent::Status { status, .. } if status.task_id.as_deref() == Some("T2"))));
+
+    // Its open tasks become the plan again; the user drops T3 and adds T4.
+    let previous = crate::PreviousRun::new("Make add right", report.outcome, &report.summary, &crate::protocol::Blackboard { plan: report.plan.clone(), ..Default::default() }, vec![]);
+    let open: Vec<String> = previous.open_tasks().into_iter().map(|t| t.id).collect();
+    assert_eq!(open, vec!["T2", "T3"]);
+    let second = doc(&[("T2", "Test add"), ("T4", "Changelog")]);
+    let coder = scripted(vec![call("finish", json!({"summary": "tested"})), call("finish", json!({"summary": "noted"}))]);
+    let t = team(vec![("coder", coder.clone())]);
+    let h2 = harness("plan-run-2");
+    let report = crate::run_plan(context(&h2, PermissionSettings::default(), Arc::new(AutoApprove(String::new()))), &t, &second).await;
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    assert_eq!(report.plan.unwrap().tasks.iter().map(|t| t.id.as_str()).collect::<Vec<_>>(), vec!["T2", "T4"], "same ids, T1 is not done again");
+    assert_eq!(coder.remaining(), 0);
+}
+
+#[tokio::test]
+async fn taking_the_switch_back_lets_the_run_go_on() {
+    let h = harness("plan-run-back");
+    let coder = scripted(vec![call("finish", json!({"summary": "one"})), call("finish", json!({"summary": "two"}))]);
+    let t = team(vec![("coder", coder)]);
+    let ctx = context(&h, PermissionSettings::default(), Arc::new(AutoApprove(String::new())));
+    // To planning and back again before the next task starts.
+    ctx.control.stop_after_task(true);
+    assert!(ctx.control.stops_after_task());
+    ctx.control.stop_after_task(false);
+    let report = crate::run_plan(ctx, &t, &doc(&[("T1", "One"), ("T2", "Two")])).await;
+    assert_eq!(report.outcome, RunOutcome::Completed, "{}", report.summary);
+    assert!(report.plan.unwrap().tasks.iter().all(|t| t.status == TaskStatus::Done));
 }

@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Output limit",
       "hint": "Longer output is shortened in the middle before the agent sees it."
+    },
+    "confirmPlan": {
+      "label": "Plan first, then build",
+      "hint": "A new request opens planning mode first: the agents only read and write a plan. It is built only when you switch to “Build”.",
+      "hintAsk": "On by default in Ask first mode. A new request opens planning mode first; it is built only when you switch to “Build”."
+    },
+    "questionsTitle": "Clarifying questions",
+    "questionsDescription": "How readily the orchestrator asks before it plans, and the chat asks back when a request is unclear. Questions come with answers to click.",
+    "questions": {
+      "label": "Clarifying questions",
+      "never": {
+        "title": "Never",
+        "body": "The orchestrator plans right away. The chat answers the most likely reading and says what it assumed."
+      },
+      "ifNeeded": {
+        "title": "When needed",
+        "body": "Only when a request is really ambiguous or leaves an important choice open that the project does not answer. Clear requests start right away."
+      },
+      "often": {
+        "title": "More often",
+        "body": "Also when a request leaves choices open that change the result, such as the scope, the behaviour or names. At most one round of up to three questions."
+      }
     }
   },
   "roles": {
@@ -310,6 +332,10 @@
     "recap": {
       "label": "Summary",
       "hint": "Sent to the orchestrator at the end of a run, to write a short summary in your language."
+    },
+    "planning": {
+      "label": "Planning mode",
+      "hint": "Sent to the orchestrator in planning mode: for a new plan and for every change to it."
     }
   },
   "network": {
@@ -381,6 +407,10 @@
       "autoCurrent": "Automatic (currently {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (not installed)"
+    },
+    "kvQuant": {
+      "label": "Compress the KV cache for speed",
+      "hint": "Stores the context at 8 bits (q8_0) instead of 16. It needs half the memory, so more of the model fits on the GPU and answers usually come a little faster. Very slightly less exact."
     },
     "extraArgs": {
       "label": "Extra llama-server arguments",
@@ -504,6 +534,75 @@
     "logLoading": "Loading server log",
     "logFailed": "The server log could not be loaded: {{message}}",
     "logEmpty": "The server has not written anything yet."
+  },
+  "tips": {
+    "dismiss": "Hide this tip",
+    "ramSpeed": {
+      "title": "Your RAM runs slower than it could",
+      "body": "Your RAM ({{kind}}, “{{part}}”) runs at {{configured}} MT/s but is probably built for {{rated}} MT/s. To get there, switch on its EXPO or XMP profile in the BIOS. Models that run partly in system RAM then answer about 5–10% faster.",
+      "caveat": "The profile is an overclock the manufacturer stands behind: check briefly afterwards that the PC runs stable. Ylide never changes BIOS settings."
+    }
+  },
+  "calibration": {
+    "title": "Optimize for this PC",
+    "intro": "Ylide tries a few llama-server settings with your model and keeps the fastest: load mode, batch size, threads and more. It takes 2 to 4 minutes; chat and agents pause meanwhile.",
+    "lossyKv": "Also try a compressed KV cache (very slightly less exact)",
+    "start": "Optimize (~3 min)",
+    "again": "Measure again",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "needsModel": "Start the model first.",
+    "running": "Measuring {{done}} of about {{total}} …",
+    "measuring": "measuring …",
+    "speeds": "Prompt {{prompt}} tok/s · Answer {{gen}} tok/s",
+    "tuned": "Optimized for this PC",
+    "trial": {
+      "baseline": "Current settings",
+      "loadMode": "Load mode",
+      "kvCache": "KV cache",
+      "batchSize": "Batch size",
+      "threads": "Threads",
+      "expertCache": "GPU cache for experts",
+      "confirm": "Confirmation"
+    },
+    "outcome": {
+      "measured": "measured",
+      "better": "faster, kept",
+      "worse": "not faster",
+      "different": "different answer, dropped",
+      "overflow": "memory too tight, dropped",
+      "failed": "did not start"
+    },
+    "result": {
+      "gen": "Answers: {{before}} tok/s before, {{after}} tok/s now ({{change}})",
+      "prompt": "Reading prompts: {{before}} tok/s before, {{after}} tok/s now ({{change}})",
+      "same": "Your current settings were already the fastest ({{gen}} tok/s for answers, {{prompt}} tok/s for prompts).",
+      "applied": "Applies to every start of this model on this PC.",
+      "notApplied": "Not applied until you measure again.",
+      "trials": "All measurements ({{date}})"
+    },
+    "change": {
+      "kvQ8": "KV cache compressed (q8_0)",
+      "noMmap": "Model loaded completely into RAM",
+      "mmap": "Model file mapped instead of loaded (mmap)",
+      "ubatch": "Batch size {{n}}",
+      "ccd": "{{n}} threads on the CCD with the largest cache",
+      "pinned": "Threads pinned to the physical cores",
+      "expertCache": "{{mib}} MiB GPU cache for experts"
+    },
+    "stale": "Something changed since the measurement: {{what}}. Measure again so the settings fit.",
+    "changed": {
+      "model": "model file",
+      "runtime": "llama.cpp version",
+      "gpu": "graphics card or driver",
+      "cpu": "processor",
+      "ram": "RAM",
+      "context": "context size",
+      "slots": "parallel requests",
+      "projector": "image input"
+    },
+    "cancelled": "Cancelled. The previous settings still apply.",
+    "failed": "The measurement failed: {{message}}"
   },
   "installed": {
     "title": "Installed models",

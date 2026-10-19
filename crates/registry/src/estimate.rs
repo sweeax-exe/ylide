@@ -365,6 +365,33 @@ pub fn plan_with_projector(
     None
 }
 
+/// How much of the model leaves the GPU (lower is better).
+fn offload_rank(p: Placement) -> u8 {
+    match p {
+        Placement::Gpu | Placement::Unified => 0,
+        Placement::MoeOffload { .. } => 1,
+        Placement::PartialOffload { .. } => 2,
+        Placement::Cpu => 3,
+    }
+}
+
+/// The plan at `context` as the app starts it: an F16 KV cache, or q8_0
+/// when the smaller cache keeps weights on the GPU that F16 would push to
+/// the CPU (a dense model that fits completely only with it), or always
+/// q8_0 when the user chose it (`force_q8`). Between MoE offloads of
+/// different depth F16 stays: a lossy cache is the user's call there.
+pub fn plan_at(model: &Model, variant: &Variant, projector_file_bytes: u64, context: u32, budget: &ComputeBudget, force_q8: bool) -> Option<Plan> {
+    let q8 = plan_with_projector(model, variant, projector_file_bytes, context, KvCacheType::Q8_0, budget);
+    if force_q8 {
+        return q8;
+    }
+    match (plan_with_projector(model, variant, projector_file_bytes, context, KvCacheType::F16, budget), q8) {
+        (Some(f16), Some(q8)) if offload_rank(q8.placement) < offload_rank(f16.placement) => Some(q8),
+        (Some(f16), _) => Some(f16),
+        (None, q8) => q8,
+    }
+}
+
 /// Decode is memory-bound: time per token = bytes read / effective bandwidth.
 fn tokens_per_sec(gpu_bytes: f64, cpu_bytes: f64, budget: &ComputeBudget) -> f64 {
     let mut seconds = 0.0;
@@ -567,6 +594,27 @@ mod tests {
         let with = plan_with_projector(model, variant, projector, 32_768, KvCacheType::F16, &cpu).unwrap();
         assert_eq!(with.placement, Placement::Cpu);
         assert_eq!((with.ram_bytes, with.vram_bytes), (without.ram_bytes + projector_bytes(projector), 0));
+    }
+
+    #[test]
+    fn the_kv_cache_is_compressed_only_where_it_keeps_the_model_on_the_gpu() {
+        let reg = crate::bundled();
+        let budget = ComputeBudget::from_profile(&hw(16, 64, true), &[]);
+        // Qwen3.8 27B GSQ IQ3_XXS at 64K: F16 needs CPU layers, q8_0 fits the GPU.
+        let gsq = reg.models.iter().find(|m| m.id == "qwen3.8-27b-gsq").unwrap();
+        let v = gsq.variants.iter().find(|v| v.quant == "GSQ-RCO-IQ3_XXS").unwrap();
+        let f16 = plan(gsq, v, 65_536, KvCacheType::F16, &budget).unwrap();
+        assert!(matches!(f16.placement, Placement::PartialOffload { .. }), "{f16:?}");
+        let p = plan_at(gsq, v, 0, 65_536, &budget, false).unwrap();
+        assert_eq!((p.placement, p.kv_cache_type), (Placement::Gpu, KvCacheType::Q8_0));
+        // The MoE default at 128K offloads experts either way: F16 stays.
+        let moe = reg.models.iter().find(|m| m.id == "qwen3.6-35b-a3b").unwrap();
+        let v = moe.variants.iter().find(|v| v.quant == "UD-IQ4_XS").unwrap();
+        let p = plan_at(moe, v, 0, 131_072, &budget, false).unwrap();
+        assert_eq!(p.kv_cache_type, KvCacheType::F16);
+        assert!(matches!(p.placement, Placement::MoeOffload { .. }));
+        // The user's choice wins.
+        assert_eq!(plan_at(moe, v, 0, 131_072, &budget, true).unwrap().kv_cache_type, KvCacheType::Q8_0);
     }
 
     #[test]

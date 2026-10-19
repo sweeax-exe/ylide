@@ -15,6 +15,7 @@ import { HistoryMenu } from './HistoryMenu';
 import { MessageList } from './MessageList';
 import { StartScreen } from './StartScreen';
 import { registerChatPanel, useChat } from './store';
+import { splitSuggestions } from './suggestions';
 
 function ModelStatus() {
   const { t } = useTranslation('chat');
@@ -57,7 +58,7 @@ function Announcer() {
     }
     if (before.status !== 'streaming' || last.status === 'streaming') return;
     // Errors are announced by their own alert.
-    if (last.status === 'done') setMessage(t('announce.answer', { text: plainText(last.content) }));
+    if (last.status === 'done') setMessage(t('announce.answer', { text: plainText(splitSuggestions(last.content).text) }));
     if (last.status === 'cancelled') setMessage(t('announce.stopped'));
   }, [last, t]);
 

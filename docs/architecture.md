@@ -278,15 +278,19 @@ estimated), autocomplete on the GPU and embeddings on the CPU.
 llama-server command line from the memory plan that `plan_for`
 (`apps/desktop/src-tauri/src/commands.rs`) computes on every start. It tries
 the contexts [settings override or the model's recommended value, 64K, 32K,
-16K, 8K] (those up to the model's maximum), at each one an F16 KV cache first
-and q8_0 only when F16 does not fit, and returns the first plan that fits. A
-model that is not in the registry has no plan.
+16K, 8K] (those up to the model's maximum) and returns the first plan that
+fits (`estimate::plan_at`). At each context the KV cache is F16, or q8_0 when
+only the smaller cache keeps weights on the GPU that F16 would push to the
+CPU: Qwen3.8 27B GSQ IQ3_XXS at 64K on a 16 GB GPU runs completely on the
+GPU with q8_0 instead of with 5 layers on the CPU (measured 48 instead of
+43 tok/s). Between MoE offloads of different depth F16 stays. A model
+that is not in the registry has no plan.
 
 Some flags depend on what the build's `--help` lists (parsed once per
 binary):
 
-* Only when listed: `--fit` (and with it `--fit-target`), `--cache-ram`,
-  `--metrics`, `--no-webui` and `--offline`.
+* Only when listed: `--fit` (and with it `--fit-target`), `--load-mode`,
+  `--cache-ram`, `--metrics`, `--no-webui` and `--offline`.
 * When listed, or when `--help` yields nothing: `-kvu` / `--kv-unified`,
   `-fa` and `-dev none`. The registry's `llamaArgs` are filtered against the
   list and pass unfiltered without one.
@@ -327,6 +331,15 @@ In command-line order:
     fit (both below).
   * MoE offload adds `-b 2048 -ub 2048` in every case: larger batches speed
     up prompt processing while the experts are in RAM.
+  * **Load mode**: `-lm none` for a MoE or partial offload plan when the RAM
+    available at start (measured after the previous server stopped) is at
+    least the plan's RAM part plus 6 GiB, unless the user's arguments set
+    `-lm` / `--load-mode` themselves. llama.cpp maps the GGUF file into memory
+    by default; with weights computed on the CPU, mapped pages make prompt
+    processing much slower (b11669 logs "consider using --load-mode none";
+    reported 1,293 → 2,145 tokens/s on a 22.7K-token prompt). Without the
+    mapping those weights become private memory of the server, which is why
+    it needs the free RAM; loading from a cold disk takes a little longer.
   * **User arguments that stop fitting** (in the settings, see below):
     `-ngl` / `--gpu-layers` / `--n-gpu-layers` with any value but `auto`
     (llama.cpp's default), the tensor overrides `-ncmoe` / `--n-cpu-moe`,
@@ -357,9 +370,16 @@ In command-line order:
   match keeps the model off an iGPU next to a dedicated GPU. Without a
   probed GPU, or when `--list-devices` fails, no `-dev` is passed.
 * **KV cache**: `-ctk q8_0 -ctv q8_0` when the plan uses a q8_0 cache, which
-  `plan_for` picks only when F16 does not fit at that context; otherwise
-  llama.cpp's F16 default.
-* **Threads**: `-t <physical cores>`.
+  `plan_for` picks only where that keeps the model on the GPU, or always
+  when the user switched on "Compress the KV cache for speed" (also for
+  imported models without a plan); otherwise llama.cpp's F16 default.
+* **Threads**: `-t <physical cores>`. A calibration may set fewer generation
+  threads pinned to one CCD (`-t 8 -C 0x5555 --cpu-strict 1 -Cb
+  0x55555555`, with `-tb <physical cores>`), or every physical core pinned
+  (`-C <mask> --cpu-strict 1`); see below.
+* **Calibrated settings** (when they apply, see below): `-b`/`-ub`,
+  `-lm`, the KV cache type and `--moe-cache-mib`, each only when the build
+  lists the flag.
 * **Image input** (when "Understand images" is on for the model, see
   `docs/registry.md`): `--mmproj <projector file>`, and `--image-max-tokens
   2048` when the build lists it, which caps the tokens of one image and with
@@ -418,6 +438,54 @@ With `-ngl 999` llama.cpp skipped fitting ("n_gpu_layers already set by
 user") and the GPU spilled about 7 GB into shared system memory. `--fit on`
 alone moved MoE experts to RAM instead and was faster than the planned fixed
 expert split (22 layers, measured without the fallback's +2 margin).
+
+### Optimize for this PC (calibration)
+
+`apps/desktop/src-tauri/src/calibrate.rs`, started from the Models page.
+`--fit` stays the placement engine, so no GPU layer count is ever stored:
+fit adapts to the free VRAM at every start. The calibration tunes what fit
+takes as given (`runtime::Tuning`):
+
+1. **Baseline**: today's launch (with the user's KV choice and Ylide's
+   `-lm none` rule).
+2. **Load mode**: where Ylide chose `-lm none`, the mapped file for comparison.
+3. **KV cache** q8_0, only when the user ticks "also try a compressed KV cache".
+4. **Batch size**: MoE offload 1024 (then 3072 if smaller did not win),
+   other placements 1024 instead of llama.cpp's 512.
+5. **Threads** (MoE or partial offload, from `hardware::cpu_topology`, i.e.
+   `GetLogicalProcessorInformationEx`): generation on the physical cores of
+   the L3 group with the largest cache (the V-Cache CCD), prompt processing
+   on every core; else every physical core pinned.
+6. **Expert cache** (`--moe-cache-mib`, CUDA and MoE offload only): 10 % of
+   the experts in RAM. It must be 5 % faster and its greedy answer must
+   start like the best so far (degenerate output has been reported).
+7. **Confirmation** of the winner; it must beat the baseline by 1 %.
+
+Each trial restarts llama-server with the candidate (`StartTuning::trial`:
+no refit, no OOM retry, no tool self-test, 4 minutes to load), sends a
+warm-up request and then two `/completion` requests with a fixed code-like
+prompt of about 3,000 tokens (`cache_prompt: false`) and 64 greedy tokens
+(`ignore_eos`). Trials are compared by the time of a typical agent step,
+4000 / prompt tok/s + 400 / answer tok/s; a change is kept when it is 3 %
+faster. A trial is dropped when the server does not start, fit fails or it
+runs out of memory, NVML reports less than 128 MiB of free VRAM or less than
+2 GiB of RAM is available after loading, or it generates below 60 % of the
+baseline (Windows spills an over-full GPU into shared memory without an
+error).
+
+It runs only while the selected model is ready and idle: no agent run, no
+chat or inline request, no slot in use. Meanwhile `chat_handle()` gives
+requests no model and `server_start` refuses (`calibrating`); it can be
+cancelled. Afterwards, also after a cancel or an error, the server starts
+normally with the best known-good settings.
+
+Results are stored in `<local data>/calibration.json`, one per model file,
+with a key of everything they depend on: the model file (path, size,
+modification time), runtime build and variant, GPU, VRAM and driver, CPU,
+RAM size and the speed it runs at, context, slots and the projector. A start
+uses the result only while the key matches (`ServerInfo.tuned`); the Models
+page then says what changed and offers to measure again. If a calibrated
+launch does not start, it starts once with the defaults and logs why.
 
 ## 7. Sub-agent protocol
 

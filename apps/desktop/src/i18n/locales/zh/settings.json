@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "输出上限",
       "hint": "超出上限的输出会先从中间截短，再交给智能体。"
+    },
+    "confirmPlan": {
+      "label": "先规划，再执行",
+      "hint": "新的请求会先打开规划模式：智能体只读取并写出计划。只有切换到“执行”后才会执行。",
+      "hintAsk": "在“先询问”模式下默认开启。新的请求会先打开规划模式；只有切换到“执行”后才会执行。"
+    },
+    "questionsTitle": "澄清问题",
+    "questionsDescription": "编排者在制定计划前提问的意愿，以及请求不清楚时聊天反问的意愿。问题会附带可点击的回答。",
+    "questions": {
+      "label": "澄清问题",
+      "never": {
+        "title": "从不",
+        "body": "编排者立即制定计划。聊天按最可能的理解回答，并说明它做了哪些假设。"
+      },
+      "ifNeeded": {
+        "title": "必要时",
+        "body": "只有请求确实有歧义，或留下项目无法回答的重要选择时才提问。明确的请求会立即开始。"
+      },
+      "often": {
+        "title": "更常提问",
+        "body": "当请求留下会改变结果的选择时也会提问，例如范围、行为或命名。最多一轮，最多三个问题。"
+      }
     }
   },
   "roles": {
@@ -308,6 +330,10 @@
     "recap": {
       "label": "总结",
       "hint": "在运行结束时发送给编排者，让它用你的语言写一份简短的总结。"
+    },
+    "planning": {
+      "label": "规划模式",
+      "hint": "在规划模式下发送给编排者：用于新计划以及对它的每次修改。"
     }
   },
   "network": {
@@ -379,6 +405,10 @@
       "autoCurrent": "自动（当前为 {{variant}}）",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}}（未安装）"
+    },
+    "kvQuant": {
+      "label": "压缩 KV 缓存以提升速度",
+      "hint": "以 8 位（q8_0）而不是 16 位存储上下文。内存占用减半，模型能有更多部分放进 GPU，回答通常会快一些。精度略有下降。"
     },
     "extraArgs": {
       "label": "额外的 llama-server 参数",
@@ -502,6 +532,75 @@
     "logLoading": "正在加载服务器日志",
     "logFailed": "无法加载服务器日志：{{message}}",
     "logEmpty": "服务器还没有输出任何内容。"
+  },
+  "tips": {
+    "dismiss": "隐藏此提示",
+    "ramSpeed": {
+      "title": "你的内存没有跑到应有的速度",
+      "body": "你的内存（{{kind}}，“{{part}}”）运行在 {{configured}} MT/s，但它很可能是为 {{rated}} MT/s 设计的。在 BIOS 中开启它的 EXPO 或 XMP 配置即可。部分运行在系统内存中的模型随后回答会快约 5–10%。",
+      "caveat": "该配置是厂商认可的超频：开启后请简单确认电脑运行稳定。Ylide 从不更改 BIOS 设置。"
+    }
+  },
+  "calibration": {
+    "title": "为这台电脑优化",
+    "intro": "Ylide 会用你的模型试几种 llama-server 设置，并保留最快的：加载方式、批大小、线程等。需要 2 到 4 分钟；在此期间聊天和代理会暂停。",
+    "lossyKv": "也测试压缩的 KV 缓存（精度略有下降）",
+    "start": "优化（约 3 分钟）",
+    "again": "重新测量",
+    "cancel": "取消",
+    "reset": "重置",
+    "needsModel": "请先启动模型。",
+    "running": "正在测量第 {{done}} 项，共约 {{total}} 项 …",
+    "measuring": "测量中 …",
+    "speeds": "提示 {{prompt}} tok/s · 回答 {{gen}} tok/s",
+    "tuned": "已为这台电脑优化",
+    "trial": {
+      "baseline": "当前设置",
+      "loadMode": "加载方式",
+      "kvCache": "KV 缓存",
+      "batchSize": "批大小",
+      "threads": "线程",
+      "expertCache": "专家的 GPU 缓存",
+      "confirm": "确认"
+    },
+    "outcome": {
+      "measured": "已测量",
+      "better": "更快，已采用",
+      "worse": "没有更快",
+      "different": "回答不同，已放弃",
+      "overflow": "内存不足，已放弃",
+      "failed": "未能启动"
+    },
+    "result": {
+      "gen": "回答：之前 {{before}} tok/s，现在 {{after}} tok/s（{{change}}）",
+      "prompt": "读取提示：之前 {{before}} tok/s，现在 {{after}} tok/s（{{change}}）",
+      "same": "你当前的设置已经是最快的（回答 {{gen}} tok/s，读取提示 {{prompt}} tok/s）。",
+      "applied": "此后在这台电脑上每次启动该模型时生效。",
+      "notApplied": "重新测量之前不会生效。",
+      "trials": "全部测量（{{date}}）"
+    },
+    "change": {
+      "kvQ8": "KV 缓存已压缩（q8_0）",
+      "noMmap": "模型完整加载到内存",
+      "mmap": "模型文件以映射代替加载（mmap）",
+      "ubatch": "批大小 {{n}}",
+      "ccd": "在缓存最大的 CCD 上使用 {{n}} 个线程",
+      "pinned": "线程绑定到物理核心",
+      "expertCache": "{{mib}} MiB 专家 GPU 缓存"
+    },
+    "stale": "测量之后有变化：{{what}}。请重新测量，让设置保持合适。",
+    "changed": {
+      "model": "模型文件",
+      "runtime": "llama.cpp 版本",
+      "gpu": "显卡或驱动",
+      "cpu": "处理器",
+      "ram": "内存",
+      "context": "上下文大小",
+      "slots": "并行请求",
+      "projector": "图像输入"
+    },
+    "cancelled": "已取消。之前的设置继续有效。",
+    "failed": "测量失败：{{message}}"
   },
   "installed": {
     "title": "已安装的模型",

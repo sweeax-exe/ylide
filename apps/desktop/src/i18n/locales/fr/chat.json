@@ -123,5 +123,14 @@
     "messages_one": "{{count}} message",
     "messages_many": "{{count}} de messages",
     "messages_other": "{{count}} messages"
+  },
+  "suggestions": {
+    "label": "Étapes suivantes proposées",
+    "askHint": "Envoyer comme message suivant",
+    "agents": "Faire avec les agents",
+    "agentsLabel": "Faire avec les agents : {{text}}",
+    "agentsHint": "Lance une exécution des agents avec cet objectif.",
+    "agentsBusy": "Une exécution des agents est déjà en cours.",
+    "agentsNoProject": "Ouvrez d’abord un projet."
   }
 }

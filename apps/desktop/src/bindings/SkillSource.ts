@@ -19,4 +19,16 @@ path: string, commit: string,
 /**
  * Git tree id of that folder at the commit, to see whether it changed.
  */
-tree: string, } | { "kind": "folder", path: string, } | { "kind": "project" };
+tree: string, } | { "kind": "folder", path: string, } | { "kind": "recommended", 
+/**
+ * "owner/repo".
+ */
+repo: string, commit: string, 
+/**
+ * SPDX licence from the source repository.
+ */
+license: string, 
+/**
+ * The skill's folder on GitHub at the pinned commit.
+ */
+url: string, } | { "kind": "project" };

@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "출력 제한",
       "hint": "이보다 긴 출력은 에이전트에게 전달되기 전에 가운데 부분이 생략됩니다."
+    },
+    "confirmPlan": {
+      "label": "먼저 계획하고, 그다음 실행",
+      "hint": "새 요청은 먼저 계획 모드로 열립니다. 에이전트는 읽기만 하고 계획을 씁니다. ‘실행’으로 바꿀 때까지 실행되지 않습니다.",
+      "hintAsk": "‘먼저 묻기’ 모드에서는 기본으로 켜져 있습니다. 새 요청은 먼저 계획 모드로 열리고, ‘실행’으로 바꿀 때까지 실행되지 않습니다."
+    },
+    "questionsTitle": "확인 질문",
+    "questionsDescription": "오케스트레이터가 계획 전에 얼마나 쉽게 묻고, 요청이 불분명할 때 채팅이 얼마나 쉽게 되묻는지 정합니다. 질문에는 클릭할 수 있는 답변이 함께 나옵니다.",
+    "questions": {
+      "label": "확인 질문",
+      "never": {
+        "title": "안 함",
+        "body": "오케스트레이터는 바로 계획합니다. 채팅은 가장 그럴듯한 해석으로 답하고 무엇을 가정했는지 알려 줍니다."
+      },
+      "ifNeeded": {
+        "title": "필요할 때",
+        "body": "요청이 정말 모호하거나 프로젝트로는 답할 수 없는 중요한 선택이 남아 있을 때만 묻습니다. 명확한 요청은 바로 시작됩니다."
+      },
+      "often": {
+        "title": "더 자주",
+        "body": "범위, 동작, 이름처럼 결과를 바꾸는 선택이 남아 있을 때도 묻습니다. 질문은 한 번, 최대 세 개까지입니다."
+      }
     }
   },
   "roles": {
@@ -308,6 +330,10 @@
     "recap": {
       "label": "요약",
       "hint": "실행이 끝날 때 오케스트레이터에게 보내져 사용자의 언어로 짧은 요약을 쓰게 합니다."
+    },
+    "planning": {
+      "label": "계획 모드",
+      "hint": "계획 모드에서 오케스트레이터에게 보내집니다. 새 계획을 만들 때와 계획을 바꿀 때마다 쓰입니다."
     }
   },
   "network": {
@@ -379,6 +405,10 @@
       "autoCurrent": "자동(현재 {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}}(설치되지 않음)"
+    },
+    "kvQuant": {
+      "label": "속도를 위해 KV 캐시 압축",
+      "hint": "컨텍스트를 16비트 대신 8비트(q8_0)로 저장합니다. 메모리가 절반만 필요해 모델의 더 많은 부분이 GPU에 올라가고, 보통 답변이 조금 더 빨라집니다. 정확도는 아주 약간 낮아집니다."
     },
     "extraArgs": {
       "label": "추가 llama-server 인수",
@@ -502,6 +532,75 @@
     "logLoading": "서버 로그 불러오는 중",
     "logFailed": "서버 로그를 불러오지 못했습니다: {{message}}",
     "logEmpty": "서버가 아직 아무것도 출력하지 않았습니다."
+  },
+  "tips": {
+    "dismiss": "이 팁 숨기기",
+    "ramSpeed": {
+      "title": "RAM이 제 속도보다 느리게 동작합니다",
+      "body": "RAM({{kind}}, “{{part}}”)이 {{configured}} MT/s로 동작하지만 원래 {{rated}} MT/s용일 가능성이 높습니다. BIOS에서 EXPO 또는 XMP 프로필을 켜면 됩니다. 일부를 시스템 메모리에서 실행하는 모델은 답변이 약 5–10% 빨라집니다.",
+      "caveat": "이 프로필은 제조사가 보증하는 오버클럭입니다. 켠 뒤 PC가 안정적으로 동작하는지 잠깐 확인하세요. Ylide는 BIOS 설정을 절대 바꾸지 않습니다."
+    }
+  },
+  "calibration": {
+    "title": "이 PC에 맞게 최적화",
+    "intro": "Ylide가 사용 중인 모델로 llama-server 설정 몇 가지를 시험해 보고 가장 빠른 것을 유지합니다: 로드 방식, 배치 크기, 스레드 등. 2~4분이 걸리며 그동안 채팅과 에이전트는 일시 중지됩니다.",
+    "lossyKv": "압축된 KV 캐시도 시험 (정확도가 아주 약간 낮아짐)",
+    "start": "최적화 (약 3분)",
+    "again": "다시 측정",
+    "cancel": "취소",
+    "reset": "초기화",
+    "needsModel": "먼저 모델을 시작하세요.",
+    "running": "측정 {{done}} / 약 {{total}} …",
+    "measuring": "측정 중 …",
+    "speeds": "프롬프트 {{prompt}} tok/s · 답변 {{gen}} tok/s",
+    "tuned": "이 PC에 최적화됨",
+    "trial": {
+      "baseline": "현재 설정",
+      "loadMode": "로드 방식",
+      "kvCache": "KV 캐시",
+      "batchSize": "배치 크기",
+      "threads": "스레드",
+      "expertCache": "전문가용 GPU 캐시",
+      "confirm": "확인"
+    },
+    "outcome": {
+      "measured": "측정됨",
+      "better": "더 빠름, 적용",
+      "worse": "빠르지 않음",
+      "different": "답변이 달라 제외",
+      "overflow": "메모리 부족으로 제외",
+      "failed": "시작되지 않음"
+    },
+    "result": {
+      "gen": "답변: 이전 {{before}} tok/s, 현재 {{after}} tok/s ({{change}})",
+      "prompt": "프롬프트 읽기: 이전 {{before}} tok/s, 현재 {{after}} tok/s ({{change}})",
+      "same": "현재 설정이 이미 가장 빨랐습니다 (답변 {{gen}} tok/s, 프롬프트 읽기 {{prompt}} tok/s).",
+      "applied": "이 PC에서 이 모델을 시작할 때마다 적용됩니다.",
+      "notApplied": "다시 측정하기 전까지 적용되지 않습니다.",
+      "trials": "모든 측정 ({{date}})"
+    },
+    "change": {
+      "kvQ8": "KV 캐시 압축 (q8_0)",
+      "noMmap": "모델을 메모리에 전부 로드",
+      "mmap": "모델 파일을 로드 대신 매핑 (mmap)",
+      "ubatch": "배치 크기 {{n}}",
+      "ccd": "캐시가 가장 큰 CCD에서 스레드 {{n}}개",
+      "pinned": "스레드를 물리 코어에 고정",
+      "expertCache": "전문가용 GPU 캐시 {{mib}} MiB"
+    },
+    "stale": "측정 이후 변경된 것이 있습니다: {{what}}. 설정이 맞도록 다시 측정하세요.",
+    "changed": {
+      "model": "모델 파일",
+      "runtime": "llama.cpp 버전",
+      "gpu": "그래픽 카드 또는 드라이버",
+      "cpu": "프로세서",
+      "ram": "메모리",
+      "context": "컨텍스트 크기",
+      "slots": "병렬 요청",
+      "projector": "이미지 입력"
+    },
+    "cancelled": "취소했습니다. 이전 설정이 계속 적용됩니다.",
+    "failed": "측정에 실패했습니다: {{message}}"
   },
   "installed": {
     "title": "설치된 모델",

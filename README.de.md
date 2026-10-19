@@ -183,7 +183,8 @@ deinen Rechner. Als grobe Orientierung:
 |---|---|---|---|
 | Qwen3.6 35B-A3B | MoE, 35B (3B aktiv) | 13–37 GB | 12 GB VRAM + 32 GB RAM (Experten im RAM) oder 24 GB VRAM |
 | Qwen3-Coder-Next 80B-A3B | MoE, 80B (3B aktiv) | 38–50 GB | 16 GB VRAM + 64 GB RAM |
-| Qwen3.8 27B | dicht, 27,8B | 11–29 GB | 12–24 GB VRAM |
+| Qwen3.8 27B | dicht, 27,8B | 11–29 GB | 16–24 GB VRAM |
+| Qwen3.8 27B GSQ-RCO (2–3 Bit) | dicht, 27B | 8–12 GB | 12–16 GB VRAM, komplett auf der GPU |
 | Qwen3.6 27B | dicht, 27B | 15–29 GB | 16–24 GB VRAM |
 | Muse Glimmer 30B | dicht, 29,6B | 17–20 GB | 20–24 GB VRAM |
 | gpt-oss 20B | MoE, 21B (3,6B aktiv) | 12 GB | 16 GB VRAM oder 8 GB VRAM + RAM |

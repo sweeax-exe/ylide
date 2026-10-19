@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Ausgabelimit",
       "hint": "Längere Ausgaben werden in der Mitte gekürzt, bevor der Agent sie sieht."
+    },
+    "confirmPlan": {
+      "label": "Erst planen, dann umsetzen",
+      "hint": "Ein neuer Auftrag öffnet zuerst den Planungsmodus: Die Agents lesen nur und schreiben einen Plan. Umgesetzt wird erst, wenn du auf „Umsetzen“ wechselst.",
+      "hintAsk": "Im Modus „Immer fragen“ standardmäßig an. Ein neuer Auftrag öffnet zuerst den Planungsmodus; umgesetzt wird erst, wenn du auf „Umsetzen“ wechselst."
+    },
+    "questionsTitle": "Rückfragen",
+    "questionsDescription": "Wie bereitwillig der Orchestrator vor dem Plan nachfragt und der Chat zurückfragt, wenn eine Anfrage unklar ist. Fragen kommen mit Antworten zum Anklicken.",
+    "questions": {
+      "label": "Rückfragen",
+      "never": {
+        "title": "Nie",
+        "body": "Der Orchestrator plant sofort. Der Chat antwortet mit der wahrscheinlichsten Deutung und sagt, was er angenommen hat."
+      },
+      "ifNeeded": {
+        "title": "Wenn nötig",
+        "body": "Nur wenn eine Anfrage wirklich mehrdeutig ist oder eine wichtige Entscheidung offen lässt, die das Projekt nicht beantwortet. Klare Anfragen starten sofort."
+      },
+      "often": {
+        "title": "Öfter",
+        "body": "Auch wenn eine Anfrage Entscheidungen offen lässt, die das Ergebnis verändern, etwa Umfang, Verhalten oder Namen. Höchstens eine Runde mit bis zu drei Fragen."
+      }
     }
   },
   "roles": {
@@ -310,6 +332,10 @@
     "recap": {
       "label": "Zusammenfassung",
       "hint": "Geht am Ende eines Laufs an den Orchestrator, damit er eine kurze Zusammenfassung in deiner Sprache schreibt."
+    },
+    "planning": {
+      "label": "Planungsmodus",
+      "hint": "Geht im Planungsmodus an den Orchestrator: für einen neuen Plan und für jede Änderung daran."
     }
   },
   "network": {
@@ -381,6 +407,10 @@
       "autoCurrent": "Automatisch (derzeit {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (nicht installiert)"
+    },
+    "kvQuant": {
+      "label": "KV-Cache für mehr Tempo komprimieren",
+      "hint": "Speichert den Kontext mit 8 statt 16 Bit (q8_0). Das halbiert seinen Speicherbedarf, sodass mehr vom Modell auf die GPU passt und Antworten meist etwas schneller kommen. Minimal ungenauer."
     },
     "extraArgs": {
       "label": "Zusätzliche llama-server-Argumente",
@@ -504,6 +534,75 @@
     "logLoading": "Server-Protokoll wird geladen",
     "logFailed": "Das Server-Protokoll konnte nicht geladen werden: {{message}}",
     "logEmpty": "Der Server hat noch nichts ausgegeben."
+  },
+  "tips": {
+    "dismiss": "Hinweis ausblenden",
+    "ramSpeed": {
+      "title": "Dein Arbeitsspeicher läuft langsamer als möglich",
+      "body": "Dein RAM ({{kind}}, „{{part}}“) läuft mit {{configured}} MT/s, ist aber vermutlich für {{rated}} MT/s gebaut. Dafür schaltest du im BIOS sein EXPO- oder XMP-Profil ein. Modelle, die teilweise im Arbeitsspeicher laufen, antworten dann etwa 5–10 % schneller.",
+      "caveat": "Das Profil ist eine vom Hersteller freigegebene Übertaktung: Prüf danach kurz, ob der PC stabil läuft. Ylide ändert nie BIOS-Einstellungen."
+    }
+  },
+  "calibration": {
+    "title": "Für diesen PC optimieren",
+    "intro": "Ylide probiert mit deinem Modell ein paar Einstellungen von llama-server aus und behält die schnellsten: Ladeart, Batchgröße, Threads und mehr. Das dauert 2 bis 4 Minuten; Chat und Agenten pausieren so lange.",
+    "lossyKv": "Auch einen komprimierten KV-Cache testen (minimal ungenauer)",
+    "start": "Optimieren (~3 Min.)",
+    "again": "Neu messen",
+    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
+    "needsModel": "Starte zuerst das Modell.",
+    "running": "Messung {{done}} von etwa {{total}} …",
+    "measuring": "wird gemessen …",
+    "speeds": "Prompt {{prompt}} tok/s · Antwort {{gen}} tok/s",
+    "tuned": "Für diesen PC optimiert",
+    "trial": {
+      "baseline": "Bisherige Einstellungen",
+      "loadMode": "Ladeart",
+      "kvCache": "KV-Cache",
+      "batchSize": "Batchgröße",
+      "threads": "Threads",
+      "expertCache": "GPU-Cache für Experten",
+      "confirm": "Bestätigung"
+    },
+    "outcome": {
+      "measured": "gemessen",
+      "better": "schneller, übernommen",
+      "worse": "nicht schneller",
+      "different": "andere Antwort, verworfen",
+      "overflow": "Speicher zu knapp, verworfen",
+      "failed": "startete nicht"
+    },
+    "result": {
+      "gen": "Antworten: vorher {{before}} tok/s, jetzt {{after}} tok/s ({{change}})",
+      "prompt": "Prompt lesen: vorher {{before}} tok/s, jetzt {{after}} tok/s ({{change}})",
+      "same": "Deine bisherigen Einstellungen waren schon die schnellsten ({{gen}} tok/s beim Antworten, {{prompt}} tok/s beim Prompt lesen).",
+      "applied": "Gilt ab jetzt bei jedem Start dieses Modells auf diesem PC.",
+      "notApplied": "Gilt erst wieder, wenn du neu misst.",
+      "trials": "Alle Messungen ({{date}})"
+    },
+    "change": {
+      "kvQ8": "KV-Cache komprimiert (q8_0)",
+      "noMmap": "Modell komplett in den Arbeitsspeicher geladen",
+      "mmap": "Modelldatei eingeblendet statt geladen (mmap)",
+      "ubatch": "Batchgröße {{n}}",
+      "ccd": "{{n}} Threads auf dem CCD mit dem größten Cache",
+      "pinned": "Threads fest an die physischen Kerne gebunden",
+      "expertCache": "{{mib}} MiB GPU-Cache für Experten"
+    },
+    "stale": "Seit der Messung hat sich etwas geändert: {{what}}. Miss neu, damit die Einstellungen passen.",
+    "changed": {
+      "model": "Modelldatei",
+      "runtime": "llama.cpp-Version",
+      "gpu": "Grafikkarte oder Treiber",
+      "cpu": "Prozessor",
+      "ram": "Arbeitsspeicher",
+      "context": "Kontextgröße",
+      "slots": "parallele Anfragen",
+      "projector": "Bildeingabe"
+    },
+    "cancelled": "Abgebrochen. Die bisherigen Einstellungen gelten weiter.",
+    "failed": "Die Messung ist fehlgeschlagen: {{message}}"
   },
   "installed": {
     "title": "Installierte Modelle",

@@ -1,4 +1,4 @@
-import { CircleCheck, CircleCheckBig, CircleStop, CircleX, Cpu, FolderOpen, Play, StepForward, TriangleAlert } from 'lucide-react';
+import { CircleCheck, CircleCheckBig, CircleStop, CircleX, Cpu, FolderOpen, ListChecks, Play, StepForward, TriangleAlert } from 'lucide-react';
 import { useId, useMemo, type FormEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ApprovalMode } from '../../bindings/ApprovalMode';
@@ -12,6 +12,7 @@ import { useLayout } from '../../state/layout';
 import s from './IdleView.module.css';
 import { ChangedFilesList } from './parts';
 import { RunReport } from './Report';
+import { usePlanning } from './planStore';
 import { changedFiles, openTaskCount, tasksOf, type RunData } from './run';
 import { useAgentRun } from './store';
 import { formatClock, formatWhen } from './text';
@@ -37,9 +38,17 @@ export function IdleView() {
   const imagesBlocked = images.length > 0 && !vision.canSee;
   const canStart = modelReady && !!workspace && draft.trim().length > 0 && !imagesBlocked;
 
+  // With "plan first", a new request opens planning mode with its plan.
+  const planFirst = !!permissions && (permissions.confirmPlan ?? permissions.mode === 'ask');
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
-    if (canStart) void start(draft);
+    if (!canStart) return;
+    if (planFirst) {
+      void usePlanning
+        .getState()
+        .planFirst(draft)
+        .then((ok) => ok && setDraft(''));
+    } else void start(draft);
   };
 
   return (
@@ -76,8 +85,8 @@ export function IdleView() {
         </Field>
         {permissions && <ModeControl permissions={permissions} />}
         <Readiness />
-        <Button type="submit" variant="primary" size="lg" icon={<Play size={15} />} disabled={!canStart} className={s.start}>
-          {t('idle.start')}
+        <Button type="submit" variant="primary" size="lg" icon={planFirst ? <ListChecks size={15} /> : <Play size={15} />} disabled={!canStart} className={s.start}>
+          {planFirst ? t('idle.startPlanning') : t('idle.start')}
         </Button>
       </form>
       {previous && <PreviousRun run={previous} />}
@@ -116,6 +125,14 @@ function ModeControl({ permissions: p }: { permissions: PermissionSettings }) {
         {t(`mode.${p.mode}Hint`)}
         {allowed && <> {t('mode.allowedCommands', { count: p.allowedCommands.length })}</>}
       </p>
+      <div className={s.planSwitch}>
+        <Switch
+          checked={p.confirmPlan ?? p.mode === 'ask'}
+          // The mode's own default follows the mode again.
+          onChange={(v) => void update((perm) => void (perm.confirmPlan = v === (perm.mode === 'ask') ? null : v))}
+          label={t('mode.confirmPlan')}
+        />
+      </div>
       {p.mode === 'autonomous' && (
         <div className={`${s.guards} ${unguarded ? s.guardsOff : ''}`}>
           <Switch checked={p.confirmCommands} onChange={(v) => void update((perm) => void (perm.confirmCommands = v))} label={t('mode.confirmCommands')} />

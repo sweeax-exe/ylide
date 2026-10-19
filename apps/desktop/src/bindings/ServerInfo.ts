@@ -11,4 +11,8 @@ runtime: string, device: string | null, context: number, slots: number, status: 
 /**
  * The exact command line (without the API key), for transparency.
  */
-command: Array<string>, };
+command: Array<string>, 
+/**
+ * Started with the launch settings of a calibration for this PC.
+ */
+tuned: boolean, };

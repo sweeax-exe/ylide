@@ -17,12 +17,12 @@ use crate::updates::{self, UpdateOutcome, UpdateProgress};
 use crate::watcher::ProjectWatcher;
 use agent::{AgentEvent, ApprovalResponse, Checkpoint};
 use hardware::HardwareProfile;
-use registry::estimate::{ComputeBudget, KvCacheType, Plan};
+use registry::estimate::{ComputeBudget, Plan};
 use registry::store::RegistryOrigin;
 use registry::{Recommendation, Registry};
 use serde::Serialize;
 use skills::github::RepoListing;
-use skills::{SkillContent, SkillInfo, SkillUpdate};
+use skills::{RecommendedInfo, SkillContent, SkillInfo, SkillUpdate};
 use tauri::ipc::Channel;
 use tauri::{AppHandle, Emitter, State};
 use ts_rs::TS;
@@ -108,6 +108,25 @@ pub async fn hardware_probe(state: State<'_, AppState>, force: bool) -> Cmd<Hard
     let hw = tokio::task::spawn_blocking(move || hardware::probe(Some(&dir))).await.map_err(|e| AppError::new("internal", e))?;
     *state.hardware.write().unwrap() = Some(hw.clone());
     Ok(hw)
+}
+
+/// Hardware settings outside Ylide that would make models faster.
+#[derive(Debug, Clone, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct HardwareTips {
+    /// RAM runs below the speed the kit is rated for (EXPO/XMP off).
+    pub ram_speed: Option<hardware::RamSpeedTip>,
+    pub memory_modules: Vec<hardware::MemoryModule>,
+}
+
+#[tauri::command]
+pub async fn hardware_tips() -> Cmd<HardwareTips> {
+    let memory_modules = tokio::task::spawn_blocking(hardware::memory_modules).await.map_err(|e| AppError::new("internal", e))?;
+    Ok(HardwareTips {
+        ram_speed: hardware::ram_speed_tip(&memory_modules),
+        memory_modules,
+    })
 }
 
 #[derive(Debug, Clone, Serialize, TS)]
@@ -260,8 +279,10 @@ pub async fn image_load(path: String) -> Cmd<String> {
 }
 
 /// Memory plan for a registry model on this machine (largest context that
-/// fits), with its vision projector when image input is on.
-fn plan_for(state: &AppState, model_id: &str, quant: &str) -> Option<Plan> {
+/// fits), with its vision projector when image input is on. The KV cache is
+/// F16, or q8_0 where only that keeps the model on the GPU, and always q8_0
+/// when the user asked for it (`estimate::plan_at`).
+pub(crate) fn plan_for(state: &AppState, model_id: &str, quant: &str) -> Option<Plan> {
     let reg = state.registry();
     let model = reg.models.iter().find(|m| m.id == model_id)?;
     let variant = model.variants.iter().find(|v| v.quant == quant)?;
@@ -272,18 +293,16 @@ fn plan_for(state: &AppState, model_id: &str, quant: &str) -> Option<Plan> {
     let mut contexts = vec![settings.models.context.unwrap_or(model.context.recommended), 65_536, 32_768, 16_384, 8_192];
     contexts.retain(|c| *c <= model.context.max);
     contexts.dedup();
-    for context in contexts {
-        for kv in [KvCacheType::F16, KvCacheType::Q8_0] {
-            if let Some(p) = registry::estimate::plan_with_projector(model, variant, projector, context, kv, &budget) {
-                return Some(p);
-            }
-        }
-    }
-    None
+    contexts
+        .into_iter()
+        .find_map(|context| registry::estimate::plan_at(model, variant, projector, context, &budget, settings.models.quantize_kv))
 }
 
 #[tauri::command]
 pub async fn server_start(app: AppHandle, state: State<'_, AppState>, selection: Option<ModelSelection>) -> Cmd<ServerInfo> {
+    if state.runtime.is_calibrating() {
+        return Err(AppError::new("calibrating", "the model is being calibrated for this PC"));
+    }
     let settings = state.settings();
     if settings.endpoint.enabled {
         return state.runtime.use_external(&app, &settings).await;
@@ -298,7 +317,8 @@ pub async fn server_start(app: AppHandle, state: State<'_, AppState>, selection:
     let plan = plan_for(&state, &selection.model_id, &selection.quant);
     let hw = state.hardware();
     let reg = state.registry();
-    state.runtime.start(&app, &hw, &reg, &settings, &installed, plan).await
+    let launch = crate::calibrate::start_tuning(&state, &installed, plan.as_ref());
+    state.runtime.start(&app, &hw, &reg, &settings, &installed, plan, launch).await
 }
 
 #[tauri::command]
@@ -559,12 +579,22 @@ pub fn agent_approve(state: State<'_, AppState>, run_id: String, request_id: Str
     Ok(state.agents.get(&run_id)?.broker.resolve_approval(&request_id, response))
 }
 
+/// Answers a question card: `answers` has one answer per question (empty:
+/// left open); without it, `answer` answers the only question.
 #[tauri::command]
-pub fn agent_answer(state: State<'_, AppState>, run_id: String, question_id: String, answer: String, images: Option<Vec<String>>) -> Cmd<bool> {
+pub fn agent_answer(
+    state: State<'_, AppState>,
+    run_id: String,
+    question_id: String,
+    answer: String,
+    answers: Option<Vec<String>>,
+    images: Option<Vec<String>>,
+) -> Cmd<bool> {
     let run = state.agents.get(&run_id)?;
     let images = images.unwrap_or_default();
     crate::chat::check_images(&images, run.vision)?;
-    Ok(run.broker.resolve_question(&question_id, agent::UserReply { text: answer, images }))
+    let answers = answers.unwrap_or_else(|| vec![answer]);
+    Ok(run.broker.resolve_question(&question_id, &answers, images))
 }
 
 #[tauri::command]
@@ -625,6 +655,33 @@ pub async fn skills_remove(state: State<'_, AppState>, name: String) -> Cmd<Vec<
 pub async fn skills_content(state: State<'_, AppState>, id: String) -> Cmd<SkillContent> {
     let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
     blocking(move || skill_service::content(&store, ws.as_ref(), &id)).await
+}
+
+/// The recommended skills bundled with Ylide (REA is the first), each marked
+/// whether it is installed already.
+#[tauri::command]
+pub async fn skills_recommended(state: State<'_, AppState>) -> Cmd<Vec<RecommendedInfo>> {
+    let store = state.skills.clone();
+    blocking(move || Ok(skill_service::recommended(&store))).await
+}
+
+/// SKILL.md and files of a recommended skill, from the bundle (no network).
+#[tauri::command]
+pub async fn skills_recommended_content(state: State<'_, AppState>, name: String) -> Cmd<SkillContent> {
+    let store = state.skills.clone();
+    blocking(move || skill_service::recommended_content(&store, &name)).await
+}
+
+/// Adds a recommended skill from the bundle and switches it on (the user saw
+/// its content first); returns the new installed list.
+#[tauri::command]
+pub async fn skills_install_recommended(state: State<'_, AppState>, name: String) -> Cmd<Vec<SkillInfo>> {
+    let (store, ws) = (state.skills.clone(), state.workspace.read().unwrap().clone());
+    blocking(move || {
+        skill_service::install_recommended(&store, &name)?;
+        Ok(skill_service::list(&store, ws.as_ref()))
+    })
+    .await
 }
 
 /// Lists the skills in a GitHub repository (needs the skill-download permission).

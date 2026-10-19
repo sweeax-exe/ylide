@@ -122,5 +122,14 @@
     "saveFailed": "Der Chat konnte nicht im Verlauf gespeichert werden",
     "messages_one": "{{count}} Nachricht",
     "messages_other": "{{count}} Nachrichten"
+  },
+  "suggestions": {
+    "label": "Vorschläge für den nächsten Schritt",
+    "askHint": "Als nächste Nachricht senden",
+    "agents": "Mit Agents umsetzen",
+    "agentsLabel": "Mit Agents umsetzen: {{text}}",
+    "agentsHint": "Startet einen Agent-Lauf mit diesem Ziel.",
+    "agentsBusy": "Es läuft schon ein Agent-Lauf.",
+    "agentsNoProject": "Öffne zuerst ein Projekt."
   }
 }

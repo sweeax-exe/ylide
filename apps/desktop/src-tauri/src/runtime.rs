@@ -18,9 +18,10 @@ use hardware::{Backend, HardwareProfile};
 use inference::{Endpoint, LlamaServer, LlmClient, Scheduler, ServerConfig, ServerError, ServerStatus};
 use registry::estimate::{KvCacheType, Placement, Plan};
 use registry::{Model, Registry};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
@@ -140,6 +141,8 @@ pub struct ServerInfo {
     pub vision: VisionState,
     /// The exact command line (without the API key), for transparency.
     pub command: Vec<String>,
+    /// Started with the launch settings of a calibration for this PC.
+    pub tuned: bool,
 }
 
 /// What request handlers need to talk to the active model.
@@ -167,6 +170,8 @@ pub struct RuntimeManager {
     info: Arc<Mutex<Option<ServerInfo>>>,
     help_cache: Mutex<HashMap<PathBuf, Arc<HashSet<String>>>>,
     install: Arc<Mutex<Option<RuntimeInstall>>>,
+    /// A calibration owns the server: requests wait, starts are refused.
+    calibrating: AtomicBool,
 }
 
 pub fn backend_of(variant: &str) -> Backend {
@@ -214,7 +219,18 @@ impl RuntimeManager {
             info: Arc::new(Mutex::new(None)),
             help_cache: Mutex::default(),
             install: Arc::default(),
+            calibrating: AtomicBool::new(false),
         }
+    }
+
+    /// While set, [`Self::chat_handle`] gives requests no model and the app
+    /// starts none: the calibration starts and measures servers itself.
+    pub fn set_calibrating(&self, on: bool) {
+        self.calibrating.store(on, Ordering::SeqCst);
+    }
+
+    pub fn is_calibrating(&self) -> bool {
+        self.calibrating.load(Ordering::SeqCst)
     }
 
     /// All runtimes found on disk (bundled first).
@@ -446,8 +462,16 @@ impl RuntimeManager {
         let _ = app.emit("runtime://server", &info);
     }
 
-    /// Handle for chat/inline/agent requests, if a model is ready.
+    /// Handle for chat/inline/agent requests, if a model is ready (none while calibrating).
     pub async fn chat_handle(&self) -> Option<ChatHandle> {
+        if self.is_calibrating() {
+            return None;
+        }
+        self.ready_handle().await
+    }
+
+    /// The ready server's handle, also during a calibration (for its measurements).
+    pub async fn ready_handle(&self) -> Option<ChatHandle> {
         let guard = self.chat.lock().await;
         let running = guard.as_ref()?;
         let ready = running.server.as_ref().is_none_or(|s| matches!(s.status(), ServerStatus::Ready));
@@ -495,6 +519,7 @@ impl RuntimeManager {
             tool_calls: ToolCallSupport::Unknown,
             vision: VisionState::Off,
             command: vec![],
+            tuned: false,
         };
         let handle = ChatHandle {
             client,
@@ -525,8 +550,11 @@ impl RuntimeManager {
         settings: &Settings,
         installed: &InstalledModel,
         plan: Option<Plan>,
+        launch: StartTuning,
     ) -> AppResult<ServerInfo> {
         self.stop(app).await;
+        let StartTuning { mut tuning, mut fallback, calibrated, trial } = launch;
+        let mut tuned = calibrated;
         let runtime = self
             .select(hw, registry, settings)
             .ok_or_else(|| AppError::new("no_runtime", "no llama.cpp runtime is installed"))?;
@@ -549,7 +577,8 @@ impl RuntimeManager {
         {
             tracing::warn!("{flag} in the extra llama-server arguments keeps llama.cpp from fitting the model; using the estimated GPU split");
         }
-        let fit_fallback = refit_possible(&flags, runtime.backend, plan.as_ref(), extra);
+        // A trial reports a failed fit instead of working around it.
+        let fit_fallback = !trial && refit_possible(&flags, runtime.backend, plan.as_ref(), extra);
         let mut refitted = false;
         let mut oom_retries = 0;
         // Image input: the projector if its file is there, else a start without it.
@@ -562,6 +591,8 @@ impl RuntimeManager {
             }
             None => (None, VisionState::Off),
         };
+        // Measured after the previous server stopped, so its memory counts as free.
+        let ram_available = hardware::available_memory();
 
         loop {
             let launch = LaunchOptions {
@@ -572,10 +603,12 @@ impl RuntimeManager {
                 plan: plan.as_ref(),
                 threads: hw.cpu.physical_cores.max(1),
                 ram_total: hw.memory.total_bytes,
+                ram_available,
                 device: device.clone(),
                 extra,
                 runtime_backend: runtime.backend,
                 projector: projector.as_ref().map(|p| p.path.as_str()),
+                tuning: Some(&tuning),
             };
             let args = chat_args(&launch, &flags);
             let mut info = ServerInfo {
@@ -590,6 +623,7 @@ impl RuntimeManager {
                 tool_calls: ToolCallSupport::Unknown,
                 vision,
                 command: std::iter::once(binary.display().to_string()).chain(args.iter().cloned()).collect(),
+                tuned,
             };
             self.set_info(app, Some(info.clone()));
             let log_app = app.clone();
@@ -598,7 +632,8 @@ impl RuntimeManager {
                     binary: binary.clone(),
                     args,
                     env: vec![],
-                    ready_timeout: Duration::from_secs(900),
+                    // A trial that loads this slowly has failed anyway.
+                    ready_timeout: Duration::from_secs(if trial { 240 } else { 900 }),
                     pid_file: Some(self.run_dir.join("chat.pid")),
                     key_dir: Some(self.run_dir.clone()),
                 },
@@ -609,6 +644,11 @@ impl RuntimeManager {
             .await;
             match result {
                 Ok(mut server) => {
+                    if trial && fit_failed(&server.logs().lines()) {
+                        server.stop().await;
+                        self.set_info(app, None);
+                        return Err(AppError::new("fit_failed", "llama.cpp could not fit the model into free GPU memory"));
+                    }
                     if !refitted && fit_fallback && fit_failed(&server.logs().lines()) {
                         // Only once: the restart runs without `--fit`.
                         tracing::warn!("llama.cpp could not fit the model into free GPU memory; restarting with the estimated split");
@@ -643,7 +683,9 @@ impl RuntimeManager {
                         handle: handle.clone(),
                     });
                     self.set_info(app, Some(info.clone()));
-                    self.spawn_tool_self_test(app.clone(), handle, info.clone());
+                    if !trial {
+                        self.spawn_tool_self_test(app.clone(), handle, info.clone());
+                    }
                     return Ok(info);
                 }
                 Err(ServerError::Exited { log_tail, .. }) if projector.is_some() && projector_failed(&log_tail) => {
@@ -653,10 +695,18 @@ impl RuntimeManager {
                     projector = None;
                     vision = VisionState::Failed;
                 }
-                Err(ServerError::Exited { log_tail, .. }) if oom_retries < 2 && looks_like_oom(&log_tail) && context > 8_192 => {
+                Err(ServerError::Exited { log_tail, .. }) if !trial && oom_retries < 2 && looks_like_oom(&log_tail) && context > 8_192 => {
                     tracing::warn!("llama-server ran out of memory at {context} tokens; retrying with half the context");
                     oom_retries += 1;
                     context = (context / 2).max(8_192);
+                }
+                Err(e) if fallback.is_some() => {
+                    // Calibrated settings that no longer work (another driver, less
+                    // free memory): start once with the defaults instead.
+                    tracing::warn!("llama-server did not start with the calibrated settings ({e}); starting with the defaults");
+                    let _ = app.emit("runtime://log", CALIBRATION_DROPPED_NOTE);
+                    tuning = fallback.take().unwrap_or_default();
+                    tuned = false;
                 }
                 Err(e) => {
                     info.status = ServerStatus::Crashed {
@@ -736,7 +786,7 @@ fn watch_status(app: AppHandle, mut rx: tokio::sync::watch::Receiver<ServerStatu
     });
 }
 
-fn looks_like_oom(log: &str) -> bool {
+pub(crate) fn looks_like_oom(log: &str) -> bool {
     let l = log.to_lowercase();
     ["out of memory", "failed to allocate", "cudamalloc failed", "erroroutofdevicememory", "unable to allocate"]
         .iter()
@@ -754,6 +804,10 @@ fn projector_failed(log: &str) -> bool {
         .iter()
         .any(|p| log.contains(p))
 }
+
+/// Server log line when the calibrated launch settings did not start.
+const CALIBRATION_DROPPED_NOTE: &str =
+    "[ylide] llama-server did not start with the settings from \"Optimize for this PC\"; started with the defaults (measure again on the Models page)";
 
 /// Server log line explaining the restart after a failed `--fit`.
 const REFIT_NOTE: &str =
@@ -778,7 +832,7 @@ fn refit_possible(flags: &HashSet<String>, backend: Backend, plan: Option<&Plan>
 }
 
 /// llama.cpp could not apply `--fit` and kept its defaults (every layer on the GPU).
-fn fit_failed(log: &[String]) -> bool {
+pub(crate) fn fit_failed(log: &[String]) -> bool {
     log.iter().any(|l| l.contains("failed to fit params") || l.contains("error while trying to fit params"))
 }
 
@@ -815,15 +869,89 @@ pub struct LaunchOptions<'a> {
     pub plan: Option<&'a Plan>,
     pub threads: u32,
     pub ram_total: u64,
+    /// RAM available when the server starts (decides `-lm none`).
+    pub ram_available: u64,
     pub device: Option<String>,
     pub extra: &'a [String],
     pub runtime_backend: Backend,
     /// Vision projector file (`--mmproj`) for image input.
     pub projector: Option<&'a str>,
+    /// Launch settings on top of the plan; `None` = the plan's alone.
+    pub tuning: Option<&'a Tuning>,
+}
+
+/// Launch settings that change how the planned model runs, not where: the
+/// user's KV cache choice and, per machine, the calibration's results.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase", default)]
+#[ts(export)]
+pub struct Tuning {
+    /// KV cache type (`-ctk` / `-ctv`); `None` = the plan's.
+    pub kv: Option<KvCacheType>,
+    /// `-lm none` (true) or llama.cpp's memory mapping (false); `None` = Ylide's rule.
+    pub no_mmap: Option<bool>,
+    /// Physical batch size (`-ub`, with `-b` at least 2048); `None` = 2048 for
+    /// MoE offload, llama.cpp's default otherwise.
+    pub ubatch: Option<u32>,
+    /// Generation threads (`-t`); prompt processing keeps every physical core (`-tb`).
+    pub threads: Option<u32>,
+    /// Affinity of the generation threads (`-C` with `--cpu-strict 1`), e.g. "0x5555".
+    pub cpu_mask: Option<String>,
+    /// Affinity of the prompt-processing threads (`-Cb`).
+    pub cpu_mask_batch: Option<String>,
+    /// GPU cache for MoE experts kept in RAM (`--moe-cache-mib`).
+    pub moe_cache_mib: Option<u32>,
+}
+
+impl Tuning {
+    /// What the user chose in the settings, without a calibration.
+    pub fn from_settings(settings: &Settings) -> Self {
+        Self {
+            kv: settings.models.quantize_kv.then_some(KvCacheType::Q8_0),
+            ..Self::default()
+        }
+    }
+}
+
+/// How [`RuntimeManager::start`] launches the server.
+#[derive(Debug, Clone, Default)]
+pub struct StartTuning {
+    pub tuning: Tuning,
+    /// Used once when the server does not start with `tuning`.
+    pub fallback: Option<Tuning>,
+    /// `tuning` comes from a calibration (shown as [`ServerInfo::tuned`]).
+    pub calibrated: bool,
+    /// A calibration trial: a failed fit or an out-of-memory exit is an error
+    /// (no retry), no tool self-test, and a shorter wait for readiness.
+    pub trial: bool,
 }
 
 /// Free GPU memory `--fit` leaves for the desktop and other programs.
 const FIT_TARGET_MIB: &str = "1024";
+
+/// RAM that must stay available next to the weights computed on the CPU when
+/// they are read into the server's own memory (`-lm none`) instead of mapped.
+const LOAD_NONE_HEADROOM: u64 = 6 << 30;
+
+/// Whether to load the model with `-lm none`. llama.cpp memory-maps the GGUF
+/// file by default; when part of the model is computed on the CPU (MoE
+/// experts or whole layers in RAM), mapped weights make prompt processing
+/// much slower (b11669 logs "consider using --load-mode none"; reported
+/// 1,293 → 2,145 tokens/s). Without the mapping those weights become private
+/// memory of the server, so only when that much RAM is available plus a
+/// margin, and never against the user's own `--load-mode`.
+fn load_without_mmap(o: &LaunchOptions<'_>, flags: &HashSet<String>) -> bool {
+    let user_sets = flag_values(o.extra).any(|(f, _)| matches!(f, "-lm" | "--load-mode"));
+    if let Some(choice) = o.tuning.and_then(|t| t.no_mmap) {
+        return choice && flags.contains("--load-mode") && !user_sets;
+    }
+    let Some(plan) = o.plan else { return false };
+    flags.contains("--load-mode")
+        && o.runtime_backend != Backend::Cpu
+        && matches!(plan.placement, Placement::MoeOffload { .. } | Placement::PartialOffload { .. })
+        && o.ram_available >= plan.ram_bytes + LOAD_NONE_HEADROOM
+        && !user_sets
+}
 
 /// Command line for the chat/agent server (see docs/architecture.md, "Launch flags").
 pub fn chat_args(o: &LaunchOptions<'_>, flags: &HashSet<String>) -> Vec<String> {
@@ -872,7 +1000,6 @@ pub fn chat_args(o: &LaunchOptions<'_>, flags: &HashSet<String>) -> Vec<String> 
             } else {
                 push(&["-ngl", "999", "--n-cpu-moe", &(cpu_expert_layers + 2).to_string()]);
             }
-            push(&["-b", "2048", "-ub", "2048"]);
         }
         (_, Some(Placement::PartialOffload { gpu_layers })) => {
             if can_fit {
@@ -891,16 +1018,47 @@ pub fn chat_args(o: &LaunchOptions<'_>, flags: &HashSet<String>) -> Vec<String> 
             }
         }
     }
+    // MoE offload: larger batches speed up prompt processing while the
+    // experts are in RAM (each ubatch copies them to the GPU once).
+    let moe_offload = o.runtime_backend != Backend::Cpu && matches!(placement, Some(Placement::MoeOffload { .. }));
+    if let Some(ub) = o.tuning.and_then(|t| t.ubatch).or(moe_offload.then_some(2048)) {
+        push(&["-b", &ub.max(2048).to_string(), "-ub", &ub.to_string()]);
+    }
+    if load_without_mmap(o, flags) {
+        push(&["-lm", "none"]);
+    }
     if let Some(dev) = &o.device
         && o.runtime_backend != Backend::Cpu
         && placement != Some(Placement::Cpu)
     {
         push(&["-dev", dev]);
     }
-    if o.plan.is_some_and(|p| p.kv_cache_type == KvCacheType::Q8_0) {
-        push(&["-ctk", "q8_0", "-ctv", "q8_0"]);
+    let kv = o.tuning.and_then(|t| t.kv).or(o.plan.map(|p| p.kv_cache_type));
+    if let Some(kv) = kv.filter(|k| *k != KvCacheType::F16) {
+        push(&["-ctk", kv.llama_arg(), "-ctv", kv.llama_arg()]);
     }
-    push(&["-t", &o.threads.to_string()]);
+    let threads = o.tuning.and_then(|t| t.threads).unwrap_or(o.threads);
+    push(&["-t", &threads.to_string()]);
+    if threads != o.threads && flags.contains("-tb") {
+        push(&["-tb", &o.threads.to_string()]);
+    }
+    if let Some(t) = o.tuning
+        && let Some(mask) = &t.cpu_mask
+        && flags.contains("-C")
+        && flags.contains("--cpu-strict")
+    {
+        push(&["-C", mask, "--cpu-strict", "1"]);
+        if let Some(batch) = &t.cpu_mask_batch
+            && flags.contains("-Cb")
+        {
+            push(&["-Cb", batch]);
+        }
+    }
+    if let Some(mib) = o.tuning.and_then(|t| t.moe_cache_mib)
+        && flags.contains("--moe-cache-mib")
+    {
+        push(&["--moe-cache-mib", &mib.to_string()]);
+    }
     // With `--fit`, llama-server adds the projector's worst-case memory to the
     // fit target itself; the estimated split counts it in the plan.
     if let Some(projector) = o.projector
@@ -1136,10 +1294,12 @@ mod tests {
             plan: Some(&p),
             threads: 16,
             ram_total: 64 << 30,
+            ram_available: 40 << 30,
             device: Some("CUDA0".into()),
             extra: &[],
             runtime_backend: Backend::Cuda,
             projector: None,
+            tuning: None,
         };
         let all = flags(&["-m", "--alias", "-c", "-np", "-kvu", "-fa", "-ngl", "--fit", "--fit-target", "-b", "-ub", "-dev", "-t", "--cache-ram", "--metrics", "--no-webui", "--offline", "--jinja", "--reasoning-format"]);
         let args = chat_args(&o, &all).join(" ");
@@ -1170,10 +1330,12 @@ mod tests {
             plan,
             threads: 8,
             ram_total: 32 << 30,
+            ram_available: 16 << 30,
             device: Some("CUDA0".into()),
             extra,
             runtime_backend: Backend::Cuda,
             projector: None,
+            tuning: None,
         }
     }
 
@@ -1314,6 +1476,116 @@ mod tests {
     }
 
     #[test]
+    fn weights_in_ram_are_loaded_without_mmap_when_ram_allows() {
+        let lm = |o: &LaunchOptions<'_>, f: &HashSet<String>| chat_args(o, f).join(" ").contains("-lm none");
+        let mut f = flags(WITH_FIT);
+        f.insert("--load-mode".into());
+        let offload = |placement| Plan { ram_bytes: 12 << 30, ..plan(placement, KvCacheType::F16, 32_768) };
+        let moe = offload(Placement::MoeOffload { cpu_expert_layers: 20 });
+        let partial = offload(Placement::PartialOffload { gpu_layers: 30 });
+        let mut o = cuda_options(Some(&moe), &[]);
+        o.ram_available = 18 << 30;
+        assert!(lm(&o, &f), "12 GiB of experts + 6 GiB margin fit");
+        o.plan = Some(&partial);
+        assert!(lm(&o, &f), "layers in RAM: the same");
+        o.ram_available = 17 << 30;
+        assert!(!lm(&o, &f), "too little RAM left: keep the mapping");
+
+        // Everything on the GPU (or no plan): mapped weights are only read once.
+        let gpu = plan(Placement::Gpu, KvCacheType::F16, 32_768);
+        let mut o = cuda_options(Some(&gpu), &[]);
+        o.ram_available = 64 << 30;
+        assert!(!lm(&o, &f));
+        o.plan = None;
+        assert!(!lm(&o, &f));
+
+        // A build without --load-mode, a CPU runtime and the user's own choice.
+        let mut o = cuda_options(Some(&moe), &[]);
+        o.ram_available = 64 << 30;
+        assert!(!lm(&o, &flags(WITH_FIT)));
+        o.runtime_backend = Backend::Cpu;
+        assert!(!lm(&o, &f));
+        let user = ["-lm".to_string(), "mmap".to_string()];
+        let mut o = cuda_options(Some(&moe), &user);
+        o.ram_available = 64 << 30;
+        let args = chat_args(&o, &f).join(" ");
+        assert!(!args.contains("-lm none") && args.ends_with("-lm mmap"), "{args}");
+    }
+
+    #[test]
+    fn kv_cache_follows_the_plan_unless_the_tuning_says_otherwise() {
+        let kv = |o: &LaunchOptions<'_>| {
+            let args = chat_args(o, &flags(WITH_FIT)).join(" ");
+            args.split_once("-ctk ").map(|(_, rest)| rest.split(' ').next().unwrap_or_default().to_string())
+        };
+        let f16 = plan(Placement::Gpu, KvCacheType::F16, 32_768);
+        let q8 = plan(Placement::Gpu, KvCacheType::Q8_0, 32_768);
+        assert_eq!(kv(&cuda_options(Some(&f16), &[])), None, "llama.cpp's F16 default");
+        assert_eq!(kv(&cuda_options(Some(&q8), &[])), Some("q8_0".into()));
+        // "Quantize the KV cache" also covers imported models, which have no plan.
+        let quantized = Tuning {
+            kv: Some(KvCacheType::Q8_0),
+            ..Tuning::default()
+        };
+        for p in [Some(&f16), None] {
+            let mut o = cuda_options(p, &[]);
+            o.tuning = Some(&quantized);
+            assert_eq!(kv(&o), Some("q8_0".into()), "{p:?}");
+        }
+        let args = { let mut o = cuda_options(None, &[]); o.tuning = Some(&quantized); chat_args(&o, &flags(WITH_FIT)).join(" ") };
+        assert!(args.contains("-ctk q8_0 -ctv q8_0"), "{args}");
+    }
+
+    #[test]
+    fn calibrated_settings_reach_the_command_line() {
+        let mut f = flags(WITH_FIT);
+        for flag in ["--load-mode", "-tb", "-C", "-Cb", "--cpu-strict", "--moe-cache-mib"] {
+            f.insert(flag.into());
+        }
+        let moe = Plan { ram_bytes: 12 << 30, ..plan(Placement::MoeOffload { cpu_expert_layers: 20 }, KvCacheType::F16, 32_768) };
+        let args = |tuning: &Tuning, plan: &Plan, flags: &HashSet<String>| {
+            let mut o = cuda_options(Some(plan), &[]);
+            o.ram_available = 48 << 30;
+            o.tuning = Some(tuning);
+            chat_args(&o, flags).join(" ")
+        };
+        // Defaults: MoE offload batches of 2048, every core, -lm none (RAM allows).
+        let plain = args(&Tuning::default(), &moe, &f);
+        assert!(plain.contains("-b 2048 -ub 2048") && plain.contains("-lm none") && plain.contains("-t 8"), "{plain}");
+        assert!(!plain.contains("-tb") && !plain.contains(" -C ") && !plain.contains("--moe-cache-mib"), "{plain}");
+
+        let tuned = Tuning {
+            no_mmap: Some(false),
+            ubatch: Some(1024),
+            threads: Some(4),
+            cpu_mask: Some("0x55".into()),
+            cpu_mask_batch: Some("0x5555".into()),
+            moe_cache_mib: Some(1280),
+            ..Tuning::default()
+        };
+        let a = args(&tuned, &moe, &f);
+        assert!(a.contains("-b 2048 -ub 1024"), "-b stays at least 2048: {a}");
+        assert!(!a.contains("-lm"), "the calibration measured mmap faster: {a}");
+        assert!(a.contains("-t 4 -tb 8 -C 0x55 --cpu-strict 1 -Cb 0x5555"), "{a}");
+        assert!(a.contains("--moe-cache-mib 1280"), "{a}");
+        let larger = Tuning { ubatch: Some(3072), ..Tuning::default() };
+        assert!(args(&larger, &moe, &f).contains("-b 3072 -ub 3072"));
+
+        // A dense model on the GPU gets a batch size only when calibrated.
+        let gpu = plan(Placement::Gpu, KvCacheType::F16, 32_768);
+        assert!(!args(&Tuning::default(), &gpu, &f).contains("-ub"));
+        assert!(args(&Tuning { ubatch: Some(1024), ..Tuning::default() }, &gpu, &f).contains("-b 2048 -ub 1024"));
+        let forced = Tuning { no_mmap: Some(true), ..Tuning::default() };
+        assert!(args(&forced, &gpu, &f).contains("-lm none"), "an explicit choice is not second-guessed");
+
+        // A build without the flags: no masks, no cache, no load mode.
+        let old = flags(WITH_FIT);
+        let a = args(&tuned, &moe, &old);
+        assert!(!a.contains(" -C ") && !a.contains("--moe-cache-mib") && !a.contains("-lm") && !a.contains("-tb"), "{a}");
+        assert!(a.contains("-t 4"), "{a}");
+    }
+
+    #[test]
     fn cpu_runtime_never_offloads() {
         let p = plan(Placement::Gpu, KvCacheType::Q8_0, 32_768);
         let o = LaunchOptions {
@@ -1324,10 +1596,12 @@ mod tests {
             plan: Some(&p),
             threads: 8,
             ram_total: 16 << 30,
+            ram_available: 8 << 30,
             device: Some("Vulkan0".into()),
             extra: &["--seed".into(), "1".into()],
             runtime_backend: Backend::Cpu,
             projector: None,
+            tuning: None,
         };
         let args = chat_args(&o, &HashSet::new());
         let joined = args.join(" ");

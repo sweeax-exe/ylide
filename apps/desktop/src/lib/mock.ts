@@ -9,13 +9,19 @@
 //   jobfail   model downloads fail halfway (checksum mismatch)
 //   notgguf   importing a model file fails with not_gguf
 //   crash     the model server crashes while loading
-//   question  the agent asks the user a question during the run
+//   question  the coder asks the user a question with answers to click during the run
+//   clarify   the orchestrator asks two questions before it plans
+//   chatask   the chat answers a first message with a question and answers to click
 //   changes   the reviewer requests changes once
 //   lastrun   the project has a failed agent run from an earlier session, with open tasks
 //   norecap   the orchestrator writes no summary at the end (the task list stands in)
 //   skills    starts with installed skills, one of them broken (see ./mockSkills.ts)
 //   novision  the installed model starts with image input off (no projector)
 //   ratelimit GitHub refuses skill listings: its request limit is used up
+//   fastram   the RAM already runs at its rated speed (no EXPO/XMP tip)
+//   calibrated the chat model was calibrated for this PC before ("Optimize for this PC")
+//   calstale  ... and the RAM speed changed since
+//   calfail   the calibration fails (the model does not start)
 
 import registryJson from '../../../../registry/models.json';
 import orchestratorPrompt from '../../../../crates/agent/prompts/orchestrator.md?raw';
@@ -26,11 +32,13 @@ import chatPrompt from '../../src-tauri/prompts/chat.md?raw';
 import inlinePrompt from '../../src-tauri/prompts/inline.md?raw';
 import type { StoredChat } from '../bindings/StoredChat';
 import type { AgentEvent } from '../bindings/AgentEvent';
+import type { CalibrationResult } from '../bindings/CalibrationResult';
 import type { ChatEvent } from '../bindings/ChatEvent';
 import type { DownloadJob } from '../bindings/DownloadJob';
 import type { FileChange } from '../bindings/FileChange';
 import type { FileNode } from '../bindings/FileNode';
 import type { HardwareProfile } from '../bindings/HardwareProfile';
+import type { HardwareTips } from '../bindings/HardwareTips';
 import type { InlineEvent } from '../bindings/InlineEvent';
 import type { InstalledModel } from '../bindings/InstalledModel';
 import type { LastRun } from '../bindings/LastRun';
@@ -38,12 +46,15 @@ import type { Mention } from '../bindings/Mention';
 import type { NetworkLogEntry } from '../bindings/NetworkLogEntry';
 import type { Placement } from '../bindings/Placement';
 import type { Plan } from '../bindings/Plan';
+import type { TaskPlan } from '../bindings/TaskPlan';
+import type { Question } from '../bindings/Question';
 import type { Recommendation } from '../bindings/Recommendation';
 import type { Registry } from '../bindings/Registry';
 import type { RuntimeStatus } from '../bindings/RuntimeStatus';
 import type { ServerInfo } from '../bindings/ServerInfo';
 import type { Settings } from '../bindings/Settings';
 import type { Task } from '../bindings/Task';
+import { planningCommand, planningControl } from './mockPlanning';
 import { mentionedSkillItems, skillsCommand } from './mockSkills';
 
 const registry = registryJson as unknown as Registry;
@@ -95,10 +106,10 @@ let settings: Settings = {
     allowSkillDownloads: false,
     registryUrl: 'https://ylide.app/registry/v2/models.json',
   },
-  models: { dir: null, chat: null, autocomplete: null, embedding: null, context: null, runtimeVariant: null, slots: 2, extraArgs: [], autostart: true },
+  models: { dir: null, chat: null, autocomplete: null, embedding: null, context: null, runtimeVariant: null, slots: 2, extraArgs: [], autostart: true, quantizeKv: false },
   endpoint: { enabled: false, baseUrl: '', apiKey: null, model: null, context: null },
   agent: {
-    permissions: { mode: 'autoSafe', confirmCommands: true, confirmDeletes: true, allowedCommands: [] },
+    permissions: { mode: 'autoSafe', confirmCommands: true, confirmDeletes: true, allowedCommands: [], confirmPlan: null },
     roles: [
       role('orchestrator', 'Orchestrator', 'Understands the request, explores the project and plans small tasks.', orchestratorPrompt, [...read, 'submit_plan'], 12),
       role('coder', 'Coder', 'Implements tasks: reads, edits and creates files, runs builds and tests.', coderPrompt, [...read, 'write_file', 'edit_file', 'delete_file', 'run_command', 'ask', 'finish'], 40),
@@ -112,6 +123,7 @@ let settings: Settings = {
   },
   chat: { systemPrompt: chatPrompt.trim(), inlinePrompt: inlinePrompt.trim(), contextBudgetTokens: 24000, saveHistory: true },
   editor: { fontSize: 13, fontFamily: '"JetBrains Mono Variable", "JetBrains Mono", Consolas, monospace', tabSize: 4, wordWrap: false, minimap: false, lineHeight: 1.55 },
+  questions: 'ifNeeded',
 };
 const defaultSettings: Settings = structuredClone(settings);
 
@@ -127,6 +139,13 @@ const hardware: HardwareProfile = {
   disk: { mountPoint: 'D:\\', totalBytes: 1863 * GiB, freeBytes: 282 * GiB },
   probedAtUnixMs: Date.now(),
   warnings: [],
+};
+
+/** This PC: a 6000 MT/s kit running at the JEDEC 4800 because EXPO is off. */
+const ddr5 = { kind: 'DDR5', sizeBytes: 32 * GiB, manufacturer: 'Unknown', partNumber: '6000 Series', speedMts: 4800, configuredMts: 4800, configuredMv: 1100, ratedMts: 6000 };
+const hardwareTips: HardwareTips = {
+  ramSpeed: { kind: 'DDR5', configuredMts: 4800, ratedMts: 6000, partNumber: '6000 Series' },
+  memoryModules: [ddr5, { ...ddr5 }],
 };
 
 const plan = (placement: Placement, context: number, vram: number, ram: number, tps: number, weights: number): Plan => ({
@@ -272,6 +291,71 @@ if (settings.onboardingDone) settings.models.chat = { modelId: 'qwen3.6-35b-a3b'
 
 const jobs = new Map<string, DownloadJob & { timer?: number }>();
 let server: ServerInfo | null = null;
+
+/** A calibration of the chat model like the reference PC's: experts in RAM, 16 cores on two CCDs. */
+function mockCalibrationTrials(): CalibrationResult['trials'] {
+  const tuning: CalibrationResult['tuning'] = { kv: null, noMmap: null, ubatch: null, threads: null, cpuMask: null, cpuMaskBatch: null, moeCacheMib: null };
+  const trial = (kind: CalibrationResult['trials'][number]['kind'], change: Partial<typeof tuning>, promptTps: number, genTps: number, outcome: CalibrationResult['trials'][number]['outcome'], note: string | null = null) => ({
+    kind,
+    tuning: { ...tuning, ...change },
+    speeds: { promptTps, genTps },
+    outcome,
+    note,
+  });
+  const ccd = { threads: 8, cpuMask: '0x5555', cpuMaskBatch: '0x55555555' };
+  return [
+    trial('baseline', {}, 2140, 50.2, 'measured'),
+    trial('loadMode', { noMmap: false }, 1318, 50.0, 'worse'),
+    trial('batchSize', { ubatch: 1024 }, 2052, 53.8, 'better'),
+    trial('threads', { ubatch: 1024, ...ccd }, 2047, 56.9, 'better'),
+    trial('expertCache', { ubatch: 1024, ...ccd, moeCacheMib: 1280 }, 2011, 58.4, 'different'),
+    trial('confirm', { ubatch: 1024, ...ccd }, 2060, 56.7, 'measured'),
+  ];
+}
+
+function mockCalibration(): CalibrationResult {
+  const trials = mockCalibrationTrials();
+  return {
+    key: { modelPath: 'D:/models/model.gguf', modelBytes: 21_233_608_512, modelModified: 0, runtime: 'b11669/cuda-13.4', gpu: 'NVIDIA GeForce RTX 5070 Ti, 16303 MiB, driver 13.3', cpu: 'AMD Ryzen 9 9950X3D (16C/32T)', ram: '63 GiB DDR5-4800', context: 131072, slots: 2, projector: false },
+    modelId: settings.models.chat?.modelId ?? 'qwen3.6-35b-a3b',
+    quant: settings.models.chat?.quant ?? 'UD-IQ4_XS',
+    baseline: trials[0].speeds!,
+    best: trials[trials.length - 1].speeds!,
+    tuning: trials[trials.length - 1].tuning,
+    trials,
+    createdAtUnixMs: Date.now() - 3_600_000,
+  };
+}
+
+let calibration: CalibrationResult | null = failures.has('calibrated') || failures.has('calstale') ? mockCalibration() : null;
+let calibrating = false;
+let calibrationCancelled = false;
+
+/** Plays a calibration: one server restart and measurement per trial. */
+async function runMockCalibration() {
+  const trials = mockCalibrationTrials();
+  const done: CalibrationResult['trials'] = [];
+  const base = server;
+  for (const trial of trials) {
+    emit('runtime://calibration', { state: 'running', current: trial.kind, trials: [...done], total: trials.length });
+    if (base) emit('runtime://server', { ...base, status: { state: 'loading' } });
+    await sleep(1100);
+    if (calibrationCancelled || failures.has('calfail')) {
+      calibrating = false;
+      server = base;
+      emit('runtime://server', server);
+      emit('runtime://calibration', calibrationCancelled ? { state: 'cancelled' } : { state: 'failed', message: 'llama-server exited with code 1 while loading' });
+      return;
+    }
+    if (base) emit('runtime://server', { ...base, status: { state: 'ready' } });
+    done.push(trial);
+  }
+  calibration = { ...mockCalibration(), trials: done, createdAtUnixMs: Date.now() };
+  calibrating = false;
+  server = base ? { ...base, tuned: true, status: { state: 'ready' } } : null;
+  emit('runtime://server', server);
+  emit('runtime://calibration', { state: 'done', result: calibration });
+}
 const netLog: NetworkLogEntry[] = [];
 const savedChats = new Map<string, StoredChat>();
 
@@ -365,7 +449,22 @@ export function total(items: Item[]): number {
 }
 \`\`\`
 
-The existing test in \`test/cart.test.ts\` (3 × 100 = 300) will pass after this change.`;
+The existing test in \`test/cart.test.ts\` (3 × 100 = 300) will pass after this change.
+
+\`\`\`suggestions
+Why did no test catch this?
+change: Fix total() in src/cart.ts
+change: Add a test for an empty cart
+\`\`\``;
+
+/** A first message the chat asks back on (`?mock=chatask`). */
+const chatQuestion = `Which part should get faster: loading the cart page, or the \`total()\` calculation in \`src/cart.ts\`?
+
+\`\`\`suggestions
+Loading the cart page
+The total() calculation
+Both
+\`\`\``;
 
 const chatReasoning = 'The user asks why the cart total is wrong. total() reduces over items and adds item.price, but Item has a quantity field that is never used. The test expects 3 × 100 = 300, so the fix is to multiply by quantity.';
 
@@ -399,8 +498,9 @@ function demoScreenshot(): string {
 
 /** Resolvers of what the simulated run waits for (approvals, answers). */
 const pendingApprovals = new Map<string, (approved: boolean) => void>();
-const pendingAnswers = new Map<string, (answer: string) => void>();
-let runControl: { paused: boolean; cancelled: boolean; abort: () => void } = { paused: false, cancelled: false, abort: () => undefined };
+const pendingAnswers = new Map<string, (answers: string[]) => void>();
+/** `handover`: the user switched to Planen; the run stops after its current task. */
+let runControl: { paused: boolean; cancelled: boolean; handover: boolean; abort: () => void } = { paused: false, cancelled: false, handover: false, abort: () => undefined };
 let runSend: ((e: AgentEvent) => void) | null = null;
 let runId = '';
 /** Last status per agent, so pause/resume can report it like the core. */
@@ -550,6 +650,11 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     status('orchestrator', 'orchestrator', 'idle', '', null);
     return recap;
   };
+  /** Like the core when the user switched to Planen: the run stops before the next task. */
+  const stopForPlanning = () => {
+    status('coder', 'coder', 'idle', '', null);
+    send({ type: 'runFinished', runId, outcome: 'cancelled', summary: 'Stopped for planning.', recap: null });
+  };
   const cartNotes = '**Run and build:** `npm install`\n**Tests:** `npm test` (vitest) passes.\n**Structure:** cart logic in `src/cart.ts`, tests in `test/cart.test.ts`.\n**Decisions:** `total()` multiplies price by quantity.';
 
   try {
@@ -569,12 +674,15 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
       const goOn = /^\s*(mach weiter|weiter|weitermachen|continue|go on)\b/i.test(goal) && carried.length > 0;
       const last = Math.max(0, ...(previous.plan?.tasks ?? []).map((t) => Number(t.id.slice(1)) || 0));
       const title = goal.length > 60 ? `${goal.slice(0, 59)}…` : goal;
-      const tasks: Task[] = [...carried];
-      if (!goOn) tasks.push(task(carried.length ? `T${last + 1}` : 'T1', title, goal, ['src/cart.ts']));
-      send({ type: 'planReady', runId, plan: { goal, summary: carried.length ? 'Finish the open tasks, then the new request.' : 'One step on top of the previous run.', tasks } });
+      const planned: Task[] = [...carried];
+      if (!goOn) planned.push(task(carried.length ? `T${last + 1}` : 'T1', title, goal, ['src/cart.ts']));
+      const first: TaskPlan = { goal, summary: carried.length ? 'Finish the open tasks, then the new request.' : 'One step on top of the previous run.', tasks: planned };
+      send({ type: 'planReady', runId, plan: first });
       status('orchestrator', 'orchestrator', 'idle', 'plan ready', null);
+      const tasks = first.tasks;
       const lines: string[] = [];
       for (const [i, t] of tasks.entries()) {
+        if (runControl.handover) return stopForPlanning();
         const checkpointId = `${runId}-${i + 1}`;
         send({ type: 'checkpointCreated', runId, checkpoint: { id: checkpointId, runId, seq: i + 1, label: `${t.id}: ${t.title} (coder)`, createdAtUnixMs: Date.now(), files: [] } });
         send({ type: 'taskUpdated', runId, task: { ...t, status: 'inProgress' } });
@@ -613,7 +721,29 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
       send({ type: 'runFinished', runId, outcome: 'completed', summary: `${lines.join('\n')}\n\nChanged files: src/cart.ts${notes}`, recap });
       return;
     }
-    const plan = {
+    if (failures.has('clarify') && settings.questions !== 'never') {
+      const de = language.startsWith('de');
+      const questions: Question[] = de
+        ? [
+            { question: 'Soll total() auch Rabattcodes berücksichtigen?', options: [{ label: 'Nein, nur Preis × Menge', recommended: true }, { label: 'Ja, mit Rabattcodes', recommended: false }], multiple: false },
+            { question: 'Welche Tests sollen dazukommen?', options: [{ label: 'Leerer Warenkorb', recommended: false }, { label: 'Menge größer 1', recommended: false }, { label: 'Negative Preise', recommended: false }], multiple: true },
+          ]
+        : [
+            { question: 'Should total() also apply discount codes?', options: [{ label: 'No, only price × quantity', recommended: true }, { label: 'Yes, with discount codes', recommended: false }], multiple: false },
+            { question: 'Which tests should be added?', options: [{ label: 'Empty cart', recommended: false }, { label: 'Quantity above 1', recommended: false }, { label: 'Negative prices', recommended: false }], multiple: true },
+          ];
+      const text = questions.map((q, i) => `${i + 1}. ${q.question}\nOptions: ${q.options.map((o) => (o.recommended ? `${o.label} (recommended)` : o.label)).join(' / ')}`).join('\n');
+      status('orchestrator', 'orchestrator', 'waitingForAnswer', 'asking the user', null);
+      send({ type: 'message', runId, message: { id: nextId('msg'), from: 'orchestrator', to: 'user', kind: 'question', content: text, taskId: null } });
+      const questionId = nextId('question');
+      send({ type: 'questionForUser', runId, questionId, agentId: 'orchestrator', question: text, questions, clarify: true });
+      const answers = await until(new Promise<string[]>((resolve) => pendingAnswers.set(questionId, resolve)));
+      const reply = answers.every((a) => !a.trim()) ? 'The user skipped the questions.' : questions.map((q, i) => `${i + 1}. ${q.question}\nAnswer: ${answers[i]?.trim() || '(no answer)'}`).join('\n\n');
+      send({ type: 'message', runId, message: { id: nextId('msg'), from: 'user', to: 'orchestrator', kind: 'answer', content: reply, taskId: null } });
+      status('orchestrator', 'orchestrator', 'thinking', 'thinking', null, 54);
+      await think('orchestrator', 'Planning with your answers.');
+    }
+    const first: TaskPlan = {
       goal,
       summary: 'Fix the total so it multiplies price by quantity, then make sure the tests cover it.',
       tasks: [
@@ -621,8 +751,9 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
         task('T2', 'Add a test for empty carts', 'Add a test that total([]) is 0.', ['test/cart.test.ts']),
       ],
     };
-    send({ type: 'planReady', runId, plan });
+    send({ type: 'planReady', runId, plan: first });
     status('orchestrator', 'orchestrator', 'idle', 'plan ready', null);
+    const plan = first;
     send({ type: 'checkpointCreated', runId, checkpoint: { id: `${runId}-1`, runId, seq: 1, label: 'T1: Fix total() (coder)', createdAtUnixMs: Date.now(), files: [] } });
     send({ type: 'taskUpdated', runId, task: { ...plan.tasks[0], status: 'inProgress' } });
     status('coder', 'coder', 'thinking', 'thinking', 'T1', 61);
@@ -634,8 +765,13 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
       const questionId = nextId('question');
       status('coder', 'coder', 'waitingForAnswer', 'waiting for your answer', 'T1');
       const question = 'Should prices stay in cents (integers), or may total() return fractional euros?';
-      send({ type: 'questionForUser', runId, questionId, agentId: 'coder', question });
-      const answer = await until(new Promise<string>((resolve) => pendingAnswers.set(questionId, resolve)));
+      const options = [
+        { label: 'Keep integer cents', recommended: true },
+        { label: 'Fractional euros', recommended: false },
+      ];
+      send({ type: 'message', runId, message: { id: nextId('msg'), from: 'coder', to: 'user', kind: 'question', content: `${question}\nOptions: Keep integer cents (recommended) / Fractional euros`, taskId: 'T1' } });
+      send({ type: 'questionForUser', runId, questionId, agentId: 'coder', question, questions: [{ question, options, multiple: false }], clarify: false });
+      const answer = (await until(new Promise<string[]>((resolve) => pendingAnswers.set(questionId, resolve))))[0]?.trim() || '(no answer)';
       send({ type: 'message', runId, message: { id: nextId('msg'), from: 'user', to: 'coder', kind: 'answer', content: answer, taskId: 'T1' } });
       status('coder', 'coder', 'thinking', 'thinking', 'T1', 61);
       await think('coder', 'Understood, keeping integer cents.');
@@ -703,6 +839,7 @@ async function simulateRun(id: string, goal: string, deliver: (e: AgentEvent) =>
     const attempts = failures.has('changes') ? 1 : 0;
     send({ type: 'taskUpdated', runId, task: { ...plan.tasks[0], status: 'done', attempts, result: t1Result, review: { verdict: 'approve', summary: 'Correct and covered by the existing test.', comments: [] } } });
     status('reviewer', 'reviewer', 'idle', '', 'T1');
+    if (runControl.handover) return stopForPlanning();
     send({ type: 'checkpointCreated', runId, checkpoint: { id: `${runId}-2`, runId, seq: 2, label: 'T2: Add a test for empty carts (coder)', createdAtUnixMs: Date.now(), files: [] } });
     send({ type: 'taskUpdated', runId, task: { ...plan.tasks[1], status: 'inProgress' } });
     status('coder', 'coder', 'thinking', 'thinking', 'T2', 63);
@@ -751,6 +888,20 @@ function reportPause(paused: boolean) {
 export async function mockInvoke<T>(command: string, args: Record<string, any>): Promise<T> {
   await sleep(command.startsWith('fs_') ? 20 : 60);
   const r = (v: unknown) => v as T;
+  if (command.startsWith('plan_') || command === 'agent_handover') {
+    const env = {
+      modelReady: server?.status.state === 'ready',
+      files,
+      changed: (paths: string[]) => emit('fs://changed', paths),
+      setHandover: (on: boolean) => void (runControl.handover = on),
+      record: (run: LastRun) => {
+        runRecords.set(run.runId, run);
+        lastRun = run;
+      },
+      previous: (id: string) => runRecords.get(id) ?? (lastRun?.runId === id ? lastRun : null),
+    };
+    return r(await planningCommand(command, args, env));
+  }
   if (command.startsWith('skills_')) {
     return r(await skillsCommand(command, args, { failures, downloadsAllowed: settings.network.allowSkillDownloads, projectOpen: settings.onboardingDone, log: logNet }));
   }
@@ -769,6 +920,9 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
     case 'hardware_probe':
       await sleep(600);
       return r(hardware);
+    case 'hardware_tips':
+      // `?mock=fastram` stands for RAM that already runs at its rated speed.
+      return r(failures.has('fastram') ? { ramSpeed: null, memoryModules: [] } : hardwareTips);
     case 'registry_info':
       return r({ registry, origin: 'bundled' });
     case 'registry_refresh':
@@ -934,7 +1088,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       const model = registry.models.find((m) => m.id === sel?.modelId);
       const projector = installed.find((m) => m.modelId === sel?.modelId && m.quant === sel?.quant)?.projector ?? null;
       const command = ['llama-server.exe', '-m', 'model.gguf', '-c', '131072', '-np', '2', '-kvu', '-fa', 'on', '--fit', 'on', ...(projector ? ['--mmproj', projector.path, '--image-max-tokens', '2048'] : [])];
-      const base: ServerInfo = { modelId: sel?.modelId ?? 'x', quant: sel?.quant ?? '', modelName: model?.name ?? 'Model', runtime: runtime().selected ?? 'vulkan', device: cudaInstalled ? 'CUDA0' : 'Vulkan0', context: 131072, slots: 2, status: { state: 'starting' }, toolCalls: 'unknown', vision: projector ? 'on' : 'off', command };
+      const base: ServerInfo = { modelId: sel?.modelId ?? 'x', quant: sel?.quant ?? '', modelName: model?.name ?? 'Model', runtime: runtime().selected ?? 'vulkan', device: cudaInstalled ? 'CUDA0' : 'Vulkan0', context: 131072, slots: 2, status: { state: 'starting' }, toolCalls: 'unknown', vision: projector ? 'on' : 'off', command, tuned: !!calibration && !failures.has('calstale') };
       server = base;
       emit('runtime://server', server);
       await sleep(700);
@@ -960,6 +1114,25 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
     case 'server_stop':
       server = null;
       emit('runtime://server', null);
+      return r(undefined);
+    case 'calibration_get':
+      return r({ result: calibration, changes: calibration && failures.has('calstale') ? ['ram'] : [], running: calibrating });
+    case 'calibration_run':
+      if (!server || server.status.state !== 'ready') throw { code: 'calibration_not_running', message: 'start the model first' };
+      if (calibrating) throw { code: 'calibration_running', message: 'a calibration is already running' };
+      calibrating = true;
+      calibrationCancelled = false;
+      void runMockCalibration();
+      return r(undefined);
+    case 'calibration_cancel':
+      calibrationCancelled = true;
+      return r(undefined);
+    case 'calibration_reset':
+      calibration = null;
+      if (server) {
+        server = { ...server, tuned: false };
+        emit('runtime://server', server);
+      }
       return r(undefined);
     case 'server_info':
       return r(server);
@@ -1050,12 +1223,13 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       const isCancelled = () => cancelledRequests.has(req.id);
       let reasoning = '';
       let content = '';
-      let ok = await streamText(images.length ? chatImageReasoning : chatReasoning, (text) => {
+      const askBack = failures.has('chatask') && messages.length === 1 && !images.length;
+      let ok = await streamText(askBack ? 'The request does not say what should be faster.' : images.length ? chatImageReasoning : chatReasoning, (text) => {
         reasoning += text;
         send({ type: 'delta', delta: { kind: 'reasoning', text } });
       }, isCancelled, 10);
       if (ok) {
-        ok = await streamText(images.length ? chatImageAnswer(images.length) : chatAnswer, (text) => {
+        ok = await streamText(askBack ? chatQuestion : images.length ? chatImageAnswer(images.length) : chatAnswer, (text) => {
           content += text;
           send({ type: 'delta', delta: { kind: 'content', text } });
         }, isCancelled);
@@ -1104,7 +1278,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       const previous = wanted ? (runRecords.get(wanted) ?? (lastRun?.runId === wanted ? lastRun : undefined)) : null;
       if (previous === undefined) throw { code: 'unknown_run', message: wanted };
       const id = `run-${Date.now()}`;
-      runControl = { paused: false, cancelled: false, abort: () => undefined };
+      runControl = { paused: false, cancelled: false, handover: false, abort: () => undefined };
       void simulateRun(id, args.goal, args.onEvent as (e: AgentEvent) => void, previous, String(args.language ?? 'en'));
       return r(id);
     }
@@ -1120,10 +1294,11 @@ export async function mockInvoke<T>(command: string, args: Record<string, any>):
       if ((args.images ?? []).length && server?.vision !== 'on') throw { code: 'no_vision', message: 'the model that is running cannot see images' };
       const resolve = pendingAnswers.get(args.questionId);
       pendingAnswers.delete(args.questionId);
-      resolve?.(args.answer);
+      resolve?.(args.answers ?? [args.answer]);
       return r(resolve !== undefined);
     }
     case 'agent_control':
+      if (planningControl(String(args.runId), String(args.action))) return r(undefined);
       if (args.action === 'pause' && !runControl.paused) {
         runControl.paused = true;
         setTimeout(() => reportPause(true), 300);

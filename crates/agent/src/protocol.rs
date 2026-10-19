@@ -249,9 +249,22 @@ pub enum AgentEvent {
     ToolResult { run_id: String, agent_id: String, call_id: String, ok: bool, summary: String, change: Option<FileChange> },
     #[serde(rename_all = "camelCase")]
     ApprovalRequested { run_id: String, request: crate::permissions::ApprovalRequest },
-    /// An agent asks the user something and waits for the answer.
+    /// An agent asks the user something and waits for the answer. `question`
+    /// is the text of all `questions` (one, or up to three before the plan,
+    /// each maybe with answers to click); `clarify` marks the orchestrator's
+    /// questions before it plans.
     #[serde(rename_all = "camelCase")]
-    QuestionForUser { run_id: String, question_id: String, agent_id: String, question: String },
+    QuestionForUser {
+        run_id: String,
+        question_id: String,
+        agent_id: String,
+        question: String,
+        questions: Vec<crate::questions::Question>,
+        clarify: bool,
+    },
+    /// Planning mode: the orchestrator wrote the plan (or changed it).
+    #[serde(rename_all = "camelCase")]
+    PlanDrafted { run_id: String, plan: crate::planning::PlanDoc },
     #[serde(rename_all = "camelCase")]
     Message { run_id: String, message: AgentMessage },
     #[serde(rename_all = "camelCase")]

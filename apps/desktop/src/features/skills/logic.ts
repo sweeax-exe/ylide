@@ -23,6 +23,8 @@ export function sourceText(source: SkillSource): string {
       return source.path ? `${source.repo} · ${source.path}` : source.repo;
     case 'folder':
       return source.path;
+    case 'recommended':
+      return source.repo;
     case 'project':
       return '.agents/skills';
   }
@@ -30,6 +32,7 @@ export function sourceText(source: SkillSource): string {
 
 /** The skill's folder on GitHub at the installed commit; null for other sources. */
 export function sourceUrl(source: SkillSource): string | null {
+  if (source.kind === 'recommended') return source.url;
   if (source.kind !== 'github') return null;
   const path = source.path ? `/${source.path.split('/').map(encodeURIComponent).join('/')}` : '';
   return `https://github.com/${source.repo}/tree/${source.commit}${path}`;

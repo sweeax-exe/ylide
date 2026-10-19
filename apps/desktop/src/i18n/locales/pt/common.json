@@ -123,7 +123,12 @@
     "no_vision": "O modelo em execução não consegue ver imagens. Na página Modelos, ative “Entender imagens” para um modelo que consiga.",
     "bad_image": "Não é possível usar a imagem: {{message}}",
     "not_projector": "Isto não é um módulo de imagem (arquivo GGUF mmproj).",
-    "no_projector": "Este modelo não aceita imagens."
+    "no_projector": "Este modelo não aceita imagens.",
+    "calibrating": "O modelo está sendo otimizado para este PC. Tente de novo em instantes.",
+    "calibration_busy": "O modelo está trabalhando agora. Otimize quando o chat e os agentes estiverem parados.",
+    "calibration_not_running": "Inicie o modelo primeiro e depois otimize.",
+    "calibration_running": "Já há uma otimização em andamento.",
+    "calibration_external": "Um servidor externo não pode ser otimizado pelo Ylide."
   },
   "images": {
     "attach": "Anexar imagens",

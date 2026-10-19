@@ -7,9 +7,16 @@ const api = vi.hoisted(() => ({
   agents: {
     start: vi.fn(),
     answer: vi.fn(async () => true),
+    handover: vi.fn(async () => undefined),
     intervene: vi.fn(async () => undefined),
     lastRun: vi.fn(async () => null),
     checkpoints: vi.fn(async () => []),
+  },
+  plans: {
+    run: vi.fn(async (_plan: unknown, _continues: unknown, _language: string, onEvent: (e: AgentEvent) => void) => {
+      emit = onEvent;
+      return `run-${++runs}`;
+    }),
   },
 }));
 vi.mock('../../lib/ipc', () => ({ api }));
@@ -84,11 +91,48 @@ describe('agent run images', () => {
   it('sends images with an answer and with a message to an agent', async () => {
     const store = await load();
     await store.getState().start('Fix the cart');
-    await store.getState().answer('question-1', 'Like this', ['data:image/png;base64,a']);
-    expect(api.agents.answer).toHaveBeenCalledWith('run-1', 'question-1', 'Like this', ['data:image/png;base64,a']);
+    await store.getState().answer('question-1', ['Like this'], ['data:image/png;base64,a']);
+    expect(api.agents.answer).toHaveBeenCalledWith('run-1', 'question-1', ['Like this'], ['data:image/png;base64,a']);
     await store.getState().intervene('coder', ' Use this color ', ['data:image/png;base64,b']);
     expect(api.agents.intervene).toHaveBeenCalledWith('run-1', 'coder', 'Use this color', ['data:image/png;base64,b']);
     await store.getState().intervene('coder', 'No image');
     expect(api.agents.intervene).toHaveBeenLastCalledWith('run-1', 'coder', 'No image', []);
+  });
+});
+
+describe('agent run questions and plan', () => {
+  it('answers a card with one answer per question', async () => {
+    const store = await load();
+    await store.getState().start('Add tests');
+    emit({ type: 'questionForUser', runId: 'run-1', questionId: 'question-1', agentId: 'orchestrator', question: 'q', questions: [], clarify: true });
+    await flush();
+    await store.getState().answer('question-1', ['Vitest', '']);
+    expect(api.agents.answer).toHaveBeenLastCalledWith('run-1', 'question-1', ['Vitest', ''], []);
+    expect(store.getState().run?.questions).toEqual([]);
+  });
+
+  it('carries out a plan, also one that continues the stopped run', async () => {
+    const store = await load();
+    const plan = { goal: 'Rabatte', approach: 'a', steps: [{ id: 'T2', title: 'Berechnung', description: '', files: [], verify: '', assignee: 'coder' }], risks: [], questions: [] };
+    await store.getState().start('Rabatte');
+    emit({ type: 'runFinished', runId: 'run-1', outcome: 'cancelled', summary: '', recap: null });
+    await flush();
+    store.getState().setDraft('kept');
+    expect(await store.getState().runPlan(plan, 'run-1')).toBe(true);
+    expect(api.plans.run).toHaveBeenLastCalledWith(plan, 'run-1', 'de', expect.any(Function));
+    expect(store.getState().run?.continues?.runId, 'shows the run it goes on with').toBe('run-1');
+    expect(store.getState().draft, 'the goal field is left alone').toBe('kept');
+    expect(await store.getState().runPlan(plan, null), 'one run at a time').toBe(false);
+  });
+
+  it('starts a run from a chat suggestion without touching the drafts', async () => {
+    const store = await load();
+    store.getState().setDraft('My own goal');
+    store.getState().setDraftImages([image('mockup')]);
+    expect(await store.getState().startWith('Add a test for an empty cart')).toBe(true);
+    expect(api.agents.start).toHaveBeenLastCalledWith('Add a test for an empty cart', expect.any(Function), null, [], 'de');
+    expect(store.getState().draft).toBe('My own goal');
+    expect(store.getState().draftImages).toHaveLength(1);
+    expect(await store.getState().startWith('Another one'), 'one run at a time').toBe(false);
   });
 });

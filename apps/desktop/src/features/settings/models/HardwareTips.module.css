@@ -1,0 +1,18 @@
+.tips {
+  margin-top: var(--space-3);
+}
+
+.title {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.body,
+.caveat {
+  margin: var(--space-1) 0 0;
+}
+
+.caveat {
+  color: var(--text-3);
+  font-size: var(--text-sm);
+}

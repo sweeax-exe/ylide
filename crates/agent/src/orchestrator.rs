@@ -13,8 +13,10 @@ use crate::edit::unified_diff;
 use crate::knowledge;
 use crate::llm::ChatModel;
 use crate::permissions::UserReply;
+use crate::planning::{self, PlanDoc, PlanRequest};
 use crate::previous::PreviousRun;
 use crate::protocol::{AgentEvent, AgentState, MessageKind, NO_VERDICT, Plan, Review, RunOutcome, Task, TaskStatus, Verdict};
+use crate::questions::{self, Question, QuestionLevel};
 use crate::recap;
 use crate::roles::{RoleDefinition, fill};
 use crate::runner::{AgentEnd, AgentSpec, AskRouter, PlanDraft, RunContext, run_agent};
@@ -51,7 +53,18 @@ impl Team {
             id: role.id.clone(),
             role,
             model: self.model_for(&role.id),
+            extra_tools: Vec::new(),
         }
+    }
+
+    /// The orchestrator while it plans a run: with `clarify`, unless the user
+    /// wants no questions.
+    fn planner<'a>(&'a self, ctx: &RunContext, role: &'a RoleDefinition) -> AgentSpec<'a> {
+        let mut spec = self.spec(role);
+        if ctx.questions != QuestionLevel::Never {
+            spec.extra_tools.push(questions::CLARIFY);
+        }
+        spec
     }
 }
 
@@ -61,14 +74,15 @@ struct Router<'a> {
 
 #[async_trait]
 impl AskRouter for Router<'_> {
-    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<UserReply> {
+    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &Question, task_id: Option<&str>) -> Option<UserReply> {
         if to == "user" {
             // Stopping the run must not wait for an answer that may never come.
             return tokio::select! {
-                answer = ctx.broker.ask_user(from, question) => Some(answer),
+                answer = ctx.broker.ask_user(from, std::slice::from_ref(question), false) => Some(answer),
                 _ = ctx.control.cancel.cancelled() => None,
             };
         }
+        let question = &questions::as_text(question);
         let Some(role) = self.team.role(to) else {
             return Some(UserReply::text(format!("There is no agent called '{to}'. Available: user, {}", self.team.roles.iter().map(|r| r.id.as_str()).collect::<Vec<_>>().join(", "))));
         };
@@ -177,20 +191,97 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
             return finish(&ctx, outcome, plan, "The run was stopped before a plan was made.".into(), None);
         }
     };
-    ctx.blackboard.lock().unwrap().plan = Some(plan.clone());
-    ctx.emit(AgentEvent::PlanReady {
-        run_id: ctx.run_id.clone(),
-        plan: plan.clone(),
-    });
+    publish_plan(&ctx, &plan);
+    execute(&ctx, team, &router, goal, &notes, &skills).await
+}
 
+/// Carries out a plan from planning mode: its steps are the tasks, with
+/// their ids, and nothing is planned again. A run that stopped for planning
+/// goes on this way with the plan its open tasks became.
+pub async fn run_plan(ctx: Arc<RunContext>, team: &Team, doc: &PlanDoc) -> RunReport {
+    ctx.emit(AgentEvent::RunStarted {
+        run_id: ctx.run_id.clone(),
+        goal: doc.goal.clone(),
+    });
+    let router = Router { team };
+    let notes = ctx.ws.read_text(knowledge::FILE).map(|f| knowledge::prompt_section(&f.content, knowledge::PROMPT_CHARS)).unwrap_or_default();
+    let skills = skills::prompt::listing(&ctx.skills, skills::prompt::Audience::Agent);
+    let plan = Plan { goal: doc.goal.clone(), summary: doc.approach.clone(), tasks: planning::tasks(doc) };
+    publish_plan(&ctx, &plan);
+    execute(&ctx, team, &router, &doc.goal, &notes, &skills).await
+}
+
+/// Planning mode: the orchestrator reads the project (nothing else: the
+/// run context is read-only) and writes a plan, or changes the current one
+/// as the user wished. The plan goes out as `PlanDrafted`; None when the
+/// run was stopped or the model gave no plan.
+pub async fn draft_plan(ctx: Arc<RunContext>, team: &Team, req: &PlanRequest, previous: Option<&PreviousRun>) -> Option<PlanDoc> {
+    ctx.emit(AgentEvent::RunStarted {
+        run_id: ctx.run_id.clone(),
+        goal: req.goal.clone(),
+    });
+    let router = Router { team };
+    let notes = ctx.ws.read_text(knowledge::FILE).map(|f| knowledge::prompt_section(&f.content, knowledge::PROMPT_CHARS)).unwrap_or_default();
+    let skills = skills::prompt::listing(&ctx.skills, skills::prompt::Audience::Agent);
+    let doc = match team.role("orchestrator") {
+        Some(role) => {
+            let mut values = BTreeMap::new();
+            values.insert("goal", req.goal.clone());
+            values.insert("roles", roles_listing(team));
+            values.insert("outline", ctx.ws.outline("", 2, 150).unwrap_or_default());
+            values.insert("environment", environment_description(&ctx.shell));
+            values.insert("language", recap::language_name(&ctx.language).to_string());
+            let mut parts = planning::sections(req, ctx.questions);
+            values.insert("open_questions", parts.remove("open_questions").unwrap_or_default());
+            let previous_section = previous.map(|p| format!("{}\n", p.describe())).unwrap_or_default();
+            let sections = [("project_notes", notes), ("skills", skills), ("previous", previous_section), ("current", parts.remove("current").unwrap_or_default())];
+            let mut conversation = vec![ChatMessage::system(role.system_prompt.clone()), ChatMessage::user(fill_sections(&ctx.templates.planning, values, &sections))];
+            // Open questions go into the plan, so no clarify round here.
+            let spec = team.spec(role);
+            conversation[1].images = request_images(&ctx, &spec);
+            let draft = match run_agent(&ctx, &spec, &mut conversation, None, None, &router).await {
+                AgentEnd::Plan(p) => Some(p),
+                AgentEnd::Text(t) => parse_plan_text(&t),
+                _ => None,
+            };
+            let roles: Vec<String> = team.roles.iter().map(|r| r.id.clone()).collect();
+            let first = previous.map_or(0, PreviousRun::last_task_number);
+            draft.filter(|_| !ctx.control.cancel.is_cancelled()).map(|d| planning::doc_from_draft(&req.goal, d, req.current.as_ref(), first, ctx.questions, &roles))
+        }
+        None => None,
+    };
+    ctx.status("orchestrator", "orchestrator", AgentState::Idle, "plan ready", None);
+    if let Some(doc) = &doc {
+        ctx.emit(AgentEvent::PlanDrafted { run_id: ctx.run_id.clone(), plan: doc.clone() });
+    }
+    let outcome = match (&doc, ctx.control.cancel.is_cancelled()) {
+        (_, true) => RunOutcome::Cancelled,
+        (Some(_), false) => RunOutcome::Completed,
+        (None, false) => RunOutcome::Failed,
+    };
+    let summary = if doc.is_some() { "The plan is written." } else { "No plan was written." };
+    ctx.emit(AgentEvent::RunFinished {
+        run_id: ctx.run_id.clone(),
+        outcome,
+        summary: summary.into(),
+        recap: None,
+    });
+    doc
+}
+
+/// The tasks of the plan on the blackboard, then the project notes and the
+/// report. When the user switched to planning, the run stops before the
+/// next task; its open tasks then go back into a plan.
+async fn execute(ctx: &Arc<RunContext>, team: &Team, router: &Router<'_>, goal: &str, notes: &str, skills: &str) -> RunReport {
+    let plan = ctx.blackboard.lock().unwrap().plan.clone().unwrap_or_else(|| single_task_plan(goal));
     // ---- 2. Tasks -----------------------------------------------------------
     let mut cancelled = false;
     for task in &plan.tasks {
-        if ctx.control.cancel.is_cancelled() {
+        if ctx.control.cancel.is_cancelled() || ctx.control.stops_after_task() {
             cancelled = true;
             break;
         }
-        if !run_task(&ctx, team, &router, &task.id, &notes, &skills).await {
+        if !run_task(ctx, team, router, &task.id, notes, skills).await {
             cancelled = ctx.control.cancel.is_cancelled();
             if cancelled {
                 break;
@@ -205,12 +296,12 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
     let learned = !ctx.commands_that_worked().is_empty()
         || ctx.blackboard.lock().unwrap().plan.as_ref().is_some_and(|p| p.tasks.iter().any(|t| t.status == TaskStatus::Done));
     if team.update_notes && !cancelled && learned {
-        update_notes(&ctx, team).await;
+        update_notes(ctx, team).await;
     }
 
     // ---- 4. Report ----------------------------------------------------------
     let final_plan = ctx.blackboard.lock().unwrap().plan.clone();
-    let summary = report(&ctx);
+    let summary = report(ctx);
     let outcome = if cancelled {
         RunOutcome::Cancelled
     } else if final_plan.as_ref().is_some_and(|p| p.tasks.iter().all(|t| t.status == TaskStatus::Done)) {
@@ -219,8 +310,8 @@ pub async fn run_with_previous(ctx: Arc<RunContext>, team: &Team, goal: &str, pr
         RunOutcome::Failed
     };
     // A stopped run ends right away, with the task list.
-    let recap = if team.summarize && outcome != RunOutcome::Cancelled { write_recap(&ctx, team, goal, &work_files).await } else { None };
-    finish(&ctx, outcome, final_plan, summary, recap)
+    let recap = if team.summarize && outcome != RunOutcome::Cancelled { write_recap(ctx, team, goal, &work_files).await } else { None };
+    finish(ctx, outcome, final_plan, summary, recap)
 }
 
 fn finish(ctx: &RunContext, outcome: RunOutcome, plan: Option<Plan>, summary: String, recap: Option<String>) -> RunReport {
@@ -291,7 +382,7 @@ async fn make_plan(
         ChatMessage::system(role.system_prompt.clone()),
         ChatMessage::user(planning_request(&ctx.templates.planner, values, notes, skills, previous)),
     ];
-    let spec = team.spec(role);
+    let spec = team.planner(ctx, role);
     conversation[1].images = request_images(ctx, &spec);
     let end = run_agent(ctx, &spec, &mut conversation, None, None, router).await;
     ctx.status("orchestrator", "orchestrator", AgentState::Idle, "plan ready", None);
@@ -303,6 +394,15 @@ async fn make_plan(
         _ => draft_single(goal),
     };
     Ok(to_plan(goal, draft, team))
+}
+
+/// The plan on the blackboard and in the UI.
+fn publish_plan(ctx: &RunContext, plan: &Plan) {
+    ctx.blackboard.lock().unwrap().plan = Some(plan.clone());
+    ctx.emit(AgentEvent::PlanReady {
+        run_id: ctx.run_id.clone(),
+        plan: plan.clone(),
+    });
 }
 
 /// Fills the planner template with the project notes, the enabled skills and the previous run's section.
@@ -396,7 +496,11 @@ fn draft_single(goal: &str) -> PlanDraft {
             description: goal.to_string(),
             files: vec![],
             assignee: None,
+            id: String::new(),
+            verify: String::new(),
         }],
+        risks: serde_json::Value::Null,
+        questions: serde_json::Value::Null,
     }
 }
 
@@ -446,7 +550,11 @@ fn to_plan(goal: &str, draft: PlanDraft, team: &Team) -> Plan {
                     .assignee
                     .filter(|a| team.role(a).is_some() && a != "orchestrator" && a != "reviewer")
                     .unwrap_or_else(|| "coder".into());
-                new_task(i + 1, t.title, t.description, t.files, assignee)
+                let description = match t.verify.trim() {
+                    "" => t.description,
+                    verify => format!("{}\n\nHow to verify: {verify}", t.description.trim()).trim().to_string(),
+                };
+                new_task(i + 1, t.title, description, t.files, assignee)
             })
             .collect(),
     }

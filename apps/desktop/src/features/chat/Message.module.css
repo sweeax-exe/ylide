@@ -158,3 +158,81 @@
   overflow-wrap: anywhere;
   user-select: text;
 }
+
+/* ---------- Suggested next steps ---------- */
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.suggestion {
+  display: inline-flex;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.suggestionAsk,
+.suggestionAgents {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  min-width: 0;
+  padding: 4px var(--space-3) 4px var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  line-height: var(--leading-ui);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease);
+}
+
+.suggestionAsk > svg,
+.suggestionAgents > svg {
+  flex: none;
+  color: var(--text-3);
+}
+
+.suggestionAsk > span {
+  overflow-wrap: anywhere;
+}
+
+.suggestionAgents {
+  flex: none;
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--border);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.suggestionAsk:not(:disabled):hover,
+.suggestionAgents:not(:disabled):hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.suggestionAgents:not(:disabled):hover > svg {
+  color: var(--accent);
+}
+
+.suggestionAsk:disabled,
+.suggestionAgents:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.suggestionAsk:focus-visible,
+.suggestionAgents:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}

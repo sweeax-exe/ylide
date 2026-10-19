@@ -65,7 +65,8 @@
     "stepLimit": "Schrittlimit erreicht",
     "answering": "Beantwortet eine Frage von {{agent}}",
     "notes": "Aktualisiert das Projektwissen",
-    "recap": "Schreibt die Zusammenfassung"
+    "recap": "Schreibt die Zusammenfassung",
+    "clarify": "Wartet auf deine Antworten"
   },
   "idle": {
     "goalLabel": "Was sollen die Agents tun?",
@@ -85,7 +86,8 @@
     "previous": "Letzter Lauf",
     "showRun": "Details anzeigen",
     "openTasks_one": "Eine Aufgabe ist noch offen. Beim Weitermachen kommt sie zuerst dran.",
-    "openTasks_other": "{{count}} Aufgaben sind noch offen. Beim Weitermachen kommen sie zuerst dran."
+    "openTasks_other": "{{count}} Aufgaben sind noch offen. Beim Weitermachen kommen sie zuerst dran.",
+    "startPlanning": "Plan erstellen"
   },
   "mode": {
     "label": "Freigaben",
@@ -101,7 +103,8 @@
     "confirmDeletes": "Vor dem Löschen von Dateien fragen",
     "unguardedCommands": "Agents führen Befehle ohne Rückfrage aus. Deren Folgen lassen sich nicht rückgängig machen.",
     "unguardedDeletes": "Agents löschen Dateien ohne Rückfrage. Du kannst sie über die Checkpoints wiederherstellen.",
-    "unguardedBoth": "Agents führen Befehle aus und löschen Dateien ohne Rückfrage. Die Folgen von Befehlen lassen sich nicht rückgängig machen."
+    "unguardedBoth": "Agents führen Befehle aus und löschen Dateien ohne Rückfrage. Die Folgen von Befehlen lassen sich nicht rückgängig machen.",
+    "confirmPlan": "Erst planen, dann umsetzen"
   },
   "run": {
     "elapsed": "Laufzeit",
@@ -252,7 +255,16 @@
     "answerLabel": "Deine Antwort",
     "hint": "Strg+Enter sendet die Antwort.",
     "later": "Später antworten",
-    "send": "Antwort senden"
+    "send": "Antwort senden",
+    "clarifyTitle": "Ein paar Fragen vor dem Plan",
+    "clarifyIntro": "Der Orchestrator plant mit deinen Antworten. Klick eine Antwort an oder schreib deine eigene; was du offen lässt, entscheidet er selbst.",
+    "recommended": "(empfohlen)",
+    "own": "Eigene Antwort",
+    "ownLabel": "Eigene Antwort auf: {{question}}",
+    "several": "Mehrere Antworten möglich.",
+    "sendAll": "Antworten senden",
+    "skip": "Überspringen",
+    "skipHint": "Ohne Antworten planen: Der Orchestrator entscheidet selbst und sagt, was er angenommen hat."
   },
   "live": {
     "task": "{{id}} {{title}}: {{status}}",
@@ -264,6 +276,69 @@
     "answer": "Deine Antwort konnte nicht gesendet werden",
     "intervene": "Deine Nachricht konnte nicht gesendet werden",
     "restore": "Die Änderungen konnten nicht zurückgenommen werden",
-    "settings": "Die Freigabe-Einstellung konnte nicht gespeichert werden"
+    "settings": "Die Freigabe-Einstellung konnte nicht gespeichert werden",
+    "planDraft": "Der Plan konnte nicht erstellt werden",
+    "planSave": "Der Plan konnte nicht gespeichert werden"
+  },
+  "workMode": {
+    "label": "Arbeitsweise",
+    "plan": "Planen",
+    "code": "Umsetzen",
+    "hint": "Zwischen Planen und Umsetzen wechseln ({{key}})"
+  },
+  "plan": {
+    "introTitle": "Erst planen, dann umsetzen",
+    "introBody": "Im Planungsmodus lesen die Agents nur, ändern nichts und schreiben einen Plan. Den besprichst und bearbeitest du, bis er passt. Mit „Umsetzen“ arbeiten sie ihn ab.",
+    "goalLabel": "Was soll geplant werden?",
+    "goalPlaceholder": "Zum Beispiel: Rabattcodes im Warenkorb",
+    "create": "Plan erstellen",
+    "createHint": "Strg+Enter erstellt den Plan.",
+    "notReady": "Starte ein Modell und öffne ein Projekt, um zu planen.",
+    "adopt": "Offene Aufgaben übernehmen",
+    "adoptHint": "Der letzte Lauf („{{goal}}“) hat offene Aufgaben. Übernimm sie als Plan, um sie zu überarbeiten.",
+    "handover": "Wechselt zum Planen, sobald {{task}} fertig ist.",
+    "handoverNoTask": "Wechselt zum Planen, sobald die laufende Aufgabe fertig ist.",
+    "keepGoing": "Weiter umsetzen",
+    "kicker": "Plan",
+    "firstDraft": "Der Orchestrator sieht sich das Projekt an und schreibt den Plan. Geändert wird dabei nichts.",
+    "working": "Der Orchestrator plant …",
+    "stop": "Stoppen",
+    "approach": "Vorgehen",
+    "done": "Schon erledigt",
+    "steps": "Schritte",
+    "noSteps": "Noch keine Schritte. Füge einen hinzu oder beschreib unten, was fehlt.",
+    "addStep": "Schritt hinzufügen",
+    "newStep": "Neuer Schritt",
+    "files": "Dateien",
+    "verify": "Prüfen",
+    "risks": "Risiken",
+    "questions": "Offene Fragen",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "titleLabel": "Titel",
+    "descriptionLabel": "Was zu tun ist",
+    "filesLabel": "Dateien, durch Kommas getrennt",
+    "verifyLabel": "So wird geprüft",
+    "apply": "Übernehmen",
+    "answer": "Antworten senden",
+    "answersIntro": "Antworten auf die offenen Fragen:",
+    "leftOpen": "offen gelassen, entscheide selbst",
+    "notesLabel": "Verlauf des Plans",
+    "noteCreated": "Plan erstellt",
+    "noteUpdated": "Plan aktualisiert",
+    "noteFailed": "Der Orchestrator konnte keinen Plan schreiben. Versuch es noch einmal oder formulier es anders.",
+    "noteTookOver": "Die offenen Aufgaben sind jetzt der Plan.",
+    "chatLabel": "Plan besprechen",
+    "chatPlaceholder": "Zum Beispiel: Ändere Schritt 2, nimm lieber Vitest",
+    "send": "Senden",
+    "saveFile": "Als Datei speichern",
+    "saved": "Plan gespeichert",
+    "discard": "Plan verwerfen",
+    "discardTitle": "Plan verwerfen?",
+    "discardBody": "Der Plan und sein Verlauf gehen verloren. Gespeicherte Dateien bleiben.",
+    "carryOut": "Umsetzen",
+    "carryOutHint": "Die Agents arbeiten die Schritte ab, im gewählten Freigabemodus."
   }
 }

@@ -32,6 +32,31 @@ pub(crate) fn current() -> impl PlatformProbe {
     fallback::FallbackProbe
 }
 
+/// The raw SMBIOS structure table (without the entry point), if the OS gives it out.
+#[cfg(windows)]
+pub(crate) fn smbios_table() -> Option<Vec<u8>> {
+    windows::smbios_table()
+}
+#[cfg(target_os = "linux")]
+pub(crate) fn smbios_table() -> Option<Vec<u8>> {
+    // Readable by root only on most distributions.
+    std::fs::read("/sys/firmware/dmi/tables/DMI").ok()
+}
+#[cfg(not(any(windows, target_os = "linux")))]
+pub(crate) fn smbios_table() -> Option<Vec<u8>> {
+    None
+}
+
+/// The raw processor layout (Windows: `GetLogicalProcessorInformationEx`).
+#[cfg(windows)]
+pub(crate) fn processor_information() -> Option<Vec<u8>> {
+    windows::processor_information()
+}
+#[cfg(not(windows))]
+pub(crate) fn processor_information() -> Option<Vec<u8>> {
+    None
+}
+
 /// Loads a shared library without keeping it, to test for its presence.
 #[allow(dead_code)]
 pub(crate) fn library_loadable(name: &str) -> bool {

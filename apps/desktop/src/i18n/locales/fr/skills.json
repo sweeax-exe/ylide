@@ -12,6 +12,19 @@
     "emptyTitle": "Aucune compétence pour l’instant",
     "emptyBody": "Ajoutez des compétences depuis un dépôt GitHub, par exemple https://github.com/morluto/rea, ou depuis un dossier de cet ordinateur."
   },
+  "recommended": {
+    "title": "Recommandées",
+    "description": "Des compétences fournies avec Ylide. Elles sont désactivées jusqu'à ce que vous en ajoutiez une : lisez-la d'abord, puis activez-la en un clic.",
+    "badge": "Recommandée",
+    "needsMcpBadge": "Nécessite un serveur MCP",
+    "needsMcpHint": "Utilise ses propres outils via un serveur MCP, configuré séparément.",
+    "add": "Ajouter",
+    "addEnable": "Ajouter et activer",
+    "added": "{{name}} ajoutée et activée",
+    "addFailed": "Impossible d'ajouter {{name}}",
+    "docs": "Docs",
+    "mcpConfirm": "Cette compétence utilise ses propres outils via un serveur MCP, souvent avec des programmes d'analyse distincts. Tant que ce serveur n'est pas connecté, les modèles reçoivent les instructions de la compétence, mais pas ses outils."
+  },
   "project": {
     "title": "Du projet",
     "description": "Les compétences du dossier .agents/skills du projet ouvert. Ylide les lit à cet endroit et ne les modifie jamais ; en activer une ne vaut que pour ce projet.",

@@ -5,4 +5,10 @@ export type PermissionSettings = { mode: ApprovalMode, confirmCommands: boolean,
 /**
  * Command prefixes that never need confirmation (except in `ask` mode).
  */
-allowedCommands: Array<string>, };
+allowedCommands: Array<string>, 
+/**
+ * A new request is planned first, in planning mode, and the tasks start
+ * when the user switches to carrying it out. `None` follows the mode: on
+ * in `ask`, off otherwise.
+ */
+confirmPlan: boolean | null, };

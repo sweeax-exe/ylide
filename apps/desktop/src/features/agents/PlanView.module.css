@@ -1,0 +1,511 @@
+/* Planning mode: a quiet document, the conversation under it, actions at the bottom. */
+.view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  container-type: inline-size;
+}
+
+.scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-1) var(--space-3) var(--space-4);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+  color: var(--text-3);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* ---- before there is a plan */
+.start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-1) var(--space-3) var(--space-5);
+}
+
+.intro {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+}
+
+.introIcon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
+.introTitle {
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.introBody {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+}
+
+.goalInput {
+  min-height: 96px;
+  font-size: var(--text-md);
+}
+
+.startRow,
+.adopt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.adopt {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.adopt > .hint,
+.startRow > .hint {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* ---- a run finishing its task before planning */
+.handover {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-1) var(--space-3) var(--space-4);
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 6px 6px var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-panel);
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.bannerText {
+  flex: 1;
+  min-width: 140px;
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+}
+
+/* ---- the plan */
+.doc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.kicker {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.goal {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.approach {
+  margin: 0;
+  padding: 2px 4px;
+  margin-inline: -4px;
+  border-radius: var(--radius-chip);
+  line-height: var(--leading-prose);
+  color: var(--text-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: start;
+  padding: var(--space-2) 4px;
+  margin-inline: -4px;
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-chip);
+}
+
+.stepId {
+  min-width: 24px;
+  padding-top: 1px;
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--text-3);
+}
+
+.stepBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.stepTitle {
+  margin: 0;
+  font-weight: 600;
+  line-height: var(--leading-ui);
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.stepText {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.metaRow {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.metaRow > dt {
+  flex: none;
+  color: var(--text-3);
+}
+
+.metaRow > dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.files > code {
+  padding: 0 4px;
+  border-radius: var(--radius-chip);
+  background: var(--bg-sunken);
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-1);
+}
+
+/* Actions show on hover and focus; touch and narrow panels keep them visible. */
+.stepActions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--motion-ease);
+}
+
+.step:hover .stepActions,
+.step:focus-within .stepActions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .stepActions {
+    opacity: 1;
+  }
+}
+
+.stepEditing {
+  grid-template-columns: auto minmax(0, 1fr);
+  background: var(--bg-raised);
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.editor > label {
+  margin-top: 4px;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.mono {
+  font-family: var(--font-code);
+  font-size: var(--text-sm);
+}
+
+.editorActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.addStep {
+  align-self: flex-start;
+}
+
+.doneList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doneItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}
+
+.doneItem > svg {
+  flex: none;
+  color: var(--success);
+}
+
+.doneTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 4px 2px 22px;
+  margin-inline: -4px;
+  border-radius: var(--radius-chip);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-2);
+}
+
+.questions {
+  gap: var(--space-3);
+}
+
+.questionsActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* A part the orchestrator just changed lights up for a moment. */
+.flash {
+  animation: flash 2.4s var(--motion-ease);
+}
+
+@keyframes flash {
+  0%,
+  35% {
+    background: var(--accent-muted);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash {
+    animation: none;
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+}
+
+/* ---- the conversation about the plan */
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+}
+
+.wish {
+  align-self: flex-end;
+  max-width: 88%;
+  padding: 6px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  color: var(--text-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.event {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}
+
+.eventFailed {
+  color: var(--warning);
+}
+
+.working {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  min-width: 0;
+  padding: 6px var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.workingText {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.workingStep {
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composer {
+  position: relative;
+  flex: none;
+  padding: var(--space-2) var(--space-3) 0;
+  border-top: 1px solid var(--border);
+}
+
+.composerInput {
+  min-height: 56px;
+  padding-right: 40px;
+  resize: none;
+}
+
+.sendButton {
+  position: absolute;
+  right: calc(var(--space-3) + 6px);
+  bottom: 6px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex: none;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+.footerSide {
+  display: flex;
+  gap: 2px;
+}
+
+/* Narrow panels: step actions go under the text, always visible. */
+@container (max-width: 340px) {
+  .step {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .stepActions {
+    grid-column: 2;
+    opacity: 1;
+  }
+
+  .wish {
+    max-width: 100%;
+  }
+}

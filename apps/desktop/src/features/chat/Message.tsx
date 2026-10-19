@@ -1,5 +1,5 @@
-import { ChevronRight, CircleAlert, RotateCcw } from 'lucide-react';
-import { memo, useEffect, useId, useRef, useState } from 'react';
+import { Bot, ChevronRight, CircleAlert, CornerDownRight, RotateCcw } from 'lucide-react';
+import { memo, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ContextItem } from '../../bindings/ContextItem';
 import type { Mention } from '../../bindings/Mention';
@@ -10,6 +10,8 @@ import { errorText } from '../../lib/errors';
 import { formatNumber } from '../../lib/format';
 import { IpcError } from '../../lib/ipc';
 import { useApp } from '../../state/app';
+import { useLayout } from '../../state/layout';
+import { useAgentRun } from '../agents/store';
 import { focusComposer } from './composerFocus';
 import type { AssistantTurn, UserTurn } from './conversation';
 import { ContextChip, type ChipData } from './ContextChip';
@@ -19,6 +21,7 @@ import s from './Message.module.css';
 import { mentionKey, mentionLabel, mentionPath } from './mentions';
 import { openInEditor } from './projectPaths';
 import { useChat } from './store';
+import { splitSuggestions, type Suggestion } from './suggestions';
 
 function itemChip(item: ContextItem): ChipData {
   return { kind: item.kind, label: item.label, tokens: item.tokens, truncated: item.truncated, error: item.error };
@@ -106,7 +109,7 @@ function Thinking({ turn }: { turn: AssistantTurn }) {
   );
 }
 
-function Metrics({ turn }: { turn: AssistantTurn }) {
+function Metrics({ turn, text }: { turn: AssistantTurn; text: string }) {
   const { t } = useTranslation('chat');
   const { usage, timings } = turn;
   const details = timings
@@ -119,7 +122,7 @@ function Metrics({ turn }: { turn: AssistantTurn }) {
         {usage && <span>{t('messages.promptTokens', { value: formatNumber(usage.promptTokens) })}</span>}
         {usage && <span>{t('messages.cachedTokens', { value: formatNumber(usage.cachedTokens) })}</span>}
       </span>
-      {turn.content && <CopyButton text={turn.content} label={t('messages.copyAnswer')} />}
+      {text && <CopyButton text={text} label={t('messages.copyAnswer')} />}
     </div>
   );
 }
@@ -150,10 +153,55 @@ function Failure({ turn, canRetry }: { turn: AssistantTurn; canRetry: boolean })
   );
 }
 
+/**
+ * The next steps the answer suggests. A click asks the chat; a suggested
+ * change can go to the agents instead, as the goal of a new run.
+ */
+function SuggestionChips({ suggestions }: { suggestions: Suggestion[] }) {
+  const { t } = useTranslation('chat');
+  const busy = useChat((st) => st.activeRequestId !== null);
+  const sendSuggestion = useChat((st) => st.sendSuggestion);
+  const agentsBusy = useAgentRun((st) => st.phase === 'starting' || st.phase === 'running');
+  const projectOpen = useApp((st) => st.workspace !== null);
+  const toAgents = (goal: string) => {
+    useLayout.getState().setRight('agents');
+    void useAgentRun.getState().startWith(goal);
+  };
+  const agentsTitle = !projectOpen ? t('suggestions.agentsNoProject') : agentsBusy ? t('suggestions.agentsBusy') : t('suggestions.agentsHint');
+  return (
+    <div className={s.suggestions} role="group" aria-label={t('suggestions.label')}>
+      {suggestions.map((sg) => (
+        <div key={sg.text} className={s.suggestion}>
+          <button
+            type="button"
+            className={s.suggestionAsk}
+            disabled={busy}
+            title={t('suggestions.askHint')}
+            onClick={() => {
+              if (sendSuggestion(sg.text)) focusComposer();
+            }}
+          >
+            <CornerDownRight size={13} aria-hidden />
+            <span>{sg.text}</span>
+          </button>
+          {sg.change && (
+            <button type="button" className={s.suggestionAgents} disabled={agentsBusy || !projectOpen} title={agentsTitle} aria-label={t('suggestions.agentsLabel', { text: sg.text })} onClick={() => toAgents(sg.text)}>
+              <Bot size={13} aria-hidden />
+              <span>{t('suggestions.agents')}</span>
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export const AssistantMessage = memo(function AssistantMessage({ turn, last }: { turn: AssistantTurn; last: boolean }) {
   const { t } = useTranslation('chat');
   const streaming = turn.status === 'streaming';
   const waiting = streaming && !turn.content && !turn.reasoning;
+  // The next steps never show as text, also not while they stream.
+  const split = useMemo(() => splitSuggestions(turn.content, streaming), [turn.content, streaming]);
   return (
     <article className={s.assistant} aria-busy={streaming}>
       <h3 className="visually-hidden">{t('messages.assistant')}</h3>
@@ -164,12 +212,13 @@ export const AssistantMessage = memo(function AssistantMessage({ turn, last }: {
           {t('messages.waiting')}
         </p>
       )}
-      {turn.content && <Markdown source={turn.content} settled={!streaming} />}
-      {turn.status === 'done' && !turn.content.trim() && <p className={s.note}>{t('messages.empty')}</p>}
+      {split.text && <Markdown source={split.text} settled={!streaming} />}
+      {turn.status === 'done' && !split.text.trim() && !split.suggestions.length && <p className={s.note}>{t('messages.empty')}</p>}
       {turn.status === 'cancelled' && <p className={s.note}>{t('messages.cancelled')}</p>}
       {turn.finishReason === 'length' && <p className={`${s.note} ${s.warning}`}>{t('messages.cutOff')}</p>}
       {turn.status === 'error' && <Failure turn={turn} canRetry={last} />}
-      {(turn.status === 'done' || turn.status === 'cancelled') && (turn.usage || turn.timings || turn.content) && <Metrics turn={turn} />}
+      {last && turn.status === 'done' && split.suggestions.length > 0 && <SuggestionChips suggestions={split.suggestions} />}
+      {(turn.status === 'done' || turn.status === 'cancelled') && (turn.usage || turn.timings || turn.content) && <Metrics turn={turn} text={split.text} />}
     </article>
   );
 });

@@ -8,7 +8,7 @@ use crate::state::AppState;
 use agent::llm::ChatModel;
 use agent::permissions::{ApprovalBroker, ApprovalRequest, ApprovalResponse, UserReply};
 use crate::last_run::{LastRun, record_change};
-use agent::{AgentEvent, CheckpointStore, FileChange, PreviousRun, RunContext, RunOutcome, ScheduledModel, Team};
+use agent::{AgentEvent, CheckpointStore, FileChange, PlanDoc, PlanRequest, PreviousRun, Question, RunContext, RunOutcome, ScheduledModel, Team};
 use async_trait::async_trait;
 use inference::{ChatRequest, ChatResult, Delta, LlmError, Priority};
 use registry::Model;
@@ -21,12 +21,14 @@ use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
 type EventSink = Arc<dyn Fn(AgentEvent) + Send + Sync>;
+/// An open question card: its questions, to put each answer with its question.
+type OpenQuestion = (Vec<Question>, oneshot::Sender<UserReply>);
 
 /// Answers approvals and agent questions from the UI.
 #[derive(Default)]
 pub struct UiBroker {
     approvals: Mutex<HashMap<String, oneshot::Sender<ApprovalResponse>>>,
-    questions: Mutex<HashMap<String, oneshot::Sender<UserReply>>>,
+    questions: Mutex<HashMap<String, OpenQuestion>>,
     events: Mutex<Option<EventSink>>,
     run_id: Mutex<String>,
     counter: Mutex<u64>,
@@ -37,8 +39,23 @@ impl UiBroker {
         self.approvals.lock().unwrap().remove(request_id).map(|tx| tx.send(response).is_ok()).unwrap_or(false)
     }
 
-    pub fn resolve_question(&self, question_id: &str, answer: UserReply) -> bool {
-        self.questions.lock().unwrap().remove(question_id).map(|tx| tx.send(answer).is_ok()).unwrap_or(false)
+    /// One answer per question (empty: left open), as the card sends them.
+    pub fn resolve_question(&self, question_id: &str, answers: &[String], images: Vec<String>) -> bool {
+        let Some((questions, tx)) = self.questions.lock().unwrap().remove(question_id) else { return false };
+        let text = agent::questions::format_reply(&questions, answers);
+        tx.send(UserReply { text, images }).is_ok()
+    }
+
+    fn next_id(&self, prefix: &str) -> String {
+        let mut c = self.counter.lock().unwrap();
+        *c += 1;
+        format!("{prefix}-{c}")
+    }
+
+    fn emit(&self, event: AgentEvent) {
+        if let Some(emit) = self.events.lock().unwrap().clone() {
+            emit(event);
+        }
     }
 }
 
@@ -53,22 +70,18 @@ impl ApprovalBroker for UiBroker {
         })
     }
 
-    async fn ask_user(&self, agent_id: &str, question: &str) -> UserReply {
-        let id = {
-            let mut c = self.counter.lock().unwrap();
-            *c += 1;
-            format!("question-{c}")
-        };
+    async fn ask_user(&self, agent_id: &str, questions: &[Question], clarify: bool) -> UserReply {
+        let id = self.next_id("question");
         let (tx, rx) = oneshot::channel();
-        self.questions.lock().unwrap().insert(id.clone(), tx);
-        if let Some(emit) = self.events.lock().unwrap().clone() {
-            emit(AgentEvent::QuestionForUser {
-                run_id: self.run_id.lock().unwrap().clone(),
-                question_id: id,
-                agent_id: agent_id.to_string(),
-                question: question.to_string(),
-            });
-        }
+        self.questions.lock().unwrap().insert(id.clone(), (questions.to_vec(), tx));
+        self.emit(AgentEvent::QuestionForUser {
+            run_id: self.run_id.lock().unwrap().clone(),
+            question_id: id,
+            agent_id: agent_id.to_string(),
+            question: agent::questions::list_text(questions),
+            questions: questions.to_vec(),
+            clarify,
+        });
         rx.await.unwrap_or_else(|_| UserReply::text("(no answer)"))
     }
 }
@@ -151,6 +164,11 @@ impl AgentRuns {
     pub fn get(&self, run_id: &str) -> AppResult<Arc<RunEntry>> {
         self.runs.lock().unwrap().get(run_id).cloned().ok_or_else(|| AppError::new("unknown_run", run_id))
     }
+
+    /// Runs that have not ended yet (a calibration waits for them).
+    pub fn active(&self) -> usize {
+        self.runs.lock().unwrap().values().filter(|r| r.ended.lock().unwrap().is_none()).count()
+    }
 }
 
 fn team_for(state: &AppState, handle: &ChatHandle) -> Team {
@@ -205,6 +223,22 @@ pub async fn start(
     language: String,
     channel: Channel<AgentEvent>,
 ) -> AppResult<String> {
+    launch(state, Work::Run { goal, previous_run }, images, language, channel).await
+}
+
+/// What a run does.
+pub enum Work {
+    /// Plan the request and carry it out (continuing `previous_run`, if any).
+    Run { goal: String, previous_run: Option<String> },
+    /// Carry out a plan from planning mode. With `continues`, it holds the
+    /// open tasks of that stopped run, which the record then continues.
+    Plan { plan: PlanDoc, continues: Option<String> },
+    /// Planning mode: only read the project and write or change a plan.
+    Draft { request: PlanRequest, continues: Option<String> },
+}
+
+/// Starts `work` in the background and returns the run's id.
+pub async fn launch(state: &AppState, work: Work, images: Vec<String>, language: String, channel: Channel<AgentEvent>) -> AppResult<String> {
     let handle = state
         .runtime
         .chat_handle()
@@ -212,7 +246,11 @@ pub async fn start(
         .ok_or_else(|| AppError::new("no_model", "start a model first"))?;
     crate::chat::check_images(&images, handle.vision)?;
     let ws = state.workspace()?;
-    let previous = match previous_run {
+    let previous_id = match &work {
+        Work::Run { previous_run, .. } => previous_run.clone(),
+        Work::Plan { continues, .. } | Work::Draft { continues, .. } => continues.clone(),
+    };
+    let previous = match previous_id {
         Some(id) => Some(find_previous(state, ws.root(), &id)?),
         None => None,
     };
@@ -238,21 +276,29 @@ pub async fn start(
     *broker.events.lock().unwrap() = Some(emit.clone());
     // The skills that are on when the run starts; they work with any model.
     let skills = crate::skill_service::enabled(&state.skills, Some(&ws));
-    let ctx = Arc::new(
-        RunContext::new(
-            run_id.clone(),
-            ws,
-            Arc::new(checkpoint_store(state)?),
-            settings.agent.permissions.clone(),
-            settings.agent.shell.clone(),
-            settings.agent.templates.clone(),
-            broker.clone(),
-            emit,
-        )
-        .with_skills(skills)
-        .with_goal_images(images)
-        .with_language(language),
-    );
+    let mut ctx = RunContext::new(
+        run_id.clone(),
+        ws,
+        Arc::new(checkpoint_store(state)?),
+        settings.agent.permissions.clone(),
+        settings.agent.shell.clone(),
+        settings.agent.templates.clone(),
+        broker.clone(),
+        emit,
+    )
+    .with_skills(skills)
+    .with_goal_images(images)
+    .with_language(language)
+    .with_questions(settings.questions);
+    if matches!(work, Work::Draft { .. }) {
+        ctx = ctx.read_only();
+    }
+    let ctx = Arc::new(ctx);
+    let goal = match &work {
+        Work::Run { goal, .. } => goal.clone(),
+        Work::Plan { plan, .. } => plan.goal.clone(),
+        Work::Draft { request, .. } => request.goal.clone(),
+    };
     let entry = Arc::new(RunEntry {
         ctx: ctx.clone(),
         broker,
@@ -267,7 +313,15 @@ pub async fn start(
     let last_runs = state.last_runs.clone();
     let id = run_id.clone();
     tauri::async_runtime::spawn(async move {
-        let report = agent::run_with_previous(ctx, &team, &goal, previous.as_ref()).await;
+        let report = match &work {
+            Work::Run { .. } => agent::run_with_previous(ctx, &team, &goal, previous.as_ref()).await,
+            Work::Plan { plan, .. } => agent::run_plan(ctx, &team, plan).await,
+            Work::Draft { request, .. } => {
+                // A plan is no run of the project: nothing to keep as its last run.
+                agent::draft_plan(ctx, &team, request, previous.as_ref()).await;
+                return;
+            }
+        };
         tracing::info!("agent run finished: {:?}", report.outcome);
         let record = LastRun {
             run_id: id,

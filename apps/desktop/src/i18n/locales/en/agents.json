@@ -65,7 +65,8 @@
     "stepLimit": "Step limit reached",
     "answering": "Answering {{agent}}",
     "notes": "Updating the project knowledge",
-    "recap": "Writing the summary"
+    "recap": "Writing the summary",
+    "clarify": "Waiting for your answers"
   },
   "idle": {
     "goalLabel": "What should the agents do?",
@@ -85,7 +86,8 @@
     "previous": "Previous run",
     "showRun": "Show details",
     "openTasks_one": "One task is still open. Continuing picks it up first.",
-    "openTasks_other": "{{count}} tasks are still open. Continuing picks them up first."
+    "openTasks_other": "{{count}} tasks are still open. Continuing picks them up first.",
+    "startPlanning": "Create plan"
   },
   "mode": {
     "label": "Approvals",
@@ -101,7 +103,8 @@
     "confirmDeletes": "Ask before deleting files",
     "unguardedCommands": "Agents run commands without asking. Their effects cannot be undone.",
     "unguardedDeletes": "Agents delete files without asking. You can restore them from the checkpoints.",
-    "unguardedBoth": "Agents run commands and delete files without asking. Effects of commands cannot be undone."
+    "unguardedBoth": "Agents run commands and delete files without asking. Effects of commands cannot be undone.",
+    "confirmPlan": "Plan first, then build"
   },
   "run": {
     "elapsed": "Elapsed time",
@@ -252,7 +255,16 @@
     "answerLabel": "Your answer",
     "hint": "Ctrl+Enter sends the answer.",
     "later": "Answer later",
-    "send": "Send answer"
+    "send": "Send answer",
+    "clarifyTitle": "A few questions before the plan",
+    "clarifyIntro": "The orchestrator plans with your answers. Click an answer or write your own; what you leave open, it decides itself.",
+    "recommended": "(recommended)",
+    "own": "Your own answer",
+    "ownLabel": "Your own answer to: {{question}}",
+    "several": "You can pick several.",
+    "sendAll": "Send answers",
+    "skip": "Skip",
+    "skipHint": "Plan without answers: the orchestrator decides itself and says what it assumed."
   },
   "live": {
     "task": "{{id}} {{title}}: {{status}}",
@@ -264,6 +276,69 @@
     "answer": "Your answer could not be sent",
     "intervene": "Your message could not be sent",
     "restore": "The changes could not be undone",
-    "settings": "The approval setting could not be saved"
+    "settings": "The approval setting could not be saved",
+    "planDraft": "The plan could not be created",
+    "planSave": "The plan could not be saved"
+  },
+  "workMode": {
+    "label": "Mode",
+    "plan": "Plan",
+    "code": "Build",
+    "hint": "Switch between planning and building ({{key}})"
+  },
+  "plan": {
+    "introTitle": "Plan first, then build",
+    "introBody": "In planning mode the agents only read, change nothing and write a plan. You discuss and edit it until it fits. With “Build” they work through it.",
+    "goalLabel": "What should be planned?",
+    "goalPlaceholder": "For example: discount codes in the cart",
+    "create": "Create plan",
+    "createHint": "Ctrl+Enter creates the plan.",
+    "notReady": "Start a model and open a project to plan.",
+    "adopt": "Take over open tasks",
+    "adoptHint": "The last run (“{{goal}}”) has open tasks. Take them over as a plan to rework them.",
+    "handover": "Switches to planning once {{task}} is done.",
+    "handoverNoTask": "Switches to planning once the current task is done.",
+    "keepGoing": "Keep building",
+    "kicker": "Plan",
+    "firstDraft": "The orchestrator looks at the project and writes the plan. Nothing is changed.",
+    "working": "The orchestrator is planning …",
+    "stop": "Stop",
+    "approach": "Approach",
+    "done": "Already done",
+    "steps": "Steps",
+    "noSteps": "No steps yet. Add one, or describe below what is missing.",
+    "addStep": "Add step",
+    "newStep": "New step",
+    "files": "Files",
+    "verify": "Check",
+    "risks": "Risks",
+    "questions": "Open questions",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "edit": "Edit",
+    "remove": "Remove",
+    "titleLabel": "Title",
+    "descriptionLabel": "What to do",
+    "filesLabel": "Files, separated by commas",
+    "verifyLabel": "How to check it",
+    "apply": "Apply",
+    "answer": "Send answers",
+    "answersIntro": "Answers to the open questions:",
+    "leftOpen": "left open, decide yourself",
+    "notesLabel": "History of the plan",
+    "noteCreated": "Plan created",
+    "noteUpdated": "Plan updated",
+    "noteFailed": "The orchestrator could not write a plan. Try again or put it differently.",
+    "noteTookOver": "The open tasks are the plan now.",
+    "chatLabel": "Discuss the plan",
+    "chatPlaceholder": "For example: change step 2, use Vitest instead",
+    "send": "Send",
+    "saveFile": "Save as file",
+    "saved": "Plan saved",
+    "discard": "Discard plan",
+    "discardTitle": "Discard the plan?",
+    "discardBody": "The plan and its history are lost. Saved files stay.",
+    "carryOut": "Build",
+    "carryOutHint": "The agents work through the steps, in the chosen approval mode."
   }
 }

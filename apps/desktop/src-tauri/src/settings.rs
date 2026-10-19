@@ -2,7 +2,7 @@
 //! Unknown or missing fields fall back to defaults, so old files keep working.
 
 use crate::error::AppResult;
-use agent::{PermissionSettings, PromptTemplates, RoleDefinition, ShellConfig};
+use agent::{PermissionSettings, PromptTemplates, QuestionLevel, RoleDefinition, ShellConfig};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use ts_rs::TS;
@@ -95,6 +95,10 @@ pub struct ModelSettings {
     pub extra_args: Vec<String>,
     /// Start the main model automatically when the app opens.
     pub autostart: bool,
+    /// Always use a q8_0 KV cache (`-ctk/-ctv q8_0`): half the memory for the
+    /// context, so more of the model fits on the GPU; very slightly lossy.
+    /// Off: q8_0 only where an F16 cache does not fit.
+    pub quantize_kv: bool,
 }
 
 impl Default for ModelSettings {
@@ -109,6 +113,7 @@ impl Default for ModelSettings {
             slots: 2,
             extra_args: vec![],
             autostart: true,
+            quantize_kv: false,
         }
     }
 }
@@ -218,6 +223,8 @@ pub struct Settings {
     pub agent: AgentSettings,
     pub chat: ChatSettings,
     pub editor: EditorSettings,
+    /// How readily the agents (before they plan) and the chat ask back.
+    pub questions: QuestionLevel,
 }
 
 impl Default for Settings {
@@ -234,6 +241,7 @@ impl Default for Settings {
             agent: AgentSettings::default(),
             chat: ChatSettings::default(),
             editor: EditorSettings::default(),
+            questions: QuestionLevel::IfNeeded,
         }
     }
 }
@@ -321,12 +329,17 @@ mod tests {
         assert_eq!(s.language.as_deref(), Some("de"));
         assert_eq!(s.models.slots, 3);
         assert!(s.models.autostart);
+        assert!(!s.models.quantize_kv, "the lossy KV cache stays opt-in");
         assert_eq!(s.editor.tab_size, 4);
         // Files written before update checks existed keep them on.
         let s: Settings = serde_json::from_str(r#"{"network":{"allowModelDownloads":false}}"#).unwrap();
         assert!(!s.network.allow_model_downloads);
         assert!(s.network.allow_update_checks);
         assert!(!s.network.allow_skill_downloads, "skill downloads wait for the user's go");
+        // Files written before questions could be set ask when needed.
+        assert_eq!(s.questions, QuestionLevel::IfNeeded);
+        let s: Settings = serde_json::from_str(r#"{"questions":"never"}"#).unwrap();
+        assert_eq!(s.questions, QuestionLevel::Never);
     }
 
     #[test]

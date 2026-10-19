@@ -10,7 +10,7 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
 name = "agent"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "async-trait",
  "getrandom 0.4.3",
@@ -1015,7 +1015,7 @@ dependencies = [
 
 [[package]]
 name = "downloader"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "futures-util",
  "hex",
@@ -1817,7 +1817,7 @@ dependencies = [
 
 [[package]]
 name = "hardware"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "libloading 0.9.0",
  "serde",
@@ -2151,6 +2151,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "include_dir"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "923d117408f1e49d914f1a379a309cffe4f18c05cf4e3d12e613a15fc81bd0dd"
+dependencies = [
+ "include_dir_macros",
+]
+
+[[package]]
+name = "include_dir_macros"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cab85a7ed0bd5f0e76d93846e0147172bed2e2d3f859bcc33a8d9699cad1a75"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2184,7 +2203,7 @@ dependencies = [
 
 [[package]]
 name = "inference"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "base64 0.22.1",
  "futures-util",
@@ -3741,7 +3760,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
 name = "registry"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "hardware",
  "jsonschema",
@@ -4314,8 +4333,9 @@ checksum = "33f4fe9184a62d842c9ef383018f3306d8ba224fd9d836f56d7288308847c256"
 
 [[package]]
 name = "skills"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
+ "include_dir",
  "serde",
  "serde_json",
  "similar",
@@ -6206,7 +6226,7 @@ checksum = "1ebf944e87a7c253233ad6766e082e3cd714b5d03812acc24c318f549614536e"
 
 [[package]]
 name = "workspace"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "dunce",
  "grep-matcher",
@@ -6303,7 +6323,7 @@ dependencies = [
 
 [[package]]
 name = "ylide-desktop"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "agent",
  "async-trait",

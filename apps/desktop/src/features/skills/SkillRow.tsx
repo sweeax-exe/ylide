@@ -146,7 +146,15 @@ export function SkillRow({ skill, onRemoved }: { skill: SkillInfo; onRemoved: ()
         />
       </div>
 
-      <ContentDialog skill={skill} open={viewing !== null} confirm={viewing === 'enable'} busy={busy} onEnable={() => void setEnabled(true)} onClose={() => setViewing(null)} />
+      <ContentDialog
+        name={skill.name}
+        load={() => api.skills.content(skill.id)}
+        open={viewing !== null}
+        confirm={viewing === 'enable'}
+        busy={busy}
+        onEnable={() => void setEnabled(true)}
+        onClose={() => setViewing(null)}
+      />
 
       <SettingsDialog
         open={update !== null}

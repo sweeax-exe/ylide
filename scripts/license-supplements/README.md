@@ -8,6 +8,7 @@ or that contain code under a further license.
 | Folder | Text | Source |
 |---|---|---|
 | `alloc-stdlib/` | BSD-3-Clause | `LICENSE` of dropbox/rust-alloc-no-stdlib at 0a81fd6 (the commit the crate was published from) |
+| `include_dir/`, `include_dir_macros/` | MIT | `LICENSE` of Michael-F-Bryan/include_dir; the crates ship none |
 | `selectors/` | MPL-2.0 | `LICENSE` of the cssparser 0.37.0 crate (also Servo); servo/stylo has no license file for it |
 | `ts-rs/`, `ts-rs-macros/` | MIT | `LICENSE` of Aleph-Alpha/ts-rs at 7182ad8 |
 | `webview2-com/`, `webview2-com-sys/`, `webview2-com-macros/` | MIT | `LICENSE` of wravery/webview2-rs at edc2caf and dffa41a |

@@ -116,6 +116,7 @@ function RunHeader({ run }: { run: RunData }) {
   const task = currentTask(run);
   const total = run.taskOrder.length;
   const index = task ? run.taskOrder.indexOf(task.id) + 1 : 0;
+  const started = run.taskOrder.some((id) => run.tasks[id] && run.tasks[id].status !== 'pending');
 
   let status: ReactNode;
   if (run.outcome) {
@@ -145,7 +146,7 @@ function RunHeader({ run }: { run: RunData }) {
     status = (
       <span className={s.status}>
         <Braid active={isGenerating(run)} size={12} />
-        {task ? t('run.progress', { index, total }) : run.plan ? t('run.wrappingUp') : t('run.planning')}
+        {task ? t('run.progress', { index, total }) : run.plan && started ? t('run.wrappingUp') : t('run.planning')}
       </span>
     );
   }

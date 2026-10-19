@@ -1,0 +1,143 @@
+.card {
+  margin-top: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--bg-raised);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-3);
+}
+
+.icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--metal);
+}
+
+.headText {
+  flex: 1;
+  min-width: 220px;
+}
+
+.title {
+  font-weight: 650;
+  color: var(--text-1);
+}
+
+.intro {
+  margin: 2px 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  line-height: var(--leading-prose);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: 0 var(--space-5) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.hint {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}
+
+.progress,
+.result {
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.progressHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.trials {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trial {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.trialName {
+  min-width: 170px;
+  color: var(--text-1);
+}
+
+.trialSpeeds {
+  flex: 1;
+  min-width: 200px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.headline {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.secondary {
+  margin: 2px 0 0;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.changes {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-5);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.details {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.details summary {
+  cursor: pointer;
+}
+
+.message {
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.result .message {
+  padding: var(--space-3) 0 0;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}

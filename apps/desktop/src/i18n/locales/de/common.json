@@ -122,7 +122,12 @@
     "no_vision": "Das laufende Modell kann keine Bilder sehen. Schalte auf der Modelle-Seite „Bilder verstehen“ für ein Modell ein, das es kann.",
     "bad_image": "Das Bild lässt sich nicht verwenden: {{message}}",
     "not_projector": "Das ist kein Bildmodul (mmproj-GGUF-Datei).",
-    "no_projector": "Dieses Modell hat kein Bildverständnis."
+    "no_projector": "Dieses Modell hat kein Bildverständnis.",
+    "calibrating": "Das Modell wird gerade für diesen PC optimiert. Versuch es gleich noch einmal.",
+    "calibration_busy": "Das Modell arbeitet gerade. Optimiere, wenn Chat und Agenten ruhen.",
+    "calibration_not_running": "Starte zuerst das Modell, dann optimiere es.",
+    "calibration_running": "Eine Optimierung läuft bereits.",
+    "calibration_external": "Ein externer Server lässt sich nicht von Ylide aus optimieren."
   },
   "images": {
     "attach": "Bilder anhängen",

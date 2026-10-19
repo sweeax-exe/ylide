@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*", "apps/desktop/src-tauri"]
 
 [workspace.package]
-version = "0.1.8"
+version = "0.1.9"
 edition = "2024"
 license = "Apache-2.0"
 rust-version = "1.88"
@@ -33,6 +33,7 @@ grep-searcher = "0.1"
 ignore = "0.4"
 regex = "1"
 similar = "3"
+include_dir = "0.7"
 async-trait = "0.1"
 zip = { version = "9", default-features = false, features = ["deflate"] }
 notify = "8"

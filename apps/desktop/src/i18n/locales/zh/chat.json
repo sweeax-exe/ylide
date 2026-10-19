@@ -121,5 +121,14 @@
     "deleteConfirm": "删除",
     "saveFailed": "无法将聊天保存到历史记录",
     "messages_other": "{{count}} 条消息"
+  },
+  "suggestions": {
+    "label": "建议的下一步",
+    "askHint": "作为下一条消息发送",
+    "agents": "交给智能体完成",
+    "agentsLabel": "交给智能体完成：{{text}}",
+    "agentsHint": "以此为目标启动一次智能体运行。",
+    "agentsBusy": "已有一次智能体运行正在进行。",
+    "agentsNoProject": "请先打开一个项目。"
   }
 }

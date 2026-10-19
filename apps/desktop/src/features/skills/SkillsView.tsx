@@ -5,6 +5,7 @@
 import { FolderPlus, Plus, ShieldAlert } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import type { RecommendedInfo } from '../../bindings/RecommendedInfo';
 import type { SkillInfo } from '../../bindings/SkillInfo';
 import { Button, EmptyState, Spinner } from '../../components/ui';
 import { reportError } from '../../lib/errors';
@@ -16,6 +17,7 @@ import { SKILL_SECTIONS } from '../settings/page/ids';
 import { Page, PageSection } from '../settings/page/Page';
 import { AddFromGithub } from './AddFromGithub';
 import { splitSkills } from './logic';
+import { RecommendedRow } from './RecommendedRow';
 import { SkillRow } from './SkillRow';
 import s from './Skills.module.css';
 import { useSkills } from './store';
@@ -24,6 +26,7 @@ export function SkillsView() {
   const { t } = useTranslation('skills');
   const workspace = useApp((st) => st.workspace);
   const skills = useSkills((st) => st.skills);
+  const recommended = useSkills((st) => st.recommended);
   const error = useSkills((st) => st.error);
   const load = useSkills((st) => st.load);
   const [adding, setAdding] = useState(false);
@@ -34,22 +37,39 @@ export function SkillsView() {
   }, [load, workspace?.root]);
 
   const { installed, project } = useMemo(() => splitSkills(skills ?? []), [skills]);
+  // Only skills not installed yet are offered.
+  const offered = useMemo(() => (recommended ?? []).filter((r) => !r.installed), [recommended]);
   const sections = useMemo(
     () => [
       { id: SKILL_SECTIONS.installed, title: t('installed.title') },
+      ...(offered.length > 0 ? [{ id: SKILL_SECTIONS.recommended, title: t('recommended.title') }] : []),
       ...(workspace ? [{ id: SKILL_SECTIONS.project, title: t('project.title') }] : []),
       { id: SKILL_SECTIONS.usage, title: t('usage.title') },
     ],
-    [t, workspace],
+    [t, workspace, offered.length],
   );
 
   return (
     <Page view="skills" title={t('page.title')} intro={t('page.intro')} sections={sections}>
       <Installed skills={installed} loading={skills === null && !error} error={error} onAdd={() => setAdding(true)} />
+      {offered.length > 0 && <Recommended skills={offered} />}
       {workspace && <ProjectSkills skills={project} loading={skills === null && !error} />}
       <Usage />
       <AddFromGithub open={adding} onClose={() => setAdding(false)} />
     </Page>
+  );
+}
+
+function Recommended({ skills }: { skills: RecommendedInfo[] }) {
+  const { t } = useTranslation('skills');
+  return (
+    <PageSection id={SKILL_SECTIONS.recommended} title={t('recommended.title')} description={t('recommended.description')}>
+      <ul className={s.list}>
+        {skills.map((skill) => (
+          <RecommendedRow key={skill.id} skill={skill} />
+        ))}
+      </ul>
+    </PageSection>
   );
 }
 

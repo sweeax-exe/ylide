@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { ApprovalMode } from '../../../bindings/ApprovalMode';
+import type { QuestionLevel } from '../../../bindings/QuestionLevel';
 import type { Settings } from '../../../bindings/Settings';
 import { Group, GroupResetButton, LinesSetting, NumberSetting, Row, StaticRow, SwitchRow, TextSetting } from '../page/controls';
 import { useDefaults } from '../page/defaults';
@@ -11,6 +12,7 @@ import { RolesEditor } from './RolesEditor';
 import { TemplatesEditor } from './TemplatesEditor';
 
 const MODES: ApprovalMode[] = ['ask', 'autoSafe', 'autonomous'];
+const LEVELS: QuestionLevel[] = ['never', 'ifNeeded', 'often'];
 
 export function AgentsSection({ settings }: { settings: Settings }) {
   const { t } = useTranslation('settings');
@@ -48,6 +50,17 @@ export function AgentsSection({ settings }: { settings: Settings }) {
               </div>
             </StaticRow>
             <SwitchRow
+              label={t('agents.confirmPlan.label')}
+              hint={askMode ? t('agents.confirmPlan.hintAsk') : t('agents.confirmPlan.hint')}
+              checked={perms.confirmPlan ?? askMode}
+              onChange={(v) =>
+                void save((d) => {
+                  // The mode's own default follows the mode again.
+                  d.agent.permissions.confirmPlan = v === (d.agent.permissions.mode === 'ask') ? null : v;
+                })
+              }
+            />
+            <SwitchRow
               label={t('agents.confirmCommands.label')}
               hint={guarded ? t('agents.onlyAutonomous') : t('agents.confirmCommands.hint')}
               warning={!perms.confirmCommands && !guarded ? t('agents.confirmCommands.off') : undefined}
@@ -70,6 +83,32 @@ export function AgentsSection({ settings }: { settings: Settings }) {
               }
             />
           </>
+        )}
+      </Group>
+
+      <Group title={t('agents.questionsTitle')} description={t('agents.questionsDescription')}>
+        {(save) => (
+          <StaticRow wide label={t('agents.questions.label')}>
+            <div className={s.modes} role="radiogroup" aria-label={t('agents.questions.label')}>
+              {LEVELS.map((level) => (
+                <label key={level} className={s.mode}>
+                  <input
+                    type="radio"
+                    name="question-level"
+                    value={level}
+                    checked={settings.questions === level}
+                    onChange={() =>
+                      void save((d) => {
+                        d.questions = level;
+                      })
+                    }
+                  />
+                  <span className={s.modeTitle}>{t(`agents.questions.${level}.title`)}</span>
+                  <span className={s.modeBody}>{t(`agents.questions.${level}.body`)}</span>
+                </label>
+              ))}
+            </div>
+          </StaticRow>
         )}
       </Group>
 

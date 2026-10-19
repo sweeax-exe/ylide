@@ -3,7 +3,12 @@
 /**
  * Message templates with `{placeholder}` fields; see `prompts/templates.json`.
  */
-export type PromptTemplates = { planner: string, coderTask: string, reviewerTask: string, feedback: string, question: string, continue: string, repeatedFailure: string, 
+export type PromptTemplates = { planner: string, coderTask: string, reviewerTask: string, feedback: string, 
+/**
+ * Planning mode: asks the orchestrator for a plan the user reviews, or
+ * for a change to it. Settings saved before it existed get the default.
+ */
+planning: string, question: string, continue: string, repeatedFailure: string, 
 /**
  * Asks the orchestrator for the new project notes after a run. Settings
  * saved before it existed get the default.

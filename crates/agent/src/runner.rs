@@ -8,6 +8,7 @@ use crate::permissions::{
     ApprovalBroker, ApprovalRequest, ApprovalResponse, Decision, PermissionSettings, ToolRisk, UserReply, decide,
 };
 use crate::protocol::{AgentEvent, AgentMessage, AgentState, AgentStatus, Blackboard, MessageKind, Review};
+use crate::questions::{self, Question, QuestionLevel};
 use crate::roles::{PromptTemplates, RoleDefinition};
 use crate::textcalls::parse_text_tool_calls;
 use crate::tools::{SKILL_READ, ShellConfig, ToolEnv, ToolOutcome, describe_call, execute, tool_spec};
@@ -16,7 +17,7 @@ use inference::{ChatMessage, ChatRequest, FinishReason, LlmError, MessageRole};
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::watch;
 use tokio_util::sync::CancellationToken;
@@ -31,6 +32,8 @@ pub struct RunControl {
     pub cancel: CancellationToken,
     paused: watch::Sender<bool>,
     interventions: Arc<Mutex<Vec<(String, UserReply)>>>,
+    /// The user switched to planning: the task being worked on finishes, then the run stops.
+    stop_after_task: Arc<AtomicBool>,
 }
 
 impl Default for RunControl {
@@ -39,11 +42,21 @@ impl Default for RunControl {
             cancel: CancellationToken::new(),
             paused: watch::channel(false).0,
             interventions: Arc::default(),
+            stop_after_task: Arc::default(),
         }
     }
 }
 
 impl RunControl {
+    /// With `true`, the run stops once the current task is done, before the
+    /// next one starts (the open tasks then go back into a plan); `false`
+    /// takes that back while the task still runs.
+    pub fn stop_after_task(&self, on: bool) {
+        self.stop_after_task.store(on, Ordering::SeqCst);
+    }
+    pub fn stops_after_task(&self) -> bool {
+        self.stop_after_task.load(Ordering::SeqCst)
+    }
     pub fn pause(&self) {
         self.paused.send_replace(true);
     }
@@ -99,8 +112,15 @@ pub struct RunContext {
     /// the agent that works on a task see them with their first message.
     pub goal_images: Vec<String>,
     /// The user's language (app language code, "en" by default): the summary
-    /// at the end of the run is written in it.
+    /// at the end of the run and questions to the user are written in it.
     pub language: String,
+    /// How readily the orchestrator asks before it plans (setting "Rückfragen").
+    pub questions: QuestionLevel,
+    /// The orchestrator asked its one round of questions (or tried to).
+    clarified: AtomicBool,
+    /// Planning mode: agents only read. Tools that write, delete or run
+    /// commands are neither offered nor executed, whatever a role lists.
+    pub read_only: bool,
     /// Tools the user approved "always" during this run.
     always_allowed: Mutex<HashSet<String>>,
     /// Files read by any agent in this run (guards blind overwrites).
@@ -137,6 +157,9 @@ impl RunContext {
             skills: Vec::new(),
             goal_images: Vec::new(),
             language: "en".into(),
+            questions: QuestionLevel::default(),
+            clarified: AtomicBool::new(false),
+            read_only: false,
             always_allowed: Mutex::default(),
             read_files: Mutex::default(),
             worked_commands: Mutex::default(),
@@ -164,6 +187,18 @@ impl RunContext {
     /// The run for a user of this app language ("de", "pt", ...).
     pub fn with_language(mut self, language: impl Into<String>) -> Self {
         self.language = language.into();
+        self
+    }
+
+    /// The run with the user's setting for questions before the plan.
+    pub fn with_questions(mut self, level: QuestionLevel) -> Self {
+        self.questions = level;
+        self
+    }
+
+    /// A planning run: the agents only read the project.
+    pub fn read_only(mut self) -> Self {
+        self.read_only = true;
         self
     }
 
@@ -218,7 +253,7 @@ impl RunContext {
 #[async_trait]
 pub trait AskRouter: Send + Sync {
     /// The answer, or `None` if the run was cancelled while waiting for it.
-    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &str, task_id: Option<&str>) -> Option<UserReply>;
+    async fn ask(&self, ctx: &RunContext, from: &str, to: &str, question: &Question, task_id: Option<&str>) -> Option<UserReply>;
 }
 
 /// A message with the user's images, for a model that sees; another model
@@ -239,6 +274,12 @@ fn with_user_images(message: ChatMessage, images: Vec<String>, vision: bool) -> 
 pub struct PlanDraft {
     pub summary: String,
     pub tasks: Vec<TaskDraft>,
+    /// Planning mode: what could go wrong (checked leniently, see `planning`).
+    #[serde(default)]
+    pub risks: Value,
+    /// Planning mode: questions the user should decide, as for `clarify`.
+    #[serde(default)]
+    pub questions: Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -250,6 +291,22 @@ pub struct TaskDraft {
     pub files: Vec<String>,
     #[serde(default)]
     pub assignee: Option<String>,
+    /// The id of a step the orchestrator kept when it changed a plan.
+    #[serde(default, deserialize_with = "lenient_text")]
+    pub id: String,
+    /// How to check the step is done.
+    #[serde(default, deserialize_with = "lenient_text")]
+    pub verify: String,
+}
+
+/// Text from a string, a number or a list of strings; anything else is empty.
+fn lenient_text<'de, D: serde::Deserializer<'de>>(d: D) -> Result<String, D::Error> {
+    Ok(match Value::deserialize(d)? {
+        Value::String(s) => s,
+        Value::Number(n) => n.to_string(),
+        Value::Array(items) => items.iter().filter_map(Value::as_str).collect::<Vec<_>>().join("; "),
+        _ => String::new(),
+    })
 }
 
 /// How an agent's turn ended.
@@ -270,6 +327,8 @@ pub struct AgentSpec<'a> {
     pub id: String,
     pub role: &'a RoleDefinition,
     pub model: Arc<dyn ChatModel>,
+    /// Tools for this conversation on top of the role's (`clarify` while the orchestrator plans).
+    pub extra_tools: Vec<&'static str>,
 }
 
 fn estimate_tokens(messages: &[ChatMessage]) -> u32 {
@@ -329,7 +388,16 @@ pub async fn run_agent(
     if agent.model.vision() && !tools.is_empty() && !tools.iter().any(|t| t == image_view) {
         tools.push(image_view.to_string());
     }
-    let tool_defs: Vec<_> = tools.iter().filter_map(|t| tool_spec(t)).map(|s| s.definition()).collect();
+    for extra in &agent.extra_tools {
+        if !tools.iter().any(|t| t == extra) {
+            tools.push(extra.to_string());
+        }
+    }
+    // Planning mode: reading tools and the plan, nothing that changes the project.
+    if ctx.read_only {
+        tools.retain(|t| t == "submit_plan" || tool_spec(t).is_some_and(|s| s.risk == ToolRisk::Read));
+    }
+    let tool_defs: Vec<_> = tools.iter().filter_map(|t| tool_spec(t)).map(|s| questions::tool_definition(&s, ctx.questions, &ctx.language)).collect();
     let tool_names: Vec<&str> = tools.iter().map(String::as_str).collect();
     let mut text_only_turns = 0;
     let mut failures: HashMap<String, u32> = HashMap::new();
@@ -417,6 +485,18 @@ pub async fn run_agent(
                 && let Some(review) = parse_json_object::<Review>(&text)
             {
                 return AgentEnd::Review(review);
+            }
+            // Planners that write their questions as JSON instead of calling clarify.
+            if tool_names.contains(&questions::CLARIFY)
+                && let Some(args) = parse_json_object::<Value>(&text).filter(|a| a.get("questions").is_some())
+            {
+                let answer = match clarify(ctx, agent, &args, task_id).await {
+                    Clarified::Answered(reply) => with_user_images(ChatMessage::user(answers_text(&reply.text)), reply.images, agent.model.vision()),
+                    Clarified::Refused(msg) => ChatMessage::user(msg),
+                    Clarified::Cancelled => return AgentEnd::Cancelled,
+                };
+                conversation.push(answer);
+                continue;
             }
             text_only_turns += 1;
             if result.finish_reason == FinishReason::Length {
@@ -509,12 +589,31 @@ pub async fn run_agent(
                         ));
                     }
                 },
+                questions::CLARIFY => match clarify(ctx, agent, &args, task_id).await {
+                    Clarified::Answered(reply) => {
+                        tool_result(true, "Answers from the user", None);
+                        let result = ChatMessage::tool_result(&call.id, answers_text(&reply.text));
+                        conversation.push(with_user_images(result, reply.images, agent.model.vision()));
+                    }
+                    Clarified::Refused(msg) => {
+                        tool_result(false, msg, None);
+                        conversation.push(ChatMessage::tool_result(&call.id, format!("Error: {msg}")));
+                    }
+                    Clarified::Cancelled => {
+                        tool_result(false, "run cancelled", None);
+                        conversation.push(ChatMessage::tool_result(&call.id, "Error: run cancelled"));
+                    }
+                },
                 "ask" => {
                     let to = args["to"].as_str().unwrap_or("orchestrator");
-                    let question = args["question"].as_str().unwrap_or_default();
+                    let Some(question) = questions::parse_ask(&args) else {
+                        tool_result(false, "the question is empty", None);
+                        conversation.push(ChatMessage::tool_result(&call.id, "Error: the question is empty."));
+                        continue;
+                    };
                     ctx.status(&agent.id, &role.id, AgentState::WaitingForAnswer, &description, task_id);
-                    ctx.post_message(&agent.id, to, MessageKind::Question, question, task_id);
-                    let Some(answer) = router.ask(ctx, &agent.id, to, question, task_id).await else {
+                    ctx.post_message(&agent.id, to, MessageKind::Question, &questions::as_text(&question), task_id);
+                    let Some(answer) = router.ask(ctx, &agent.id, to, &question, task_id).await else {
                         tool_result(false, "run cancelled", None);
                         conversation.push(ChatMessage::tool_result(&call.id, "Error: run cancelled"));
                         continue;
@@ -561,6 +660,9 @@ async fn execute_with_permission(
     let Some(spec) = tool_spec(name) else {
         return error_outcome(format!("unknown tool '{name}'"));
     };
+    if ctx.read_only && spec.risk != ToolRisk::Read {
+        return error_outcome(READ_ONLY.into());
+    }
     // Only offered to a model that sees, but a role may list it by hand.
     if name == crate::tools::IMAGE_VIEW && !agent.model.vision() {
         return error_outcome(crate::tools::NO_VISION.into());
@@ -659,6 +761,9 @@ async fn execute_with_permission(
 /// Commands kept for the project notes.
 const MAX_WORKED_COMMANDS: usize = 20;
 
+/// What a write, delete or command gets in planning mode.
+pub const READ_ONLY: &str = "planning mode: the agents only read the project now. Nothing may be changed and no command may run; put the change into the plan instead.";
+
 /// One tool call outside an agent's loop (the orchestrator writing the
 /// project notes): the same events, approval and checkpoint as a model's call.
 pub(crate) async fn call_tool(ctx: &RunContext, agent: &AgentSpec<'_>, name: &str, args: Value) -> ToolOutcome {
@@ -681,6 +786,43 @@ pub(crate) async fn call_tool(ctx: &RunContext, agent: &AgentSpec<'_>, name: &st
         change: outcome.change.clone(),
     });
     outcome
+}
+
+/// How the orchestrator's round of questions ended.
+enum Clarified {
+    Answered(UserReply),
+    /// Not asked: what the model is told instead.
+    Refused(&'static str),
+    Cancelled,
+}
+
+const ALREADY_ASKED: &str = "You already asked the user once in this run. Do not ask again: plan with the answers you have and call submit_plan.";
+const NO_QUESTION: &str = "There was no usable question (each needs a short 'question' text). Do not ask again: plan with what you know and call submit_plan.";
+
+/// The orchestrator's one round of questions before it plans. A second
+/// call, or a first one without a usable question, asks nothing: the model
+/// is told to plan with what it has, so a model that cannot get the call
+/// right still ends with a plan.
+async fn clarify(ctx: &RunContext, agent: &AgentSpec<'_>, args: &Value, task_id: Option<&str>) -> Clarified {
+    if ctx.clarified.swap(true, Ordering::SeqCst) {
+        return Clarified::Refused(ALREADY_ASKED);
+    }
+    let asked = questions::parse_clarify(args);
+    if asked.is_empty() {
+        return Clarified::Refused(NO_QUESTION);
+    }
+    ctx.status(&agent.id, &agent.role.id, AgentState::WaitingForAnswer, "asking the user", task_id);
+    ctx.post_message(&agent.id, "user", MessageKind::Question, &questions::list_text(&asked), task_id);
+    let reply = tokio::select! {
+        r = ctx.broker.ask_user(&agent.id, &asked, true) => r,
+        _ = ctx.control.cancel.cancelled() => return Clarified::Cancelled,
+    };
+    ctx.post_message("user", &agent.id, MessageKind::Answer, &reply.text, task_id);
+    Clarified::Answered(reply)
+}
+
+fn answers_text(reply: &str) -> String {
+    format!("Answers from the user:\n{reply}\n\nPlan with these answers now and call submit_plan.")
 }
 
 /// True when the run already has tasks before planning (carried over from the run it continues).

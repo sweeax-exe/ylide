@@ -215,6 +215,28 @@
     "shellOutput": {
       "label": "Batas output",
       "hint": "Output yang lebih panjang dipersingkat di bagian tengah sebelum dilihat agen."
+    },
+    "confirmPlan": {
+      "label": "Rencanakan dulu, lalu kerjakan",
+      "hint": "Permintaan baru membuka mode perencanaan terlebih dahulu: agen hanya membaca dan menulis rencana. Rencana baru dikerjakan saat Anda beralih ke “Kerjakan”.",
+      "hintAsk": "Aktif secara bawaan dalam mode “Tanya dulu”. Permintaan baru membuka mode perencanaan terlebih dahulu; rencana baru dikerjakan saat Anda beralih ke “Kerjakan”."
+    },
+    "questionsTitle": "Pertanyaan klarifikasi",
+    "questionsDescription": "Seberapa mudah orkestrator bertanya sebelum menyusun rencana, dan chat bertanya balik saat permintaan tidak jelas. Pertanyaan datang dengan jawaban yang bisa diklik.",
+    "questions": {
+      "label": "Pertanyaan klarifikasi",
+      "never": {
+        "title": "Tidak pernah",
+        "body": "Orkestrator langsung menyusun rencana. Chat menjawab dengan tafsiran yang paling mungkin dan menyebutkan asumsinya."
+      },
+      "ifNeeded": {
+        "title": "Bila perlu",
+        "body": "Hanya saat permintaan benar-benar ambigu atau membiarkan keputusan penting terbuka yang tidak dijawab oleh proyek. Permintaan yang jelas langsung dimulai."
+      },
+      "often": {
+        "title": "Lebih sering",
+        "body": "Juga saat permintaan membiarkan pilihan terbuka yang mengubah hasil, seperti cakupan, perilaku, atau nama. Paling banyak satu putaran berisi hingga tiga pertanyaan."
+      }
     }
   },
   "roles": {
@@ -308,6 +330,10 @@
     "recap": {
       "label": "Ringkasan",
       "hint": "Dikirim ke orkestrator di akhir proses agar ia menulis ringkasan singkat dalam bahasa Anda."
+    },
+    "planning": {
+      "label": "Mode perencanaan",
+      "hint": "Dikirim ke orkestrator dalam mode perencanaan: untuk rencana baru dan setiap perubahannya."
     }
   },
   "network": {
@@ -379,6 +405,10 @@
       "autoCurrent": "Otomatis (saat ini {{variant}})",
       "option": "{{variant}} · {{backend}} · {{version}}",
       "missing": "{{variant}} (tidak terinstal)"
+    },
+    "kvQuant": {
+      "label": "Kompres cache KV agar lebih cepat",
+      "hint": "Menyimpan konteks dalam 8 bit (q8_0), bukan 16. Memori yang dibutuhkan jadi separuh, sehingga lebih banyak bagian model muat di GPU dan jawaban biasanya datang sedikit lebih cepat. Sedikit kurang presisi."
     },
     "extraArgs": {
       "label": "Argumen llama-server tambahan",
@@ -502,6 +532,75 @@
     "logLoading": "Memuat log server",
     "logFailed": "Log server tidak dapat dimuat: {{message}}",
     "logEmpty": "Server belum menulis apa pun."
+  },
+  "tips": {
+    "dismiss": "Sembunyikan tips ini",
+    "ramSpeed": {
+      "title": "RAM Anda berjalan lebih lambat dari seharusnya",
+      "body": "RAM Anda ({{kind}}, “{{part}}”) berjalan di {{configured}} MT/s, padahal kemungkinan dibuat untuk {{rated}} MT/s. Untuk itu, aktifkan profil EXPO atau XMP-nya di BIOS. Model yang sebagian berjalan di memori sistem akan menjawab sekitar 5–10% lebih cepat.",
+      "caveat": "Profil ini adalah overclock yang didukung produsen: setelahnya, periksa sebentar apakah PC tetap stabil. Ylide tidak pernah mengubah pengaturan BIOS."
+    }
+  },
+  "calibration": {
+    "title": "Optimalkan untuk PC ini",
+    "intro": "Ylide mencoba beberapa pengaturan llama-server dengan model Anda dan menyimpan yang tercepat: mode muat, ukuran batch, thread, dan lainnya. Butuh 2 sampai 4 menit; selama itu chat dan agen dijeda.",
+    "lossyKv": "Coba juga cache KV terkompresi (sedikit kurang presisi)",
+    "start": "Optimalkan (~3 menit)",
+    "again": "Ukur lagi",
+    "cancel": "Batal",
+    "reset": "Atur ulang",
+    "needsModel": "Mulai modelnya dulu.",
+    "running": "Pengukuran {{done}} dari sekitar {{total}} …",
+    "measuring": "mengukur …",
+    "speeds": "Prompt {{prompt}} tok/s · Jawaban {{gen}} tok/s",
+    "tuned": "Dioptimalkan untuk PC ini",
+    "trial": {
+      "baseline": "Pengaturan saat ini",
+      "loadMode": "Mode muat",
+      "kvCache": "Cache KV",
+      "batchSize": "Ukuran batch",
+      "threads": "Thread",
+      "expertCache": "Cache GPU untuk expert",
+      "confirm": "Konfirmasi"
+    },
+    "outcome": {
+      "measured": "diukur",
+      "better": "lebih cepat, dipakai",
+      "worse": "tidak lebih cepat",
+      "different": "jawaban berbeda, dibuang",
+      "overflow": "memori kurang, dibuang",
+      "failed": "tidak bisa mulai"
+    },
+    "result": {
+      "gen": "Jawaban: sebelumnya {{before}} tok/s, sekarang {{after}} tok/s ({{change}})",
+      "prompt": "Membaca prompt: sebelumnya {{before}} tok/s, sekarang {{after}} tok/s ({{change}})",
+      "same": "Pengaturan Anda saat ini sudah yang tercepat ({{gen}} tok/s untuk menjawab, {{prompt}} tok/s untuk membaca prompt).",
+      "applied": "Berlaku setiap kali model ini dimulai di PC ini.",
+      "notApplied": "Tidak berlaku sampai Anda mengukur lagi.",
+      "trials": "Semua pengukuran ({{date}})"
+    },
+    "change": {
+      "kvQ8": "Cache KV terkompresi (q8_0)",
+      "noMmap": "Model dimuat seluruhnya ke RAM",
+      "mmap": "Berkas model dipetakan, bukan dimuat (mmap)",
+      "ubatch": "Ukuran batch {{n}}",
+      "ccd": "{{n}} thread di CCD dengan cache terbesar",
+      "pinned": "Thread diikat ke inti fisik",
+      "expertCache": "Cache GPU {{mib}} MiB untuk expert"
+    },
+    "stale": "Ada yang berubah sejak pengukuran: {{what}}. Ukur lagi agar pengaturannya cocok.",
+    "changed": {
+      "model": "berkas model",
+      "runtime": "versi llama.cpp",
+      "gpu": "kartu grafis atau driver",
+      "cpu": "prosesor",
+      "ram": "RAM",
+      "context": "ukuran konteks",
+      "slots": "permintaan paralel",
+      "projector": "input gambar"
+    },
+    "cancelled": "Dibatalkan. Pengaturan sebelumnya tetap berlaku.",
+    "failed": "Pengukuran gagal: {{message}}"
   },
   "installed": {
     "title": "Model terinstal",

@@ -100,7 +100,7 @@ describe('applyEvent', () => {
       { type: 'toolResult', runId: R, agentId: 'coder', callId: 'r', ok: true, summary: 'Edited', change },
       { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 'run `npm test`', detail: 'npm test' } },
       { type: 'approvalRequested', runId: R, request: { id: 'a1', agentId: 'coder', tool: 'run_command', risk: 'execute', title: 'run `npm test`', detail: 'npm test' } },
-      { type: 'questionForUser', runId: R, questionId: 'q1', agentId: 'coder', question: 'Tabs or spaces?' },
+      { type: 'questionForUser', runId: R, questionId: 'q1', agentId: 'coder', question: 'Tabs or spaces?', questions: [], clarify: false },
     ]);
     expect(run.taskOrder).toEqual(['T1', 'T2']);
     expect(run.tasks.T1.status).toBe('inProgress');
@@ -111,6 +111,23 @@ describe('applyEvent', () => {
     expect(run.questions.map((q) => q.id)).toEqual(['q1']);
     expect(removeQuestion(run, 'q1').questions).toEqual([]);
     expect(run.feed[0]).toMatchObject({ kind: 'plan', taskCount: 2, summary: 'Do it' });
+  });
+
+  it('keeps the questions of a card, and a changed plan replaces the first one', () => {
+    const runner = { question: 'Which runner?', options: [{ label: 'Vitest', recommended: true }, { label: 'Jest', recommended: false }], multiple: false };
+    let run = feed([
+      { type: 'questionForUser', runId: R, questionId: 'q1', agentId: 'orchestrator', question: '1. Which runner? 2. Name?', questions: [runner, { question: 'Name?', options: [], multiple: false }], clarify: true },
+      { type: 'planReady', runId: R, plan: { goal: 'g', summary: 'First', tasks: [task('T1'), task('T2')] } },
+    ]);
+    expect(run.questions[0]).toMatchObject({ id: 'q1', clarify: true, questions: [runner, { question: 'Name?' }] });
+    run = feed([{ type: 'planReady', runId: R, plan: { goal: 'g', summary: 'Second', tasks: [task('T1', { title: 'New' })] } }], run);
+    expect(run.taskOrder).toEqual(['T1']);
+    expect(run.tasks.T1.title).toBe('New');
+    expect(run.tasks.T2).toBeUndefined();
+    expect(run.feed.filter((f) => f.kind === 'plan')).toHaveLength(2);
+    // A planning run's plan is kept by planning mode, not by the run.
+    const drafted = applyEvent(run, { type: 'planDrafted', runId: R, plan: { goal: 'g', approach: 'a', steps: [], risks: [], questions: [] } }, 9000);
+    expect(drafted.taskOrder).toEqual(['T1']);
   });
 
   it('finishes the run, clears open requests and ignores later events', () => {

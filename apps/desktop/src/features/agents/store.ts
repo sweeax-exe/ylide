@@ -7,6 +7,7 @@ import type { ApprovalRequest } from '../../bindings/ApprovalRequest';
 import type { ApprovalResponse } from '../../bindings/ApprovalResponse';
 import type { Checkpoint } from '../../bindings/Checkpoint';
 import type { LastRun } from '../../bindings/LastRun';
+import type { PlanDoc } from '../../bindings/PlanDoc';
 import i18n from '../../i18n';
 import { reportError } from '../../lib/errors';
 import type { DraftImage } from '../../lib/images';
@@ -52,14 +53,18 @@ interface AgentRunState {
   setFollowUp(text: string): void;
   setFollowUpImages(images: DraftImage[]): void;
   start(goal: string): Promise<void>;
+  /** Starts a run from elsewhere (a chat suggestion): without the drafts' images, and the drafts stay. */
+  startWith(goal: string): Promise<boolean>;
+  /** Carries out a plan from planning mode; with `continues`, it goes on with that stopped run. */
+  runPlan(plan: PlanDoc, continues: string | null): Promise<boolean>;
   /** Starts a run that continues the finished one; its agents are told what it did. */
   continueRun(goal: string): Promise<void>;
   pause(): Promise<void>;
   resume(): Promise<void>;
   stop(): Promise<void>;
   decide(request: ApprovalRequest, response: ApprovalResponse): Promise<void>;
-  /** `images` (data URLs) go with the answer or message to a model that sees. */
-  answer(questionId: string, answer: string, images?: string[]): Promise<boolean>;
+  /** One answer per question of the card; `images` (data URLs) go with them to a model that sees. */
+  answer(questionId: string, answers: string[], images?: string[]): Promise<boolean>;
   intervene(agentId: string, text: string, images?: string[]): Promise<boolean>;
   restore(checkpoint: Checkpoint): Promise<string[] | null>;
   /** Back to the idle view; the finished run stays available as "previous run". */
@@ -162,38 +167,42 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
     }
   };
 
-  /** Starts a run; with `from`, one that continues that finished run. Each takes the images of its own field. */
-  const launch = async (goal: string, from: RunData | null) => {
+  /**
+   * Starts a run; with `from`, one that continues that finished run. Each
+   * takes the images of its own field and empties it once the run is on;
+   * `elsewhere` (a chat suggestion, a plan) takes none and leaves the fields.
+   * With `plan`, the run carries out that plan instead of planning.
+   */
+  const launch = async (goal: string, from: RunData | null, elsewhere = false, plan: { doc: PlanDoc; continues: string | null } | null = null): Promise<boolean> => {
     const text = goal.trim();
-    const images = (from ? get().followUpImages : get().draftImages).map((i) => i.url);
+    const images = elsewhere ? [] : (from ? get().followUpImages : get().draftImages).map((i) => i.url);
     const { phase, run: previous } = get();
-    if (!text || phase === 'starting' || phase === 'running') return;
+    if (!text || phase === 'starting' || phase === 'running') return false;
     const continues = from && continuationOf(from);
-    if (from && !continues) return;
+    if (from && !continues && !plan) return false;
     const gen = ++generation;
     resetStreams();
     const project = useApp.getState().workspace?.root ?? null;
     set({ phase: 'starting', run: createRun(text, Date.now(), { project, continues, images }), paused: false, stopping: false, controlBusy: false, restored: new Set(), streams: {}, deferred: new Set() });
     try {
-      const runId = await api.agents.start(
-        text,
-        (event) => {
-          if (gen === generation) receive(event);
-        },
-        continues?.runId ?? null,
-        images,
-        i18n.resolvedLanguage ?? i18n.language ?? 'en',
-      );
-      if (gen !== generation) return;
+      const onEvent = (event: AgentEvent) => {
+        if (gen === generation) receive(event);
+      };
+      const language = i18n.resolvedLanguage ?? i18n.language ?? 'en';
+      const runId = plan ? await api.plans.run(plan.doc, plan.continues, language, onEvent) : await api.agents.start(text, onEvent, continues?.runId ?? null, images, language);
+      if (gen !== generation) return true;
       const { run } = get();
       if (run && run.runId === null) set({ run: { ...run, runId } });
-      set((s) => ({ ...(continues ? { followUp: '', followUpImages: [] } : { draft: '', draftImages: [] }), phase: s.phase === 'starting' ? 'running' : s.phase }));
+      const emptied = elsewhere ? {} : continues ? { followUp: '', followUpImages: [] } : { draft: '', draftImages: [] };
+      set((s) => ({ ...emptied, phase: s.phase === 'starting' ? 'running' : s.phase }));
+      return true;
     } catch (e) {
-      if (gen !== generation) return;
+      if (gen !== generation) return false;
       generation++;
       // Back where the user was: the idle view, or the finished run with the text still typed.
       set({ phase, run: previous });
       reportError(e, t('errors.start'));
+      return false;
     }
   };
 
@@ -228,14 +237,25 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       set({ followUpImages });
     },
 
-    start(goal) {
-      return launch(goal, null);
+    async start(goal) {
+      await launch(goal, null);
+    },
+
+    startWith(goal) {
+      return launch(goal, null, true);
+    },
+
+    runPlan(plan, continues) {
+      // The stopped run shows as the one this run continues, while it is still here.
+      const { run } = get();
+      const from = continues && run?.runId === continues && run.outcome ? run : null;
+      return launch(plan.goal, from, true, { doc: plan, continues });
     },
 
     continueRun(goal) {
       const { phase, run } = get();
       if (phase !== 'finished' || !run) return Promise.resolve();
-      return launch(goal, run);
+      return launch(goal, run).then(() => undefined);
     },
 
     async pause() {
@@ -265,11 +285,11 @@ export const useAgentRun = create<AgentRunState>((set, get) => {
       }
     },
 
-    async answer(questionId, answer, images = []) {
+    async answer(questionId, answers, images = []) {
       const runId = get().run?.runId;
       if (!runId) return false;
       try {
-        await api.agents.answer(runId, questionId, answer, images);
+        await api.agents.answer(runId, questionId, answers, images);
         set((s) => {
           if (!s.run) return {};
           const deferred = new Set(s.deferred);

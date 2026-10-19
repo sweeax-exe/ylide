@@ -5,6 +5,8 @@ import type { ApprovalRequest } from "./ApprovalRequest";
 import type { Checkpoint } from "./Checkpoint";
 import type { Delta } from "./Delta";
 import type { FileChange } from "./FileChange";
+import type { PlanDoc } from "./PlanDoc";
+import type { Question } from "./Question";
 import type { RunOutcome } from "./RunOutcome";
 import type { Task } from "./Task";
 import type { TaskPlan } from "./TaskPlan";
@@ -12,4 +14,4 @@ import type { TaskPlan } from "./TaskPlan";
 /**
  * Everything the UI needs to render the agent overview, streamed live.
  */
-export type AgentEvent = { "type": "runStarted", runId: string, goal: string, } | { "type": "status", runId: string, status: AgentStatus, } | { "type": "delta", runId: string, agentId: string, delta: Delta, } | { "type": "planReady", runId: string, plan: TaskPlan, } | { "type": "taskUpdated", runId: string, task: Task, } | { "type": "toolCall", runId: string, agentId: string, callId: string, tool: string, arguments: string, } | { "type": "toolResult", runId: string, agentId: string, callId: string, ok: boolean, summary: string, change: FileChange | null, } | { "type": "approvalRequested", runId: string, request: ApprovalRequest, } | { "type": "questionForUser", runId: string, questionId: string, agentId: string, question: string, } | { "type": "message", runId: string, message: AgentMessage, } | { "type": "checkpointCreated", runId: string, checkpoint: Checkpoint, } | { "type": "runFinished", runId: string, outcome: RunOutcome, summary: string, recap: string | null, };
+export type AgentEvent = { "type": "runStarted", runId: string, goal: string, } | { "type": "status", runId: string, status: AgentStatus, } | { "type": "delta", runId: string, agentId: string, delta: Delta, } | { "type": "planReady", runId: string, plan: TaskPlan, } | { "type": "taskUpdated", runId: string, task: Task, } | { "type": "toolCall", runId: string, agentId: string, callId: string, tool: string, arguments: string, } | { "type": "toolResult", runId: string, agentId: string, callId: string, ok: boolean, summary: string, change: FileChange | null, } | { "type": "approvalRequested", runId: string, request: ApprovalRequest, } | { "type": "questionForUser", runId: string, questionId: string, agentId: string, question: string, questions: Array<Question>, clarify: boolean, } | { "type": "planDrafted", runId: string, plan: PlanDoc, } | { "type": "message", runId: string, message: AgentMessage, } | { "type": "checkpointCreated", runId: string, checkpoint: Checkpoint, } | { "type": "runFinished", runId: string, outcome: RunOutcome, summary: string, recap: string | null, };

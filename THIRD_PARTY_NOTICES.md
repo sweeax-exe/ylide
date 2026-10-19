@@ -20,7 +20,8 @@ the binaries in `runtime/<variant>/`. Both are installed with Ylide.
 | [React](https://react.dev), [zustand](https://github.com/pmndrs/zustand), [i18next](https://www.i18next.com), [react-markdown](https://github.com/remarkjs/react-markdown), [remark-gfm](https://github.com/remarkjs/remark-gfm) and their dependencies | MIT, ISC | |
 | [Lucide icons](https://lucide.dev) | ISC | |
 | [Instrument Sans](https://github.com/Instrument/instrument-sans), [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) | SIL Open Font License 1.1 | Via Fontsource. |
-| Rust crates (tokio, reqwest, rustls, serde, sysinfo, windows, ignore, grep-*, similar, notify, zip, tar, flate2, process-wrap, ts-rs and their dependencies) | MIT, Apache-2.0, Unicode-3.0, Unlicense, ISC, Zlib, BSD-3-Clause, MPL-2.0, MIT-0, CC0-1.0, 0BSD | Complete list with versions and texts in THIRD_PARTY_LICENSES.txt. The MPL-2.0 crates (cssparser, selectors, dtoa-short, option-ext) are used unmodified; their source code is on crates.io at the address listed there. |
+| Rust crates (tokio, reqwest, rustls, serde, sysinfo, windows, ignore, grep-*, similar, include_dir, notify, zip, tar, flate2, process-wrap, ts-rs and their dependencies) | MIT, Apache-2.0, Unicode-3.0, Unlicense, ISC, Zlib, BSD-3-Clause, MPL-2.0, MIT-0, CC0-1.0, 0BSD | Complete list with versions and texts in THIRD_PARTY_LICENSES.txt. The MPL-2.0 crates (cssparser, selectors, dtoa-short, option-ext) are used unmodified; their source code is on crates.io at the address listed there. |
+| Recommended skill [REA — reverse-engineer-anything](https://github.com/morluto/rea) | MIT | Off by default. Its SKILL.md and `references/` are compiled into ylide.exe, pinned to commit `f4322b1`. Copyright (c) 2026 morluto; full text under "Bundled recommended skills" below. |
 
 ## Downloaded on request
 
@@ -32,3 +33,42 @@ the binaries in `runtime/<variant>/`. Both are installed with Ylide.
 | Model weights | Hugging Face | Each model's own license, shown in the app before download |
 
 Model licenses are listed in `registry/models.json` and in the model manager.
+
+## Bundled recommended skills
+
+Ylide ships a small, curated set of recommended skills. The Skills page offers
+them; they are off by default and only installed when the user adds one. Their
+files are compiled into `ylide.exe`.
+
+### reverse-engineer-anything (REA)
+
+From [morluto/rea](https://github.com/morluto/rea), pinned to commit
+`f4322b15ed1423d736bd2572cf7a8eadf2b466e1`. Only the skill folder
+(`.agents/skills/reverse-engineer-anything/`: `SKILL.md` and `references/`) is
+bundled; REA's own MCP server (the `rea-agents` npm package) and its analysis
+engines (Ghidra, IDA, …) are not included and are installed separately by the
+user.
+
+```
+MIT License
+
+Copyright (c) 2026 morluto
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

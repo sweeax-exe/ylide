@@ -65,7 +65,8 @@
     "stepLimit": "Límite de pasos alcanzado",
     "answering": "Respondiendo a {{agent}}",
     "notes": "Actualizando el conocimiento del proyecto",
-    "recap": "Escribiendo el resumen"
+    "recap": "Escribiendo el resumen",
+    "clarify": "Espera tus respuestas"
   },
   "idle": {
     "goalLabel": "¿Qué deben hacer los agentes?",
@@ -86,7 +87,8 @@
     "showRun": "Mostrar detalles",
     "openTasks_one": "Queda una tarea pendiente. Al continuar, se retoma primero.",
     "openTasks_many": "Quedan {{count}} tareas pendientes. Al continuar, se retoman primero.",
-    "openTasks_other": "Quedan {{count}} tareas pendientes. Al continuar, se retoman primero."
+    "openTasks_other": "Quedan {{count}} tareas pendientes. Al continuar, se retoman primero.",
+    "startPlanning": "Crear plan"
   },
   "mode": {
     "label": "Aprobaciones",
@@ -103,7 +105,8 @@
     "confirmDeletes": "Preguntar antes de eliminar archivos",
     "unguardedCommands": "Los agentes ejecutan comandos sin preguntar. Sus efectos no se pueden deshacer.",
     "unguardedDeletes": "Los agentes eliminan archivos sin preguntar. Puedes restaurarlos desde los puntos de control.",
-    "unguardedBoth": "Los agentes ejecutan comandos y eliminan archivos sin preguntar. Los efectos de los comandos no se pueden deshacer."
+    "unguardedBoth": "Los agentes ejecutan comandos y eliminan archivos sin preguntar. Los efectos de los comandos no se pueden deshacer.",
+    "confirmPlan": "Primero planificar, luego ejecutar"
   },
   "run": {
     "elapsed": "Tiempo transcurrido",
@@ -260,7 +263,16 @@
     "answerLabel": "Tu respuesta",
     "hint": "Ctrl+Intro envía la respuesta.",
     "later": "Responder más tarde",
-    "send": "Enviar respuesta"
+    "send": "Enviar respuesta",
+    "clarifyTitle": "Unas preguntas antes del plan",
+    "clarifyIntro": "El orquestador planifica con tus respuestas. Haz clic en una respuesta o escribe la tuya; lo que dejes abierto lo decide él.",
+    "recommended": "(recomendado)",
+    "own": "Tu propia respuesta",
+    "ownLabel": "Tu propia respuesta a: {{question}}",
+    "several": "Puedes elegir varias.",
+    "sendAll": "Enviar respuestas",
+    "skip": "Omitir",
+    "skipHint": "Planificar sin respuestas: el orquestador decide por sí mismo y dice qué supuso."
   },
   "live": {
     "task": "{{id}} {{title}}: {{status}}",
@@ -272,6 +284,69 @@
     "answer": "No se pudo enviar tu respuesta",
     "intervene": "No se pudo enviar tu mensaje",
     "restore": "No se pudieron deshacer los cambios",
-    "settings": "No se pudo guardar el ajuste de aprobaciones"
+    "settings": "No se pudo guardar el ajuste de aprobaciones",
+    "planDraft": "No se pudo crear el plan",
+    "planSave": "No se pudo guardar el plan"
+  },
+  "workMode": {
+    "label": "Modo",
+    "plan": "Planificar",
+    "code": "Ejecutar",
+    "hint": "Cambiar entre planificar y ejecutar ({{key}})"
+  },
+  "plan": {
+    "introTitle": "Primero planificar, luego ejecutar",
+    "introBody": "En el modo de planificación los agentes solo leen, no cambian nada y escriben un plan. Tú lo comentas y lo editas hasta que encaje. Con “Ejecutar” lo llevan a cabo.",
+    "goalLabel": "¿Qué hay que planificar?",
+    "goalPlaceholder": "Por ejemplo: códigos de descuento en el carrito",
+    "create": "Crear plan",
+    "createHint": "Ctrl+Intro crea el plan.",
+    "notReady": "Inicia un modelo y abre un proyecto para planificar.",
+    "adopt": "Adoptar tareas pendientes",
+    "adoptHint": "La última ejecución (“{{goal}}”) tiene tareas pendientes. Adóptalas como plan para revisarlas.",
+    "handover": "Pasa a planificar en cuanto termine {{task}}.",
+    "handoverNoTask": "Pasa a planificar en cuanto termine la tarea actual.",
+    "keepGoing": "Seguir ejecutando",
+    "kicker": "Plan",
+    "firstDraft": "El orquestador revisa el proyecto y escribe el plan. No se cambia nada.",
+    "working": "El orquestador está planificando …",
+    "stop": "Detener",
+    "approach": "Enfoque",
+    "done": "Ya hecho",
+    "steps": "Pasos",
+    "noSteps": "Aún no hay pasos. Añade uno o describe abajo lo que falta.",
+    "addStep": "Añadir paso",
+    "newStep": "Paso nuevo",
+    "files": "Archivos",
+    "verify": "Comprobar",
+    "risks": "Riesgos",
+    "questions": "Preguntas abiertas",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "titleLabel": "Título",
+    "descriptionLabel": "Qué hay que hacer",
+    "filesLabel": "Archivos, separados por comas",
+    "verifyLabel": "Cómo se comprueba",
+    "apply": "Aplicar",
+    "answer": "Enviar respuestas",
+    "answersIntro": "Respuestas a las preguntas abiertas:",
+    "leftOpen": "sin respuesta, decide tú",
+    "notesLabel": "Historial del plan",
+    "noteCreated": "Plan creado",
+    "noteUpdated": "Plan actualizado",
+    "noteFailed": "El orquestador no pudo escribir un plan. Inténtalo de nuevo o formúlalo de otra manera.",
+    "noteTookOver": "Las tareas pendientes son ahora el plan.",
+    "chatLabel": "Comentar el plan",
+    "chatPlaceholder": "Por ejemplo: cambia el paso 2, mejor usa Vitest",
+    "send": "Enviar",
+    "saveFile": "Guardar como archivo",
+    "saved": "Plan guardado",
+    "discard": "Descartar plan",
+    "discardTitle": "¿Descartar el plan?",
+    "discardBody": "Se pierden el plan y su historial. Los archivos guardados se quedan.",
+    "carryOut": "Ejecutar",
+    "carryOutHint": "Los agentes completan los pasos, en el modo de aprobación elegido."
   }
 }

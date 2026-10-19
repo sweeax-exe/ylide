@@ -64,10 +64,12 @@ async fn launch(model_path: &Path, model: Option<&Model>, projector: Option<&str
         plan: None,
         threads: hw.cpu.physical_cores,
         ram_total: hw.memory.total_bytes,
+        ram_available: hw.memory.available_bytes,
         device,
         extra: &[],
         runtime_backend: backend_of(&runtime.file_name().unwrap_or_default().to_string_lossy()),
         projector,
+        tuning: None,
     };
     let args = chat_args(&options, &flags);
     println!("args: {}", args.join(" "));
@@ -319,4 +321,220 @@ async fn real_model_sees_images() {
     println!("QUESTION.md:\n{written}");
     server.stop().await;
     assert!(written.to_lowercase().contains("two teas"), "the agents did not read the image");
+}
+
+/// Questions before the plan and next steps in the chat, with a real model on
+/// a llama-server that already runs (the app's own, for example):
+///
+/// ```text
+/// $env:YLIDE_E2E_URL = "http://127.0.0.1:65044"
+/// $env:YLIDE_E2E_KEY_FILE = "<local data>\run\llama-65044.key"
+/// $env:YLIDE_E2E_MODEL = "<the model's .gguf>"   # only its file name is used, for the registry defaults
+/// cargo test -p ylide-desktop --lib e2e::real_model_asks_back -- --ignored --nocapture
+/// ```
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "needs a running llama-server (see the doc comment)"]
+async fn real_model_asks_back() {
+    use agent::permissions::{ApprovalBroker, ApprovalRequest, ApprovalResponse, UserReply};
+    use agent::{Question, QuestionLevel};
+    use async_trait::async_trait;
+    use std::sync::Mutex;
+
+    let base_url = std::env::var("YLIDE_E2E_URL").expect("set YLIDE_E2E_URL");
+    let key = std::env::var_os("YLIDE_E2E_KEY_FILE").map(|p| std::fs::read_to_string(p).unwrap().trim().to_string());
+    let model = registry_model(&model_from_env());
+    let handle = ChatHandle {
+        client: inference::LlmClient::new(inference::Endpoint { base_url, api_key: key, model: None }),
+        scheduler: Scheduler::new(1),
+        model: model.clone(),
+        context: 32_768,
+        // The app may use the server too: let it pick a free slot.
+        pin_slot: false,
+        vision: false,
+    };
+
+    /// Answers like a user who clicks the recommended answer (else the first).
+    #[derive(Default)]
+    struct Clicking {
+        asked: Mutex<Vec<Vec<Question>>>,
+    }
+    #[async_trait]
+    impl ApprovalBroker for Clicking {
+        async fn request_approval(&self, _request: ApprovalRequest) -> ApprovalResponse {
+            ApprovalResponse::Reject { reason: Some("not in this test".into()) }
+        }
+        async fn ask_user(&self, _agent_id: &str, questions: &[Question], _clarify: bool) -> UserReply {
+            self.asked.lock().unwrap().push(questions.to_vec());
+            let answers: Vec<String> = questions
+                .iter()
+                .map(|q| q.options.iter().find(|o| o.recommended).or(q.options.first()).map(|o| o.label.clone()).unwrap_or_else(|| "Entscheide du.".into()))
+                .collect();
+            UserReply::text(agent::questions::format_reply(questions, &answers))
+        }
+    }
+
+    let project = tempfile::tempdir().unwrap();
+    std::fs::create_dir_all(project.path().join("src")).unwrap();
+    std::fs::write(project.path().join("package.json"), "{\n  \"name\": \"demo-shop\",\n  \"scripts\": { \"test\": \"vitest run\" },\n  \"devDependencies\": { \"vitest\": \"^2.0.0\" }\n}\n").unwrap();
+    std::fs::write(
+        project.path().join("src/cart.ts"),
+        "export interface Item {\n  id: string;\n  price: number;\n  quantity: number;\n}\n\nexport function total(items: Item[]): number {\n  return items.reduce((sum, item) => sum + item.price, 0);\n}\n",
+    )
+    .unwrap();
+    let store = tempfile::tempdir().unwrap();
+
+    // Plans `goal` and stops once the plan stands; returns the questions asked before it.
+    let plan_only = |goal: &'static str| {
+        let handle = &handle;
+        let project = project.path().to_path_buf();
+        let store = store.path().to_path_buf();
+        async move {
+            let broker = Arc::new(Clicking::default());
+            let control: Arc<Mutex<Option<agent::RunControl>>> = Arc::default();
+            let stop = control.clone();
+            let ctx = Arc::new(
+                RunContext::new(
+                    "e2e-ask",
+                    workspace::Workspace::open(&project).unwrap(),
+                    Arc::new(CheckpointStore::new(&store)),
+                    PermissionSettings::default(),
+                    ShellConfig::default(),
+                    PromptTemplates::default(),
+                    broker.clone(),
+                    Arc::new(move |e| {
+                        print_event(&e);
+                        if matches!(e, AgentEvent::PlanReady { .. })
+                            && let Some(c) = stop.lock().unwrap().as_ref()
+                        {
+                            c.cancel();
+                        }
+                    }),
+                )
+                .with_language("de")
+                .with_questions(QuestionLevel::IfNeeded),
+            );
+            *control.lock().unwrap() = Some(ctx.control.clone());
+            let t0 = Instant::now();
+            println!("--- {goal}");
+            agent::run(ctx, &agent_team(handle), goal).await;
+            println!("    planned in {:.0}s", t0.elapsed().as_secs_f64());
+            let asked = broker.asked.lock().unwrap().clone();
+            for q in asked.iter().flatten() {
+                println!("    asked: {}", agent::questions::as_text(q).replace('\n', " | "));
+            }
+            asked
+        }
+    };
+
+    let clear = plan_only("In src/cart.ts, total() ignores the quantity. Fix it so it multiplies price by quantity.").await;
+    let vague = plan_only("Füge Rabatte hinzu.").await;
+
+    // --- the chat: next steps, and a question back on a vague request
+    let file = std::fs::read_to_string(project.path().join("src/cart.ts")).unwrap();
+    // With the file attached, or (None) without any context.
+    let chat = |question: &'static str, attached: Option<&str>| {
+        let handle = &handle;
+        let model = model.clone();
+        let message = match attached {
+            Some(file) => format!("File src/cart.ts:\n```ts\n{file}```\n\n{question}"),
+            None => question.to_string(),
+        };
+        async move {
+            let system = format!("{}\n\n{}", crate::settings::DEFAULT_CHAT_PROMPT.trim(), crate::chat::interaction_section(QuestionLevel::IfNeeded));
+            let mut req = ChatRequest::new(vec![ChatMessage::system(system), ChatMessage::user(message)]);
+            apply_mode(&mut req, model.as_ref(), Mode::Chat);
+            let t0 = Instant::now();
+            let r = handle.client.chat(req, &CancellationToken::new(), |_| {}).await.unwrap();
+            let answer = r.message.content.unwrap_or_default();
+            println!("--- chat: {question} ({:.1}s)\n{answer}\n", t0.elapsed().as_secs_f64());
+            answer
+        }
+    };
+    let explained = chat("Warum stimmt die Summe im Warenkorb nicht?", Some(&file)).await;
+    let unclear = chat("Kannst du das schneller machen?", None).await;
+
+    assert!(clear.is_empty(), "a clear request was planned right away: {clear:?}");
+    assert!(!vague.is_empty() && vague[0].len() <= 3, "a vague request got questions first");
+    assert!(vague[0].iter().any(|q| q.options.len() >= 2), "with answers to click: {vague:?}");
+    assert!(explained.contains("```suggestions"), "the chat suggests next steps");
+    assert!(unclear.contains('?'), "the chat asks back on a vague request");
+}
+
+/// Planning mode with a real model on a running llama-server (same
+/// variables as `real_model_asks_back`): a read-only plan, then a change to it.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "needs a running llama-server (see real_model_asks_back)"]
+async fn real_model_plans_read_only() {
+    use agent::permissions::AutoApprove;
+    use agent::{PlanRequest, QuestionLevel};
+
+    let base_url = std::env::var("YLIDE_E2E_URL").expect("set YLIDE_E2E_URL");
+    let key = std::env::var_os("YLIDE_E2E_KEY_FILE").map(|p| std::fs::read_to_string(p).unwrap().trim().to_string());
+    let model = registry_model(&model_from_env());
+    let handle = ChatHandle {
+        client: inference::LlmClient::new(inference::Endpoint { base_url, api_key: key, model: None }),
+        scheduler: Scheduler::new(1),
+        model,
+        context: 32_768,
+        pin_slot: false,
+        vision: false,
+    };
+    let project = tempfile::tempdir().unwrap();
+    std::fs::create_dir_all(project.path().join("src")).unwrap();
+    std::fs::write(project.path().join("package.json"), "{\n  \"name\": \"demo-shop\",\n  \"scripts\": { \"test\": \"vitest run\" },\n  \"devDependencies\": { \"vitest\": \"^2.0.0\" }\n}\n").unwrap();
+    let cart = "export interface Item {\n  id: string;\n  price: number;\n  quantity: number;\n}\n\nexport function total(items: Item[]): number {\n  return items.reduce((sum, item) => sum + item.price, 0);\n}\n";
+    std::fs::write(project.path().join("src/cart.ts"), cart).unwrap();
+    let store = tempfile::tempdir().unwrap();
+    let draft = |req: PlanRequest| {
+        let handle = &handle;
+        let project = project.path().to_path_buf();
+        let store = store.path().to_path_buf();
+        async move {
+            let ctx = Arc::new(
+                RunContext::new(
+                    "e2e-plan",
+                    workspace::Workspace::open(&project).unwrap(),
+                    Arc::new(CheckpointStore::new(&store)),
+                    PermissionSettings { mode: agent::ApprovalMode::Autonomous, confirm_commands: false, confirm_deletes: false, ..PermissionSettings::default() },
+                    ShellConfig::default(),
+                    PromptTemplates::default(),
+                    Arc::new(AutoApprove(String::new())),
+                    Arc::new(|e| print_event(&e)),
+                )
+                .with_language("de")
+                .with_questions(QuestionLevel::IfNeeded)
+                .read_only(),
+            );
+            let t0 = Instant::now();
+            let doc = agent::draft_plan(ctx, &agent_team(handle), &req, None).await;
+            println!("    planned in {:.0}s", t0.elapsed().as_secs_f64());
+            if let Some(doc) = &doc {
+                println!("    approach: {}", doc.approach);
+                for s in &doc.steps {
+                    println!("    [{}] {} | files: {:?} | verify: {}", s.id, s.title, s.files, s.verify);
+                    println!("         {}", s.description.chars().take(240).collect::<String>().replace('\n', " "));
+                }
+                println!("    risks: {:?}", doc.risks);
+                for q in &doc.questions {
+                    println!("    question: {}", agent::questions::as_text(q).replace('\n', " | "));
+                }
+            }
+            doc
+        }
+    };
+
+    println!("--- Füge Rabattcodes für den Warenkorb hinzu.");
+    let first = draft(PlanRequest { goal: "Füge Rabattcodes für den Warenkorb hinzu.".into(), ..Default::default() }).await.expect("a plan");
+    assert_eq!(std::fs::read_to_string(project.path().join("src/cart.ts")).unwrap(), cart, "planning changes nothing");
+    assert!(!first.steps.is_empty() && first.steps.iter().any(|s| !s.verify.is_empty()), "steps with how to verify");
+
+    let wish = "Die Tests sollen mit Vitest laufen und auch einen leeren Warenkorb prüfen.";
+    println!("--- {wish}");
+    let second = draft(PlanRequest { goal: first.goal.clone(), current: Some(first.clone()), wish: Some(wish.into()), earlier_wishes: vec![] }).await.expect("a changed plan");
+    let kept = second.steps.iter().filter(|s| first.steps.iter().any(|f| f.id == s.id)).count();
+    println!("    kept {kept} of {} step ids", first.steps.len());
+    assert!(kept > 0, "the changed plan keeps step ids");
+    let text = |s: &agent::PlanStep| format!("{} {} {}", s.title, s.description, s.verify).to_lowercase();
+    assert!(second.steps.iter().any(|s| text(s).contains("leer")), "the wish is in the plan");
+    assert_eq!(std::fs::read_to_string(project.path().join("src/cart.ts")).unwrap(), cart);
 }

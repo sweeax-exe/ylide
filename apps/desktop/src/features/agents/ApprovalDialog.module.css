@@ -142,3 +142,94 @@
   outline-offset: 4px;
   border-radius: var(--radius-control);
 }
+
+/* A card of questions: one row per question, answers to click, own answer. */
+.questionRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-height: 460px;
+  overflow: auto;
+  padding: 2px;
+}
+
+.questionRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.questionRow + .questionRow {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.questionNumber {
+  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.option {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 30px;
+  padding: 5px var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font-size: var(--text-base);
+  font-weight: 550;
+  line-height: var(--leading-ui);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease);
+}
+
+.option:not(:disabled):hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.option[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.option:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.optionLabel {
+  overflow-wrap: anywhere;
+}
+
+.recommended {
+  flex: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.optionHint {
+  font-size: var(--text-sm);
+  color: var(--text-3);
+}

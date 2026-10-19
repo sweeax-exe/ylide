@@ -121,5 +121,14 @@
     "deleteConfirm": "Hapus",
     "saveFailed": "Chat tidak dapat disimpan ke riwayat",
     "messages_other": "{{count}} pesan"
+  },
+  "suggestions": {
+    "label": "Saran langkah berikutnya",
+    "askHint": "Kirim sebagai pesan berikutnya",
+    "agents": "Kerjakan dengan agen",
+    "agentsLabel": "Kerjakan dengan agen: {{text}}",
+    "agentsHint": "Memulai proses agen dengan ini sebagai tujuan.",
+    "agentsBusy": "Proses agen sudah berjalan.",
+    "agentsNoProject": "Buka proyek terlebih dahulu."
   }
 }

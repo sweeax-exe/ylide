@@ -65,7 +65,8 @@
     "stepLimit": "已达到步数上限",
     "answering": "正在回答 {{agent}}",
     "notes": "正在更新项目知识",
-    "recap": "正在撰写总结"
+    "recap": "正在撰写总结",
+    "clarify": "正在等待你的回答"
   },
   "idle": {
     "goalLabel": "智能体要做什么？",
@@ -84,7 +85,8 @@
     "noProject": "未打开文件夹。智能体需要一个项目才能工作。",
     "previous": "上一次运行",
     "showRun": "显示详情",
-    "openTasks_other": "还有 {{count}} 个任务未完成。继续时会先处理它们。"
+    "openTasks_other": "还有 {{count}} 个任务未完成。继续时会先处理它们。",
+    "startPlanning": "创建计划"
   },
   "mode": {
     "label": "批准方式",
@@ -99,7 +101,8 @@
     "confirmDeletes": "删除文件前询问",
     "unguardedCommands": "智能体会不经询问运行命令。命令的影响无法撤销。",
     "unguardedDeletes": "智能体会不经询问删除文件。你可以从检查点恢复它们。",
-    "unguardedBoth": "智能体会不经询问运行命令和删除文件。命令的影响无法撤销。"
+    "unguardedBoth": "智能体会不经询问运行命令和删除文件。命令的影响无法撤销。",
+    "confirmPlan": "先规划，再执行"
   },
   "run": {
     "elapsed": "已用时间",
@@ -244,7 +247,16 @@
     "answerLabel": "你的回答",
     "hint": "按 Ctrl+Enter 发送回答。",
     "later": "稍后回答",
-    "send": "发送回答"
+    "send": "发送回答",
+    "clarifyTitle": "制定计划前的几个问题",
+    "clarifyIntro": "编排者会根据你的回答制定计划。点击一个回答，或写下你自己的回答；你留空的问题由它自己决定。",
+    "recommended": "（推荐）",
+    "own": "你自己的回答",
+    "ownLabel": "你对此的回答：{{question}}",
+    "several": "可以选择多个。",
+    "sendAll": "发送回答",
+    "skip": "跳过",
+    "skipHint": "不回答直接制定计划：编排者会自己决定，并说明它做了哪些假设。"
   },
   "live": {
     "task": "{{id}} {{title}}：{{status}}",
@@ -256,6 +268,69 @@
     "answer": "无法发送你的回答",
     "intervene": "无法发送你的消息",
     "restore": "无法撤销更改",
-    "settings": "无法保存批准设置"
+    "settings": "无法保存批准设置",
+    "planDraft": "无法创建计划",
+    "planSave": "无法保存计划"
+  },
+  "workMode": {
+    "label": "模式",
+    "plan": "规划",
+    "code": "执行",
+    "hint": "在规划和执行之间切换（{{key}}）"
+  },
+  "plan": {
+    "introTitle": "先规划，再执行",
+    "introBody": "在规划模式下，智能体只读取、不做任何修改，并写出一份计划。你可以讨论并编辑它，直到满意。切换到“执行”后，它们会按计划完成。",
+    "goalLabel": "要规划什么？",
+    "goalPlaceholder": "例如：购物车里的折扣码",
+    "create": "创建计划",
+    "createHint": "按 Ctrl+Enter 创建计划。",
+    "notReady": "要规划，请先启动模型并打开一个项目。",
+    "adopt": "接手未完成的任务",
+    "adoptHint": "上一次运行（“{{goal}}”）还有未完成的任务。把它们作为计划接手，再修改。",
+    "handover": "{{task}} 完成后切换到规划。",
+    "handoverNoTask": "当前任务完成后切换到规划。",
+    "keepGoing": "继续执行",
+    "kicker": "计划",
+    "firstDraft": "编排者会查看项目并写出计划，不会修改任何内容。",
+    "working": "编排者正在规划…",
+    "stop": "停止",
+    "approach": "思路",
+    "done": "已完成",
+    "steps": "步骤",
+    "noSteps": "还没有步骤。添加一个，或在下方说明还缺什么。",
+    "addStep": "添加步骤",
+    "newStep": "新步骤",
+    "files": "文件",
+    "verify": "检查",
+    "risks": "风险",
+    "questions": "待定问题",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "edit": "编辑",
+    "remove": "删除",
+    "titleLabel": "标题",
+    "descriptionLabel": "要做什么",
+    "filesLabel": "文件，用逗号分隔",
+    "verifyLabel": "如何检查",
+    "apply": "应用",
+    "answer": "发送回答",
+    "answersIntro": "待定问题的回答：",
+    "leftOpen": "未回答，请自行决定",
+    "notesLabel": "计划记录",
+    "noteCreated": "计划已创建",
+    "noteUpdated": "计划已更新",
+    "noteFailed": "编排者没能写出计划。请再试一次或换个说法。",
+    "noteTookOver": "未完成的任务现在就是计划。",
+    "chatLabel": "讨论计划",
+    "chatPlaceholder": "例如：修改第 2 步，改用 Vitest",
+    "send": "发送",
+    "saveFile": "保存为文件",
+    "saved": "计划已保存",
+    "discard": "放弃计划",
+    "discardTitle": "放弃这个计划？",
+    "discardBody": "计划及其记录将丢失。已保存的文件会保留。",
+    "carryOut": "执行",
+    "carryOutHint": "智能体按所选的批准模式完成这些步骤。"
   }
 }

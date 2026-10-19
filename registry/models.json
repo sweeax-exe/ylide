@@ -1,7 +1,7 @@
 {
   "$schema": "./schema/registry.schema.json",
   "schemaVersion": 2,
-  "registryVersion": "2026.10.17",
+  "registryVersion": "2026.10.17.1",
   "updatedAt": "2026-10-17",
   "runtimes": [
     {
@@ -784,6 +784,199 @@
         "hybrid-attention"
       ],
       "notes": "Default reasoning_effort is xhigh and over-thinks; the IDE sends medium for agents. Use q8_0 KV on 16 GB GPUs. A separate MTP head (MTP/mtp-Qwen3.8-27B-Q4_0.gguf) is pending an A/B test. The vision projector (mmproj) is loaded only when the user switches on image input for the model."
+    },
+    {
+      "id": "qwen3.8-27b-gsq",
+      "name": "Qwen3.8 27B (GSQ-RCO)",
+      "family": "qwen3.8",
+      "publisher": "Qwen (Alibaba), GGUF by ISTA-DASLab",
+      "releaseDate": "2026-08-14",
+      "roles": [
+        "chat",
+        "agent"
+      ],
+      "description": {
+        "en": "Qwen3.8 27B in research-grade 2-3 bit quantizations (GSQ-RCO by ISTA-DASLab) that keep nearly all of its coding quality. Fits completely on 12-16 GB GPUs, where the regular files do not.",
+        "de": "Qwen3.8 27B in 2- bis 3-Bit-Quantisierungen aus der Forschung (GSQ-RCO von ISTA-DASLab), die fast die volle Coding-Qualität behalten. Passt komplett auf GPUs mit 12 bis 16 GB, wo die normalen Dateien zu groß sind."
+      },
+      "strengths": [
+        {
+          "en": "The same model as Qwen3.8 27B in much smaller files",
+          "de": "Dasselbe Modell wie Qwen3.8 27B in deutlich kleineren Dateien"
+        },
+        {
+          "en": "IQ3_S matches the full model on LiveCodeBench (quantizer's numbers)",
+          "de": "IQ3_S erreicht im LiveCodeBench den Wert des vollen Modells (Angabe des Quantisierers)"
+        },
+        {
+          "en": "Runs fully on 16 GB GPUs with 64K context",
+          "de": "Läuft mit 64K Kontext komplett auf 16-GB-GPUs"
+        }
+      ],
+      "license": {
+        "id": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "commercialUse": true,
+        "notes": "The quantized weights inherit the license of Qwen/Qwen3.8-27B (Apache-2.0). Not to be confused with Qwen3.8-Flash-Next, which uses the Qwen Community License and is not offered."
+      },
+      "architecture": {
+        "type": "dense",
+        "paramsTotalB": 26.9,
+        "paramsActiveB": 26.9,
+        "layers": 64,
+        "attentionLayers": 16,
+        "kvHeads": 4,
+        "headDimK": 256,
+        "headDimV": 256,
+        "recurrentStateMib": 145
+      },
+      "context": {
+        "max": 262144,
+        "recommended": 65536
+      },
+      "capabilities": {
+        "toolCalling": "excellent",
+        "reasoning": "optional",
+        "vision": true
+      },
+      "quality": {
+        "coding": 86,
+        "agentic": 84
+      },
+      "requestDefaults": {
+        "agent": {
+          "temperature": 1,
+          "topP": 0.95,
+          "topK": 20,
+          "presencePenalty": 0,
+          "templateKwargs": {
+            "reasoning_effort": "medium"
+          }
+        },
+        "chat": {
+          "temperature": 1,
+          "topP": 0.95,
+          "topK": 20,
+          "presencePenalty": 0,
+          "templateKwargs": {
+            "reasoning_effort": "low"
+          }
+        },
+        "inline": {
+          "temperature": 1,
+          "topP": 0.95,
+          "topK": 20,
+          "presencePenalty": 0,
+          "templateKwargs": {
+            "reasoning_effort": "low"
+          }
+        }
+      },
+      "source": {
+        "hfRepo": "ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF",
+        "revision": "d562806dbafae37109975e970aae91b43e73b440",
+        "homepage": "https://huggingface.co/Qwen/Qwen3.8-27B"
+      },
+      "variants": [
+        {
+          "quant": "GSQ-RCO-IQ2_XS",
+          "bitsPerWeight": 2.5,
+          "qualityPenalty": 9,
+          "files": [
+            {
+              "path": "Qwen3.8-27B-GSQ-RCO-IQ2_XS.gguf",
+              "sizeBytes": 8422841472,
+              "sha256": "f0ae5006da0ce6225935339e4e989369f94de95d2263cf969519f8420c9ae02c"
+            }
+          ]
+        },
+        {
+          "quant": "GSQ-RCO-IQ2_S",
+          "bitsPerWeight": 2.75,
+          "qualityPenalty": 5,
+          "files": [
+            {
+              "path": "Qwen3.8-27B-GSQ-RCO-IQ2_S.gguf",
+              "sizeBytes": 9259510912,
+              "sha256": "16c9802111aa9ef3acde465188d6d601f8db128ee3d828ad983a5caca4135ecb"
+            }
+          ]
+        },
+        {
+          "quant": "GSQ-RCO-IQ3_XXS",
+          "bitsPerWeight": 3,
+          "qualityPenalty": 2.5,
+          "files": [
+            {
+              "path": "Qwen3.8-27B-GSQ-RCO-IQ3_XXS.gguf",
+              "sizeBytes": 10094357632,
+              "sha256": "fdfcb6a29b11188956dfbfd904223588a6c1b77eb250c3e8a36e1bd269df91f7"
+            }
+          ]
+        },
+        {
+          "quant": "GSQ-RCO-IQ3_S",
+          "bitsPerWeight": 3.5,
+          "qualityPenalty": 1.5,
+          "files": [
+            {
+              "path": "Qwen3.8-27B-GSQ-RCO-IQ3_S.gguf",
+              "sizeBytes": 11771546784,
+              "sha256": "64b53b64c7aa39f20a7e54bd80582fe595b1d745624ee8a72e92508c0326d810"
+            }
+          ]
+        }
+      ],
+      "projector": {
+        "path": "mmproj-Qwen3.8-27B-BF16.gguf",
+        "sizeBytes": 931146528,
+        "sha256": "13cb7bebccbd04afc8f4090cb949ecf8937cdf7377c5799b1a0c594e7c0d3e16"
+      },
+      "benchmarks": [
+        {
+          "name": "Terminal-Bench 2.1",
+          "score": 73,
+          "unit": "%",
+          "sourceUrl": "https://huggingface.co/Qwen/Qwen3.8-27B",
+          "selfReported": true,
+          "date": "2026-08"
+        },
+        {
+          "name": "SWE-bench Pro",
+          "score": 61.7,
+          "unit": "%",
+          "sourceUrl": "https://huggingface.co/Qwen/Qwen3.8-27B",
+          "selfReported": true,
+          "date": "2026-08"
+        },
+        {
+          "name": "Artificial Analysis Intelligence Index v4.3.2",
+          "score": 34,
+          "unit": "index",
+          "sourceUrl": "https://artificialanalysis.ai/models/qwen3-8-27b",
+          "selfReported": false,
+          "date": "2026-10"
+        },
+        {
+          "name": "LiveCodeBench v6 (GSQ-RCO IQ3_S)",
+          "score": 85.71,
+          "unit": "%",
+          "sourceUrl": "https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF",
+          "selfReported": true,
+          "date": "2026-09"
+        }
+      ],
+      "llamaArgs": [
+        "--jinja",
+        "--reasoning-format",
+        "deepseek"
+      ],
+      "tags": [
+        "dense",
+        "hybrid-attention"
+      ],
+      "notes": "The weights of qwen3.8-27b, quantized with GSQ-RCO by ISTA-DASLab (arXiv 2604.18556, 2605.00649). Quality per quant is the quantizer's own measurement (LiveCodeBench v6: BF16 85.71, IQ3_S 85.71, IQ3_XXS 84.57, IQ2_S 82.29, IQ2_XS 76.57); no independent tool-calling or long-context results at 2-3 bit. The GGUF embeds its own chat template (8952 characters, unsloth: 9993). The -mtp files in the same revision carry the MTP head and are pending an A/B test. Only a BF16 projector is offered. Use q8_0 KV on 16 GB GPUs."
     },
     {
       "id": "qwen3.6-27b",

@@ -6,6 +6,7 @@ use crate::last_run::LastRuns;
 use crate::models::ModelStore;
 use crate::network::NetworkGate;
 use crate::paths::AppPaths;
+use crate::planning::PlanStore;
 use crate::runtime::RuntimeManager;
 use crate::settings::Settings;
 use crate::skill_service::CachedTree;
@@ -42,6 +43,8 @@ pub struct AppState {
     pub chats: ChatStore,
     /// The last agent run of each project, for "Continue" after a restart.
     pub last_runs: LastRuns,
+    /// Planning mode of each project: its plan, the mode and the conversation.
+    pub plans: PlanStore,
     /// Installed skills and their on/off state (also of each project's own skills).
     pub skills: Arc<SkillStore>,
     /// The skill folders of the repository listed last, so installing needs no second listing.
@@ -89,6 +92,7 @@ impl AppState {
             agents: AgentRuns::default(),
             chats: ChatStore::new(paths.data.join("chats")),
             last_runs: LastRuns::new(paths.data.join("agent-runs")),
+            plans: PlanStore::new(paths.data.join("agent-plans")),
             skills: Arc::new(SkillStore::new(paths.skills.clone())),
             skill_tree: Mutex::new(None),
             pending_update: Mutex::new(None),

@@ -1,8 +1,9 @@
 import { ShieldCheck, TriangleAlert, Undo2 } from 'lucide-react';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ClipboardEventHandler, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ApprovalRequest } from '../../bindings/ApprovalRequest';
 import type { ApprovalResponse } from '../../bindings/ApprovalResponse';
+import type { Question } from '../../bindings/Question';
 import type { ToolRisk } from '../../bindings/ToolRisk';
 import { Dialog } from '../../components/Dialog';
 import { AttachImagesButton, ImageStrip, useDraftImages, useImageInput, useVision } from '../../components/ImageInput';
@@ -12,6 +13,7 @@ import { looksLikeDiff } from './diff';
 import { DiffView } from './DiffView';
 import { useRoleName } from './hooks';
 import { CodeText } from './parts';
+import { answersFor, answersOnClick, canSend, emptyDrafts, pick, type AnswerDraft } from './questions';
 import type { UserQuestion } from './run';
 import { useAgentRun } from './store';
 
@@ -159,62 +161,112 @@ function ApprovalDetail({ request }: { request: ApprovalRequest }) {
   );
 }
 
-/** Dialog for a question an agent asks the user. */
+/**
+ * Dialog for questions an agent asks the user: one, or before the plan up
+ * to three. A question with answers to click shows them as buttons (the
+ * recommended one marked) with a field for the user's own answer; for a
+ * single question that takes one answer, the click answers it.
+ */
 export function QuestionDialog({ question, onLater }: { question: UserQuestion; onLater: () => void }) {
   const { t } = useTranslation('agents');
   const roleName = useRoleName();
   const answer = useAgentRun((st) => st.answer);
-  const [text, setText] = useState('');
+  const questions = question.questions;
+  const [drafts, setDrafts] = useState<AnswerDraft[]>(() => emptyDrafts(questions.length));
   const [busy, setBusy] = useState(false);
   const [images, getImages, setImages] = useDraftImages();
   const vision = useVision();
   const imageInput = useImageInput(getImages, setImages, vision);
   const imagesBlocked = images.length > 0 && !vision.canSee;
+  const plain = questions.length === 1 && questions[0].options.length === 0;
+  const byClick = answersOnClick(questions);
+  const ready = canSend(questions, drafts) && !imagesBlocked;
 
-  const send = async () => {
-    if (!text.trim() || busy || imagesBlocked) return;
+  const send = async (answers: string[]) => {
+    if (busy || imagesBlocked) return;
     setBusy(true);
-    await answer(question.id, text.trim(), images.map((i) => i.url));
+    await answer(question.id, answers, images.map((i) => i.url));
     setBusy(false);
   };
+  const change = (index: number, edit: (d: AnswerDraft) => AnswerDraft) => {
+    const next = drafts.map((d, i) => (i === index ? edit(d) : d));
+    setDrafts(next);
+    return next;
+  };
+  const choose = (index: number, option: number) => {
+    const next = change(index, (d) => pick(d, option, questions[index].multiple));
+    if (byClick) void send(answersFor(questions, next));
+  };
+  const submit = () => {
+    if (ready) void send(answersFor(questions, drafts));
+  };
 
+  const title = question.clarify ? t('question.clarifyTitle') : t('question.title', { agent: roleName(question.agentId) });
   return (
     <Dialog
       open
-      title={t('question.title', { agent: roleName(question.agentId) })}
+      title={title}
       onClose={onLater}
-      width={520}
+      width={questions.length > 1 ? 600 : 520}
       footer={
         <>
           <Button variant="ghost" onClick={onLater}>
             {t('question.later')}
           </Button>
-          <Button variant="primary" onClick={() => void send()} loading={busy} disabled={!text.trim() || imagesBlocked}>
-            {t('question.send')}
+          {question.clarify && (
+            <Button variant="secondary" onClick={() => void send(questions.map(() => ''))} disabled={busy || imagesBlocked} title={t('question.skipHint')}>
+              {t('question.skip')}
+            </Button>
+          )}
+          <Button variant="primary" onClick={submit} loading={busy} disabled={!ready}>
+            {plain || byClick ? t('question.send') : t('question.sendAll')}
           </Button>
         </>
       }
     >
       <div className={`${s.body} ${imageInput.dragging ? s.dropping : ''}`} onDragOver={imageInput.onDragOver} onDragLeave={imageInput.onDragLeave} onDrop={imageInput.onDrop}>
-        <p className={s.question}>{question.question}</p>
-        <Field label={t('question.answerLabel')} hint={t('question.hint')}>
-          {(id) => (
-            <TextArea
-              id={id}
-              data-autofocus=""
-              rows={4}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onPaste={imageInput.onPaste}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                  e.preventDefault();
-                  void send();
-                }
-              }}
-            />
-          )}
-        </Field>
+        {question.clarify && <p className={s.hint}>{t('question.clarifyIntro')}</p>}
+        {plain ? (
+          <>
+            <p className={s.question}>{questions[0].question}</p>
+            <Field label={t('question.answerLabel')} hint={t('question.hint')}>
+              {(id) => (
+                <TextArea
+                  id={id}
+                  data-autofocus=""
+                  rows={4}
+                  value={drafts[0]?.own ?? ''}
+                  onChange={(e) => change(0, (d) => ({ ...d, own: e.target.value }))}
+                  onPaste={imageInput.onPaste}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                      e.preventDefault();
+                      submit();
+                    }
+                  }}
+                />
+              )}
+            </Field>
+          </>
+        ) : (
+          <div className={s.questionRows}>
+            {questions.map((q, i) => (
+              <QuestionRow
+                key={i}
+                question={q}
+                draft={drafts[i]}
+                numbered={questions.length > 1 ? i + 1 : null}
+                toggles={!byClick}
+                autoFocus={i === 0}
+                disabled={busy}
+                onPick={(option) => choose(i, option)}
+                onOwn={(own) => change(i, (d) => ({ ...d, own }))}
+                onSubmit={submit}
+                onPaste={imageInput.onPaste}
+              />
+            ))}
+          </div>
+        )}
         <div className={s.answerImages}>
           <ImageStrip images={images} onRemove={imageInput.remove} size="sm" />
           <AttachImagesButton vision={vision} onPick={imageInput.pick} busy={imageInput.busy} />
@@ -222,5 +274,69 @@ export function QuestionDialog({ question, onLater }: { question: UserQuestion; 
         </div>
       </div>
     </Dialog>
+  );
+}
+
+/** One question with its answers to click and a field for an own answer (question cards, the plan's open questions). */
+export function QuestionRow({
+  question,
+  draft,
+  numbered,
+  toggles,
+  autoFocus,
+  disabled,
+  onPick,
+  onOwn,
+  onSubmit,
+  onPaste,
+}: {
+  question: Question;
+  draft: AnswerDraft;
+  numbered: number | null;
+  /** The buttons pick (several questions, or several answers); else a click answers. */
+  toggles: boolean;
+  autoFocus: boolean;
+  disabled: boolean;
+  onPick: (option: number) => void;
+  onOwn: (text: string) => void;
+  onSubmit: () => void;
+  onPaste?: ClipboardEventHandler;
+}) {
+  const { t } = useTranslation('agents');
+  const id = useId();
+  return (
+    <div className={s.questionRow} role="group" aria-labelledby={id}>
+      <p id={id} className={s.question}>
+        {numbered !== null && <span className={s.questionNumber}>{numbered}.</span>}
+        {question.question}
+      </p>
+      {question.options.length > 0 && (
+        <div className={s.options}>
+          {question.options.map((o, i) => (
+            <button key={i} type="button" className={s.option} aria-pressed={toggles ? draft.picked.includes(i) : undefined} disabled={disabled} onClick={() => onPick(i)}>
+              <span className={s.optionLabel}>{o.label}</span>
+              {o.recommended && <span className={s.recommended}>{t('question.recommended')}</span>}
+            </button>
+          ))}
+        </div>
+      )}
+      {question.multiple && <span className={s.optionHint}>{t('question.several')}</span>}
+      <TextInput
+        data-autofocus={autoFocus ? '' : undefined}
+        aria-label={t('question.ownLabel', { question: question.question })}
+        placeholder={question.options.length ? t('question.own') : t('question.answerLabel')}
+        value={draft.own}
+        disabled={disabled}
+        onChange={(e) => onOwn(e.target.value)}
+        onPaste={onPaste}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            onSubmit();
+          }
+        }}
+        spellCheck
+      />
+    </div>
   );
 }

@@ -175,7 +175,8 @@ exact machine. As a rough guide:
 |---|---|---|---|
 | Qwen3.6 35B-A3B | MoE, 35B (3B active) | 13–37 GB | 12 GB VRAM + 32 GB RAM (experts in RAM), or 24 GB VRAM |
 | Qwen3-Coder-Next 80B-A3B | MoE, 80B (3B active) | 38–50 GB | 16 GB VRAM + 64 GB RAM |
-| Qwen3.8 27B | dense, 27.8B | 11–29 GB | 12–24 GB VRAM |
+| Qwen3.8 27B | dense, 27.8B | 11–29 GB | 16–24 GB VRAM |
+| Qwen3.8 27B GSQ-RCO (2–3 bit) | dense, 27B | 8–12 GB | 12–16 GB VRAM, completely on the GPU |
 | Qwen3.6 27B | dense, 27B | 15–29 GB | 16–24 GB VRAM |
 | Muse Glimmer 30B | dense, 29.6B | 17–20 GB | 20–24 GB VRAM |
 | gpt-oss 20B | MoE, 21B (3.6B active) | 12 GB | 16 GB VRAM, or 8 GB VRAM + RAM |

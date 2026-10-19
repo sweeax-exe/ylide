@@ -52,6 +52,9 @@ describe('skills page', () => {
     expect(sourceText({ kind: 'folder', path: 'D:/skills/pdf' })).toBe('D:/skills/pdf');
     expect(sourceUrl({ kind: 'folder', path: 'D:/skills/pdf' })).toBeNull();
     expect(sourceText({ kind: 'project' })).toBe('.agents/skills');
+    const recommended = { kind: 'recommended' as const, repo: 'morluto/rea', commit: 'f4322b15ed1423d736bd2572cf7a8eadf2b466e1', license: 'MIT', url: 'https://github.com/morluto/rea/tree/f4322b1/.agents/skills/reverse-engineer-anything' };
+    expect(sourceText(recommended)).toBe('morluto/rea');
+    expect(sourceUrl(recommended)).toBe(recommended.url);
     expect(shortCommit('9744d07211ac750ae0273c4f91175eac0c890d9d')).toBe('9744d07');
   });
 
